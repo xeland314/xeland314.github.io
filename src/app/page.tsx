@@ -16,11 +16,6 @@ export default function Home() {
           {/* Aquí puedes añadir tus entradas de blog */}
         </section>
 
-        <section id="proyectos" className="mb-16">
-          <h2 className="text-3xl font-bold">Proyectos</h2>
-          {/* Aquí puedes añadir tus proyectos */}
-        </section>
-
         <section id="acerca-de-mi" className="mb-16">
           <h2 className="text-3xl font-bold">Acerca de mí</h2>
           {/* Aquí puedes añadir información sobre ti */}
