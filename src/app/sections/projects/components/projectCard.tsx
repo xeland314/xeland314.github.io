@@ -6,11 +6,14 @@ export default function ProjectCard({ project }: { project: IProjectInfo }) {
   return (
     <div className="rounded-lg shadow-md overflow-hidden">
       {project.image && (
-        <img
-          className="w-full h-48 object-cover"
-          src={project.image}
-          alt={project.title}
-        />
+        <div className="flex flex-auto justify-center">
+          <img
+            className="w-auto h-48 object-cover"
+            src={project.image}
+            alt={project.title}
+            loading="lazy"
+          />
+        </div>
       )}
       <div className="p-4">
         <CardHeader title={project.title} />
@@ -25,7 +28,10 @@ export default function ProjectCard({ project }: { project: IProjectInfo }) {
             </span>
           ))}
         </div>
-        <CardFooter githubLink={project.githubLink} demoLink={project.demoLink} />
+        <CardFooter
+          githubLink={project.githubLink}
+          demoLink={project.demoLink}
+        />
       </div>
     </div>
   );

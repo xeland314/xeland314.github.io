@@ -5,7 +5,7 @@ import { projects } from "../sections/projects/info";
 import { ProjectCard } from "../sections/projects/components";
 import Pagination from "./pagination";
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 5;
 
 export default function ProjectsPage() {
   const [currentPage, setCurrentPage] = useState(1);

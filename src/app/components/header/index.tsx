@@ -29,16 +29,16 @@ export default function Header() {
             isOpen ? "block" : "hidden"
           }`}
         >
-          <HeaderLink href="#inicio" onClick={() => setIsOpen(!isOpen)}>
+          <HeaderLink href="/#inicio" onClick={() => setIsOpen(!isOpen)}>
             Inicio
           </HeaderLink>
-          <HeaderLink href="#blogs" onClick={() => setIsOpen(!isOpen)}>
+          <HeaderLink href="/#blogs" onClick={() => setIsOpen(!isOpen)}>
             Blogs
           </HeaderLink>
-          <HeaderLink href="#proyectos" onClick={() => setIsOpen(!isOpen)}>
+          <HeaderLink href="/#proyectos" onClick={() => setIsOpen(!isOpen)}>
             Proyectos
           </HeaderLink>
-          <HeaderLink href="#acerca-de-mi" onClick={() => setIsOpen(!isOpen)}>
+          <HeaderLink href="/#acerca-de-mi" onClick={() => setIsOpen(!isOpen)}>
             Acerca de mí
           </HeaderLink>
           <div

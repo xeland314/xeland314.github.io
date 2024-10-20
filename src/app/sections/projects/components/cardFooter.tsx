@@ -7,15 +7,15 @@ interface ICardFooterProps {
 
 export function CardFooter({ githubLink, demoLink }: ICardFooterProps) {
   return (
-    <div className="flex gap-2 mt-4">
+    <div className="flex justify-between gap-2 mt-4">
       {githubLink && (
         <a
           href={githubLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="flex items-center bg-gray-500 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded"
         >
-          <span className="mr-2">Repo</span>
+          <span className="mr-2">Repositorio</span>
           <Github />
         </a>
       )}
@@ -24,7 +24,7 @@ export function CardFooter({ githubLink, demoLink }: ICardFooterProps) {
           href={demoLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          className="flex items-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
         >
           <span className="mr-2">Demo</span>
           <OpenLink />
