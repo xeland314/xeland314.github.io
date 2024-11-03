@@ -8,6 +8,16 @@ export default function SmallProjectCard({ project }: { project: IProjectInfo })
       <div className="p-2">
         <CardHeader title={project.title} />
         <p className="text-gray-600 text-xs mb-1">{project.shortDescription}</p>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {project.tags.map((tag) => (
+            <span
+              key={tag}
+              className="bg-gray-200 text-gray-700 rounded-full px-2 py-1 text-xs"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
         <CardFooter githubLink={project.githubLink} demoLink={project.demoLink} />
       </div>
     </div>

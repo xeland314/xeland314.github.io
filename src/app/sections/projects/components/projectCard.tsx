@@ -4,7 +4,7 @@ import { IProjectInfo } from "./interfaces";
 
 export default function ProjectCard({ project }: { project: IProjectInfo }) {
   return (
-    <div className="rounded-lg shadow-md overflow-hidden">
+    <div className="rounded-lg shadow-md overflow-hidden h-auto">
       {project.image && (
         <div className="flex flex-auto justify-center">
           <img
