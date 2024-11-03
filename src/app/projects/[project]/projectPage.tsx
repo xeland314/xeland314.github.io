@@ -8,7 +8,7 @@ export default function ProjectPageClient({
   projectData: IProjectInfo;
 }) {
   return (
-    <section id="proyecto" className="mb-16">
+    <section id="proyecto" className="mx-4 p-4 mb-16">
       <h2 className="text-3xl font-bold mb-8">{projectData.title}</h2>
       {projectData.image && (
         <div className="flex flex-auto justify-center m-10">

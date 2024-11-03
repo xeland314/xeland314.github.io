@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 import { ThemeProvider } from "../../themes";
+import { Footer, Header } from "@/app/components";
 
 export const metadata: Metadata = {
   title: "xeland314 - Projects",
@@ -18,7 +19,9 @@ export default function ProjectLayout({
     <html lang="es">
       <ThemeProvider>
         <body className="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-          <div className="container mx-auto p-4">{children}</div>
+          <Header />
+          <div>{children}</div>
+          <Footer />
         </body>
       </ThemeProvider>
     </html>
