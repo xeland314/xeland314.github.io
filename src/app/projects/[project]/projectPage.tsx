@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import { CardFooter } from "@/app/sections/projects/components/cardFooter";
 import { IProjectInfo } from "@/app/sections/projects/components";
