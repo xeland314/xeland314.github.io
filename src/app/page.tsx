@@ -5,20 +5,19 @@ import ProjectsSection from "./sections/projects/section";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-visible">
       <Header />
 
       {/* Main Content */}
-      <main className="flex-grow mx-auto px-4 py-8">
+      <main className="flex-grow mx-auto pt-8">
         <Introduction />
         <AboutMe />
         <ProjectsSection />
-        <section id="blogs" className="mb-16">
+        <section id="blogs" className="mb-16 py-6 md:py-8 px-10">
           <h2 className="text-3xl font-bold">Blogs</h2>
           {/* Aquí puedes añadir tus entradas de blog */}
         </section>
       </main>
-
       <Footer />
     </div>
   );
