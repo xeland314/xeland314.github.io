@@ -5,11 +5,11 @@ import ProjectsSection from "./sections/projects/section";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen overflow-visible">
+    <div className="w-full min-h-screen">
       <Header />
 
       {/* Main Content */}
-      <main className="flex-grow mx-auto pt-8">
+      <main className="flex-grow w-full mx-auto pt-8">
         <Introduction />
         <AboutMe />
         <ProjectsSection />

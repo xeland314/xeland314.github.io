@@ -22,7 +22,7 @@ export default function RootLayout({
           className={`${inter.className} bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100`}
         >
           <Header />
-          <div className="container mx-auto pt-20 p-4">{children}</div>
+          <div className="container min-h-screen mx-auto pt-20 p-4">{children}</div>
           <Footer />
         </body>
       </ThemeProvider>
