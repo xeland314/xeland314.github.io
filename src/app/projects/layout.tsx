@@ -18,11 +18,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <ThemeProvider>
-        <body
-          className={`${inter.className} bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100`}
-        >
+        <body className={`${inter.className}`}>
           <Header />
-          <div className="container min-h-screen mx-auto pt-20 p-4">{children}</div>
+          <div className="container min-h-screen mx-auto pt-20 p-4">
+            {children}
+          </div>
           <Footer />
         </body>
       </ThemeProvider>
