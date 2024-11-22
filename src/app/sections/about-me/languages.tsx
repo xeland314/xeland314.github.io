@@ -5,12 +5,18 @@ const ProgrammingLanguages = () => {
     <section id="programming-languages" className="mb-16">
       <h4 className="text-xl font-bold mb-8">Lenguajes de Programación</h4>
       <div className="flex text-center mb-4 items-center justify-center">
-        <img
-          src="https://skillicons.dev/icons?i=py,java,c,go,dart,js,ts,html,css&perline=10&theme=light"
-          alt="Programming languages"
-          width="400"
-          height="100"
-        />
+        <picture>
+          <source
+            srcSet="https://skillicons.dev/icons?i=py,java,c,go,dart,js,ts,html,css&perline=10&theme=dark"
+            media="(prefers-color-scheme: dark)"
+          />
+          <img
+            src="https://skillicons.dev/icons?i=py,java,c,go,dart,js,ts,html,css&perline=10&theme=light"
+            alt="Programming languages"
+            width="400"
+            height="100"
+          />
+        </picture>
       </div>
       <div className="flex text-center mb-4 items-center justify-center">
         <picture>

@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "../globals.css";
-import { ThemeProvider } from "../themes";
-import { Footer, Header } from "@/app/components";
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "xeland314 - Projects",
@@ -16,16 +12,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <ThemeProvider>
-        <body className={`${inter.className}`}>
-          <Header />
-          <div className="container min-h-screen mx-auto pt-20 p-4">
-            {children}
-          </div>
-          <Footer />
-        </body>
-      </ThemeProvider>
-    </html>
+    <div className="container min-h-screen mx-auto p-4">{children}</div>
   );
 }

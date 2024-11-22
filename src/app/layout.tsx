@@ -20,7 +20,7 @@ export default function RootLayout({
       <ThemeProvider>
         <body className={`${inter.className}`}>
           <Header />
-          <div className="container min-h-screen mx-auto pt-20 p-4">
+          <div className="container min-h-screen mx-auto p-1 pt-0">
             {children}
           </div>
           <Footer />

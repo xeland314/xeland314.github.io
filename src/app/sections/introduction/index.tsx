@@ -1,6 +1,6 @@
 export default function Introduction() {
   return (
-    <section id="inicio" className="h-screen w-auto flex items-center justify-center py-12 md:py-24 lg:py-32 xl:py-48">
+    <section id="inicio" className="h-full min-h-dvh w-auto flex items-center justify-center">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="space-y-2">
@@ -19,8 +19,8 @@ export default function Introduction() {
               Contáctame
             </a>
             <a
-              href="#projects"
-              className="inline-block px-6 py-2 text-white bg-blue-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              href="/#proyectos"
+              className="inline-block px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
               Ver Proyectos
             </a>

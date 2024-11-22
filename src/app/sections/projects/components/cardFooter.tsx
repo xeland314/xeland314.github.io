@@ -7,7 +7,7 @@ interface ICardFooterProps {
 
 export function CardFooter({ githubLink, demoLink }: ICardFooterProps) {
   return (
-    <div className="flex justify-between gap-2 mt-4">
+    <div className="flex items-center max-sm:flex-col justify-between gap-2 mt-4">
       {githubLink && (
         <a
           href={githubLink}

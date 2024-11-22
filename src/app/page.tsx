@@ -1,10 +1,10 @@
-import AboutMe from "./about-me";
+import AboutMe from "./sections/about-me";
 import Introduction from "./sections/introduction";
 import ProjectsSection from "./sections/projects/section";
 
 export default function Home() {
   return (
-    <main className="flex-grow w-full mx-auto pt-8">
+    <main className="flex-grow w-full mx-auto">
       <Introduction />
       <AboutMe />
       <ProjectsSection />

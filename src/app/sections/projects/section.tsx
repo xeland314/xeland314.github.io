@@ -25,7 +25,7 @@ export default function ProjectsSection() {
   };
 
   return (
-    <section id="proyectos" className="py-6 md:py-8 px-10 mb-16">
+    <section id="proyectos" className="py-6 md:py-8 md:px-10 px-2 mb-16">
       <h2 className="text-3xl font-bold mb-8">
         <a
           href="/projects"

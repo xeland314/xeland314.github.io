@@ -8,7 +8,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-gray-800 text-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 h-auto w-full bg-gray-800 text-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="flex justify-between items-center relative">
         <div className="basis-1/2 p-3 text-lg font-bold">
           <h1>
