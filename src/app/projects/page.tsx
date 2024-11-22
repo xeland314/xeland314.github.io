@@ -17,7 +17,7 @@ export default function ProjectsPage() {
   );
 
   return (
-    <section id="proyectos" className="mb-16">
+    <section id="projects" className="mb-16">
       <h2 className="text-3xl font-bold mb-8">Todos los Proyectos</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {currentProjects.map((project) => (

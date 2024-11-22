@@ -35,10 +35,10 @@ export default function Header() {
           <HeaderLink href="/#blogs" onClick={() => setIsOpen(!isOpen)}>
             Blogs
           </HeaderLink>
-          <HeaderLink href="/#proyectos" onClick={() => setIsOpen(!isOpen)}>
+          <HeaderLink href="/#projects" onClick={() => setIsOpen(!isOpen)}>
             Proyectos
           </HeaderLink>
-          <HeaderLink href="/#acerca-de-mi" onClick={() => setIsOpen(!isOpen)}>
+          <HeaderLink href="/#about-me" onClick={() => setIsOpen(!isOpen)}>
             Acerca de mí
           </HeaderLink>
           <div
