@@ -30,6 +30,10 @@ const ContactForm = () => {
     setRecaptchaToken(token);
   };
 
+  const handleRecaptchaExpired = () => {
+    setRecaptchaToken(null);
+  };
+
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
@@ -80,7 +84,6 @@ const ContactForm = () => {
       setStatus("Mensaje enviado correctamente!");
       setEmail("");
       setMessage("");
-      setRecaptchaToken(null);
       setEmailCount((prevCount) => {
         const newCount = prevCount + 1;
         localStorage.setItem("emailCount", newCount.toString());
@@ -138,6 +141,7 @@ const ContactForm = () => {
       <ReCAPTCHA
         sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
         onChange={handleRecaptchaChange}
+        onExpired={handleRecaptchaExpired}
       />
       <button
         type="submit"
