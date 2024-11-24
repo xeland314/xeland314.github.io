@@ -149,8 +149,8 @@ const ContactForm = () => {
         disabled={emailCount >= 2}
       >
         {emailCount >= 2 || emailCount < 0
-          ? "Has alcanzado el límite diario de correos"
-          : "Enviar"}
+          ? "Has alcanzado el límite diario de correos "
+          : "Enviar "}
         ({emailCount}/2)
       </button>
       {status && <p className="mt-4 text-sm text-gray-600">{status}</p>}
