@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
 const ContactForm = () => {
@@ -11,14 +11,30 @@ const ContactForm = () => {
   const [errors, setErrors] = useState<{ email?: string; message?: string }>(
     {}
   );
+  const [emailCount, setEmailCount] = useState(0);
+
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const savedDate = localStorage.getItem("emailDate");
+    const savedCount = localStorage.getItem("emailCount");
+
+    if (savedDate === today && savedCount) {
+      setEmailCount(parseInt(savedCount, 10));
+    } else {
+      localStorage.setItem("emailDate", today);
+      localStorage.setItem("emailCount", "0");
+    }
+  }, []);
 
   const handleRecaptchaChange = (token: string | null) => {
     setRecaptchaToken(token);
   };
+
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
   };
+
   const validateForm = () => {
     const newErrors: { email?: string; message?: string } = {};
     if (!validateEmail(email)) {
@@ -30,6 +46,7 @@ const ContactForm = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const sendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -39,6 +56,11 @@ const ContactForm = () => {
     }
 
     if (!validateForm()) {
+      return;
+    }
+
+    if (emailCount >= 2) {
+      setStatus("Has alcanzado el límite de correos enviados por hoy.");
       return;
     }
 
@@ -59,6 +81,11 @@ const ContactForm = () => {
       setEmail("");
       setMessage("");
       setRecaptchaToken(null);
+      setEmailCount((prevCount) => {
+        const newCount = prevCount + 1;
+        localStorage.setItem("emailCount", newCount.toString());
+        return newCount;
+      });
     } else {
       setStatus("Error al enviar el mensaje. Inténtalo de nuevo.");
     }
@@ -84,7 +111,7 @@ const ContactForm = () => {
           required
           className="min-w-52 w-80 mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
-        {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}{" "}
+        {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
       </div>
       <div className="mb-4">
         <label htmlFor="message" className="block text-sm font-medium pb-1">
@@ -115,8 +142,12 @@ const ContactForm = () => {
       <button
         type="submit"
         className="min-w-52 w-80 inline-flex justify-center mt-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        disabled={emailCount >= 2}
       >
-        Enviar
+        {emailCount >= 2 || emailCount < 0
+          ? "Has alcanzado el límite diario de correos"
+          : "Enviar"}
+        ({emailCount}/2)
       </button>
       {status && <p className="mt-4 text-sm text-gray-600">{status}</p>}
     </form>
