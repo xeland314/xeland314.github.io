@@ -17,6 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfI7IcqAAAAAGHi4AWFSAt0nZTKeFedhTku6-eD"></script>
+      </head>
       <ThemeProvider>
         <body className={`${inter.className}`}>
           <Header />

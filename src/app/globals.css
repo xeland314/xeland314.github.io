@@ -13,7 +13,7 @@
   --text-color: #000000;
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --background-color: #1f2937;
   --text-color: #ffffff;
 }
@@ -21,4 +21,12 @@
 body {
   background-color: var(--background-color);
   color: var(--text-color);
+}
+
+#g-recaptcha-response {
+  display: block !important;
+  position: absolute;
+  margin: -50px 0 0 0 !important;
+  z-index: -999999;
+  opacity: 0;
 }
