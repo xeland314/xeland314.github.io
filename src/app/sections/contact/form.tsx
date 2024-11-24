@@ -139,7 +139,10 @@ const ContactForm = () => {
         )}
       </div>
       <ReCAPTCHA
-        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+        sitekey={
+          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
+          "6LeeTIgqAAAAAJ9bsIrpSDTRNYJtx_GKfsz2z9q0"
+        }
         onChange={handleRecaptchaChange}
         onExpired={handleRecaptchaExpired}
       />
