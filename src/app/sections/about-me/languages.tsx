@@ -2,8 +2,8 @@ import React from "react";
 
 const ProgrammingLanguages = () => {
   return (
-    <section id="programming-languages" className="mb-16">
-      <h4 className="text-xl font-bold mb-8">Lenguajes de Programación</h4>
+    <section id="programming-languages" className="flex flex-col items-center mb-16">
+      <h3 className="text-2xl font-bold mb-8">Lenguajes de Programación</h3>
       <div className="flex text-center mb-4 items-center justify-center">
         <picture>
           <source

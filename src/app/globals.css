@@ -30,3 +30,8 @@ body {
   z-index: -999999;
   opacity: 0;
 }
+
+p {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
