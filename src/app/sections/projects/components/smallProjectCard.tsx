@@ -4,7 +4,7 @@ import { IProjectInfo } from "./interfaces";
 
 export default function SmallProjectCard({ project }: { project: IProjectInfo }) {
   return (
-    <div className="rounded-lg shadow-md overflow-hidden">
+    <div className="rounded-lg shadow-md overflow-hidden scrolldown-animation">
       <div className="p-4">
         <CardHeader title={project.title} />
         <p className="text-gray-600 text-xs mb-1">{project.shortDescription}</p>

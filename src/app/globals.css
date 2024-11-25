@@ -11,6 +11,11 @@
 :root {
   --background-color: #ffffff;
   --text-color: #000000;
+  --foreground-rgb: 0, 0, 0;
+  --primary-color: #1d4ed8;
+  --secondary-color: #ffffff;
+  scrollbar-color: #1d4ed8 #1f2937;
+  scrollbar-width: auto;
 }
 
 [data-theme="dark"] {
@@ -34,4 +39,44 @@ body {
 p {
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+    scale: 10%;
+  }
+  to {
+    opacity: 1;
+    scale: 100%;
+  }
+}
+
+.scrolldown-animation {
+  view-timeline-name: --reveal;
+  animation-name: show;
+  animation-fill-mode: both;
+  animation-timeline: --reveal;
+  animation-range: entry 25% cover 50%;
+}
+
+.scrolldown-animation-2 {
+  view-timeline-name: --reveal;
+  animation-name: show;
+  animation-fill-mode: backwards;
+  animation-timeline: --reveal;
+  animation-range: entry 25% cover 30%;
 }

@@ -9,7 +9,7 @@ const AboutMe = () => {
     >
       <h2 className="text-3xl font-bold mb-8">Acerca de mí</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12">
-        <div className="mb-4">
+        <div className="mb-4 scrolldown-animation-2">
           <h3 className="text-2xl font-bold mb-2">
             Hola, soy xeland314 (💻🐱)
           </h3>
@@ -33,7 +33,7 @@ const AboutMe = () => {
             .
           </p>
         </div>
-        <div className="mb-4">
+        <div className="mb-4 scrolldown-animation-2">
           <ProgrammingLanguages />
         </div>
       </div>

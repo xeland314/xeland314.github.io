@@ -101,7 +101,7 @@ const ContactForm = () => {
       className="flex flex-col max-w-96 mb-16 items-center"
     >
       <h3 className="text-2xl font-bold mb-4">Contáctame</h3>
-      <div className="mb-4">
+      <div className="mb-4 scrolldown-animation-2">
         <label htmlFor="email" className="block text-sm font-medium pb-1">
           Correo electrónico:
         </label>
@@ -116,7 +116,7 @@ const ContactForm = () => {
         />
         {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
       </div>
-      <div className="mb-4">
+      <div className="mb-4 scrolldown-animation-2">
         <label htmlFor="message" className="block text-sm font-medium pb-1">
           Mensaje:
         </label>
