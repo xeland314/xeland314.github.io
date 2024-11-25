@@ -12,7 +12,7 @@ export default function Header() {
       <nav className="flex justify-between items-center relative">
         <div className="basis-1/2 p-3 text-lg font-bold">
           <h1>
-            <a href="/">xeland314</a>
+            <a href="/" className="hover:text-blue-700">xeland314</a>
           </h1>
         </div>
         <div className="sm:hidden">
