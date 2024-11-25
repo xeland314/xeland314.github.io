@@ -1,6 +1,6 @@
 export default function Introduction() {
   return (
-    <section id="inicio" className="h-full min-h-dvh w-auto flex items-center justify-center">
+    <section id="inicio" className="h-full min-h-[92dvh] w-auto flex items-center justify-center">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="space-y-2">
