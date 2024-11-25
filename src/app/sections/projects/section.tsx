@@ -25,7 +25,7 @@ export default function ProjectsSection() {
   };
 
   return (
-    <section id="proyectos" className="py-6 md:py-8 md:px-10 px-2 mb-16">
+    <section id="projects" className="py-6 md:py-8 md:px-10 px-2 mb-16">
       <h2 className="text-3xl font-bold mb-8">
         <a
           href="/projects"
@@ -49,12 +49,12 @@ export default function ProjectsSection() {
       <div className="flex justify-center mt-8">
         <button
           onClick={handleRandomizeProjects}
-          className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-4"
+          className="bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white font-medium py-2 px-4 rounded mr-4"
         >
           Cambiar Proyectos
         </button>
         <Link
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-white font-medium py-2 px-4 rounded"
           href="/projects"
         >
           Ver todos los proyectos
