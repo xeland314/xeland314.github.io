@@ -12,6 +12,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="container min-h-screen mx-auto p-4">{children}</div>
+    <div className="min-h-screen mx-auto p-4">{children}</div>
   );
 }

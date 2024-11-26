@@ -3,8 +3,8 @@ import React from "react";
 const ProgrammingLanguages = () => {
   return (
     <section id="programming-languages" className="flex flex-col items-center mb-16">
-      <h3 className="text-2xl font-bold mb-8">Lenguajes de Programación</h3>
-      <div className="flex text-center mb-4 items-center justify-center">
+      <h3 className="scrolldown-animation-2 text-2xl font-bold mb-8">Lenguajes de Programación</h3>
+      <div className="scrolldown-animation-2 flex text-center mb-4 items-center justify-center">
         <picture>
           <source
             srcSet="https://skillicons.dev/icons?i=py,java,c,go,dart,js,ts,html,css&perline=10&theme=dark"
@@ -18,7 +18,7 @@ const ProgrammingLanguages = () => {
           />
         </picture>
       </div>
-      <div className="flex text-center mb-4 items-center justify-center">
+      <div className="scrolldown-animation-2 flex text-center mb-4 items-center justify-center">
         <picture>
           <source
             srcSet="https://github-readme-stats-git-main-xeland314s-projects.vercel.app/api/top-langs/?username=xeland314&theme=city_lights&include_all_commits=true&exclude_repo=github-readme-stats,to-do-list-simple,Analizador-lexico,servichef_site&layout=compact&langs_count=10&hide=cmake,c%2B%2B,swift"
