@@ -1,12 +1,13 @@
 import { CardHeader } from "./cardHeader";
 import { CardFooter } from "./cardFooter";
 import { IProjectInfo } from "./interfaces";
+import { Tag } from "@/app/components";
 
 export default function ProjectCard({ project }: { project: IProjectInfo }) {
   return (
     <div className="rounded-lg shadow-md overflow-hidden h-auto scrolldown-animation-2">
       {project.image && (
-        <div className="flex flex-auto justify-center">
+        <div className="flex flex-auto justify-center bg-white">
           <img
             className="w-auto h-48 object-cover"
             src={project.image}
@@ -17,15 +18,12 @@ export default function ProjectCard({ project }: { project: IProjectInfo }) {
       )}
       <div className="p-4">
         <CardHeader title={project.title} />
-        <p className="text-gray-600 text-sm mb-2">{project.shortDescription}</p>
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
+          {project.shortDescription}
+        </p>
         <div className="flex flex-wrap gap-2 mb-2">
-          {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="bg-gray-200 text-gray-700 rounded-full px-2 py-1 text-xs"
-            >
-              {tag}
-            </span>
+          {project.tags.map((tag, index) => (
+            <div key={index}>{tag}</div>
           ))}
         </div>
         <CardFooter

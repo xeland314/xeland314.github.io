@@ -1,17 +1,21 @@
-import { useTheme } from './index';
-import { useState, useEffect } from 'react';
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
 
 export default function ThemeToggleButton() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    setChecked(theme === 'dark');
+    setChecked(theme === "dark");
   }, [theme]);
 
   const handleChange = () => {
     setChecked(!checked);
-    toggleTheme();
+    if (theme === "dark") {
+      setTheme("light");
+    } else {
+      setTheme("dark");
+    }
   };
 
   return (
@@ -28,14 +32,12 @@ export default function ThemeToggleButton() {
       >
         <div
           className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
-            checked ? 'translate-x-5' : 'translate-x-0'
+            checked ? "translate-x-5" : "translate-x-0"
           }`}
         ></div>
       </div>
-      <span
-       className="ml-3 text-sm font-medium"
-       >
-        Tema {theme === 'light' ? 'claro' : 'oscuro'}
+      <span className="ml-3 text-sm font-medium">
+        Tema {theme === "light" ? "claro" : "oscuro"}
       </span>
     </label>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./themes";
+import { ThemeProvider } from "next-themes";
 import { Footer, Header } from "./components";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,19 +16,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <head>
         <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfI7IcqAAAAAGHi4AWFSAt0nZTKeFedhTku6-eD"></script>
       </head>
-      <ThemeProvider>
-        <body className={`${inter.className}`}>
+      <body className={`${inter.className} bg-white dark:bg-gray-800 text-black dark:text-white`}>
+        <ThemeProvider attribute="data-mode">
           <Header />
-          <div className="min-h-screen mx-auto p-1 pt-0">
-            {children}
-          </div>
+          <div className="min-h-screen mx-auto p-1 pt-0">{children}</div>
           <Footer />
-        </body>
-      </ThemeProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

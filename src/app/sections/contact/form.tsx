@@ -112,7 +112,7 @@ const ContactForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="min-w-52 w-80 mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="min-w-52 w-80 mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
       </div>
@@ -129,7 +129,7 @@ const ContactForm = () => {
           maxLength={2000}
           minLength={1}
           rows={10}
-          className="min-w-52 w-80 block px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="min-w-52 w-80 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         <div className="flex flex-row justify-end">
           <p className="text-sm pt-1">{message.length}/2000 caracteres</p>
