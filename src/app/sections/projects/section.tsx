@@ -37,10 +37,10 @@ export default function ProjectsSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-auto">
         {randomProjects.map((project) => (
           <div key={project.title}>
-            <div className="hidden md:block">
+            <div className="hidden sm:block">
               <ProjectCard project={project} />
             </div>
-            <div className="block md:hidden">
+            <div className="block sm:hidden">
               <SmallProjectCard project={project} />
             </div>
           </div>
