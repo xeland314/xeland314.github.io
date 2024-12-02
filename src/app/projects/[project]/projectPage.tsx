@@ -22,15 +22,10 @@ export default function ProjectPageClient({
       )}
       <p className="text-gray-600 text-sm mb-4">{projectData.description}</p>
       <div className="flex flex-wrap gap-2 mb-4">
-        {projectData.tags.map((tag) => (
-          <span
-            key={tag}
-            className="bg-gray-200 text-gray-700 rounded-full px-2 py-1 text-xs"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+          {projectData.tags.map((tag, index) => (
+            <div key={index}>{tag}</div>
+          ))}
+        </div>
       <CardFooter
         githubLink={projectData.githubLink}
         demoLink={projectData.demoLink}
