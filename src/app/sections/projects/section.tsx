@@ -25,8 +25,8 @@ export default function ProjectsSection() {
   };
 
   return (
-    <section id="projects" className="py-6 md:py-8 md:px-10 px-2 mb-16">
-      <h2 className="text-3xl font-bold mb-8">
+    <section id="projects" className="md:px-10 px-2 mb-16">
+      <h2 className="text-3xl text-center font-bold mb-8 border-b-2 border-b-gray-700 dark:border-b-slate-100 pb-4">
         <a
           href="/projects"
           className="hover:text-blue-700 font-bold py-2 px-4 rounded"
