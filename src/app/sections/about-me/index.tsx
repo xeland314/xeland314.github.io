@@ -10,28 +10,19 @@ const AboutMe = () => {
       <h2 className="text-3xl text-center font-bold mb-8 border-b-2 border-b-gray-700 dark:border-b-slate-100 pb-4">
         Acerca de mí
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 justify-between gap-x-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 justify-between gap-x-16 md:pb-0 pb-10">
         <div className="scrolldown-animation-2">
-          <h3 className="text-center text-2xl font-bold mb-2">
-            Hola, soy xeland314 (💻🐱)
+          <h3 className="text-center text-2xl font-bold mb-8">
+            Me llamo Christopher Villamarín
           </h3>
           <div className="flex justify-center mb-4">
             <img src="/profile.png" alt="Profile" width={128} height={128} className="bg-slate-700 dark:bg-white rounded-full" />
           </div>
           <p>
-            Soy un desarrollador backend con experiencia en frontend. Creo APIs
-            con Django y aplicaciones web con React o Flutter. También tengo
-            experiencia en la creación de aplicaciones móviles con Flutter.
-            Despliego proyectos en AWS, Cloudflare y Render.
+            Soy un desarrollador backend con experiencia en frontend. Creo APIs con Django y aplicaciones web con React. Despliego mis proyectos en AWS, Cloudflare y Render.
           </p>
           <p>
-            Soy un programador autodidacta con habilidades en aprendizaje rápido
-            y resolución de problemas. Me aseguro de ofrecer un trabajo de alta
-            calidad y eficiencia.
-          </p>
-          <p>
-            He participado en diversos proyectos, creando soluciones
-            interactivas y eficientes. Puedes ver más de mi trabajo en mi{" "}
+            Puedes ver más de mi trabajo en mi{" "}
             <a href="https://github.com/xeland314" className="text-blue-500">
               GitHub
             </a>
