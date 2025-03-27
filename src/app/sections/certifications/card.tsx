@@ -1,5 +1,5 @@
 import { Badge } from "@/app/components";
-import { OpenLink, Calendar } from "@/app/icons";
+import { Calendar, Building2 } from "lucide-react";
 type Certification = {
   logo: string;
   title: string;
@@ -20,33 +20,38 @@ const CertificationCard = ({
   skills,
 }: Certification) => {
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-2">
-      <div className="flex items-center mb-2">
+    <div
+      id={`${credentialId}`}
+      className="min-h-52 flex flex-col justify-between bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-2"
+    >
+      <div className="flex items-center">
         <img
           src={logo}
           alt={`${issuer} logo`}
           className="bg-white w-12 h-12 mr-4 self-start"
         />
         <div>
-          <h3 className="text-lg font-bold">{title}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{issuer}</p>
+          <a
+            href={credentialUrl}
+            className="text-blue-500 hover:underline text-sm mb-4 flex items-center gap-2"
+            title="Ver certificado"
+            target="_blank"
+          >
+            <h3 className="text-lg font-bold">{title}</h3>
+          </a>
         </div>
       </div>
-      <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+      <div className="flex flex-col justify-start text-sm text-gray-600 dark:text-gray-400 mb-2">
+        <div className="flex items-center gap-2">
+          <Building2 />
+          <p className="text-sm text-gray-600 dark:text-gray-400">{issuer}</p>
+        </div>
         <div className="flex items-center gap-2">
           <Calendar />
           <span>Expedición: {issueDate}</span>
         </div>
-        <p>ID: {credentialId}</p>
       </div>
-      <a
-        href={credentialUrl}
-        className="text-blue-500 hover:underline text-sm mb-4 flex items-center gap-2"
-      >
-        <OpenLink />
-        Mostrar credencial
-      </a>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 ">
         {skills.map((skill, index) => (
           <Badge index={index} text={skill} />
         ))}
