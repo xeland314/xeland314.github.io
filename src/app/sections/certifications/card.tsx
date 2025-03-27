@@ -1,3 +1,4 @@
+import { Badge } from "@/app/components";
 import { OpenLink, Calendar } from "@/app/icons";
 type Certification = {
   logo: string;
@@ -21,7 +22,11 @@ const CertificationCard = ({
   return (
     <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-2">
       <div className="flex items-center mb-2">
-        <img src={logo} alt={`${issuer} logo`} className="bg-white w-12 h-12 mr-4 self-start" />
+        <img
+          src={logo}
+          alt={`${issuer} logo`}
+          className="bg-white w-12 h-12 mr-4 self-start"
+        />
         <div>
           <h3 className="text-lg font-bold">{title}</h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">{issuer}</p>
@@ -43,12 +48,7 @@ const CertificationCard = ({
       </a>
       <div className="flex flex-wrap gap-2">
         {skills.map((skill, index) => (
-          <span
-            key={index}
-            className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
-          >
-            {skill}
-          </span>
+          <Badge index={index} text={skill} />
         ))}
       </div>
     </div>

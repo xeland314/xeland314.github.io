@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 
 export interface IProjectInfo {
   title: string;
@@ -6,7 +5,7 @@ export interface IProjectInfo {
   shortDescription: string;
   githubLink?: string;
   demoLink?: string;
-  tags: ReactNode[];
+  tags: string[];
   image?: string;
   creationDate?: string; // Fecha de creación del proyecto
   authors?: string[]; // Lista de autores del proyecto

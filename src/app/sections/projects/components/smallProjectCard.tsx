@@ -1,7 +1,7 @@
 import { CardHeader } from "./cardHeader";
 import { CardFooter } from "./cardFooter";
 import { IProjectInfo } from "./interfaces";
-import { Tag } from "@/app/components";
+import { Badge, Tag } from "@/app/components";
 
 export default function SmallProjectCard({
   project,
@@ -17,7 +17,7 @@ export default function SmallProjectCard({
         </p>
         <div className="flex flex-wrap gap-2 mb-2">
           {project.tags.map((tag, index) => (
-            <div key={index}>{tag}</div>
+            <Badge index={index} text={tag} />
           ))}
         </div>
         <CardFooter
