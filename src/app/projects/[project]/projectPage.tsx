@@ -1,6 +1,7 @@
 import React from "react";
 import { CardFooter } from "@/app/sections/projects/components/cardFooter";
 import { IProjectInfo } from "@/app/sections/projects/components";
+import { Badge } from "@/app/components";
 
 export default function ProjectPageClient({
   projectData,
@@ -22,10 +23,12 @@ export default function ProjectPageClient({
       )}
       <p className="text-gray-600 text-sm mb-4">{projectData.description}</p>
       <div className="flex flex-wrap gap-2 mb-4">
-          {projectData.tags.map((tag, index) => (
-            <div key={index}>{tag}</div>
-          ))}
-        </div>
+        {projectData.tags.map((tag, index) => (
+          <div key={index}>
+            <Badge index={index} text={tag} />
+          </div>
+        ))}
+      </div>
       <CardFooter
         githubLink={projectData.githubLink}
         demoLink={projectData.demoLink}

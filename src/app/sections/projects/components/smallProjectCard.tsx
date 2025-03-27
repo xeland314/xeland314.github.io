@@ -17,7 +17,9 @@ export default function SmallProjectCard({
         </p>
         <div className="flex flex-wrap gap-2 mb-2">
           {project.tags.map((tag, index) => (
-            <Badge index={index} text={tag} />
+            <div key={index}>
+              <Badge index={index} text={tag} />
+            </div>
           ))}
         </div>
         <CardFooter
