@@ -2,6 +2,26 @@ import { IProjectInfo } from "./components";
 
 export const projects: IProjectInfo[] = [
   {
+    title: "Calendario de Adviento Interactivo",
+    description:
+      "Crea un calendario de adviento digital en React con animaciones y diseño festivo. Permite abrir cajas según el día correspondiente revelando mensajes o regalos virtuales.",
+    shortDescription: "Calendario de adviento digital interactivo en React.",
+    githubLink: "https://github.com/xeland314/advent-calendar",
+    demoLink: "https://xeland314.github.io/advent-calendar/",
+    tags: ["React", "Frontend", "PixelArt", "TailwindCSS"],
+    image: "/tapa.svg",
+  },
+  {
+    title: "URL Shortening Service",
+    description:
+      "Desarrolla una API RESTful para acortar URLs con operaciones CRUD y estadísticas de acceso. Puede incluir un frontend minimalista para interacción.",
+    shortDescription: "API para acortar URLs con estadísticas de acceso.",
+    githubLink: "https://github.com/xeland314/urlshortener",
+    tags: ["API", "RESTful", "Backend"],
+    image:
+      "https://assets.roadmap.sh/guest/url-shortener-architecture-u72mu.png",
+  },
+  {
     title: "Tetris",
     description:
       "Un clásico juego de Tetris desarrollado en Java utilizando Swing. Este proyecto incluye características como niveles de dificultad, puntuaciones y una interfaz gráfica intuitiva.",

@@ -7,7 +7,7 @@ export default function ProjectCard({ project }: { project: IProjectInfo }) {
   return (
     <div className="rounded-lg shadow-md overflow-hidden h-auto scrolldown-animation-2">
       {project.image && (
-        <div className="flex flex-auto justify-center bg-white">
+        <div className="flex flex-auto justify-center bg-transparent">
           <img
             className="w-auto h-48 object-cover"
             src={project.image}
