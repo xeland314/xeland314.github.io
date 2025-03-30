@@ -2,7 +2,7 @@ import CodeBlock from "@/app/components/codeBlock";
 
 export default function URLShortenerPage() {
   return (
-    <div className="p-6">
+    <div className="p-0 sm:p-6">
       <h1 className="text-4xl font-bold mb-6">URL Shortener</h1>
       <p className="mb-4">
         A simple and efficient URL shortening service built with Django and

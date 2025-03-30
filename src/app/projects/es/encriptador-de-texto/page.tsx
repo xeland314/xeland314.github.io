@@ -4,7 +4,7 @@ import CodeBlock from "@/app/components/codeBlock";
 
 export default function TextEncryptorPage() {
   return (
-    <div className="p-6">
+    <div className="p-0 sm:p-6">
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-4">🔐 Encriptador de Texto</h1>
         <p className="text-lg">

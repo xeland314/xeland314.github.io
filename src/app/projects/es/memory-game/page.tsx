@@ -2,7 +2,7 @@ import MemoryGame from "./example";
 
 export default function MemoryGamePage() {
   return (
-    <div className="justify-center p-6">
+    <div className="justify-center p-0 sm:p-6">
       <header className="items-center justify-center text-center mb-8">
         <h1 className="text-4xl font-bold mb-4">🎮 Memory Game</h1>
         <p className="text-lg text-center mb-4">

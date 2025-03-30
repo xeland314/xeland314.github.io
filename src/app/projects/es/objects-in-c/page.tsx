@@ -3,7 +3,7 @@ import React from "react";
 
 export default function ObjectsInCPage() {
   return (
-    <div className="p-6">
+    <div className="p-0 sm:p-6">
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-4">📘 Objetos en C</h1>
         <p className="text-lg">

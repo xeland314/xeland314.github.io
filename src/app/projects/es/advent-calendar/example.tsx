@@ -4,7 +4,7 @@ import React from "react";
 
 export default function AdventCalendarPreview() {
   return (
-    <div className="p-6">
+    <div className="p-0 py-4 sm:p-6 sm:py-0">
       <header className="mb-4 text-center">
         <h1 className="text-3xl font-bold">Vista previa del Calendario de Adviento</h1>
         <p className="text-gray-600 dark:text-white">¡Experimenta cómo funciona!</p>

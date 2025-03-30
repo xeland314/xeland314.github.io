@@ -3,7 +3,7 @@ import React from "react";
 
 export default function PoliTetrisPage() {
   return (
-    <div className="p-6">
+    <div className="p-0 sm:p-6">
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4">Poli - Tetris</h1>
         <img

@@ -4,7 +4,7 @@ import NumberRecognitionTable from "./table";
 
 export default function MathExpressionRecognizerPage() {
   return (
-    <div className="p-6">
+    <div className="p-0 sm:p-6">
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-4">
           🧮 Reconocedor de Expresiones Matemáticas
