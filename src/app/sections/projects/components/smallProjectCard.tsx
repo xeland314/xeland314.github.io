@@ -11,7 +11,7 @@ export default function SmallProjectCard({
   return (
     <div className="rounded-lg shadow-md overflow-hidden scrolldown-animation">
       <div className="p-4">
-        <CardHeader title={project.title} />
+        <CardHeader title={project.title} link={project.links?.[0] || ""} />
         <p className="text-gray-600 dark:text-gray-300 text-xs mb-1">
           {project.shortDescription}
         </p>

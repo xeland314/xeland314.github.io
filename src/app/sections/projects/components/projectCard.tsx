@@ -17,7 +17,7 @@ export default function ProjectCard({ project }: { project: IProjectInfo }) {
         </div>
       )}
       <div className="p-4">
-        <CardHeader title={project.title} />
+        <CardHeader title={project.title} link={project.links?.[0] || ""} />
         <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
           {project.shortDescription}
         </p>

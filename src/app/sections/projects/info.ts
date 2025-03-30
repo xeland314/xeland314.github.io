@@ -10,6 +10,7 @@ export const projects: IProjectInfo[] = [
     demoLink: "https://xeland314.github.io/advent-calendar/",
     tags: ["React", "Frontend", "PixelArt", "TailwindCSS"],
     image: "/tapa.svg",
+    links: ["/projects/es/advent-calendar"],
   },
   {
     title: "URL Shortening Service",
@@ -20,6 +21,7 @@ export const projects: IProjectInfo[] = [
     tags: ["API", "RESTful", "Backend"],
     image:
       "https://assets.roadmap.sh/guest/url-shortener-architecture-u72mu.png",
+    links: ["/projects/en/url-shortening-service"],
   },
   {
     title: "Tetris",
@@ -30,6 +32,7 @@ export const projects: IProjectInfo[] = [
     demoLink: "https://github.com/xeland314/PoliTetris/releases",
     tags: ["Java", "Swing"],
     image: "/images/tetris.jpg",
+    links: ["/projects/es/tetris"],
   },
   {
     title: "Chat Analyzer",
@@ -38,6 +41,7 @@ export const projects: IProjectInfo[] = [
     shortDescription: "Analiza chats de WhatsApp con Python.",
     githubLink: "https://github.com/xeland314/chat-analyzer",
     tags: ["Python", "WhatsApp", "Nltk", "Cli"],
+    links: ["/projects/es/chat-analyzer"],
   },
   {
     title: "Memory Game",
@@ -48,6 +52,7 @@ export const projects: IProjectInfo[] = [
     demoLink: "https://xeland314.github.io/memory-game/",
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/memorygame.jpg",
+    links: ["/projects/es/memory-game"],
   },
   {
     title: "Encriptador de Texto",
@@ -58,6 +63,7 @@ export const projects: IProjectInfo[] = [
     demoLink: "https://xeland314.github.io/encriptador-de-texto/",
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/encriptador.jpg",
+    links: ["/projects/es/encriptador-de-texto"],
   },
   {
     title: "Analizador-lexico",
@@ -67,6 +73,7 @@ export const projects: IProjectInfo[] = [
     githubLink: "https://github.com/xeland314/Analizador-lexico",
     tags: ["C", "Compiladores", "Expresiones Regulares", "Golang"],
     image: "/images/analizador.png",
+    links: ["/projects/es/analizador-lexico"],
   },
   {
     title: "Speed Test",
@@ -75,6 +82,7 @@ export const projects: IProjectInfo[] = [
     shortDescription: "Script en Bash para pruebas de velocidad en Linux.",
     githubLink: "https://github.com/xeland314/speedtest",
     tags: ["Bash", "Performance", "Awk"],
+    links: ["/projects/es/speedtest"],
   },
   {
     title: "freqtables",
@@ -84,6 +92,7 @@ export const projects: IProjectInfo[] = [
     githubLink: "https://github.com/xeland314/freqtables",
     tags: ["Python", "Estadisticas", "TablasDeFrecuencias"],
     image: "/images/freqtables.png",
+    links: ["/projects/es/freqtables"],
   },
   {
     title: "objects-in-C",
@@ -92,6 +101,7 @@ export const projects: IProjectInfo[] = [
     shortDescription: "Programación orientada a objetos en C.",
     githubLink: "https://github.com/xeland314/objects-in-C",
     tags: ["C", "Oop", "Encapsulamiento", "Strings"],
+    links: ["/projects/es/objects-in-c"], 
   },
   {
     title: "Conversor de Unidades",
@@ -101,6 +111,7 @@ export const projects: IProjectInfo[] = [
     githubLink: "https://github.com/xeland314/conversor-de-unidades",
     tags: ["Java", "Swing", "Conversion De Unidades"],
     image: "/images/conversor.png",
+    links: ["/projects/es/conversor-de-unidades"],
   },
   {
     title: "Simplex",
@@ -109,5 +120,6 @@ export const projects: IProjectInfo[] = [
     shortDescription: "Optimización con el método simplex en Python.",
     githubLink: "https://github.com/xeland314/simplex",
     tags: ["Python", "Optimizacion", "Simplex", "Jupyter"],
+    links: ["/projects/es/simplex"],
   },
 ];

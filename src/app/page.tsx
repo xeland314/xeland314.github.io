@@ -1,4 +1,3 @@
-import ProjectPage from "./projects/[project]/page";
 import ProjectsPage from "./projects/page";
 import AboutMe from "./sections/about-me";
 import CertificationsSection from "./sections/certifications";

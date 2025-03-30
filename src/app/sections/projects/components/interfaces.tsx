@@ -10,4 +10,5 @@ export interface IProjectInfo {
   creationDate?: string; // Fecha de creación del proyecto
   authors?: string[]; // Lista de autores del proyecto
   technologies?: string[]; // Tecnologías utilizadas en el proyecto
+  links?: string[]; // Enlaces adicionales relacionados con el proyecto
 }
