@@ -31,14 +31,14 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/images/bmc_qr.png",
-        width: 256,
-        height: 256,
+        width: 1200,
+        height: 630,
         alt: "Código QR para Buy Me a Coffee",
       },
       {
         url: "/images/qrcode.png",
-        width: 256,
-        height: 256,
+        width: 1200,
+        height: 630,
         alt: "Código QR para Ko-fi",
       },
     ],
