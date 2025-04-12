@@ -31,7 +31,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 h-auto w-full bg-gray-800 text-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 h-auto w-full bg-gray-900 text-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="flex justify-between items-center relative">
         <div className="basis-1/2 p-3 text-lg font-bold">
           <h1>
@@ -52,7 +52,7 @@ export default function Header() {
         </div>
         <ul
           ref={menuRef}
-          className={`absolute z-[1000] top-full left-0 items-center max-md:w-full bg-gray-800 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out ${
+          className={`absolute z-[1000] top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out ${
             isOpen ? "block" : "hidden"
           }`}
         >
