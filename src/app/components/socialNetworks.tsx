@@ -1,15 +1,21 @@
-import { Mail, Github, Linkedin } from "../icons";
+import { Mail } from "lucide-react";
 
 export default function SocialNetworks() {
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4 bg-gray-900 p-4 rounded-xl gap-x-4">
       <a
         href="https://github.com/xeland314"
         target="_blank"
         rel="noopener"
         className="text-gray-400 hover:text-white transition-colors duration-300"
       >
-        <Github />
+        <img
+          src="/icons/github.svg"
+          alt="Github icon"
+          height="20"
+          width="20"
+          style={{ filter: "invert(1)" }}
+        />
         <span className="sr-only">GitHub</span>
       </a>
       <a
@@ -18,7 +24,13 @@ export default function SocialNetworks() {
         rel="noopener"
         className="text-gray-400 hover:text-white transition-colors duration-300"
       >
-        <Linkedin />
+        <img
+          src="/icons/linkedin.svg"
+          alt="Linkedin icon"
+          height="20"
+          width="20"
+          style={{ filter: "invert(1)" }}
+        />
         <span className="sr-only">LinkedIn</span>
       </a>
       <a

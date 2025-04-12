@@ -3,7 +3,7 @@
 import React from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import CertificationCard from "./card";
-import { ChevronLeft, ChevronRight } from "@/app/icons";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Certification = {
   logo: string;
@@ -41,7 +41,7 @@ export default function CertificationCarousel({
         <div className="flex">
           {certifications.map((cert, index) => (
             <div
-              key={index}
+              key={`${cert.title}-${index}`}
               className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_50%] lg:flex-[0_0_33.33%] pl-4"
             >
               <CertificationCard {...cert} />

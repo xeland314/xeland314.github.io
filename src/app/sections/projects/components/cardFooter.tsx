@@ -1,4 +1,4 @@
-import { Github, OpenLink } from "@/app/icons";
+import { Link } from "lucide-react";
 
 interface ICardFooterProps {
   githubLink?: string;
@@ -16,7 +16,13 @@ export function CardFooter({ githubLink, demoLink }: ICardFooterProps) {
           className="flex flex-row items-center justify-center bg-gray-500 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded"
         >
           <span className="mr-2">Repositorio</span>
-          <Github />
+          <img
+            src="/icons/github.svg"
+            alt="Github icon"
+            height="20"
+            width="20"
+            style={{ filter: "invert(1)" }}
+          />
         </a>
       )}
       {demoLink && (
@@ -27,7 +33,7 @@ export function CardFooter({ githubLink, demoLink }: ICardFooterProps) {
           className="flex flex-row items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded"
         >
           <span className="mr-2">Demo</span>
-          <OpenLink />
+          <Link />
         </a>
       )}
     </div>
