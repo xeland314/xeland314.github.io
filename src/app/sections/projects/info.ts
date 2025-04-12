@@ -51,7 +51,7 @@ export const projects: IProjectInfo[] = [
     githubLink: "https://github.com/xeland314/memory-game",
     demoLink: "https://xeland314.github.io/memory-game/",
     tags: ["Html", "Css", "JavaScript"],
-    image: "/images/memorygame.jpg",
+    image: "/images/memorygame.png",
     links: ["/projects/es/memory-game"],
   },
   {
@@ -62,7 +62,7 @@ export const projects: IProjectInfo[] = [
     githubLink: "https://github.com/xeland314/encriptador-de-texto",
     demoLink: "https://xeland314.github.io/encriptador-de-texto/",
     tags: ["Html", "Css", "JavaScript"],
-    image: "/images/encriptador.jpg",
+    image: "/images/encriptador.png",
     links: ["/projects/es/encriptador-de-texto"],
   },
   {

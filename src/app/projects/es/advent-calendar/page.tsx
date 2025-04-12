@@ -1,6 +1,47 @@
 import React from "react";
 import AdventCalendarPreview from "./example";
 import CodeBlock from "@/app/components/codeBlock";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Calendario de Adviento Interactivo - Christopher Villamarín Projects",
+  description:
+    "Descubre el Calendario de Adviento Interactivo, desarrollado en Next.js y estilo pixelart. Cada día revela una sorpresa mientras celebramos la cuenta regresiva hacia la Navidad.",
+  keywords: [
+    "Calendario de Adviento",
+    "interactivo",
+    "Navidad",
+    "Next.js",
+    "React",
+    "pixelart",
+    "desarrollo web",
+    "proyectos",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "Calendario de Adviento Interactivo - Christopher Villamarín",
+    description:
+      "Un calendario de adviento digital y festivo, desarrollado con tecnologías modernas como Next.js y React. Cada día revela una sorpresa interactiva.",
+    url: "https://xeland314.github.io/projects/es/advent-calendar/",
+    type: "website",
+    images: [
+      {
+        url: "https://xeland314.github.io/images/advent_calendar_preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del Calendario de Adviento Interactivo",
+      },
+    ],
+  },
+  robots: "index, follow", // Garantiza que los motores de búsqueda rastreen e indexen la página.
+};
 
 export default function AdventCalendarPage() {
   return (

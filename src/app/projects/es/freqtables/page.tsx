@@ -1,5 +1,46 @@
 import CodeBlock from "@/app/components/codeBlock";
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "📊 freqtables - Christopher Villamarín Projects",
+  description:
+    "Aprende a crear tablas de frecuencias simples y tablas con intervalos usando el paquete freqtables. Compatible con listas, tuplas y diccionarios para un manejo eficiente de datos.",
+  keywords: [
+    "freqtables",
+    "tablas de frecuencias",
+    "intervalos",
+    "análisis de datos",
+    "Python",
+    "FreqTableSimple",
+    "Christopher Villamarín",
+    "xeland314",
+    "proyectos",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "📊 freqtables - Proyecto de Christopher Villamarín",
+    description:
+      "Descubre cómo crear tablas de frecuencias simples y con intervalos utilizando el paquete freqtables. Ideal para análisis de datos en Python.",
+    url: "https://xeland314.github.io/projects/es/freqtables/",
+    type: "website",
+    images: [
+      {
+        url: "https://raw.githubusercontent.com/xeland314/freqtables/refs/heads/main/examples/example0.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto freqtables",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
+
 
 export default function FreqTablesPage() {
   return (

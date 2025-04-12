@@ -34,11 +34,9 @@ export default function Header() {
     <header className="sticky top-0 z-40 h-auto w-full bg-gray-900 text-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="flex justify-between items-center relative">
         <div className="basis-1/2 p-3 text-lg font-bold">
-          <h1>
-            <a href="/" className="hover:text-blue-700">
-              xeland314
-            </a>
-          </h1>
+          <a href="/" className="hover:text-blue-700">
+            xeland314
+          </a>
         </div>
         <div className="md:hidden">
           <button

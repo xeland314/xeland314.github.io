@@ -1,6 +1,49 @@
 import CodeBlock from "@/app/components/codeBlock";
 import React from "react";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Execution Time Analysis - Christopher Villamarín Projects",
+  description:
+    "Explora Execution Time Analysis, un proyecto diseñado para analizar tiempos de ejecución en sistemas Unix utilizando Bash y AWK. Calcula promedios y desviaciones estándar de tiempo real, usuario y sistema.",
+  keywords: [
+    "Execution Time Analysis",
+    "Unix",
+    "Bash",
+    "AWK",
+    "tiempos de ejecución",
+    "análisis de rendimiento",
+    "desarrollo backend",
+    "Christopher Villamarín",
+    "xeland314",
+    "proyectos",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "Execution Time Analysis - Proyecto de Christopher Villamarín",
+    description:
+      "Un proyecto para analizar tiempos de ejecución en sistemas Unix utilizando Bash y AWK. Ideal para comprender el rendimiento de comandos y programas.",
+    url: "https://xeland314.github.io/projects/es/execution-time-analysis/",
+    type: "website",
+    images: [
+      {
+        url: "https://xeland314.github.io/images/execution_time_analysis_preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto Execution Time Analysis",
+      },
+    ],
+  },
+  robots: "index, follow", // Asegura que los motores de búsqueda rastreen e indexen esta página.
+};
+
+
 export default function ExecutionTimeAnalysisPage() {
   return (
     <div className="p-0 sm:p-6">

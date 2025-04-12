@@ -1,4 +1,46 @@
+import { Metadata } from "next";
 import MemoryGame from "./example";
+
+export const metadata: Metadata = {
+  title: "🎮 Memory Game - Christopher Villamarín Projects",
+  description:
+    "Explora el Memory Game, un proyecto interactivo desarrollado con Vanilla JavaScript, CSS y HTML. Disfruta de diferentes niveles de dificultad y una experiencia dinámica desde cero.",
+  keywords: [
+    "Memory Game",
+    "juegos de memoria",
+    "JavaScript",
+    "CSS",
+    "HTML",
+    "proyectos",
+    "desarrollo web",
+    "interactividad",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "🎮 Memory Game - Proyecto de Christopher Villamarín",
+    description:
+      "Descubre el Memory Game, un juego interactivo desarrollado con Vanilla JavaScript, CSS y HTML. Ideal para jugadores de todos los niveles.",
+    url: "https://xeland314.github.io/memory-game/",
+    type: "website",
+    images: [
+      {
+        url: "https://xeland314.github.io/images/memorygame.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto Memory Game",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
+
 
 export default function MemoryGamePage() {
   return (

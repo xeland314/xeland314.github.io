@@ -1,5 +1,47 @@
 import CodeBlock from "@/app/components/codeBlock";
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "📊 chat-analyzer - Christopher Villamarín Projects",
+  description:
+    "Descubre chat-analyzer, una herramienta que analiza chats exportados de WhatsApp, mostrando la frecuencia de palabras y emojis usados. Genera nubes de palabras y tablas detalladas para un análisis visual.",
+  keywords: [
+    "chat-analyzer",
+    "análisis de chats",
+    "WhatsApp",
+    "frecuencia de emojis",
+    "frecuencia de palabras",
+    "nubes de palabras",
+    "Python",
+    "Christopher Villamarín",
+    "xeland314",
+    "proyectos",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "📊 chat-analyzer - Proyecto de Christopher Villamarín",
+    description:
+      "Analiza chats de WhatsApp con chat-analyzer. Descubre las palabras y emojis más usados y visualízalos en nubes de palabras y tablas interactivas.",
+    url: "https://xeland314.github.io/projects/es/chat-analyzer/",
+    type: "website",
+    images: [
+      {
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQYzl7jxgLN9QGN4yvFYRzU5dMv3WMyJGhbeXYiEHwwtxUKDudXUINhxq3fhXmzv1JbmTVGImI07r0e/pubchart?oid=1886909932&amp;format=image",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto chat-analyzer",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
+
 
 export default function ChatAnalyzerPage() {
   return (

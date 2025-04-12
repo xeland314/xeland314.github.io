@@ -1,5 +1,46 @@
 import CodeBlock from "@/app/components/codeBlock";
 import React from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Poli - Tetris - Christopher Villamarín Projects",
+  description:
+    "Descubre Poli - Tetris, un proyecto de videojuego inspirado en el clásico Tetris, desarrollado en Java. Aprende a jugar, utiliza controles personalizables y configura diferentes niveles de dificultad.",
+  keywords: [
+    "Poli Tetris",
+    "videojuegos",
+    "Tetris",
+    "Java",
+    "proyectos",
+    "Christopher Villamarín",
+    "xeland314",
+    "desarrollo de videojuegos",
+    "Linux",
+    "tecnología",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "Poli - Tetris - Proyecto de Christopher Villamarín",
+    description:
+      "Descubre Poli - Tetris, un videojuego inspirado en el clásico Tetris, desarrollado en Java. Configura niveles de dificultad, controla piezas y vive la experiencia en Linux.",
+    url: "https://xeland314.github.io/projects/es/poli-tetris/",
+    type: "website",
+    images: [
+      {
+        url: "https://raw.githubusercontent.com/xeland314/PoliTetris/ff11e56a969100a17380a9b8b5713eb340b8ce19/images/tetris.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto Poli - Tetris",
+      },
+    ],
+  },
+  robots: "index, follow", // Garantiza que los motores de búsqueda rastreen e indexen la página.
+};
 
 export default function PoliTetrisPage() {
   return (

@@ -1,6 +1,48 @@
 import CodeBlock from "@/app/components/codeBlock";
 import React from "react";
 import NumberRecognitionTable from "./table";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "🧮 Reconocedor de Expresiones Matemáticas - Christopher Villamarín Projects",
+  description:
+    "Descubre el Reconocedor de Expresiones Matemáticas, un analizador léxico diseñado para procesar y manejar operaciones matemáticas complejas. Integra C y Go para extender funcionalidades avanzadas.",
+  keywords: [
+    "Reconocedor de Expresiones Matemáticas",
+    "análisis léxico",
+    "compiladores",
+    "matemáticas",
+    "procesamiento numérico",
+    "C",
+    "Go",
+    "Christopher Villamarín",
+    "xeland314",
+    "proyectos",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "🧮 Reconocedor de Expresiones Matemáticas - Proyecto de Christopher Villamarín",
+    description:
+      "Explora un analizador léxico que procesa operaciones matemáticas complejas y amplía sus capacidades con la integración de C y Go.",
+    url: "https://xeland314.github.io/projects/es/math-expression-recognizer/",
+    type: "website",
+    images: [
+      {
+        url: "https://raw.githubusercontent.com/xeland314/Analizador-lexico/refs/heads/main/imgs/Captura1.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto Reconocedor de Expresiones Matemáticas",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
+
 
 export default function MathExpressionRecognizerPage() {
   return (

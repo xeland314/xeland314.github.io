@@ -1,6 +1,48 @@
 import React from "react";
 import { TextEncryptorPreview } from "./example";
 import CodeBlock from "@/app/components/codeBlock";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "🔐 Encriptador de Texto - Christopher Villamarín Projects",
+  description:
+    "Explora el Encriptador de Texto, un proyecto desarrollado para encriptar y desencriptar texto utilizando reglas específicas. Incluye una interfaz gráfica intuitiva creada con HTML, CSS y JavaScript.",
+  keywords: [
+    "Encriptador de Texto",
+    "encriptación",
+    "desencriptación",
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "validación de texto",
+    "proyectos",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "🔐 Encriptador de Texto - Proyecto de Christopher Villamarín",
+    description:
+      "Encripta y desencripta texto utilizando reglas específicas con este proyecto desarrollado como parte del curso Alura ONE. Incluye una interfaz gráfica intuitiva.",
+    url: "https://xeland314.github.io/projects/es/encriptador-de-texto/",
+    type: "website",
+    images: [
+      {
+        url: "https://xeland314.github.io/images/encriptador.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto Encriptador de Texto",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
+
 
 export default function TextEncryptorPage() {
   return (

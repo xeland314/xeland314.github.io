@@ -1,5 +1,47 @@
 import CodeBlock from "@/app/components/codeBlock";
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "📏 Conversor de Unidades - Christopher Villamarín Projects",
+  description:
+    "Explora el Conversor de Unidades, un proyecto desarrollado como parte del Challenge #2 de Oracle Next Education. Convierte entre unidades de longitud, tiempo, temperatura y divisas mediante una interfaz gráfica intuitiva creada con Java Swing.",
+  keywords: [
+    "Conversor de unidades",
+    "Java",
+    "Swing",
+    "desarrollo de aplicaciones",
+    "conversiones de longitud",
+    "conversiones de tiempo",
+    "conversiones de temperatura",
+    "conversiones de divisas",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "📏 Conversor de Unidades - Proyecto de Christopher Villamarín",
+    description:
+      "Convierte unidades de longitud, tiempo, temperatura y divisas con este proyecto intuitivo desarrollado en Java Swing. Parte del Challenge #2 de Oracle Next Education.",
+    url: "https://xeland314.github.io/projects/es/unit-converter/",
+    type: "website",
+    images: [
+      {
+        url: "https://raw.githubusercontent.com/xeland314/conversor-de-unidades/refs/heads/main/src/main/resources/conversor.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto Conversor de Unidades",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
+
 
 export default function UnitConverterPage() {
   return (

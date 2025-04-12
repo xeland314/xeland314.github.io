@@ -1,5 +1,44 @@
-import CodeBlock from "@/app/components/codeBlock";
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "📊 Simplex - Christopher Villamarín Projects",
+  description:
+    "Descubre el método Simplex aplicado a la programación lineal. Aprende a maximizar ganancias y resolver problemas de optimización con ejemplos prácticos.",
+  keywords: [
+    "Simplex",
+    "programación lineal",
+    "optimización",
+    "matemáticas aplicadas",
+    "programación lineal ejemplos",
+    "método Simplex",
+    "proyectos",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador"
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "📊 Simplex - Proyecto de Christopher Villamarín",
+    description:
+      "Aprende a utilizar el método Simplex para resolver problemas de optimización en programación lineal con ejemplos detallados.",
+    url: "https://xeland314.github.io/projects/es/simplex/",
+    type: "website",
+    images: [
+      {
+        url: "https://xeland314.github.io/images/simplex_preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto Simplex",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
 
 export default function SimplexPage() {
   return (

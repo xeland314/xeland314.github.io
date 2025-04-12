@@ -1,4 +1,44 @@
+import type { Metadata } from "next";
 import CodeBlock from "@/app/components/codeBlock";
+
+export const metadata: Metadata = {
+  title: "URL Shortener - Christopher Villamarín Projects",
+  description:
+    "Descubre un servicio de acortador de URLs eficiente construido con Django y Django REST Framework. Crea, gestiona y rastrea enlaces de manera sencilla.",
+  keywords: [
+    "URL Shortener",
+    "acortador de URLs",
+    "gestión de enlaces",
+    "Django",
+    "Django REST Framework",
+    "Redis",
+    "desarrollo backend",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador",
+  ],
+  authors: [
+    { name: "Christopher Alexander Villamarín Pila" },
+    { name: "xeland314" },
+  ],
+  creator: "xeland314",
+  openGraph: {
+    title: "URL Shortener - Christopher Villamarín Projects",
+    description:
+      "Un servicio eficiente de acortador de URLs construido con Django y Django REST Framework. Simplifica la gestión de URLs y rastrea su rendimiento.",
+    url: "https://xeland314.github.io/projects/en/url-shortening-service",
+    type: "website",
+    images: [
+      {
+        url: "https://xeland314.github.io/images/url_shortener_preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Vista previa del proyecto URL Shortener",
+      },
+    ],
+  },
+  robots: "index, follow",
+};
 
 export default function URLShortenerPage() {
   return (
