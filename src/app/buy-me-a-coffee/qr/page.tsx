@@ -43,6 +43,7 @@ export const metadata: Metadata = {
       },
     ],
   },
+  metadataBase: new URL("https://xeland314.github.io"),
   robots: "index, follow",
 };
 

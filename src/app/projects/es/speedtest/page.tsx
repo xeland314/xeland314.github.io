@@ -41,6 +41,7 @@ export const metadata: Metadata = {
     ],
   },
   robots: "index, follow", // Asegura que los motores de búsqueda rastreen e indexen esta página.
+  metadataBase: new URL("https://xeland314.github.io"),
 };
 
 

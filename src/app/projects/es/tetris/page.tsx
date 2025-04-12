@@ -40,6 +40,7 @@ export const metadata: Metadata = {
     ],
   },
   robots: "index, follow", // Garantiza que los motores de búsqueda rastreen e indexen la página.
+  metadataBase: new URL("https://xeland314.github.io"),
 };
 
 export default function PoliTetrisPage() {

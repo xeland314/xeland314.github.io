@@ -38,6 +38,7 @@ export const metadata: Metadata = {
     ],
   },
   robots: "index, follow",
+  metadataBase: new URL("https://xeland314.github.io"),
 };
 
 export default function SimplexPage() {
