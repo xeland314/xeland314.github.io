@@ -24,7 +24,7 @@ function LanguageCategory({
 
 export default function LanguageGrid() {
   return (
-    <div className="w-full">
+    <div className="w-full justify-between space-y-4">
       <LanguageCategory title="Frontend">
         <LanguageImage title="React" image="react" />
         <LanguageImage title="Next.js" image="nextjs" />

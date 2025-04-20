@@ -7,13 +7,13 @@ const AboutMe = () => {
       id="about-me"
       className="xl:px-32 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6"
     >
-      <h2 className="text-3xl text-center font-medium pb-4 scrolldown-animation-2">
+      <h2 className="text-3xl text-center font-bold pb-4 scrolldown-animation-2">
         Acerca de mí
       </h2>
       <hr className="pb-4 scrolldown-animation-2" />
       <div className="grid grid-cols-1 md:grid-cols-2 justify-between sm:gap-x-6 md:pb-0 pb-10">
         <section id="about-me-text">
-          <h3 className="text-center text-2xl font-bold mb-8 scrolldown-animation-2">
+          <h3 className="text-center text-2xl font-medium mb-8 scrolldown-animation-2">
             Me llamo <strong>Christopher Villamarín</strong>
           </h3>
           <div className="flex justify-center mb-4 scrolldown-animation-2">
