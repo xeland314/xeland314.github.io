@@ -1,4 +1,5 @@
 import { SocialNetworks } from "@/app/components";
+import HeaderLink from "@/app/components/header/link";
 
 export default function Introduction() {
   return (
@@ -17,18 +18,16 @@ export default function Introduction() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
-            <a
-              href="#contact"
+            <HeaderLink
+              href="/#contact"
               className="inline-block px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              Contáctame
-            </a>
-            <a
-              href="/#proyectos"
+              children={"Contáctame"}
+            />
+            <HeaderLink
+              href="/#projects"
               className="inline-block px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-            >
-              Ver Proyectos
-            </a>
+              children={"Ver Proyectos"}
+            />
           </div>
           <div className="pt-8">
             <SocialNetworks />
