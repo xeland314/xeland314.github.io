@@ -1,9 +1,37 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
+@theme {
+  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --background-image-gradient-conic: conic-gradient(
+    from 180deg at 50% 50%,
+    var(--tw-gradient-stops)
+  );
+
+  --breakpoint-mobile: 330px;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
   }
+}
+
+@utility text-balance {
+  text-wrap: balance;
 }
 
 :root {
@@ -14,16 +42,6 @@
   --secondary-color: #ffffff;
   scrollbar-color: #1d4ed8 #1f2937;
   scrollbar-width: auto;
-}
-
-[data-theme="dark"] {
-  --background-color: #1f2937;
-  --text-color: #ffffff;
-}
-
-body {
-  background-color: var(--background-color);
-  color: var(--text-color);
 }
 
 #g-recaptcha-response {

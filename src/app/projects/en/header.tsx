@@ -13,7 +13,7 @@ export default function Header() {
   );
 
   return (
-    <header className="flex items-center justify-between bg-gray-200 dark:bg-gray-600 p-4 mb-4 rounded">
+    <header className="flex items-center justify-between bg-gray-200 dark:bg-gray-600 p-4 mb-4 rounded-sm">
       <a href="/projects" title="Go back to projects">
         <h1 className="flex flex-row items-center cursor-pointer text-lg font-bold  hover:text-blue-700 dark:hover:text-blue-500">
           <ArrowLeft size={24} className="mr-2" />

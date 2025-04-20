@@ -76,7 +76,7 @@ export default function CertificationCarousel({
         <ChevronLeft />
       </button>
       {/* Contador de certificados */}
-      <div className="absolute left-1/2 -bottom-15 z-10 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-600 text-white px-4 py-2 rounded-lg shadow text-center">
+      <div className="absolute left-1/2 -bottom-15 z-10 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-sm text-center">
         Certificado {currentIndex + 1} de {certifications.length}
       </div>
       {/* Botón de navegación derecha */}

@@ -29,7 +29,7 @@ export default function ProjectsSection() {
       <h2 className="text-3xl text-center font-bold mb-8 pb-4">
         <a
           href="/projects"
-          className="hover:text-blue-700 font-bold py-2 px-4 rounded"
+          className="hover:text-blue-700 font-bold py-2 px-4 rounded-sm"
         >
           Proyectos
         </a>
@@ -50,12 +50,12 @@ export default function ProjectsSection() {
       <div className="flex justify-center mt-8">
         <button
           onClick={handleRandomizeProjects}
-          className="bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white font-medium py-2 px-4 rounded mr-4"
+          className="bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 text-white font-medium py-2 px-4 rounded-sm mr-4"
         >
           Cambiar Proyectos
         </button>
         <Link
-          className="bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-white font-medium py-2 px-4 rounded"
+          className="bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-white font-medium py-2 px-4 rounded-sm"
           href="/projects"
         >
           Ver todos los proyectos

@@ -27,18 +27,18 @@ function Hit({ hit }: HitProps) {
   return (
     <div
       onClick={handleNavigation}
-      className="cursor-pointer flex flex-col sm:flex-row items-start bg-gray-100 dark:bg-gray-800 p-4 rounded shadow-md hover:shadow-lg transition-shadow duration-300"
+      className="cursor-pointer flex flex-col sm:flex-row items-start bg-gray-100 dark:bg-gray-800 p-4 rounded-sm shadow-md hover:shadow-lg transition-shadow duration-300"
     >
       {/* Imagen del proyecto */}
-      <div className="image-container mb-2 mr-5 flex-shrink-0 self-center">
+      <div className="image-container mb-2 mr-5 shrink-0 self-center">
         {hit.image ? (
           <img
             src={hit.image}
             alt={hit.title}
-            className="w-full sm:w-32 h-32 object-cover rounded" // Dimensiones fijas
+            className="w-full sm:w-32 h-32 object-cover rounded-sm" // Dimensiones fijas
           />
         ) : (
-          <div className="flex items-center justify-center w-32 h-32 bg-gray-300 dark:bg-gray-700 rounded">
+          <div className="flex items-center justify-center w-32 h-32 bg-gray-300 dark:bg-gray-700 rounded-sm">
             <p className="text-gray-500 dark:text-gray-400">No Image</p>
           </div>
         )}
@@ -69,7 +69,7 @@ export default function Search() {
         </div>
 
         {/* Contenedor de resultados con scroll independiente */}
-        <div className="h-[50vh] overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded shadow-inner">
+        <div className="h-[50vh] overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-sm shadow-inner">
           <Hits<HitProps["hit"]> hitComponent={Hit} />
         </div>
       </div>

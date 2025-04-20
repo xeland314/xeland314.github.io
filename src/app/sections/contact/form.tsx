@@ -35,7 +35,7 @@ const ContactForm = () => {
           required
           maxLength={128}
           minLength={1}
-          className="w-full mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-full mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-xs focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
       </div>
@@ -52,7 +52,7 @@ const ContactForm = () => {
           required
           maxLength={128}
           minLength={1}
-          className="w-full mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-full mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-xs focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
       </div>
@@ -69,7 +69,7 @@ const ContactForm = () => {
           maxLength={2000}
           minLength={1}
           rows={10}
-          className="w-full block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-full block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-xs focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         <div className="flex flex-row justify-end">
           <p className="text-sm pt-1">
@@ -92,7 +92,7 @@ const ContactForm = () => {
       </div>
       <button
         type="submit"
-        className="w-full max-w-xs inline-flex justify-center mt-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="w-full max-w-xs inline-flex justify-center mt-2 py-2 px-4 border border-transparent shadow-xs text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         disabled={emailCount >= 2}
       >
         {emailCount >= 2 || emailCount < 0

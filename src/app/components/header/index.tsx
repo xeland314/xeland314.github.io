@@ -36,7 +36,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 h-auto w-full bg-gray-900 text-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 h-auto w-full bg-gray-900 text-white backdrop-blur-sm supports-backdrop-filter:bg-background/60">
       <nav className="flex justify-between items-center relative p-3">
         <div className="flex items-center">
           <a href="/" className="text-lg font-bold hover:text-blue-500">
@@ -61,7 +61,7 @@ export default function Header() {
           <button
             ref={buttonRef}
             onClick={() => setIsOpen(!isOpen)}
-            className="text-white focus:outline-none pr-4 pl-4 pt-2 pb-2 transition duration-300 ease-in-out hover:bg-gray-700"
+            className="text-white focus:outline-hidden pr-4 pl-4 pt-2 pb-2 transition duration-300 ease-in-out hover:bg-gray-700"
             type="button"
           >
             ☰
@@ -70,7 +70,7 @@ export default function Header() {
 
         <ul
           ref={menuRef}
-          className={`absolute z-[1000] top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out ${
+          className={`absolute z-1000 top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out ${
             isOpen ? "block" : "hidden"
           }`}
         >

@@ -13,7 +13,7 @@ export function CardFooter({ githubLink, demoLink }: ICardFooterProps) {
           href={githubLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex flex-row items-center justify-center bg-gray-500 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded"
+          className="flex flex-row items-center justify-center bg-gray-500 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-sm"
         >
           <span className="mr-2">Repositorio</span>
           <img
@@ -30,7 +30,7 @@ export function CardFooter({ githubLink, demoLink }: ICardFooterProps) {
           href={demoLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex flex-row items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded"
+          className="flex flex-row items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-sm"
         >
           <span className="mr-2">Demo</span>
           <Link />

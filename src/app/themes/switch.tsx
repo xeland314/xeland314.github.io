@@ -28,7 +28,7 @@ export default function ThemeToggleButton() {
       />
       <div
         onClick={handleChange}
-        className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700"
+        className="w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700"
       >
         <div
           className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${

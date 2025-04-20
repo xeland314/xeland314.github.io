@@ -6,7 +6,7 @@ import Introduction from "./sections/introduction";
 
 export default function Home() {
   return (
-    <main className="flex-grow w-full mx-auto">
+    <main className="grow w-full mx-auto">
       <Introduction />
       <AboutMe />
       <CertificationsSection/>

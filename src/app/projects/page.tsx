@@ -21,7 +21,7 @@ export default function ProjectsPage() {
       <h2 className="text-3xl text-center font-bold mb-8 border-b-2 border-b-gray-700 dark:border-b-slate-100 pb-4">
         <a
           href="/projects"
-          className="hover:text-blue-700 font-bold py-2 px-4 rounded"
+          className="hover:text-blue-700 font-bold py-2 px-4 rounded-sm"
         >
           Proyectos
         </a>

@@ -23,7 +23,7 @@ export default function CodeBlock({ code }: CodeBlockProps) {
       </code>
       <button
         onClick={handleCopy}
-        className="absolute top-2 right-2 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none"
+        className="absolute top-2 right-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 focus:outline-hidden"
       >
         {isCopied ? "Copiado!" : "Copiar"}
       </button>
