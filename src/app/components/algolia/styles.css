@@ -9,8 +9,16 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
 }
 
+@media screen and (max-width: 400px) {
+  .ais-SearchBox-form {
+    padding: 0px; /* Espaciado reducido */
+    gap: 2px; /* Espaciado reducido */
+  }
+}
+
 /* Input de búsqueda */
 .ais-SearchBox-input {
+  width: 100%; /* Ocupa todo el ancho */
   flex: 1; /* Ocupa todo el espacio disponible */
   background-color: #ffffff; /* Fondo blanco */
   color: #333333; /* Color del texto */

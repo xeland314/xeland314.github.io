@@ -27,15 +27,15 @@ function Hit({ hit }: HitProps) {
   return (
     <div
       onClick={handleNavigation}
-      className="cursor-pointer flex flex-row items-start bg-gray-100 dark:bg-gray-800 p-4 rounded shadow-md hover:shadow-lg transition-shadow duration-300"
+      className="cursor-pointer flex flex-col sm:flex-row items-start bg-gray-100 dark:bg-gray-800 p-4 rounded shadow-md hover:shadow-lg transition-shadow duration-300"
     >
       {/* Imagen del proyecto */}
-      <div className="image-container mb-2 mr-5 flex-shrink-0">
+      <div className="image-container mb-2 mr-5 flex-shrink-0 self-center">
         {hit.image ? (
           <img
             src={hit.image}
             alt={hit.title}
-            className="w-32 h-32 object-cover rounded" // Dimensiones fijas
+            className="w-full sm:w-32 h-32 object-cover rounded" // Dimensiones fijas
           />
         ) : (
           <div className="flex items-center justify-center w-32 h-32 bg-gray-300 dark:bg-gray-700 rounded">
@@ -60,16 +60,16 @@ export default function Search() {
       <div className="mx-auto px-4 pb-4">
         {/* Cabecera de la búsqueda */}
         <div className="flex flex-row items-center justify-between">
-          <h1 className="text-2xl font-bold mb-4">Search Projects</h1>
+          <h1 className="text-2xl font-bold mb-4 hidden sm:block">Search:</h1>
           <SearchBox
-            className="mb-4 relative w-full max-w-xs text-black dark:text-white gap-x-1"
+            className="mb-4 w-full text-black dark:text-white sm:gap-x-1"
             placeholder="Search for projects..."
 
           />
         </div>
 
         {/* Contenedor de resultados con scroll independiente */}
-        <div className="h-[50vh] overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded p-2 shadow-inner">
+        <div className="h-[50vh] overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded shadow-inner">
           <Hits<HitProps["hit"]> hitComponent={Hit} />
         </div>
       </div>
