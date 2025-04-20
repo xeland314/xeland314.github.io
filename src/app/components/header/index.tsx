@@ -54,9 +54,6 @@ export default function Header() {
             isOpen ? "block" : "hidden"
           }`}
         >
-          <HeaderLink href="/#inicio" onClick={() => setIsOpen(!isOpen)}>
-            Inicio
-          </HeaderLink>
           <HeaderLink href="/#blogs" onClick={() => setIsOpen(!isOpen)}>
             Blogs
           </HeaderLink>

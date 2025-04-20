@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter, usePathname } from "next/navigation";
+
 interface LinkProps {
   href: string;
   className?: string;
@@ -12,24 +14,34 @@ export default function HeaderLink({
   onClick,
   children,
 }: LinkProps & { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname(); // Obtener la ruta actual
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
 
     const targetId = href.replace("/#", ""); // Obtener el ID de la sección
-    const targetElement = document.getElementById(targetId);
+    const isOnHomeRoute = pathname === "/"; // Verificar si estamos en la ruta inicial
 
-    if (targetElement) {
-      const headerOffset = 80; // Altura del header fijo
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+    if (isOnHomeRoute) {
+      // Desplazamiento suave si estamos en la ruta inicial
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        const headerOffset = 80; // Altura del header fijo
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth", // Desplazamiento suave
-      });
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth", // Desplazamiento suave
+        });
+      }
+    } else {
+      // Redirigir a la ruta si no estamos en la ruta inicial
+      router.push(href);
     }
 
-    if (onClick) onClick(); // Ejecutar cualquier acción adicional del padre
+    if (onClick) onClick(); // Ejecutar cualquier acción adicional
   };
 
   return (
