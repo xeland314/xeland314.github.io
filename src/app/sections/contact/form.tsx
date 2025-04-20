@@ -20,7 +20,7 @@ const ContactForm = () => {
     <form
       id="contact-form"
       onSubmit={sendEmail}
-      className="flex flex-col w-full max-w-lg px-4 mb-16 items-center"
+      className="flex flex-col w-full max-w-lg px-0 mobile:px-4 mb-16 items-center"
     >
       <div className="w-full mb-4 scrolldown-animation-2">
         <label htmlFor="email" className="block text-sm font-medium pb-1">
@@ -80,7 +80,7 @@ const ContactForm = () => {
           <p className="text-red-600 text-sm">{errors.message}</p>
         )}
       </div>
-      <div className="w-full flex justify-center items-center my-4 mobile:scale-100 scale-60 transition-transform duration-300">
+      <div className="w-full flex justify-center items-center my-4 mobile:scale-100 scale-65 transition-transform duration-300">
         <ReCAPTCHA
           sitekey={
             process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
