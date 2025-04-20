@@ -26,7 +26,7 @@ export default function ProjectsSection() {
 
   return (
     <section id="projects" className="md:px-10 px-2 mb-16">
-      <h2 className="text-3xl text-center font-bold mb-8 border-b-2 border-b-gray-700 dark:border-b-slate-100 pb-4">
+      <h2 className="text-3xl text-center font-bold mb-8 pb-4">
         <a
           href="/projects"
           className="hover:text-blue-700 font-bold py-2 px-4 rounded"
@@ -34,6 +34,7 @@ export default function ProjectsSection() {
           Proyectos
         </a>
       </h2>
+      <hr className="pb-[1px] mb-4 scrolldown-animation-2 bg-gray-800 dark:bg-white" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-auto">
         {randomProjects.map((project) => (
           <div key={project.title}>

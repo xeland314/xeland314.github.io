@@ -10,7 +10,7 @@ const AboutMe = () => {
       <h2 className="text-3xl text-center font-bold pb-4 scrolldown-animation-2">
         Acerca de mí
       </h2>
-      <hr className="pb-4 scrolldown-animation-2" />
+      <hr className="pb-[1px] mb-4 scrolldown-animation-2 bg-gray-800 dark:bg-white" />
       <div className="grid grid-cols-1 md:grid-cols-2 justify-between sm:gap-x-6 md:pb-0 pb-10">
         <section id="about-me-text">
           <h3 className="text-center text-2xl font-medium mb-8 scrolldown-animation-2">
