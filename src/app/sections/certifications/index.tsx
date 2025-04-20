@@ -126,15 +126,11 @@ const certifications = [
 
 export default function CertificationsSection() {
   return (
-    <section id="certifications" className="md:px-10 px-2 mb-16">
-      <h2 className="text-3xl text-center font-bold mb-8 border-b-2 border-b-gray-700 dark:border-b-slate-100 pb-4">
-        <a
-          href="/certifications"
-          className="hover:text-blue-700 font-bold py-2 px-4 rounded"
-        >
-          Certificaciones
-        </a>
+    <section id="certifications" className="md:px-10 px-2 mb-16 mt-5">
+      <h2 className="text-3xl text-center font-bold mb-4 scrolldown-animation-2">
+        Certificaciones
       </h2>
+      <hr className="pb-[1px] mb-4 scrolldown-animation-2 bg-gray-800 dark:bg-white" />
       <CertificationCarousel certifications={certifications} />
     </section>
   );

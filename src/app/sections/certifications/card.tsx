@@ -22,7 +22,13 @@ const CertificationCard = ({
   return (
     <div
       id={`${credentialId}`}
-      className="min-h-52 flex flex-col justify-between bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mb-2"
+      key={`${title}-${credentialId}`}
+      title={title}
+      data-credential-id={credentialId}
+      data-credential-url={credentialUrl}
+      data-credential-title={title}
+      data-credential-issuer={issuer}
+      className="min-h-52 flex flex-col justify-between bg-gray-200 dark:bg-gray-700 shadow-lg rounded-lg p-4 mb-2"
     >
       <div className="flex items-center">
         <img
@@ -33,7 +39,7 @@ const CertificationCard = ({
         <div>
           <a
             href={credentialUrl}
-            className="text-blue-500 hover:underline text-sm mb-4 flex items-center gap-2"
+            className="text-blue-700 dark:text-blue-500 hover:underline text-sm mb-4 flex items-center gap-2"
             title="Ver certificado"
             target="_blank"
           >
@@ -41,10 +47,10 @@ const CertificationCard = ({
           </a>
         </div>
       </div>
-      <div className="flex flex-col justify-start text-sm text-gray-600 dark:text-gray-400 mb-2">
+      <div className="flex flex-col justify-start text-sm text-gray-600 dark:text-gray-100 mb-2">
         <div className="flex items-center gap-2">
           <Building2 />
-          <p className="text-sm text-gray-600 dark:text-gray-400">{issuer}</p>
+          <p className="text-sm">{issuer}</p>
         </div>
         <div className="flex items-center gap-2">
           <Calendar />
