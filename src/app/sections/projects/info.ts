@@ -76,7 +76,7 @@ export const projects: IProjectInfo[] = [
     links: ["/projects/es/analizador-lexico"],
   },
   {
-    title: "Speed Test",
+    title: "SpeedTest",
     description:
       "Un script en Bash para medir el tiempo de ejecución de cualquier programa en Linux. Utiliza 'time' y 'awk' para calcular el tiempo real, de usuario y de sistema, además de la desviación estándar.",
     shortDescription: "Script en Bash para pruebas de velocidad en Linux.",
