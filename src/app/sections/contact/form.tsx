@@ -20,9 +20,9 @@ const ContactForm = () => {
     <form
       id="contact-form"
       onSubmit={sendEmail}
-      className="flex flex-col max-w-96 mb-16 items-center"
+      className="flex flex-col w-full max-w-lg px-4 mb-16 items-center"
     >
-      <div className="mb-4 scrolldown-animation-2">
+      <div className="w-full mb-4 scrolldown-animation-2">
         <label htmlFor="email" className="block text-sm font-medium pb-1">
           Correo electrónico:
         </label>
@@ -35,11 +35,11 @@ const ContactForm = () => {
           required
           maxLength={128}
           minLength={1}
-          className="min-w-52 w-80 mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-full mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
       </div>
-      <div className="mb-4 scrolldown-animation-2">
+      <div className="w-full mb-4 scrolldown-animation-2">
         <label htmlFor="name" className="block text-sm font-medium pb-1">
           Nombre:
         </label>
@@ -52,11 +52,11 @@ const ContactForm = () => {
           required
           maxLength={128}
           minLength={1}
-          className="min-w-52 w-80 mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-full mt-1 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
       </div>
-      <div className="mb-4 scrolldown-animation-2">
+      <div className="w-full mb-4 scrolldown-animation-2">
         <label htmlFor="message" className="block text-sm font-medium pb-1">
           Mensaje:
         </label>
@@ -69,7 +69,7 @@ const ContactForm = () => {
           maxLength={2000}
           minLength={1}
           rows={10}
-          className="min-w-52 w-80 block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-full block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
         <div className="flex flex-row justify-end">
           <p className="text-sm pt-1">
@@ -80,17 +80,19 @@ const ContactForm = () => {
           <p className="text-red-600 text-sm">{errors.message}</p>
         )}
       </div>
-      <ReCAPTCHA
-        sitekey={
-          process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
-          "6LeeTIgqAAAAAJ9bsIrpSDTRNYJtx_GKfsz2z9q0"
-        }
-        onChange={handleRecaptchaChange}
-        onExpired={handleRecaptchaExpired}
-      />
+      <div className="w-full flex justify-center items-center my-4 mobile:scale-100 scale-60 transition-transform duration-300">
+        <ReCAPTCHA
+          sitekey={
+            process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ||
+            "6LeeTIgqAAAAAJ9bsIrpSDTRNYJtx_GKfsz2z9q0"
+          }
+          onChange={handleRecaptchaChange}
+          onExpired={handleRecaptchaExpired}
+        />
+      </div>
       <button
         type="submit"
-        className="min-w-52 w-80 inline-flex justify-center mt-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        className="w-full max-w-xs inline-flex justify-center mt-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         disabled={emailCount >= 2}
       >
         {emailCount >= 2 || emailCount < 0
