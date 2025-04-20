@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@formspree/react": "^2.5.1",
+    "algoliasearch": "^4.24.0",
     "axios": "^1.7.7",
     "embla-carousel-react": "^8.5.2",
     "lucide-react": "^0.484.0",
@@ -20,7 +21,9 @@
     "react": "^18",
     "react-dom": "^18",
     "react-google-recaptcha": "^3.1.0",
-    "react-google-recaptcha-v3": "^1.10.1"
+    "react-google-recaptcha-v3": "^1.10.1",
+    "react-instantsearch-hooks": "^6.47.3",
+    "react-instantsearch-hooks-web": "^6.47.3"
   },
   "devDependencies": {
     "@types/node": "^20",
