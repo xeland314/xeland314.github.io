@@ -4,27 +4,36 @@ import { useState, useEffect, useRef } from "react";
 import HeaderLink from "./link";
 import { ThemeToggleButton } from "@/app/themes";
 import Search from "../algolia/search";
-import { Search as SearchIcon, X } from "lucide-react"; // Importar los iconos
+import { Search as SearchIcon, X } from "lucide-react";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isSearchVisible, setIsSearchVisible] = useState(false); // Nuevo estado para la búsqueda
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const menuRef = useRef<HTMLUListElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const searchRef = useRef<HTMLDivElement>(null); // Referencia para el componente de búsqueda
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchButtonRef = useRef<HTMLButtonElement>(null); // Nueva referencia para el botón de búsqueda
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Cierra el menú si el clic ocurre fuera del menú y el botón del menú
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target as Node) &&
         buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node) &&
-        searchRef.current &&
-        !searchRef.current.contains(event.target as Node)
+        !buttonRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-        setIsSearchVisible(false); // Cierra también el componente de búsqueda
+      }
+
+      // Cierra la barra de búsqueda si el clic ocurre fuera del área de búsqueda y el botón de búsqueda
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node) &&
+        searchButtonRef.current &&
+        !searchButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchVisible(false);
       }
     };
 
@@ -46,7 +55,8 @@ export default function Header() {
 
         {/* Botón de búsqueda */}
         <button
-          onClick={() => setIsSearchVisible(!isSearchVisible)} // Alterna la visibilidad de la búsqueda
+          ref={searchButtonRef} // Añadimos la referencia
+          onClick={() => setIsSearchVisible(!isSearchVisible)}
           className="text-white hover:text-blue-500 ml-auto"
           aria-label={isSearchVisible ? "Cerrar búsqueda" : "Abrir búsqueda"}
         >
@@ -93,7 +103,7 @@ export default function Header() {
       {isSearchVisible && (
         <div
           ref={searchRef}
-          className="w-full lg:w-1/2 absolute top-full self-center right-0 z-40 bg-gray-900 text-white p-4 shadow-lg"
+          className="w-full lg:w-1/2 absolute top-full left-1/2 transform -translate-x-1/2 z-40 bg-gray-900 text-white p-4 shadow-lg"
         >
           <Search />
         </div>

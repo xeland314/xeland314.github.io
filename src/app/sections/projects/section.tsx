@@ -25,11 +25,11 @@ export default function ProjectsSection() {
   };
 
   return (
-    <section id="projects" className="md:px-10 px-2 mb-16">
+    <section id="projects" className="md:px-10 px-2 mb-16 pt-16">
       <h2 className="text-3xl text-center font-bold mb-8 pb-4">
         <a
           href="/projects"
-          className="hover:text-blue-700 font-bold py-2 px-4 rounded-sm"
+          className="hover:text-blue-700 font-bold py-2 px-4 rounded-sm scrolldown-animation-2"
         >
           Proyectos
         </a>

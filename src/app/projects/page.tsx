@@ -18,7 +18,7 @@ export default function ProjectsPage() {
 
   return (
     <section id="projects" className="mb-16">
-      <h2 className="text-3xl text-center font-bold mb-8 border-b-2 border-b-gray-700 dark:border-b-slate-100 pb-4">
+      <h2 className="text-3xl text-center font-bold pb-4">
         <a
           href="/projects"
           className="hover:text-blue-700 font-bold py-2 px-4 rounded-sm"
@@ -26,6 +26,7 @@ export default function ProjectsPage() {
           Proyectos
         </a>
       </h2>
+      <hr className="pb-[1px] mb-4 scrolldown-animation-2 bg-gray-800 dark:bg-white" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {currentProjects.map((project) => (
           <ProjectCard key={project.title} project={project} />

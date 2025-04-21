@@ -70,20 +70,20 @@ export default function CertificationCarousel({
       <button
         title="Anterior"
         type="button"
-        className="absolute left-2 -bottom-15 z-10 bg-gray-800 dark:bg-gray-700 text-white p-2 rounded-full"
+        className="absolute left-2 -bottom-5 z-10 bg-gray-800 dark:bg-gray-700 text-white p-2 rounded-full"
         onClick={scrollPrev}
       >
         <ChevronLeft />
       </button>
       {/* Contador de certificados */}
-      <div className="absolute left-1/2 -bottom-15 z-10 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-sm text-center">
+      <div className="absolute left-1/2 -bottom-5 z-10 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-sm text-center">
         Certificado {currentIndex + 1} de {certifications.length}
       </div>
       {/* Botón de navegación derecha */}
       <button
         title="Siguiente"
         type="button"
-        className="absolute right-2 -bottom-15 z-10 bg-gray-800 dark:bg-gray-700 text-white p-2 rounded-full"
+        className="absolute right-2 -bottom-5 z-10 bg-gray-800 dark:bg-gray-700 text-white p-2 rounded-full"
         onClick={scrollNext}
       >
         <ChevronRight />
