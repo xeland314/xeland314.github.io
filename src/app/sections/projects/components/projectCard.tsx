@@ -5,7 +5,7 @@ import { Badge } from "@/app/components";
 
 export default function ProjectCard({ project }: { project: IProjectInfo }) {
   return (
-    <div className="rounded-lg shadow-md overflow-hidden h-auto scrolldown-animation-2">
+    <div className="rounded-lg shadow-lg overflow-hidden h-auto scrolldown-animation-2 bg-gray-200 dark:bg-gray-700">
       <div className="flex flex-auto justify-center bg-transparent h-48">
         {project.image ? (
           <img
