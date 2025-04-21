@@ -43,6 +43,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://xeland314.github.io"),
   robots: "index, follow",
+  verification: { google: "00zwLtdgjhmCPvhPBvazB4JmCArQ-0tFJMxNuhrCuIE" },
 };
 
 export default function RootLayout({
