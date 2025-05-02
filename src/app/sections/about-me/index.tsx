@@ -14,7 +14,7 @@ const AboutMe = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 justify-between sm:gap-x-6 md:pb-0 pb-10">
         <section id="about-me-text">
           <h3 className="text-center text-2xl font-medium mb-8 scrolldown-animation-2">
-            Me llamo <strong>Christopher Villamarín</strong>
+            Me llamo <strong>Christopher Alexander Villamarín Pila</strong>
           </h3>
           <div className="flex justify-center mb-4 scrolldown-animation-2">
             <img
