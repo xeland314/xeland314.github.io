@@ -5,6 +5,34 @@ import { ThemeToggleButton } from "@/app/themes";
 import ThemeSelector from "@/app/themes/themeSelector";
 import { code, code_2, code_3, code_4, code_5, code_6 } from "./exampleCodes";
 import TableOfContents from "@/app/components/content";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cómo crear una imagen dinámica según el tema en Next.js",
+  description:
+    "Aprende a crear un componente de imagen que cambia automáticamente según el tema claro u oscuro en Next.js, con ejemplos prácticos, configuración de Tailwind CSS y consideraciones de accesibilidad.",
+  authors: [{ name: "Christopher Villamarín" }],
+  openGraph: {
+    title: "Cómo crear una imagen dinámica según el tema en Next.js",
+    description:
+      "Guía paso a paso para implementar imágenes adaptativas al tema en Next.js, incluyendo ejemplos, alternativas y mejores prácticas.",
+    type: "article",
+    locale: "es_ES",
+  },
+  keywords: [
+    "Next.js",
+    "ThemedImage",
+    "tema oscuro",
+    "tema claro",
+    "imágenes dinámicas",
+    "accesibilidad",
+    "Tailwind CSS",
+    "next-themes",
+    "React",
+    "frontend",
+  ],
+};
+
 
 export default function ThemedImageBlog() {
   // Definir las secciones para la tabla de contenidos
