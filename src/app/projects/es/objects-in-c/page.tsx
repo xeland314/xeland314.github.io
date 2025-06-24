@@ -69,8 +69,8 @@ export default function ObjectsInCPage() {
           atributos y métodos. El diseño permite reutilizar y gestionar
           atributos de manera eficiente.
         </p>
-        <pre className="p-4 rounded-md">
-          {`typedef struct {
+        <CodeBlock
+          code={`typedef struct {
     size_t size;
     void * (* ctor) (void * self, va_list * app);
     void * (* dtor) (void * self);
@@ -86,7 +86,8 @@ void * clone(const void * self);
 int differ(const void * self, const void * other);
 size_t sizeOf(const void * self);
 char * toString(const void * self);`}
-        </pre>
+          language="c"
+        />
       </section>
 
       <section className="mb-8">
@@ -96,8 +97,8 @@ char * toString(const void * self);`}
           Considera el ejemplo de inicializar una cadena usando la clase{" "}
           <code>String</code>:
         </p>
-        <pre className="p-4 rounded-md">
-          {`#include "String.h"
+        <CodeBlock
+          code={`#include "String.h"
 #include <stdlib.h>
 
 int main() {
@@ -105,7 +106,9 @@ int main() {
     printf("%s", toString(text));
     return 0;
 }`}
-        </pre>
+          language="c"
+        />
+
         <p className="mt-4">
           Este enfoque oculta el manejo de memoria en segundo plano, haciendo el
           código más limpio y legible.
@@ -120,20 +123,26 @@ int main() {
           <li>
             <strong>Constructor:</strong> Inicializa cualquier objeto de forma
             estandarizada con <code>new()</code>. Por ejemplo:
-            <CodeBlock code={`void * text = new(String, "Hello, world");`} />
+            <CodeBlock
+              code={`void * text = new(String, "Hello, world");`}
+              language="c"
+            />
           </li>
           <li>
             <strong>Clonador:</strong> Crea una copia independiente del objeto:
-            <CodeBlock code="void * textCopy = clone(text);" />
+            <CodeBlock code="void * textCopy = clone(text);" language="c" />
           </li>
           <li>
             <strong>Destructor:</strong> Libera la memoria del objeto usando:
-            <CodeBlock code="delete(text);" />
+            <CodeBlock code="delete(text);" language="c" />
           </li>
           <li>
             <strong>toString:</strong> Retorna el contenido del objeto como una
             cadena imprimible:
-            <CodeBlock code={`printf("text = %s\\n", toString(text));`} />
+            <CodeBlock
+              code={`printf("text = %s\\n", toString(text));`}
+              language="c"
+            />
           </li>
         </ul>
       </section>
@@ -144,7 +153,7 @@ int main() {
           Para compilar los ejemplos y ver los resultados en consola, utiliza
           los comandos:
         </p>
-        <CodeBlock code="make examples && make run_examples" />
+        <CodeBlock code="make examples && make run_examples" language="sh" />
         <p className="mt-4">
           El código de los ejemplos está en la carpeta <code>examples</code>.
         </p>

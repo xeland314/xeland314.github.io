@@ -45,7 +45,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 h-auto w-full bg-gray-900 text-white backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+    <header className="my-header sticky top-0 z-50 h-auto w-full bg-gray-900 text-white backdrop-blur-sm supports-backdrop-filter:bg-background/60">
       <nav className="flex justify-between items-center relative p-3">
         <div className="flex items-center">
           <a href="/" className="text-lg font-bold hover:text-blue-500">

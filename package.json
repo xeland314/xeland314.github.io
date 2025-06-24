@@ -37,6 +37,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
+    "prism-react-renderer": "^2.4.1",
     "tailwindcss": "^4.1.4",
     "typescript": "^5"
   }
