@@ -210,7 +210,7 @@ export default function TableOfContents({ sections }: TableOfContentsProps) {
             e.stopPropagation(); // Evita propagación del evento
             setIsExpanded(!isExpanded);
           }}
-          aria-expanded={isExpanded}
+          aria-expanded={`${isExpanded}`}
           role="button"
           tabIndex={0}
           aria-label={isExpanded ? "Colapsar índice" : "Expandir índice"}
