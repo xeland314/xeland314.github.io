@@ -5,6 +5,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/common/Header.astro";
 import Footer from "../components/common/Footer.astro";
 import Introduction from "../components/sections/Introduction.astro";
+import Hero from "../components/sections/Hero.astro";
 
 // Datos para la metadata (los mismos que tenías en Next.js)
 const siteTitle =
@@ -29,7 +30,8 @@ const siteImage = "https://xeland314.github.io/images/preview.png";
     image={siteImage}
 >
     <Header />
-    <main class="mx-auto py-8">
+    <main class="mx-auto py-0">
+        <Hero />
         <Introduction />
     </main>
     <Footer />

@@ -1,0 +1,60 @@
+---
+// src/components/HeroSection.astro
+// Puedes ajustar esta ruta si tu imagen está en otro lugar
+const heroImage = "/images/gato.svg";
+---
+
+<section
+  id="hero"
+  class="relative flex flex-col md:flex-row items-center justify-center min-h-[90vh] px-4 py-0 bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white overflow-hidden"
+>
+  <div
+    class="relative z-10 flex flex-col md:flex-row items-center justify-start gap-y-6 md:gap-12 max-w-6xl mx-auto pt-8 md:pt-0"
+  >
+    <div
+      class="flex-shrink-0 w-full h-auto mobile:w-48 mobile:h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300"
+    >
+      <img
+        src={heroImage}
+        alt="Gato programando en la computadora"
+        class="w-full h-full object-cover"
+        loading="eager"
+      />
+    </div>
+
+    <div class="text-center md:text-left space-y-6 max-w-xl">
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
+        Hola, soy <span class="text-blue-600 dark:text-blue-400"
+          >Christopher Villamarín</span
+        >
+      </h1>
+      <p class="text-xl sm:text-2xl font-light">
+        Desarrollador <strong class="font-bold">Full Stack</strong> especializado
+        en <strong class="font-bold">Backend</strong>.
+      </p>
+      <p class="text-md sm:text-lg text-gray-700 dark:text-gray-300">
+        Construyendo soluciones robustas y escalables con Python, Go y mucho
+        más.
+      </p>
+
+      <div
+        class="flex flex-col sm:flex-row justify-center md:justify-start gap-4 mt-8"
+      >
+        <a
+          href="#about-me"
+          class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          Saber más sobre mí
+        </a>
+        <a
+          href="https://github.com/xeland314"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-8 py-3 border-2 border-blue-600 hover:border-blue-700 text-blue-600 dark:text-blue-400 dark:border-blue-400 dark:hover:border-blue-500 font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        >
+          Ver en GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

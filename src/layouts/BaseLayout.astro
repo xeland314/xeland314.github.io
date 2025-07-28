@@ -21,7 +21,7 @@ const { title, description, keywords, author, applicationName, url, image } =
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -70,6 +70,7 @@ const { title, description, keywords, author, applicationName, url, image } =
     >
         <div class="min-h-screen mx-auto pt-0">
             <slot />
+            <script is:inline src="/src/scripts/styles/smoothScrollWithOffset.ts"></script>
         </div>
     </body>
 </html>

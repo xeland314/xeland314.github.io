@@ -4,7 +4,7 @@ import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.as
 
 <article
   id="about-me"
-  class="xl:px-32 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6"
+  class="xl:px-32 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6 py-10 bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white"
 >
   <div
     class="grid grid-cols-1 md:grid-cols-2 justify-between sm:gap-x-6 md:pb-0 pb-10"
@@ -13,16 +13,17 @@ import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.as
       <h2
         class="text-center text-2xl font-medium mb-8 text-gray-900 dark:text-white"
       >
-        <strong>Christopher Villamarín</strong>, Desarrollador Full Stack
-        especializado en Backend
+        <strong>Acerca de mí</strong>
       </h2>
-      <div class="flex justify-center mb-4">
+      <div
+        class="flex mobile:flex-row flex-col justify-center items-center-safe gap-4 sm:gap-8 mb-4"
+      >
         <img
           src="/profile.png"
           alt="Christopher Villamarín - Foto de Perfil"
           width={128}
           height={128}
-          class="bg-slate-700 dark:bg-white rounded-full"
+          class="bg-slate-700 dark:bg-white rounded-md shadow-2xl transform hover:scale-105 transition-transform duration-300"
         />
       </div>
       <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
