@@ -1,16 +1,36 @@
 ---
-import './src/styles/global.css';
+import "./src/styles/global.css";
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/common/Header.astro";
+import Footer from "../components/common/Footer.astro";
+import Introduction from "../components/sections/Introduction.astro";
+
+// Datos para la metadata (los mismos que tenías en Next.js)
+const siteTitle =
+    "Christopher Villamarín - Backend Developer en Quito, Ecuador";
+const siteDescription =
+    "Descubre el portafolio de Christopher Villamarín, desarrollador backend especializado en crear soluciones escalables para aplicaciones web, móviles y de escritorio.";
+const siteKeywords =
+    "programador, desarrollador backend, Python, django, django rest framework, Quito, Ecuador, sistemas escalables, portafolio profesional";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteApplicationName = "Christopher Villamarín Portfolio";
+const siteUrl = "https://xeland314.github.io/";
+const siteImage = "https://xeland314.github.io/images/preview.png";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/png" href="/logo.png" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+    title={siteTitle}
+    description={siteDescription}
+    keywords={siteKeywords}
+    author={siteAuthor}
+    applicationName={siteApplicationName}
+    url={siteUrl}
+    image={siteImage}
+>
+    <Header />
+    <main class="mx-auto py-8">
+        <Introduction />
+    </main>
+    <Footer />
+</BaseLayout>

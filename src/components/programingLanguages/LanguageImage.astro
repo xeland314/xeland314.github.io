@@ -1,0 +1,53 @@
+---
+import ThemedImage from "../common/ThemedImage.tsx"; // Importa el componente Astro ThemedImage
+
+interface Props {
+  title: string;
+  image: string; // Esto será el 'i' para skillicons.dev (ej. "react", "js", "ts")
+  width?: string; // Ej. "48px"
+  height?: string; // Ej. "48px"
+  isTitleHidden?: boolean;
+}
+
+const {
+  title,
+  image,
+  width = "40px",
+  height = "40px",
+  isTitleHidden = false,
+} = Astro.props;
+
+// Puedes ajustar los URLs si tienes otros temas personalizados en skillicons.dev
+// Aquí se usan los temas 'light' y 'dark' estándar de skillicons.dev
+const srcForLight = `https://skillicons.dev/icons?i=${image}&perline=1&theme=light`;
+const srcForDark = `https://skillicons.dev/icons?i=${image}&perline=1&theme=dark`;
+---
+
+<div class="flex flex-col items-center">
+  <div class="flex items-center justify-center">
+    <ThemedImage
+      srcForLight={srcForLight}
+      srcForDark={srcForDark}
+      alt={title}
+      width={width}
+      height={height}
+      client:only
+    />
+  </div>
+  {
+    isTitleHidden ? null : (
+      <p class="text-center text-sm font-thin p-0 pt-1 text-gray-800 dark:text-gray-200">
+        {title}
+      </p>
+    )
+  }
+</div>
+
+<style>
+  div {
+    transition: transform 0.2s ease-in-out;
+  }
+  div:hover {
+    transform: translateY(-5px);
+  }
+</style>
