@@ -1,12 +1,10 @@
 ---
-// src/components/HeroSection.astro
-// Puedes ajustar esta ruta si tu imagen está en otro lugar
 const heroImage = "/images/gato.svg";
 ---
 
 <section
   id="hero"
-  class="relative flex flex-col md:flex-row items-center justify-center min-h-[90vh] px-4 py-0 bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white overflow-hidden"
+  class="relative flex flex-col md:flex-row items-center justify-center min-h-[90vh] px-4 py-0 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white overflow-hidden"
 >
   <div
     class="relative z-10 flex flex-col md:flex-row items-center justify-start gap-y-6 md:gap-12 max-w-6xl mx-auto pt-8 md:pt-0"
@@ -19,6 +17,7 @@ const heroImage = "/images/gato.svg";
         alt="Gato programando en la computadora"
         class="w-full h-full object-cover"
         loading="eager"
+        title="¿Por qué hay un gato aquí?"
       />
     </div>
 
@@ -33,8 +32,7 @@ const heroImage = "/images/gato.svg";
         en <strong class="font-bold">Backend</strong>.
       </p>
       <p class="text-md sm:text-lg text-gray-700 dark:text-gray-300">
-        Construyendo soluciones robustas y escalables con Python, Go y mucho
-        más.
+        Construyendo soluciones con Python, Go y mucho más.
       </p>
 
       <div
@@ -43,16 +41,37 @@ const heroImage = "/images/gato.svg";
         <a
           href="#about-me"
           class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          title="Saber más sobre mí"
         >
           Saber más sobre mí
+        </a>
+        <a
+          href="https://linkedin.com/in/christopher-villamarin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center justify-center px-8 py-3 border-2 font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50"
+        >
+          <img
+            src="/icons/linkedin.svg"
+            alt="Linkedin Logo"
+            class="inline-block w-6 h-6 mr-2 self-center-safe dark:invert"
+            title="Mi Linkedin"
+          />
+          Linkedin
         </a>
         <a
           href="https://github.com/xeland314"
           target="_blank"
           rel="noopener noreferrer"
-          class="px-8 py-3 border-2 border-blue-600 hover:border-blue-700 text-blue-600 dark:text-blue-400 dark:border-blue-400 dark:hover:border-blue-500 font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          class="flex items-center justify-center px-8 py-3 border-2 font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50"
         >
-          Ver en GitHub
+          <img
+            src="/icons/github.svg"
+            alt="GitHub Logo"
+            class="inline-block w-6 h-6 mr-2 self-center-safe dark:invert"
+            title="Mi GitHub"
+          />
+          xeland314
         </a>
       </div>
     </div>
