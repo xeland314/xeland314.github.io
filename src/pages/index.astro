@@ -1,9 +1,5 @@
 ---
-import "/src/styles/global.css";
-
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Header from "../components/common/Header.astro";
-import Footer from "../components/common/Footer.astro";
 import Introduction from "../components/sections/Introduction.astro";
 import Hero from "../components/sections/Hero.astro";
 import ProjectsSection from "../components/sections/ProjectsSection.astro";
@@ -30,11 +26,9 @@ const siteImage = "https://xeland314.github.io/images/preview.png";
     url={siteUrl}
     image={siteImage}
 >
-    <Header />
     <main class="mx-auto py-0">
         <Hero />
         <Introduction />
         <ProjectsSection />
     </main>
-    <Footer />
 </BaseLayout>

@@ -1,0 +1,255 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+
+// --- METADATA ---
+const pageTitle = "Calendario de Adviento Interactivo";
+const pageDescription =
+  "Descubre el Calendario de Adviento Interactivo, desarrollado en Next.js y estilo pixelart. Cada día revela una sorpresa mientras celebramos la cuenta regresiva hacia la Navidad.";
+const pageKeywords = [
+  "Calendario de Adviento",
+  "interactivo",
+  "Navidad",
+  "Next.js",
+  "React",
+  "pixelart",
+  "desarrollo web",
+  "proyectos",
+  "Christopher Villamarín",
+  "xeland314",
+  "Ecuador",
+].join(", ");
+
+const pageSlug = "calendario-adviento-interactivo";
+const pageAuthor = "Christopher Villamarín";
+const applicationName = "Portafolio de Christopher Villamarín";
+const pageUrl =
+  "https://xeland314.github.io/es/projects/calendario-adviento-interactivo/";
+const pageImage =
+  "https://xeland314.github.io/images/advent_calendar_preview.png";
+const pageImageAlt = "Vista previa del Calendario de Adviento Interactivo";
+const pageRobots = "index, follow"; // Garantiza que los motores de búsqueda rastreen e indexen la página.
+const pageCanonical = pageUrl; // La URL canónica es la misma que la URL de la página
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  applicationName={applicationName}
+  url={pageUrl}
+  image={pageImage}
+  imageAlt={pageImageAlt}
+  robots={pageRobots}
+  canonical={pageCanonical}
+>
+  <main class="py-16 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <article class="max-w-4xl mx-auto px-6">
+      <a
+        href="/projects"
+        class="text-blue-600 dark:text-blue-400 hover:underline mb-8 block"
+      >
+        &larr; Volver a todos los proyectos
+      </a>
+
+      <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-4">
+          Calendario de Adviento Interactivo
+        </h1>
+        <img
+          transition:name={`img-${pageSlug}`}
+          src={pageImage}
+          alt={pageImageAlt}
+          class="w-full h-80 object-cover rounded-lg shadow-lg mb-8"
+        />
+      </header>
+
+      <section class="mb-8">
+        <h2 class="text-3xl text-center font-semibold mb-4">
+          🌟 Reto de la Semana: 4 al 10 de Diciembre 🎄
+        </h2>
+        <p>
+          <strong>Tema: </strong>
+          ¡Crea un calendario de adviento digital para celebrar la cuenta regresiva
+          hacia la Navidad!
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-3xl font-semibold mb-4">
+          Contexto del Reto: Alura Latam
+        </h2>
+        <p class="mb-4">
+          Este proyecto nació como parte de un "Reto de la Semana" organizado
+          por el grupo <a
+            href="https://discord.gg/alumini-one"
+            target="_blank"
+            class="text-blue-600 hover:underline">Alumini ONE</a
+          > en Discord, una comunidad de estudiantes egresados del programa Oracle
+          Next Education (ONE) de Alura Latam.
+        </p>
+        <img
+          src="/images/reto-calendario-adviento.jpg"
+          alt="Captura de pantalla del reto de la semana de Alumini ONE"
+          class="mx-auto my-4 rounded-lg shadow-md"
+        />
+        <h3 class="text-3xl font-semibold mb-4">Reconocimiento y Ganadores</h3>
+        <p class="mb-4">
+          ¡Me complace compartir que este proyecto fue uno de los ganadores del
+          reto de Diciembre! El anuncio oficial del grupo Alumini ONE lo
+          confirmó:
+        </p>
+        <img
+          src="/images/ganador-calendario-adviento.jpg"
+          alt="Captura de pantalla del anuncio de ganadores de Alumini ONE"
+          class="mx-auto my-4 rounded-lg shadow-md"
+        />
+        <p class="mb-4">
+          Este reconocimiento fue un gran incentivo y demuestra el valor de
+          participar activamente en comunidades de desarrollo.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <div class="p-0 py-4 sm:p-6 sm:py-0">
+          <header class="mb-4 text-center">
+            <a
+              href="https://xeland314.github.io/advent-calendar/"
+              target="_blank"
+              class="text-blue-600 hover:text-blue-800"
+            >
+              <h3 class="text-3xl font-bold">
+                Vista previa del Calendario de Adviento
+              </h3>
+            </a>
+            <p class="text-gray-600 dark:text-white">
+              ¡Experimenta cómo funciona!
+            </p>
+          </header>
+          <div class="relative w-full h-96 border rounded-lg shadow-lg">
+            <iframe
+              src="https://xeland314.github.io/advent-calendar/"
+              title="Advent Calendar Interactive Preview"
+              class="w-full h-full rounded-lg border-none"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-3xl font-semibold mb-4">Descripción</h2>
+        <p class="mb-4">
+          Este proyecto es un calendario de adviento digital desarrollado en
+          Next.js y exportado como una página estática. Cada día, los usuarios
+          pueden abrir una "ventana" que revela un mensaje o regalo virtual. El
+          diseño está inspirado en las festividades, utilizando colores rojos,
+          verdes, dorados y una tipografía festiva. Además, el proyecto tiene un
+          estilo pixelart.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-3xl font-semibold mb-4">Detalles</h2>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>
+            Muestra un calendario de diciembre con 24 días representados como
+            cajas.
+          </li>
+          <li>
+            Permite que los usuarios abran una nueva caja solo en o después del
+            día correspondiente (usa la fecha del sistema).
+          </li>
+          <li>
+            Cada caja revela un contenido sorpresa (mensaje, imagen o un GIF
+            festivo).
+          </li>
+          <li>Utiliza animaciones suaves al abrir las cajas.</li>
+          <li>
+            Incluye un contador que muestra cuántos días faltan para Navidad.
+          </li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-3xl font-semibold mb-4">Tecnologías Utilizadas</h2>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>
+            <strong>Next.js</strong>: Framework de React para la creación de
+            aplicaciones web.
+          </li>
+          <li>
+            <strong>React</strong>: Biblioteca de JavaScript para construir
+            interfaces de usuario.
+          </li>
+          <li>
+            <strong>Tailwind CSS y CSS</strong>: Para el diseño y las
+            animaciones.
+          </li>
+          <li>
+            <strong
+              ><a
+                href="https://github.com/aseprite/aseprite"
+                class="text-blue-600 hover:underline"
+              >
+                Aseprite:
+              </a></strong
+            >Para el estilo visual utilizado en el proyecto e imágenes creadas
+            con estilo pixelart.
+          </li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-3xl font-semibold mb-4">Instalación</h2>
+        <ol class="list-decimal pl-6 space-y-4">
+          <li>
+            <strong>Clona el repositorio:</strong>
+            <CodeBlock
+              code="git clone https://github.com/xeland314/advent-calendar.git"
+              client:only
+            />
+          </li>
+          <li>
+            <strong>Navega al directorio del proyecto:</strong>
+            <CodeBlock code="cd advent-calendar" client:only />
+          </li>
+          <li>
+            <strong>Instala las dependencias:</strong>
+            <CodeBlock code="npm install" client:only />
+          </li>
+          <li>
+            <strong>Inicia el servidor de desarrollo:</strong>
+            <CodeBlock code="npm run dev" client:only />
+          </li>
+        </ol>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-3xl font-semibold mb-4">Despliegue</h2>
+        <p>
+          El proyecto está desplegado como una página estática y puede ser visto
+          en el siguiente enlace:
+        </p>
+        <a
+          href="https://xeland314.github.io/advent-calendar/"
+          class="text-blue-600 hover:underline"
+        >
+          🔗 Proyecto: Calendario de Adviento
+        </a>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-3xl font-semibold mb-4">Autor</h2>
+        <p>
+          <strong>Christopher Villamarín</strong> -{" "}
+          <a
+            href="https://github.com/xeland314"
+            class="text-blue-600 hover:underline"
+          >
+            GitHub
+          </a>
+        </p>
+      </section>
+    </article>
+  </main>
+</BaseLayout>

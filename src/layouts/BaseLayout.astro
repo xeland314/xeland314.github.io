@@ -1,6 +1,9 @@
 ---
-// src/layouts/BaseLayout.astro
+import "/src/styles/global.css";
+
 import { ClientRouter } from "astro:transitions";
+import Header from "../components/common/Header.astro";
+import Footer from "../components/common/Footer.astro";
 
 interface Props {
   title: string;
@@ -80,10 +83,12 @@ const {
     <script src="../scripts/themes/layoutThemeInit.ts"></script>
   </head>
   <body class="font-inter bg-white text-black dark:bg-gray-800 dark:text-white">
+    <Header />
     <div class="min-h-screen mx-auto pt-0">
       <slot />
       <script is:inline src="/scripts/smoothScrollWithOffset.js"
       ></script>
     </div>
+    <Footer />
   </body>
 </html>
