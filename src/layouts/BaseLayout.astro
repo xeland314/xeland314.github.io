@@ -3,74 +3,87 @@
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
-    title: string;
-    description: string;
-    keywords: string;
-    author: string;
-    applicationName: string;
-    url: string;
-    image: string;
+  title: string;
+  description: string;
+  keywords: string;
+  author: string;
+  applicationName: string;
+  url: string;
+  image: string;
+  imageAlt?: string;
+  robots?: string;
+  canonical?: string;
 }
 
-const { title, description, keywords, author, applicationName, url, image } =
-    Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  author,
+  applicationName,
+  url,
+  image,
+  imageAlt = 'Portafolio de Christopher Villamarín',
+  robots = 'index, follow',
+  canonical,
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-        <title>{title}</title>
-        <meta name="description" content={description} />
-        <meta name="keywords" content={keywords} />
-        <meta name="author" content={author} />
-        <meta name="application-name" content={applicationName} />
-        <meta name="robots" content="index, follow" />
-        <meta name="algolia-site-verification" content="839FA93308FEFD9D" />
-        <meta
-            name="google-site-verification"
-            content="00zwLtdgjhmCPvhPBvazB4JmCArQ-0tFJMxNuhrCuIE"
-        />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content={author} />
+    <meta name="creator" content={author} />
+    <meta name="application-name" content={applicationName} />
+    <meta name="robots" content={robots} />
+    <meta name="algolia-site-verification" content="839FA93308FEFD9D" />
+    <meta name="google-site-verification" content="00zwLtdgjhmCPvhPBvazB4JmCArQ-0tFJMxNuhrCuIE" />
 
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:url" content={url} />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content={image} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta
-            property="og:image:alt"
-            content="Portafolio de Christopher Villamarín"
-        />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
-            rel="stylesheet"
-        />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    <meta name="twitter:site" content="@xeland314" />
+    <meta name="twitter:creator" content="@xeland314" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
 
-        <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    {canonical && <link rel="canonical" href={canonical} />}
 
-        <script
-            is:inline
-            src="https://www.google.com/recaptcha/enterprise.js?render=6LfI7IcqAAAAAGHi4AWFSAt0nZTKeFedhTku6-eD"
-            async></script>
+    <script
+      is:inline
+      src="https://www.google.com/recaptcha/enterprise.js?render=6LfI7IcqAAAAAGHi4AWFSAt0nZTKeFedhTku6-eD"
+      async></script>
+    <ClientRouter />
 
-        <ClientRouter />
-
-        <script src="../scripts/themes/layoutThemeInit.ts"></script>
-    </head>
-    <body
-        class="font-inter bg-white text-black dark:bg-gray-800 dark:text-white"
-    >
-        <div class="min-h-screen mx-auto pt-0">
-            <slot />
-            <script is:inline src="/src/scripts/styles/smoothScrollWithOffset.ts"></script>
-        </div>
-    </body>
+    <script src="../scripts/themes/layoutThemeInit.ts"></script>
+  </head>
+  <body class="font-inter bg-white text-black dark:bg-gray-800 dark:text-white">
+    <div class="min-h-screen mx-auto pt-0">
+      <slot />
+      <script is:inline src="/scripts/smoothScrollWithOffset.js"
+      ></script>
+    </div>
+  </body>
 </html>

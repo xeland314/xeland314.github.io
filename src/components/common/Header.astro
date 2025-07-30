@@ -3,148 +3,144 @@ import ThemeToggleButton from "../themes/ThemeToggleButton.astro";
 ---
 
 <header
-    class="my-header sticky top-0 z-50 h-auto w-full bg-gray-900 text-white backdrop-blur-sm supports-backdrop-filter:bg-background/60"
+  class="my-header sticky top-0 z-50 h-auto w-full bg-gray-900 text-white backdrop-blur-sm supports-backdrop-filter:bg-background/60"
+  id="main-header"
 >
-    <nav class="flex justify-between items-center relative p-3">
-        <div class="flex items-center">
-            <a href="/" class="text-lg font-bold hover:text-blue-500">
-                xeland314
-            </a>
-        </div>
-
-        <button
-            id="searchButton"
-            class="text-white hover:text-blue-500 ml-auto"
-            aria-label="Abrir búsqueda"
-        >
-            <svg
-                id="searchIcon"
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg
-            >
-            <svg
-                id="closeIcon"
-                class="w-6 h-6 hidden"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"></path></svg
-            >
-        </button>
-
-        <div class="md:hidden">
-            <button
-                id="menuButton"
-                class="text-white focus:outline-hidden pr-4 pl-4 pt-2 pb-2 transition duration-300 ease-in-out hover:bg-gray-700"
-                type="button"
-            >
-                ☰
-            </button>
-        </div>
-
-        <ul
-            id="mobileMenu"
-            class="absolute z-1000 top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out hidden md:block"
-        >
-            <li>
-                <a href="/#blogs" class="block py-2 px-4 hover:bg-gray-700"
-                    >Blogs</a
-                >
-            </li>
-            <li>
-                <a href="/#projects" class="block py-2 px-4 hover:bg-gray-700"
-                    >Proyectos</a
-                >
-            </li>
-            <li>
-                <a href="/#about-me" class="block py-2 px-4 hover:bg-gray-700"
-                    >Acerca de mí</a
-                >
-            </li>
-            <li class="flex items-center justify-center py-2">
-                <ThemeToggleButton />
-            </li>
-        </ul>
-    </nav>
-
-    <div
-        id="searchBar"
-        class="w-full lg:w-1/2 absolute top-full left-1/2 transform -translate-x-1/2 z-40 bg-gray-900 text-white p-4 shadow-lg hidden"
-    >
-        <input
-            type="text"
-            placeholder="Buscar..."
-            class="w-full p-2 rounded bg-gray-800 text-white border border-gray-700"
-        />
+  <nav class="flex justify-between items-center relative p-3">
+    <div class="flex items-center">
+      <a href="/" class="text-lg font-bold hover:text-blue-500"> xeland314 </a>
     </div>
+
+    <button
+      id="searchButton"
+      class="text-white hover:text-blue-500 ml-auto"
+      aria-label="Abrir búsqueda"
+    >
+      <svg
+        id="searchIcon"
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg
+      >
+      <svg
+        id="closeIcon"
+        class="w-6 h-6 hidden"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"></path></svg
+      >
+    </button>
+
+    <div class="md:hidden">
+      <button
+        id="menuButton"
+        class="text-white focus:outline-hidden pr-4 pl-4 pt-2 pb-2 transition duration-300 ease-in-out hover:bg-gray-700"
+        type="button"
+      >
+        ☰
+      </button>
+    </div>
+
+    <ul
+      id="mobileMenu"
+      class="absolute z-1000 top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out hidden md:block"
+    >
+      <li>
+        <a href="/#blogs" class="block py-2 px-4 hover:bg-gray-700">Blogs</a>
+      </li>
+      <li>
+        <a href="/#projects" class="block py-2 px-4 hover:bg-gray-700"
+          >Proyectos</a
+        >
+      </li>
+      <li>
+        <a href="/#about-me" class="block py-2 px-4 hover:bg-gray-700"
+          >Acerca de mí</a
+        >
+      </li>
+      <li class="flex items-center justify-center py-2">
+        <ThemeToggleButton />
+      </li>
+    </ul>
+  </nav>
+
+  <div
+    id="searchBar"
+    class="w-full lg:w-1/2 absolute top-full left-1/2 transform -translate-x-1/2 z-40 bg-gray-900 text-white p-4 shadow-lg hidden"
+  >
+    <input
+      type="text"
+      placeholder="Buscar..."
+      class="w-full p-2 rounded bg-gray-800 text-white border border-gray-700"
+    />
+  </div>
 </header>
-
 <script is:inline>
-    const menuButton = document.getElementById("menuButton");
-    const mobileMenu = document.getElementById("mobileMenu");
-    const searchButton = document.getElementById("searchButton");
-    const searchBar = document.getElementById("searchBar");
-    const searchIcon = document.getElementById("searchIcon");
-    const closeIcon = document.getElementById("closeIcon");
+  const menuButton = document.getElementById("menuButton");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const searchButton = document.getElementById("searchButton");
+  const searchBar = document.getElementById("searchBar");
+  const searchIcon = document.getElementById("searchIcon");
+  const closeIcon = document.getElementById("closeIcon");
 
-    let isMenuOpen = false;
-    let isSearchVisible = false;
+  let isMenuOpen = false;
+  let isSearchVisible = false;
 
-    const toggleMenu = () => {
-        isMenuOpen = !isMenuOpen;
-        mobileMenu.classList.toggle("hidden", !isMenuOpen);
-    };
+  const toggleMenu = () => {
+    isMenuOpen = !isMenuOpen;
+    mobileMenu.classList.toggle("hidden", !isMenuOpen);
+  };
 
-    const toggleSearch = () => {
-        isSearchVisible = !isSearchVisible;
-        searchBar.classList.toggle("hidden", !isSearchVisible);
-        searchIcon.classList.toggle("hidden", isSearchVisible);
-        closeIcon.classList.toggle("hidden", !isSearchVisible);
-    };
+  const toggleSearch = () => {
+    isSearchVisible = !isSearchVisible;
+    searchBar.classList.toggle("hidden", !isSearchVisible);
+    searchIcon.classList.toggle("hidden", isSearchVisible);
+    closeIcon.classList.toggle("hidden", !isSearchVisible);
+  };
 
-    menuButton.addEventListener("click", toggleMenu);
-    searchButton.addEventListener("click", toggleSearch);
+  menuButton.addEventListener("click", toggleMenu);
+  searchButton.addEventListener("click", toggleSearch);
 
-    // Cerrar menú y búsqueda al hacer clic fuera
-    document.addEventListener("click", (event) => {
-        if (
-            isMenuOpen &&
-            !mobileMenu.contains(event.target) &&
-            !menuButton.contains(event.target)
-        ) {
-            isMenuOpen = false;
-            mobileMenu.classList.add("hidden");
-        }
-        if (
-            isSearchVisible &&
-            !searchBar.contains(event.target) &&
-            !searchButton.contains(event.target)
-        ) {
-            isSearchVisible = false;
-            searchBar.classList.add("hidden");
-            searchIcon.classList.remove("hidden");
-            closeIcon.classList.add("hidden");
-        }
+  // Cerrar menú y búsqueda al hacer clic fuera
+  document.addEventListener("click", (event) => {
+    if (
+      isMenuOpen &&
+      !mobileMenu.contains(event.target) &&
+      !menuButton.contains(event.target)
+    ) {
+      isMenuOpen = false;
+      mobileMenu.classList.add("hidden");
+    }
+    if (
+      isSearchVisible &&
+      !searchBar.contains(event.target) &&
+      !searchButton.contains(event.target)
+    ) {
+      isSearchVisible = false;
+      searchBar.classList.add("hidden");
+      searchIcon.classList.remove("hidden");
+      closeIcon.classList.add("hidden");
+    }
+  });
+
+  // Cierra el menú cuando se hace clic en un enlace (para móviles)
+  mobileMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      isMenuOpen = false;
+      mobileMenu.classList.add("hidden");
     });
-
-    // Cierra el menú cuando se hace clic en un enlace (para móviles)
-    mobileMenu.querySelectorAll("a").forEach((link) => {
-        link.addEventListener("click", () => {
-            isMenuOpen = false;
-            mobileMenu.classList.add("hidden");
-        });
-    });
+  });
 </script>

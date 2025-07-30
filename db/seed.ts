@@ -11,7 +11,7 @@ const projectData = [
     githubLink: "https://github.com/xeland314/advent-calendar",
     demoLink: "https://xeland314.github.io/advent-calendar/",
     tags: ["React", "Frontend", "PixelArt", "TailwindCSS"],
-    image: "/tapa.svg",
+    image: "/images/advent_calendar_preview.png",
     isFeatured: true,
     // links: ["/projects/es/advent-calendar"], // Ya no necesitamos esto en la DB
   },

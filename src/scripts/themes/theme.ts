@@ -29,4 +29,8 @@ export function applyTheme(theme: Theme) {
     // Solo añade la clase si no es el tema "light"
     htmlElement.classList.add(theme);
   }
+
+  if (typeof localStorage !== "undefined") {
+    localStorage.setItem("theme", theme);
+  }
 }
