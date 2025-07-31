@@ -1,5 +1,6 @@
 ---
 import ThemeToggleButton from "../themes/ThemeToggleButton.astro";
+import Search from "../algolia/Search";
 ---
 
 <header
@@ -76,13 +77,9 @@ import ThemeToggleButton from "../themes/ThemeToggleButton.astro";
 
   <div
     id="searchBar"
-    class="w-full lg:w-1/2 absolute top-full left-1/2 transform -translate-x-1/2 z-40 bg-gray-900 text-white p-4 shadow-lg hidden"
+    class="w-full lg:w-1/2 absolute top-full left-1/2 transform -translate-x-1/2 z-100 bg-gray-900 text-white p-4 shadow-lg hidden rounded-b-2xl"
   >
-    <input
-      type="text"
-      placeholder="Buscar..."
-      class="w-full p-2 rounded bg-gray-800 text-white border border-gray-700"
-    />
+    <Search client:load />
   </div>
 </header>
 <script is:inline>
@@ -99,6 +96,10 @@ import ThemeToggleButton from "../themes/ThemeToggleButton.astro";
   const toggleMenu = () => {
     isMenuOpen = !isMenuOpen;
     mobileMenu.classList.toggle("hidden", !isMenuOpen);
+    // Asegurarse de que la búsqueda se cierra si el menú se abre
+    if (isMenuOpen && isSearchVisible) {
+      toggleSearch();
+    }
   };
 
   const toggleSearch = () => {
@@ -106,25 +107,44 @@ import ThemeToggleButton from "../themes/ThemeToggleButton.astro";
     searchBar.classList.toggle("hidden", !isSearchVisible);
     searchIcon.classList.toggle("hidden", isSearchVisible);
     closeIcon.classList.toggle("hidden", !isSearchVisible);
+    // Asegurarse de que el menú se cierra si la búsqueda se abre
+    if (isSearchVisible && isMenuOpen) {
+      toggleMenu(); // Llama a toggleMenu para cerrarlo
+    }
+    // Opcional: enfocar el input de búsqueda cuando la barra se hace visible
+    if (isSearchVisible) {
+      // Encontrar el input dentro del componente de búsqueda de Algolia
+      const algoliaSearchInput = searchBar.querySelector(
+        ".ais-SearchBox-input"
+      );
+      if (algoliaSearchInput) {
+        algoliaSearchInput.focus();
+      }
+    }
   };
 
-  menuButton.addEventListener("click", toggleMenu);
-  searchButton.addEventListener("click", toggleSearch);
+  if (menuButton) menuButton.addEventListener("click", toggleMenu);
+  if (searchButton) searchButton.addEventListener("click", toggleSearch);
 
   // Cerrar menú y búsqueda al hacer clic fuera
   document.addEventListener("click", (event) => {
+    const target = event.target; // Cast para evitar errores de tipo
     if (
       isMenuOpen &&
-      !mobileMenu.contains(event.target) &&
-      !menuButton.contains(event.target)
+      mobileMenu &&
+      !mobileMenu.contains(target) &&
+      menuButton &&
+      !menuButton.contains(target)
     ) {
       isMenuOpen = false;
       mobileMenu.classList.add("hidden");
     }
     if (
       isSearchVisible &&
-      !searchBar.contains(event.target) &&
-      !searchButton.contains(event.target)
+      searchBar &&
+      !searchBar.contains(target) &&
+      searchButton &&
+      !searchButton.contains(target)
     ) {
       isSearchVisible = false;
       searchBar.classList.add("hidden");
@@ -134,10 +154,19 @@ import ThemeToggleButton from "../themes/ThemeToggleButton.astro";
   });
 
   // Cierra el menú cuando se hace clic en un enlace (para móviles)
-  mobileMenu.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      isMenuOpen = false;
-      mobileMenu.classList.add("hidden");
+  if (mobileMenu) {
+    mobileMenu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        isMenuOpen = false;
+        mobileMenu.classList.add("hidden");
+      });
     });
+  }
+
+  // Cierra la búsqueda al presionar 'Escape'
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isSearchVisible) {
+      toggleSearch();
+    }
   });
 </script>
