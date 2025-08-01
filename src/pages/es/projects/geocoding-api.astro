@@ -1,0 +1,339 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadatos
+const title = "🌍 Geocoding API - Christopher Villamarín Projects";
+const description =
+  "Un servicio de geocodificación inversa basado en FastAPI que integra múltiples proveedores (Geoapify, HERE, Nominatim) para consultas dinámicas y flexibles.";
+const keywords = [
+  "Geocoding API",
+  "reverse geocoding",
+  "FastAPI",
+  "Python",
+  "Geoapify",
+  "HERE",
+  "Nominatim",
+  "API",
+  "Christopher Villamarín",
+  "xeland314",
+  "proyectos",
+  "Ecuador",
+  "caching",
+  "Redis",
+  "SQLite",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "🌍 Geocoding API - Proyecto de Christopher Villamarín";
+const ogDescription =
+  "Descubre una API de geocodificación inversa robusta y flexible construida con FastAPI que se conecta con múltiples servicios como Geoapify, HERE y Nominatim.";
+const ogUrl = "https://xeland314.github.io/es/projects/geocoding-api/";
+const ogImage = "https://xeland314.github.io/images/geocoding_api_preview.png";
+const imageAlt = "Vista previa del proyecto Geocoding API";
+const canonicalUrl = "https://xeland314.github.io/es/projects/geocoding-api/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  title={ogTitle}
+  description={ogDescription}
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  applicationName="Geocoding API"
+  robots={robots}
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">🌍 Geocoding API</h1>
+      <a href="https://deepwiki.com/xeland314/geocoding_api"
+        ><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a
+      >
+      <p class="text-lg">
+        Un servicio de <strong>geocodificación inversa basado en FastAPI</strong
+        > que integra múltiples proveedores, incluyendo <strong>Geoapify</strong
+        >, <strong>HERE</strong> y
+        <strong>Nominatim</strong>. Esta API permite consultas de
+        geolocalización dinámicas y flexibles, asegurando una configuración
+        automatizada basada en el entorno.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🔥 Características Clave</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Soporte multi-proveedor</strong>: Consulta diferentes
+          servicios de geocodificación dinámicamente.
+        </li>
+        <li>
+          <strong>Configuración automatizada</strong>: Detecta y registra los
+          geocodificadores usando variables de entorno.
+        </li>
+        <li>
+          <strong>Selección de proveedor flexible</strong>: Elige cualquier
+          proveedor disponible o usa los predeterminados.
+        </li>
+        <li>
+          <strong>Alto rendimiento con FastAPI</strong>: Construido con FastAPI
+          para escalabilidad y velocidad.
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        📝 Documentación Interactiva con FastAPI
+      </h2>
+      <p class="mb-4">
+        El proyecto utiliza <a
+          href="https://fastapi.tiangolo.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline">FastAPI</a
+        > para generar automáticamente la documentación interactiva de la API, siguiendo
+        el estándar <strong>OpenAPI</strong>. Esto facilita la exploración,
+        prueba y consumo de los endpoints. La documentación incluye
+        descripciones de cada endpoint, parámetros de entrada y modelos de
+        respuesta.
+      </p>
+      <div class="my-4 flex justify-center">
+        <img
+          src={"/images/geocoding-api-screen.png"}
+          alt="Documentación de la API generada por FastAPI"
+          class="rounded-lg shadow-lg"
+        />
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        📦 Arquitectura de Caché de Dos Niveles
+      </h2>
+      <p class="mb-4">
+        Para optimizar el rendimiento y reducir los costos de las llamadas a los
+        servicios externos de geocodificación, el proyecto implementa una
+        arquitectura de caché de dos niveles:
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Redis (Caché L1 - Velocidad)</strong>: Se utiliza para
+          almacenar las respuestas de manera temporal (24 horas) y así poder
+          servir las consultas más recientes de forma rápida.
+        </li>
+        <li>
+          <strong>SQLite (Caché L2 - Persistencia)</strong>: Actúa como una
+          caché a largo plazo. Si una consulta no se encuentra en Redis, se
+          busca en la base de datos SQLite y, si se encuentra, se "promueve" de
+          nuevo a Redis para futuras consultas rápidas.
+        </li>
+      </ul>
+      <div class="flex flex-col items-center">
+        <img
+          src={"/images/geocoding-api-architecture.jpg"}
+          alt="Arquitectura de Caché de Dos Niveles"
+          class="rounded-lg shadow-lg mt-4"
+          height="550px"
+          width="425px"  
+        />
+      </div>
+
+      <p class="mt-4">
+        Esta estrategia ayuda a ahorrar tokens y a minimizar las latencias en
+        las consultas repetidas.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⚙️ Instalación</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          <strong>Clona el repositorio</strong>:
+          <CodeBlock
+            code={`git clone https://github.com/xeland314/geocoding_api.git\ncd geocoding_api`}
+            language="bash"
+            client:load
+          />
+        </li>
+        <li>
+          <strong>Crea un entorno virtual</strong>:
+          <CodeBlock
+            code={`python -m venv .venv\nsource .venv/bin/activate`}
+            language="bash"
+            client:load
+          />
+        </li>
+        <li>
+          <strong>Instala las dependencias</strong>:
+          <CodeBlock
+            code={`pip install -r pyproject.toml`}
+            language="bash"
+            client:load
+          />
+        </li>
+      </ol>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🌍 Configuración de Entorno</h2>
+      <p class="mb-4">
+        Configura las claves de API usando variables de entorno:
+      </p>
+      <CodeBlock
+        code={`export GEOAPIFY_API_KEY="your_api_key"
+export HERE_API_KEY="your_api_key"
+export NOMINATIM_USER_AGENT="MyGeocoderApp/1.0"
+export NOMINATIM_REVERSER_REPLICA_URL_1="http://127.0.0.1:8088/reverse"
+export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
+        language="bash"
+        client:load
+      />
+      <p class="mt-4">
+        Alternativamente, usa el script `set_env.sh` proporcionado:
+      </p>
+      <CodeBlock
+        code={`source ./scripts/set_env.sh`}
+        language="bash"
+        client:load
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🚀 Ejecutando la API</h2>
+      <p class="mb-4">Inicia el servidor de FastAPI:</p>
+      <CodeBlock
+        code={`uvicorn main:app --host 0.0.0.0 --port 8000 --reload`}
+        language="bash"
+        client:load
+      />
+      <p class="mt-4">
+        Documentación interactiva de la API disponible en:
+        <br />
+        🔗 <a
+          href="http://127.0.0.1:8000/docs"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline">http://127.0.0.1:8000/docs</a
+        >
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📡 Endpoints de la API</h2>
+      <h3 class="text-2xl font-semibold mb-2">🔎 Geocodificación Inversa</h3>
+      <p class="mb-4">
+        Realiza geocodificación inversa especificando latitud, longitud y un
+        proveedor opcional:
+      </p>
+      <CodeBlock
+        code={`curl -X GET "http://127.0.0.1:8000/reverse-geocode?latitude=40.748817&longitude=-73.985428&platform=geoapify"`}
+        language="bash"
+        client:load
+      />
+      <p class="mt-4">
+        <strong>Respuesta de ejemplo</strong>:
+      </p>
+      <CodeBlock
+        code={`{
+  "success": true,
+  "data": [
+    {
+      "formatted_address": "Empire State Building, 350 5th Ave, New York, NY, USA",
+      "postcode": "10118",
+      "country": "US",
+      "state": "New York",
+      "district": "Manhattan",
+      "settlement": "New York",
+      "street": "5th Ave",
+      "house": "350"
+    }
+  ],
+  "error": null
+}`}
+        language="json"
+        client:load
+      />
+
+      <h3 class="text-2xl font-semibold mt-8 mb-2">
+        📜 Listar Proveedores Disponibles
+      </h3>
+      <p class="mb-4">
+        Recupera la lista de geocodificadores registrados dinámicamente:
+      </p>
+      <CodeBlock
+        code={`curl -X GET "http://127.0.0.1:8000/geocoders"`}
+        language="bash"
+        client:load
+      />
+      <p class="mt-4">
+        <strong>Respuesta de ejemplo</strong>:
+      </p>
+      <CodeBlock
+        code={`{
+  "geocoders": [
+    {
+      "name": "GEOAPIFY",
+      "url": "https://api.geoapify.com/v1/geocode/reverse"
+    },
+    {
+      "name": "HERE",
+      "url": "https://revgeocode.search.hereapi.com/v1/revgeocode"
+    },
+    {
+      "name": "NOMINATIM",
+      "url": "https://nominatim.openstreetmap.org/reverse"
+    },
+    {
+      "name": "NOMINATIM_REPLICA_1",
+      "url": "http://127.0.0.1:8088/reverse"
+    }
+  ]
+}`}
+        language="json"
+        client:load
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📄 Licencia</h2>
+      <p class="mb-4">
+        Este proyecto está bajo la licencia <strong
+          >GNU General Public License v3 (GPLv3)</strong
+        >. Eres libre de <strong>usar, modificar y distribuir</strong> este proyecto
+        bajo los términos de la licencia GPLv3.
+      </p>
+      <p>
+        Consulta el archivo <a
+          href="https://github.com/xeland314/geocoding_api/blob/main/LICENSE"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline">LICENSE</a
+        > para más detalles.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        ⚠️ Descargo de Responsabilidad
+      </h2>
+      <p>
+        <strong class="font-bold"
+          >Este proyecto integra servicios de geocodificación de terceros</strong
+        >
+        (<strong>HERE</strong>, <strong>Geoapify</strong>, <strong
+          >Nominatim</strong
+        >). Los usuarios deben cumplir con los
+        <strong>términos de servicio</strong> y los <strong
+          >límites de uso</strong
+        > de cada proveedor. El autor de este proyecto <strong
+          >no avala ni facilita</strong
+        > ninguna violación de los acuerdos de API externos.
+      </p>
+    </section>
+  </div>
+</ProjectLayout>
