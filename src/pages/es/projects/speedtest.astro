@@ -23,8 +23,7 @@ const authors = "Christopher Alexander Villamarín Pila";
 const ogTitle = "Execution Time Analysis - Proyecto de Christopher Villamarín";
 const ogDescription =
   "Un proyecto para analizar tiempos de ejecución en sistemas Unix utilizando Bash y AWK. Ideal para comprender el rendimiento de comandos y programas.";
-const ogUrl =
-  "https://xeland314.github.io/es/projects/speedtest/";
+const ogUrl = "https://xeland314.github.io/es/projects/speedtest/";
 const ogImage =
   "https://xeland314.github.io/images/execution_time_analysis_preview.png";
 const imageAlt = "Vista previa del proyecto Execution Time Analysis";
@@ -116,9 +115,8 @@ const robots = "index, follow";
         iteración del comando, junto con el promedio y la desviación estándar de
         los tiempos de ejecución:
       </p>
-      <pre
-        class="p-4 rounded-md bg-gray-800 text-white overflow-x-auto">
-<code>{`Data:
+      <CodeBlock
+        code={`Data:
 -------------------------
 real      user      sys
 2.3       1.2       0.4
@@ -132,7 +130,8 @@ Standard deviation:
     real    0.1
     user    0.05
     sys     0.05`}
-    </code></pre>
+        client:load
+      />
     </section>
 
     <section class="mb-8">
