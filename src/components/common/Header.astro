@@ -1,6 +1,6 @@
 ---
+import SearchbarWrapper from "../algolia/Search";
 import ThemeToggleButton from "../themes/ThemeToggleButton.tsx";
-import Search from "../algolia/Search";
 ---
 
 <header
@@ -8,127 +8,60 @@ import Search from "../algolia/Search";
   id="main-header"
 >
   <nav class="flex justify-between items-center relative p-3">
-    <div class="flex items-center">
+    <div class="flex items-center justify-between">
       <a href="/" class="text-lg font-bold hover:text-blue-500"> xeland314 </a>
     </div>
+    <div class="flex flex-row">
+      <SearchbarWrapper client:load />
 
-    <button
-      id="searchButton"
-      class="text-white hover:text-blue-500 ml-auto"
-      aria-label="Abrir búsqueda"
-    >
-      <svg
-        id="searchIcon"
-        class="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-        ><path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg
-      >
-      <svg
-        id="closeIcon"
-        class="w-6 h-6 hidden"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-        ><path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"></path></svg
-      >
-    </button>
+      <div class="md:hidden">
+        <button
+          id="menuButton"
+          class="text-white focus:outline-hidden pr-4 pl-4 pt-2 pb-2 transition duration-300 ease-in-out hover:bg-gray-700"
+          type="button"
+        >
+          ☰
+        </button>
+      </div>
 
-    <div class="md:hidden">
-      <button
-        id="menuButton"
-        class="text-white focus:outline-hidden pr-4 pl-4 pt-2 pb-2 transition duration-300 ease-in-out hover:bg-gray-700"
-        type="button"
+      <ul
+        id="mobileMenu"
+        class="absolute z-1000 top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out hidden md:block"
       >
-        ☰
-      </button>
+        <li>
+          <a href="/#about-me" class="block py-2 px-4 hover:bg-gray-700"
+            >Acerca de mí</a
+          >
+        </li>
+        <li>
+          <a href="/#projects" class="block py-2 px-4 hover:bg-gray-700"
+            >Proyectos</a
+          >
+        </li>
+        <li class="flex items-center justify-center py-2">
+          <ThemeToggleButton client:load />
+        </li>
+      </ul>
     </div>
-
-    <ul
-      id="mobileMenu"
-      class="absolute z-1000 top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out hidden md:block"
-    >
-      <li>
-        <a href="/#about-me" class="block py-2 px-4 hover:bg-gray-700"
-          >Acerca de mí</a
-        >
-      </li>
-      <li>
-        <a href="/#projects" class="block py-2 px-4 hover:bg-gray-700"
-          >Proyectos</a
-        >
-      </li>
-      <li class="flex items-center justify-center py-2">
-        <ThemeToggleButton client:load/>
-      </li>
-    </ul>
   </nav>
-
-  <div
-    id="searchBar"
-    class="w-full lg:w-1/2 absolute top-full left-1/2 transform -translate-x-1/2 z-100 bg-gray-900 text-white p-4 shadow-lg hidden rounded-b-2xl"
-  >
-    <Search client:load />
-  </div>
 </header>
 <script is:inline>
+  // Solo conservamos la lógica del menú móvil
   const menuButton = document.getElementById("menuButton");
   const mobileMenu = document.getElementById("mobileMenu");
-  const searchButton = document.getElementById("searchButton");
-  const searchBar = document.getElementById("searchBar");
-  const searchIcon = document.getElementById("searchIcon");
-  const closeIcon = document.getElementById("closeIcon");
 
   let isMenuOpen = false;
-  let isSearchVisible = false;
 
   const toggleMenu = () => {
     isMenuOpen = !isMenuOpen;
     mobileMenu.classList.toggle("hidden", !isMenuOpen);
-    // Asegurarse de que la búsqueda se cierra si el menú se abre
-    if (isMenuOpen && isSearchVisible) {
-      toggleSearch();
-    }
-  };
-
-  const toggleSearch = () => {
-    isSearchVisible = !isSearchVisible;
-    searchBar.classList.toggle("hidden", !isSearchVisible);
-    searchIcon.classList.toggle("hidden", isSearchVisible);
-    closeIcon.classList.toggle("hidden", !isSearchVisible);
-    // Asegurarse de que el menú se cierra si la búsqueda se abre
-    if (isSearchVisible && isMenuOpen) {
-      toggleMenu(); // Llama a toggleMenu para cerrarlo
-    }
-    // Opcional: enfocar el input de búsqueda cuando la barra se hace visible
-    if (isSearchVisible) {
-      // Encontrar el input dentro del componente de búsqueda de Algolia
-      const algoliaSearchInput = searchBar.querySelector(
-        ".ais-SearchBox-input"
-      );
-      if (algoliaSearchInput) {
-        algoliaSearchInput.focus();
-      }
-    }
   };
 
   if (menuButton) menuButton.addEventListener("click", toggleMenu);
-  if (searchButton) searchButton.addEventListener("click", toggleSearch);
 
-  // Cerrar menú y búsqueda al hacer clic fuera
+  // Cierra menú al hacer clic fuera
   document.addEventListener("click", (event) => {
-    const target = event.target; // Cast para evitar errores de tipo
+    const target = event.target;
     if (
       isMenuOpen &&
       mobileMenu &&
@@ -138,18 +71,6 @@ import Search from "../algolia/Search";
     ) {
       isMenuOpen = false;
       mobileMenu.classList.add("hidden");
-    }
-    if (
-      isSearchVisible &&
-      searchBar &&
-      !searchBar.contains(target) &&
-      searchButton &&
-      !searchButton.contains(target)
-    ) {
-      isSearchVisible = false;
-      searchBar.classList.add("hidden");
-      searchIcon.classList.remove("hidden");
-      closeIcon.classList.add("hidden");
     }
   });
 
@@ -162,11 +83,4 @@ import Search from "../algolia/Search";
       });
     });
   }
-
-  // Cierra la búsqueda al presionar 'Escape'
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && isSearchVisible) {
-      toggleSearch();
-    }
-  });
 </script>
