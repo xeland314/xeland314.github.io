@@ -150,7 +150,7 @@ const projectData = [
     shortDescription: "Estimador de proyectos de software con IA y Firebase.",
     githubLink: "https://github.com/xeland314/codecraft-estimator",
     tags: ["IA", "Vibe Coding", "Firebase Studio", "TypeScript", "Next.js"],
-    image: "/images/codecraft-estimator.png",
+    image: "/images/codecraft_estimator_preview.png",
     isFeatured: true,
   },
   {

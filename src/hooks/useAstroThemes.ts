@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 
-import { ALL_THEMES, DEFAULT_THEME, type Theme } from "../scripts/themes/theme";
+type Theme = "light" | "dark" | "blue" | "orange" | "green" | string;
+const ALL_THEMES: Theme[] = ["dark", "blue", "orange", "green", "light"];
+const DEFAULT_THEME: Theme = "dark";
 
 // Función auxiliar para obtener el tema actual del DOM.
 // NO debe ejecutarse directamente al inicializar el módulo.
