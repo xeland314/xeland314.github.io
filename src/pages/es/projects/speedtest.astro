@@ -1,0 +1,168 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadatos
+const title = "Execution Time Analysis - Christopher Villamarín Projects";
+const description =
+  "Explora Execution Time Analysis, un proyecto diseñado para analizar tiempos de ejecución en sistemas Unix utilizando Bash y AWK. Calcula promedios y desviaciones estándar de tiempo real, usuario y sistema.";
+const keywords = [
+  "Execution Time Analysis",
+  "Unix",
+  "Bash",
+  "AWK",
+  "tiempos de ejecución",
+  "análisis de rendimiento",
+  "desarrollo backend",
+  "Christopher Villamarín",
+  "xeland314",
+  "proyectos",
+  "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "Execution Time Analysis - Proyecto de Christopher Villamarín";
+const ogDescription =
+  "Un proyecto para analizar tiempos de ejecución en sistemas Unix utilizando Bash y AWK. Ideal para comprender el rendimiento de comandos y programas.";
+const ogUrl =
+  "https://xeland314.github.io/es/projects/speedtest/";
+const ogImage =
+  "https://xeland314.github.io/images/execution_time_analysis_preview.png";
+const imageAlt = "Vista previa del proyecto Execution Time Analysis";
+const canonicalUrl = "https://xeland314.github.io/es/projects/speedtest/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  title={ogTitle}
+  description={ogDescription}
+  url={ogUrl}
+  image={ogImage}
+  robots={robots}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  applicationName="Execution Time Analysis"
+  '
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">⏱️ Execution Time Analysis</h1>
+      <p class="text-lg">
+        Este proyecto está diseñado para analizar los tiempos de ejecución de
+        comandos o programas en sistemas Unix, calculando estadísticas clave
+        como el promedio y la desviación estándar del tiempo real, usuario y del
+        sistema.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🔍 Descripción del proyecto</h2>
+      <p class="mb-4">
+        El programa utiliza una combinación de Bash y AWK para recopilar datos
+        sobre el tiempo de ejecución de un comando durante múltiples
+        iteraciones. Estos tiempos se analizan para proporcionar información
+        detallada sobre:
+      </p>
+      <ul class="list-disc pl-6 space-y-4">
+        <li>
+          <strong>Tiempo real:</strong> El tiempo total que tomó la ejecución.
+        </li>
+        <li>
+          <strong>Tiempo de usuario:</strong> El tiempo que el procesador dedicó
+          a ejecutar instrucciones de usuario.
+        </li>
+        <li>
+          <strong>Tiempo del sistema:</strong> El tiempo dedicado por el kernel del
+          sistema operativo.
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🛠️ Cómo funciona</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          <strong>Recolectar datos:</strong>
+          Un script en Bash ejecuta el comando proporcionado 10 veces usando <code
+            >/usr/bin/time</code
+          >, y guarda los resultados en un archivo temporal llamado <code
+            >/tmp/exetime</code
+          >.
+        </li>
+        <li>
+          <strong>Procesamiento de datos:</strong>
+          Un script en AWK (<code>calc.awk</code>) lee el archivo de resultados
+          y calcula:
+          <ul class="list-disc pl-6">
+            <li>Promedio del tiempo real, usuario y del sistema.</li>
+            <li>Desviación estándar de cada tiempo.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Imprimir estadísticas:</strong>
+          Los resultados se imprimen en un formato legible con información sobre
+          los tiempos y sus estadísticas.
+        </li>
+      </ol>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📋 Resultados esperados</h2>
+      <p class="mb-4">
+        Al ejecutar el programa, se obtiene un desglose detallado de cada
+        iteración del comando, junto con el promedio y la desviación estándar de
+        los tiempos de ejecución:
+      </p>
+      <pre
+        class="p-4 rounded-md bg-gray-800 text-white overflow-x-auto">
+<code>{`Data:
+-------------------------
+real      user      sys
+2.3       1.2       0.4
+2.5       1.3       0.5
+-------------------------
+Average:
+    real    2.4
+    user    1.25
+    sys     0.45
+Standard deviation:
+    real    0.1
+    user    0.05
+    sys     0.05`}
+    </code></pre>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⚙️ Requisitos</h2>
+      <ul class="list-disc pl-6 space-y-4">
+        <li>
+          Instalar el comando <code>time</code>:
+          <br /> Para sistemas Debian/Ubuntu: <code
+            >sudo apt-get install time</code
+          >
+        </li>
+        <li>Un entorno Unix compatible con Bash y AWK.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🚀 Cómo ejecutar</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          Guarda el archivo de AWK (<code>calc.awk</code>) en tu sistema.
+        </li>
+        <li>
+          Ejecuta el script Bash con el comando que deseas analizar:
+          <CodeBlock code="bash speedtest.sh [comando]" client:load />
+        </li>
+        <li>
+          Revisa las estadísticas calculadas por AWK:
+          <CodeBlock code="awk -f calc.awk /tmp/exetime" client:load />
+        </li>
+      </ol>
+    </section>
+  </div>
+</ProjectLayout>
