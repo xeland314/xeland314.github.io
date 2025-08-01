@@ -1,6 +1,6 @@
 ---
 import SearchbarWrapper from "../algolia/Search";
-import ThemeToggleButton from "../themes/ThemeToggleButton.tsx";
+import MobileMenuWrapper from "./MobileMenuWrapper";
 ---
 
 <header
@@ -11,76 +11,9 @@ import ThemeToggleButton from "../themes/ThemeToggleButton.tsx";
     <div class="flex items-center justify-between">
       <a href="/" class="text-lg font-bold hover:text-blue-500"> xeland314 </a>
     </div>
-    <div class="flex flex-row">
+    <div class="flex flex-row gap-x-4">
       <SearchbarWrapper client:load />
-
-      <div class="md:hidden">
-        <button
-          id="menuButton"
-          class="text-white focus:outline-hidden pr-4 pl-4 pt-2 pb-2 transition duration-300 ease-in-out hover:bg-gray-700"
-          type="button"
-        >
-          ☰
-        </button>
-      </div>
-
-      <ul
-        id="mobileMenu"
-        class="absolute z-1000 top-full left-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-4 transition-all duration-300 ease-in-out hidden md:block"
-      >
-        <li>
-          <a href="/#about-me" class="block py-2 px-4 hover:bg-gray-700"
-            >Acerca de mí</a
-          >
-        </li>
-        <li>
-          <a href="/#projects" class="block py-2 px-4 hover:bg-gray-700"
-            >Proyectos</a
-          >
-        </li>
-        <li class="flex items-center justify-center py-2">
-          <ThemeToggleButton client:load />
-        </li>
-      </ul>
+      <MobileMenuWrapper client:load />
     </div>
   </nav>
 </header>
-<script is:inline>
-  // Solo conservamos la lógica del menú móvil
-  const menuButton = document.getElementById("menuButton");
-  const mobileMenu = document.getElementById("mobileMenu");
-
-  let isMenuOpen = false;
-
-  const toggleMenu = () => {
-    isMenuOpen = !isMenuOpen;
-    mobileMenu.classList.toggle("hidden", !isMenuOpen);
-  };
-
-  if (menuButton) menuButton.addEventListener("click", toggleMenu);
-
-  // Cierra menú al hacer clic fuera
-  document.addEventListener("click", (event) => {
-    const target = event.target;
-    if (
-      isMenuOpen &&
-      mobileMenu &&
-      !mobileMenu.contains(target) &&
-      menuButton &&
-      !menuButton.contains(target)
-    ) {
-      isMenuOpen = false;
-      mobileMenu.classList.add("hidden");
-    }
-  });
-
-  // Cierra el menú cuando se hace clic en un enlace (para móviles)
-  if (mobileMenu) {
-    mobileMenu.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        isMenuOpen = false;
-        mobileMenu.classList.add("hidden");
-      });
-    });
-  }
-</script>
