@@ -13,20 +13,6 @@ const projectData = [
     tags: ["React", "Frontend", "PixelArt", "TailwindCSS"],
     image: "/images/advent_calendar_preview.png",
     isFeatured: true,
-    // links: ["/projects/es/advent-calendar"], // Ya no necesitamos esto en la DB
-  },
-  {
-    title: "URL Shortening Service",
-    slug: "url-shortening-service",
-    description:
-      "Desarrolla una API RESTful para acortar URLs con operaciones CRUD y estadísticas de acceso. Puede incluir un frontend minimalista para interacción.",
-    shortDescription: "API para acortar URLs con estadísticas de acceso.",
-    githubLink: "https://github.com/xeland314/urlshortener",
-    tags: ["API", "RESTful", "Backend"],
-    image:
-      "https://assets.roadmap.sh/guest/url-shortener-architecture-u72mu.png",
-    isFeatured: true,
-    // links: ["/projects/en/url-shortening-service"],
   },
   {
     title: "Tetris",
@@ -38,7 +24,7 @@ const projectData = [
     demoLink: "https://github.com/xeland314/PoliTetris/releases",
     tags: ["Java", "Swing"],
     image: "/images/tetris.jpg",
-    // links: ["/projects/es/tetris"],
+    isFeatured: true,
   },
   {
     title: "Chat Analyzer",
@@ -48,8 +34,7 @@ const projectData = [
     shortDescription: "Analiza chats de WhatsApp con Python.",
     githubLink: "https://github.com/xeland314/chat-analyzer",
     tags: ["Python", "WhatsApp", "Nltk", "Cli"],
-    image: undefined, // Si no hay imagen, puedes poner undefined o null
-    // links: ["/projects/es/chat-analyzer"],
+    image: undefined,
   },
   {
     title: "Memory Game",
@@ -61,7 +46,6 @@ const projectData = [
     demoLink: "https://xeland314.github.io/memory-game/",
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/memorygame.png",
-    // links: ["/projects/es/memory-game"],
   },
   {
     title: "Encriptador de Texto",
@@ -73,7 +57,6 @@ const projectData = [
     demoLink: "https://xeland314.github.io/encriptador-de-texto/",
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/encriptador.png",
-    // links: ["/projects/es/encriptador-de-texto"],
   },
   {
     title: "Analizador-lexico",
@@ -84,7 +67,6 @@ const projectData = [
     githubLink: "https://github.com/xeland314/Analizador-lexico",
     tags: ["C", "Compiladores", "Expresiones Regulares", "Golang"],
     image: "/images/analizador.png",
-    // links: ["/projects/es/analizador-lexico"],
   },
   {
     title: "SpeedTest",
@@ -95,7 +77,6 @@ const projectData = [
     githubLink: "https://github.com/xeland314/speedtest",
     tags: ["Bash", "Performance", "Awk"],
     image: undefined,
-    // links: ["/projects/es/speedtest"],
   },
   {
     title: "freqtables",
@@ -106,7 +87,6 @@ const projectData = [
     githubLink: "https://github.com/xeland314/freqtables",
     tags: ["Python", "Estadisticas", "TablasDeFrecuencias"],
     image: "/images/freqtables.png",
-    // links: ["/projects/es/freqtables"],
   },
   {
     title: "objects-in-C",
@@ -117,7 +97,6 @@ const projectData = [
     githubLink: "https://github.com/xeland314/objects-in-C",
     tags: ["C", "Oop", "Encapsulamiento", "Strings"],
     image: undefined,
-    // links: ["/projects/es/objects-in-c"],
   },
   {
     title: "Conversor de Unidades",
@@ -128,7 +107,7 @@ const projectData = [
     githubLink: "https://github.com/xeland314/conversor-de-unidades",
     tags: ["Java", "Swing", "Conversion De Unidades"],
     image: "/images/conversor.png",
-    // links: ["/projects/es/conversor-de-unidades"],
+    isFeatured: true,
   },
   {
     title: "Simplex",
@@ -139,7 +118,60 @@ const projectData = [
     githubLink: "https://github.com/xeland314/simplex",
     tags: ["Python", "Optimizacion", "Simplex", "Jupyter"],
     image: undefined,
-    // links: ["/projects/es/simplex"],
+  },
+  {
+    title: "Buscador de Ubicaciones - Ecuador",
+    slug: "autocompleter",
+    description:
+      "Un buscador de ubicaciones para Ecuador con autocompletado avanzado. Utiliza un servidor Nominatim local, caché con Redis y un sistema de 'refuerzo' para aprender de las selecciones del usuario y mejorar la relevancia de los resultados.",
+    shortDescription: "Buscador de ubicaciones en Ecuador con IA y caché.",
+    githubLink: "https://github.com/xeland314/autocompleter",
+    tags: ["FastAPI", "Python", "Nominatim", "Redis", "Reinforcement Learning"],
+    image: "/images/autocompleter-screen2.png",
+    isFeatured: true,
+  },
+  {
+    title: "URL Shortener",
+    slug: "urlshortener",
+    description:
+      "Servicio de acortador de URLs completo y eficiente, construido con Django, Django REST Framework y HTMX. Permite crear URLs públicas, privadas (con token) y protegidas con contraseña, con gestión de usuarios y tareas asíncronas con Celery.",
+    shortDescription:
+      "Acortador de URLs con Django y diferentes tipos de acceso.",
+    githubLink: "https://github.com/xeland314/urlshortener",
+    tags: ["Django", "DRF", "Python", "Celery", "HTMX", "Redis"],
+    image: "/images/shortener-screen.png",
+    isFeatured: true,
+  },
+  {
+    title: "CodeCraft Estimator",
+    slug: "codecraft-estimator",
+    description:
+      "Estimador de proyectos de software impulsado por IA, creado con Vibe Coding y Firebase Studio. La herramienta calcula el tiempo y costo de proyectos, gestiona riesgos y permite el aumento de tareas, basándose en la fórmula de estimación de tres puntos.",
+    shortDescription: "Estimador de proyectos de software con IA y Firebase.",
+    githubLink: "https://github.com/xeland314/codecraft-estimator",
+    tags: ["IA", "Vibe Coding", "Firebase Studio", "TypeScript", "Next.js"],
+    image: "/images/codecraft-estimator.png",
+    isFeatured: true,
+  },
+  {
+    title: "Geocoding API",
+    slug: "geocoding-api",
+    description:
+      "Un wrapper de API de geocodificación que integra múltiples servicios (Nominatim, Here, Geoapify) bajo una arquitectura de doble caché. Utiliza Redis para las consultas recientes (cache de corto plazo) y SQLite para el almacenamiento de largo plazo, optimizando el rendimiento y reduciendo las peticiones externas.",
+    shortDescription: "Wrapper de geocodificación con doble caché en FastAPI.",
+    githubLink: "https://github.com/xeland314/geocoding-api",
+    tags: [
+      "FastAPI",
+      "Python",
+      "Geocodificación",
+      "Nominatim",
+      "Here API",
+      "Geoapify",
+      "Redis",
+      "SQLite",
+    ],
+    image: "/images/geocoding-api-screen.png",
+    isFeatured: true,
   },
 ];
 

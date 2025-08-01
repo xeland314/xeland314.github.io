@@ -1,0 +1,256 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadatos
+const title = "✨ CodeCraft Estimator - Christopher Villamarín Projects";
+const description =
+  "Un estimador de proyectos de software impulsado por IA, desarrollado con Vibe Coding y Firebase Studio, que calcula tiempos y costos, gestiona riesgos y permite el aumento de tareas.";
+const keywords = [
+  "CodeCraft Estimator",
+  "estimación de proyectos",
+  "IA",
+  "Vibe Coding",
+  "Firebase Studio",
+  "gestión de requisitos",
+  "cálculo de tiempo",
+  "riesgos de proyecto",
+  "costo de software",
+  "Christopher Villamarín",
+  "xeland314",
+  "proyectos",
+  "inteligencia artificial",
+  "metodología ágil",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "✨ CodeCraft Estimator - Proyecto de Christopher Villamarín";
+const ogDescription =
+  "Descubre CodeCraft Estimator, una herramienta innovadora para la estimación de proyectos de software, desarrollada con IA y Vibe Coding, que optimiza la planificación y el presupuesto.";
+const ogUrl = "https://xeland314.github.io/es/projects/codecraft-estimator/";
+const ogImage =
+  "https://xeland314.github.io/images/codecraft_estimator_preview.png";
+const imageAlt = "Vista previa del proyecto CodeCraft Estimator";
+const robots = "index, follow";
+const canonicalUrl =
+  "https://xeland314.github.io/es/projects/codecraft-estimator/";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  title={ogTitle}
+  description={ogDescription}
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  applicationName="CodeCraft Estimator"
+  robots={robots}
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">✨ CodeCraft Estimator</h1>
+      <p class="text-lg">
+        Un estimador de proyectos de software impulsado por IA, diseñado para
+        optimizar el proceso de planificación y presupuesto.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        💡 Origen del Proyecto y Vibe Coding
+      </h2>
+      <p class="mb-4">
+        Este proyecto fue concebido y desarrollado utilizando la metodología
+        <string>Vibe Coding con Firebase Studio</string>, una aproximación
+        innovadora que combina la generación de código asistida por IA con un
+        entorno de desarrollo integrado. La idea central de la estimación de
+        tiempos, particularmente la fórmula del promedio ponderado para tareas,
+        fue inspirada por un video de Luisina de TodoCode, utilizando la misma
+        lógica de cálculo que ella presenta en su Excel.
+      </p>
+      <p class="mb-4">
+        <a
+          href="https://youtu.be/nrTedUJMuhI"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline"
+          >Ver video de Luisina de TodoCode aquí:</a
+        >
+      </p>
+      <div class="flex flex-col items-center justify-center mb-6">
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/nrTedUJMuhI?si=R3DNU1wiPkQ5m_hW"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+
+      <h3 class="text-2xl font-semibold mt-6 mb-2">
+        Desarrollo con Vibe Coding y Firebase Studio
+      </h3>
+      <p class="mb-4">
+        Vibe Coding con Firebase Studio permite una interacción fluida con un
+        modelo de lenguaje grande (LLM) para generar y refactorizar código, lo
+        que acelera significativamente el proceso de desarrollo. Sin embargo,
+        esta metodología presenta sus propios desafíos:
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Revisión Constante de Cambios:</strong> Es crucial monitorear continuamente
+          el código generado por la IA, ya que puede introducir soluciones inesperadas
+          o no óptimas.
+        </li>
+        <li>
+          <strong>Corrección de Errores de Tipado:</strong> A pesar de usar TypeScript,
+          la IA a veces genera código con errores de tipado que requieren corrección
+          manual.
+        </li>
+        <li>
+          <strong>Seguimiento de Cambios de la IA:</strong> Mantener un registro
+          claro de qué partes del código fueron generadas por la IA y cuáles fueron
+          modificadas manualmente es esencial para el control de versiones y la depuración.
+        </li>
+        <li>
+          <strong>Correcciones Manuales Pequeñas:</strong> A menudo se requieren
+          ajustes finos y correcciones manuales para adaptar el código generado a
+          la lógica específica del negocio o a las convenciones del proyecto.
+        </li>
+        <li>
+          <strong>Errores de <code>npm build</code> y Despliegue:</strong> La integración y
+          compilación final pueden presentar desafíos, requiriendo depuración adicional
+          para resolver errores de construcción y asegurar un despliegue exitoso.
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        ✨ Características Principales
+      </h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Generación de Requisitos con IA:</strong> Genera documentos de
+          requisitos de software basados en la entrada del usuario, incorporando
+          mejores prácticas para requisitos funcionales, no funcionales, seguridad
+          y despliegue. El LLM decide qué detalles incorporar o omitir según el prompt.
+          <img
+            src="/images/codecraft_estimator_preview.png"
+            alt="Generación de requisitos con IA"
+            class="w-full max-w-2xl mx-auto my-4 rounded-lg shadow-lg"
+          />
+        </li>
+        <li>
+          <strong>Gestión de Módulos:</strong> Permite a los usuarios crear, nombrar
+          y organizar módulos de proyecto individuales para estructurar el proceso
+          de estimación.
+          <img
+            src="/images/codecraft_estimator_preview2.png"
+            alt="Gestión de módulos"
+            class="w-full max-w-2xl mx-auto my-4 rounded-lg shadow-lg"
+          />
+        </li>
+        <li>
+          <strong>Entrada Manual de Tareas:</strong> Habilita la entrada manual de
+          tareas dentro de cada módulo, incluyendo estimaciones de tiempo optimistas,
+          pesimistas y más probables. Todas las estimaciones se almacenan como tipos
+          Decimal y pueden ingresarse en minutos, horas o días.
+        </li>
+        <li>
+          <strong>Cálculo de Tiempo Automatizado:</strong> Calcula el tiempo promedio
+          ponderado para cada tarea usando la fórmula:
+          <ul class="list-disc pl-6 space-y-2">
+            <li>$$t_p$$ Tiempo Pesimista (estimación más alta)</li>
+            <li>$$t_m$$ Tiempo Más Probable (estimación más realista)</li>
+            <li>$$t_o$$ Tiempo Optimista (estimación más baja)</li>
+          </ul>
+          $$(t_p + 4 \times t_m + t_o) / 6$$ Muestra esta estimación en pantalla.
+        </li>
+        <li>
+          <strong>Ajustes de Riesgo y Complejidad:</strong> Proporciona una sección
+          para ingresar posibles riesgos del proyecto (con su estimación de tiempo
+          asociada) y un multiplicador de esfuerzo general para consideraciones como
+          la seguridad o la complejidad del despliegue.
+        </li>
+        <li>
+          <strong>Conversión de Tiempo a Costo:</strong> Convierte dinámicamente
+          el tiempo total estimado a un costo de proyecto basado en una tarifa por
+          hora definible por el usuario. Los cambios se reflejan reactivamente cuando
+          se ajusta cualquiera de las estimaciones de tiempo.
+          <img
+            src="/images/codecraft_estimator_preview3.png"
+            alt="Conversión de tiempo a costo"
+            class="w-full max-w-2xl mx-auto my-4 rounded-lg shadow-lg"
+          />
+        </li>
+        <li>
+          <strong>Aumento de Tareas con IA:</strong> Permite al usuario ingresar
+          un prompt para añadir más tareas al módulo actual y ajustar los tiempos
+          de las tareas. El LLM decide si las sugerencias de tareas pueden mejorar
+          la entrega del proyecto.
+        </li>
+        <li>
+          <strong>Exportación de Estimaciones:</strong> Permite exportar las estimaciones
+          de tiempo y costo a un archivo JSON para su uso posterior o para compartir
+          con otros interesados.
+        </li>
+        <li>
+          <strong>Estadísticas y gráficas:</strong> Genera estadísticas visuales
+          del proyecto, incluyendo gráficos de barras y líneas que muestran la distribución
+          del tiempo estimado por módulo.
+          <img
+            src="/images/codecraft_estimator_preview4.png"
+            alt="Conversión de tiempo a costo"
+            class="w-full max-w-2xl mx-auto my-4 rounded-lg shadow-lg"
+          />
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        ✅ Recomendaciones para Futuras Implementaciones con Vibe Coding
+      </h2>
+      <p class="mb-4">
+        Para maximizar la eficiencia y la calidad en futuros proyectos
+        utilizando Vibe Coding, se sugieren las siguientes prácticas:
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Definir una Arquitectura Clara de Antemano:</strong> Antes de iniciar
+          el Vibe Coding, tener una arquitectura de alto nivel bien definida (componentes,
+          flujo de datos, responsabilidades) puede guiar mejor a la IA y reducir
+          la necesidad de refactorizaciones mayores.
+        </li>
+        <li>
+          <strong>Mantener un <code>changelog.md</code> Detallado:</strong> Además
+          del control de versiones con Git, un archivo <code>changelog.md</code>
+          dedicado puede servir como un registro manual de los cambios significativos
+          realizados por la IA y las intervenciones humanas, facilitando la depuración
+          y el entendimiento del historial del proyecto.
+        </li>
+        <li>
+          <strong>Establecer Pruebas Robustas desde el Inicio:</strong> Implementar
+          pruebas unitarias y de integración tempranamente en el ciclo de desarrollo
+          ayuda a identificar y corregir errores introducidos por la IA rápidamente,
+          asegurando la consistencia y fiabilidad del código.
+        </li>
+        <li>
+          <strong>Iterar en Pequeños Pasos:</strong> Realizar cambios incrementales
+          y probarlos con frecuencia puede ayudar a aislar problemas y entender mejor
+          cómo la IA interpreta y genera código.
+        </li>
+        <li>
+          <strong>Entender las Capacidades y Limitaciones del LLM:</strong> Familiarizarse
+          con las fortalezas y debilidades específicas del LLM utilizado puede ayudar
+          a formular prompts más efectivos y a anticipar posibles áreas problemáticas.
+        </li>
+      </ul>
+    </section>
+  </div>
+</ProjectLayout>
