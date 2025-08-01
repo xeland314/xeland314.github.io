@@ -1,0 +1,502 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadatos
+const title =
+  "📍 Buscador de Ubicaciones - Ecuador - Christopher Villamarín Projects";
+const description =
+  "Un buscador de ubicaciones que utiliza un servidor Nominatim local, filtrando únicamente resultados dentro de Ecuador, construido con FastAPI.";
+const keywords = [
+  "Buscador de Ubicaciones",
+  "Ecuador",
+  "Nominatim",
+  "FastAPI",
+  "geocodificación",
+  "autocompletado",
+  "Leaflet",
+  "Python",
+  "Christopher Villamarín",
+  "xeland314",
+  "proyectos",
+  "API",
+  "reinforcement learning",
+  "cache",
+  "Redis",
+  "SQLite",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle =
+  "📍 Buscador de Ubicaciones - Ecuador - Proyecto de Christopher Villamarín";
+const ogDescription =
+  "Descubre un buscador de ubicaciones para Ecuador, potenciado por Nominatim y FastAPI, con historial de búsquedas y mapa interactivo.";
+const ogUrl = "https://xeland314.github.io/es/projects/autocompleter/";
+const ogImage = "https://xeland314.github.io/images/autocompleter_preview.png";
+const imageAlt = "Vista previa del proyecto Buscador de Ubicaciones - Ecuador";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/autocompleter/";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  title={ogTitle}
+  description={ogDescription}
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  applicationName="Buscador de Ubicaciones - Ecuador"
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">
+        📍 Buscador de Ubicaciones - Ecuador
+      </h1>
+      <img
+        src="/images/autocompleter-screen.png"
+        alt="Vista previa del proyecto Buscador de Ubicaciones - Ecuador"
+        class="w-full max-w-2xl mx-auto mb-4 rounded-lg shadow-lg"
+      />
+      <p class="text-lg">
+        Este proyecto es un buscador de ubicaciones que utiliza un servidor
+        <a
+          href="https://nominatim.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline">Nominatim</a
+        >
+        local, filtrando únicamente resultados dentro de <strong>Ecuador</strong
+        > dado que yo he configurado localmente nominatim solo con los datos de mi
+        país.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">✨ Características</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          Creado con <strong>FastAPI</strong> y un HTML simple.
+        </li>
+        <li>
+          Redirige las peticiones del usuario al servidor Nominatim local.
+        </li>
+        <li>Muestra los resultados en una página HTML.</li>
+        <li>Permite ver un historial de búsquedas.</li>
+        <li>Se pueden copiar fácilmente las coordenadas de una ubicación.</li>
+        <li>
+          Opción para abrir la ubicación directamente en <strong
+            >Google Maps</strong
+          >.
+        </li>
+        <li>
+          Muestra la ubicación seleccionada en un mapa interactivo usando <strong
+            >Leaflet</strong
+          >.
+        </li>
+        <li>
+          Permite copiar las respuestas en formato <strong>JSON</strong> y <strong
+            >XML</strong
+          >.
+        </li>
+        <li>
+          Acceso a la documentación interactiva de la API mediante <strong
+            >Swagger</strong
+          > y <strong>ReDoc</strong>.
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">💡 Uso</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>Ingresa una dirección o lugar en Ecuador.</li>
+        <li>Visualiza los resultados y selecciona la ubicación deseada.</li>
+        <li>Observa la ubicación en el mapa interactivo.</li>
+        <li>Copia las coordenadas o las respuestas en formato JSON o XML.</li>
+        <li>Abre la ubicación en Google Maps u OSM.</li>
+        <li>Consulta el historial de búsquedas recientes.</li>
+        <li>
+          Accede a la documentación de la API en <code>/docs</code> (Swagger) o <code
+            >/redoc</code
+          > (ReDoc).
+        </li>
+      </ol>
+      <img
+        src="/images/autocompleter-screen2.png"
+        alt="Vista previa del proyecto Buscador de Ubicaciones - Ecuador"
+        class="w-full max-w-2xl mx-auto mb-4 rounded-lg shadow-lg"
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🤖 Sistema de Puntuación</h2>
+      <p class="mb-4">
+        El proyecto utiliza una técnica para mejorar la relevancia de las
+        sugerencias de autocompletado en función del uso real de los usuarios.
+        Cuando un usuario selecciona una ubicación, se registra este
+        <strong>"feedback"</strong> en una base de datos <strong>SQLite</strong
+        >.
+      </p>
+      <p class="mb-4">
+        Este sistema asigna un <strong>"boost" de popularidad</strong> a los resultados
+        más seleccionados, haciendo que aparezcan en la parte superior de las futuras
+        búsquedas. De esta manera, el buscador "aprende" qué ubicaciones son más
+        relevantes para los usuarios en Ecuador. Este proceso es similar a un <strong
+          >aprendizaje por refuerzo</strong
+        >, donde el sistema se optimiza a sí mismo según las interacciones del
+        usuario.
+      </p>
+      <h3 class="text-xl font-semibold mt-6 mb-2">Funcionamiento Técnico</h3>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          Se utiliza <strong>SQLite</strong> para un almacenamiento persistente y
+          de largo plazo del feedback del usuario.
+        </li>
+        <li>
+          Un <strong>AutocompleteScorer</strong> personalizado combina la popularidad
+          de la base de datos con factores como la coincidencia difusa, la relevancia
+          de Nominatim y el tipo de lugar para generar un puntaje final para cada
+          sugerencia.
+        </li>
+      </ul>
+    </section>
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">Bootstrap Feedback</h2>
+      <p class="mb-4">
+        En el caso que no tengas usuarios, pero quieras simular las respuestas
+        de los usuarios o dar prioridad a ciertos lugares, puedes utilizar el
+        script <code>bootstrap_feedback.py</code> para generar un feedback inicial.
+        Este script permite cargar datos de ubicaciones y asignarles una puntuación
+        inicial, lo que ayuda a establecer un punto de partida para el sistema de
+        puntuación.
+      </p>
+      <CodeBlock
+        code={`import sys
+import concurrent.futures
+import threading
+
+import requests
+
+from fuzzywuzzy import fuzz
+
+
+# URL base de la aplicación FastAPI
+FASTAPI_BASE_URL = "http://127.0.0.1:8089"
+
+# --- Ruta del archivo de consultas semilla ---
+SEED_QUERIES_FILE = "seed_queries.txt"
+
+# --- Umbrales para considerar una sugerencia "buena" o "popular" ---
+MIN_NOMINATIM_IMPORTANCE = 0.01
+MIN_FUZZY_RATIO = 40
+MIN_TOKEN_SET_RATIO = 70
+
+# --- Configuración de Hilos ---
+# Número de hilos concurrentes.
+MAX_WORKERS = 10
+
+# Lock para proteger la impresión en la consola (para evitar salida desordenada)
+print_lock = threading.Lock()
+
+
+def load_seed_queries(file_path: str) -> list[str]:
+    """Carga las consultas semilla desde un archivo de texto."""
+    queries = []
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                query = line.strip()
+                if query and not query.startswith(
+                    "#"
+                ):  # Ignorar líneas vacías o comentarios
+                    queries.append(query)
+    except FileNotFoundError:
+        print(f"Error: El archivo '{file_path}' no se encontró.")
+        sys.exit(1)  # Usa sys.exit para salir del script
+
+    return queries
+
+
+def record_simulated_selection(query: str, selected_item: dict):
+    """Simula el envío de feedback al endpoint de FastAPI."""
+    feedback_url = f"{FASTAPI_BASE_URL}/feedback"
+    payload = {
+        "query": query,
+        "selected_item": {
+            "osm_id": selected_item.get("osm_id"),
+            "display_name": selected_item.get("display_name"),
+            "lat": selected_item.get("lat"),
+            "lon": selected_item.get("lon"),
+            "type": selected_item.get("type"),
+        },
+    }
+    try:
+        response = requests.post(feedback_url, json=payload, timeout=5)
+        response.raise_for_status()
+        with print_lock:  # Proteger la impresión
+            print(
+                f"  ✅ Simulación exitosa: '{selected_item.get('display_name')}' para consulta '{query}'"
+            )
+        return True  # Indica éxito
+    except requests.exceptions.RequestException as e:
+        with print_lock:  # Proteger la impresión
+            print(f"  ❌ Error al enviar feedback simulado para '{query}': {e}")
+        return False  # Indica fallo
+
+
+def get_autocomplete_suggestions(query: str):
+    """Obtiene sugerencias de tu propio endpoint /autocomplete."""
+    autocomplete_url = f"{FASTAPI_BASE_URL}/autocomplete?query={query}"
+    try:
+        response = requests.get(autocomplete_url, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        with print_lock:  # Proteger la impresión
+            print(f"  Error al obtener sugerencias de FastAPI para '{query}': {e}")
+        return []
+
+
+def process_query(query: str):
+    """
+    Función que procesa una única consulta y simula la selección.
+    Diseñada para ser ejecutada por un hilo.
+    """
+    suggestions = get_autocomplete_suggestions(query)
+
+    if not suggestions:
+        with print_lock:
+            print(f"  ⚠️ No se obtuvieron sugerencias de tu API para '{query}'.")
+        return 0  # No se simuló ninguna selección
+
+    best_suggestion_for_query = None
+    highest_combined_bootstrap_score = -1
+
+    for item in suggestions:
+        display_name = item.get("display_name", "")
+        nominatim_importance = float(item.get("importance", 0.0))
+
+        query_lower = query.lower()
+        display_name_lower = display_name.lower()
+
+        fuzz_ratio = fuzz.ratio(query_lower, display_name_lower)
+        token_set_ratio = fuzz.token_set_ratio(query_lower, display_name_lower)
+
+        passes_importance = nominatim_importance >= MIN_NOMINATIM_IMPORTANCE
+        passes_fuzzy_or_token_set = (fuzz_ratio >= MIN_FUZZY_RATIO) or (
+            token_set_ratio >= MIN_TOKEN_SET_RATIO
+        )
+
+        current_bootstrap_score = (
+            (nominatim_importance * 0.4) + (token_set_ratio * 0.4) + (fuzz_ratio * 0.2)
+        )
+
+        with print_lock:  # Proteger la impresión para evitar desorden en la consola
+            print(
+                f"    - Sugerencia: '{display_name}' (Imp: {nominatim_importance:.2f}, Fuzz: {fuzz_ratio}, TokenSet: {token_set_ratio})"
+            )
+
+            if passes_importance and passes_fuzzy_or_token_set:
+                print(
+                    f"      👍 Cualifica: Imp={passes_importance}, (Fuzz={fuzz_ratio}>={MIN_FUZZY_RATIO} OR TokenSet={token_set_ratio}>={MIN_TOKEN_SET_RATIO})"
+                )
+                if current_bootstrap_score > highest_combined_bootstrap_score:
+                    highest_combined_bootstrap_score = current_bootstrap_score
+                    best_suggestion_for_query = item
+            else:
+                imp_fail = (
+                    f"(Imp: {nominatim_importance:.2f} < {MIN_NOMINATIM_IMPORTANCE})"
+                    if not passes_importance
+                    else ""
+                )
+                fuzzy_fail = (
+                    f"(Fuzz: {fuzz_ratio} < {MIN_FUZZY_RATIO})"
+                    if (fuzz_ratio >= MIN_FUZZY_RATIO)
+                    else ""
+                )
+                token_set_fail = (
+                    f"(TokenSet: {token_set_ratio} < {MIN_TOKEN_SET_RATIO})"
+                    if not (token_set_ratio >= MIN_TOKEN_SET_RATIO)
+                    else ""
+                )
+                print(
+                    f"      👎 No cualifica: Imp: {passes_importance} {imp_fail}, Fuzz/TokenSet: {passes_fuzzy_or_token_set} ({fuzzy_fail} {token_set_fail})"
+                )
+
+    if best_suggestion_for_query:
+        record_simulated_selection(query, best_suggestion_for_query)
+        return 1  # Se simuló 1 selección
+    else:
+        with print_lock:
+            print(
+                f"  ❌ No se encontró una 'buena' sugerencia para '{query}' bajo los umbrales definidos."
+            )
+        return 0  # No se simuló ninguna selección
+
+
+def bootstrap_feedback_db():
+    """
+    Simula interacciones para pre-poblar la base de datos de feedback utilizando hilos.
+    """
+    print("Iniciando el bootstrapping de la base de datos de feedback...")
+
+    # Cargar consultas semilla desde el archivo
+    seed_queries = load_seed_queries(SEED_QUERIES_FILE)
+    if not seed_queries:
+        print("No se encontraron consultas en el archivo semilla. Abortando.")
+        return
+
+    # Asegurarse de que el servidor FastAPI esté corriendo antes de ejecutar esto
+    try:
+        requests.get(f"{FASTAPI_BASE_URL}/docs", timeout=5)
+        print("Servidor FastAPI accesible.")
+    except requests.exceptions.ConnectionError:
+        print("Error: El servidor FastAPI no está corriendo en", FASTAPI_BASE_URL)
+        print("Por favor, inicia tu aplicación FastAPI antes de ejecutar este script.")
+        return
+
+    total_simulated_selections = 0
+
+    # Usar ThreadPoolExecutor para ejecutar las consultas en paralelo
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        # Mapear la función process_query a cada consulta semilla
+        # as_completed devuelve los resultados a medida que los hilos terminan
+        futures = {
+            executor.submit(process_query, query): query for query in seed_queries
+        }
+
+        for future in concurrent.futures.as_completed(futures):
+            query = futures[future]
+            try:
+                # Cada hilo devuelve 1 si se simuló una selección, 0 si no.
+                total_simulated_selections += future.result()
+            except concurrent.futures.CancelledError as exc:
+                with print_lock:
+                    print(f"La consulta '{query}' fue cancelada: {exc}")
+            except concurrent.futures.TimeoutError as exc:
+                with print_lock:
+                    print(f"La consulta '{query}' excedió el tiempo de espera: {exc}")
+            except ValueError as exc:
+                with print_lock:
+                    print(f"La consulta '{query}' generó un ValueError: {exc}")
+            except TypeError as exc:
+                with print_lock:
+                    print(f"La consulta '{query}' generó un TypeError: {exc}")
+            except requests.exceptions.RequestException as exc:
+                with print_lock:
+                    print(f"La consulta '{query}' generó un error de petición HTTP: {exc}")
+
+    print("--- Bootstrapping Completado ---")
+    print(f"Total de selecciones simuladas: {total_simulated_selections}")
+    # Nota: El DB_PATH no se imprime directamente desde aquí, ya que cache.py ya lo hace.
+    print("La base de datos de feedback ha sido actualizada.")
+    print("--- ¡ATENCIÓN! ---")
+    print(f"Se utilizó concurrencia con {MAX_WORKERS} hilos.")
+    print(
+        "Esto puede hacer que los límites de tasa (rate limit) de tu servidor FastAPI se alcancen más rápidamente."
+    )
+    print(
+        "Si ves muchos errores 429, considera reducir el número de MAX_WORKERS o aumentar los límites en tu 'rate_limiter.py'."
+    )
+    print(
+        "También puedes ajustar los umbrales (MIN_NOMINATIM_IMPORTANCE, MIN_FUZZY_RATIO, MIN_TOKEN_SET_RATIO) en este script."
+    )
+    print(f"Puedes añadir/modificar consultas en '{SEED_QUERIES_FILE}'.")
+
+
+if __name__ == "__main__":
+    try:
+        _ = fuzz.ratio("test", "test")
+    except ImportError:
+        print("Error: La librería 'fuzzywuzzy' no está instalada.")
+        print("Instálala con: pip install fuzzywuzzy python-Levenshtein")
+        sys.exit(1)
+
+    bootstrap_feedback_db()
+`}
+        language="python"
+        client:load
+      />
+    </section>
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        🚀 Caché de Consultas con Redis
+      </h2>
+      <p class="mb-4">
+        Para acelerar las respuestas y reducir la carga en el servidor local de
+        Nominatim, se implementa una capa de caché de corto plazo utilizando
+        <strong>Redis</strong>.
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          Al recibir una consulta, la API primero intenta obtener el resultado
+          de la caché de <strong>Redis</strong>.
+        </li>
+        <li>
+          Si la consulta ya ha sido realizada recientemente (dentro de los 5
+          minutos), la respuesta se sirve instantáneamente desde la caché.
+        </li>
+        <li>
+          Si no hay una respuesta en la caché, se realiza la consulta al
+          servidor Nominatim, se procesa, y el resultado final se guarda en
+          Redis para futuras peticiones.
+        </li>
+      </ul>
+      <p class="mt-4">
+        Esta estrategia mejora significativamente el rendimiento para búsquedas
+        repetidas, proporcionando una experiencia de usuario más rápida y
+        eficiente.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🛠️ Requisitos</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Python 3.8+</li>
+        <li>FastAPI</li>
+        <li>
+          Servidor Nominatim local (aunque este esté configurado solo con datos
+          de Ecuador)
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📦 Instalación</h2>
+      <CodeBlock
+        code={`pip install fastapi uvicorn requests python-multipart`}
+        language="bash"
+        client:load
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🚀 Ejecución</h2>
+      <CodeBlock
+        code={`uvicorn main:app --reload`}
+        language="bash"
+        client:load
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⚠️ Disclaimer</h2>
+      <p class="mb-4">
+        Este proyecto está diseñado únicamente para uso personal o en entornos
+        controlados con un servidor Nominatim local configurado con datos de
+        Ecuador.
+      </p>
+      <p class="font-bold text-red-600 dark:text-red-400">Advertencia:</p>
+      <p>
+        No utilices este buscador con el servidor Nominatim original ni con
+        plataformas que no permitan el uso de autocompletado o redirección de
+        consultas automatizadas. El uso indebido puede violar los términos de
+        servicio y resultar en bloqueos o sanciones.
+      </p>
+    </section>
+  </div>
+</ProjectLayout>
