@@ -26,8 +26,8 @@ const {
   applicationName,
   url,
   image,
-  imageAlt = 'Portafolio de Christopher Villamarín',
-  robots = 'index, follow',
+  imageAlt = "Portafolio de Christopher Villamarín",
+  robots = "index, follow",
   canonical,
 } = Astro.props;
 ---
@@ -47,7 +47,10 @@ const {
     <meta name="application-name" content={applicationName} />
     <meta name="robots" content={robots} />
     <meta name="algolia-site-verification" content="839FA93308FEFD9D" />
-    <meta name="google-site-verification" content="00zwLtdgjhmCPvhPBvazB4JmCArQ-0tFJMxNuhrCuIE" />
+    <meta
+      name="google-site-verification"
+      content="00zwLtdgjhmCPvhPBvazB4JmCArQ-0tFJMxNuhrCuIE"
+    />
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -81,14 +84,14 @@ const {
       async></script>
     <ClientRouter />
 
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
   </head>
   <body class="font-inter bg-white text-black dark:bg-gray-800 dark:text-white">
     <Header />
     <div class="min-h-screen mx-auto pt-0">
       <slot />
-      <script is:inline src="/scripts/smoothScrollWithOffset.js"
-      ></script>
+      <script is:inline src="/scripts/smoothScrollWithOffset.js"></script>
     </div>
     <Footer />
   </body>
