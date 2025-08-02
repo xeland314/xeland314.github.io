@@ -1,0 +1,28 @@
+---
+import { db, MyCertificates, asc, eq } from "astro:db";
+import CertificatesCard from "../certificates/CertificatesCard.astro";
+// Consultamos los datos de la base de datos
+// Opcionalmente puedes ordenarlos por fecha si el formato lo permite
+const certificates = await db
+  .select()
+  .from(MyCertificates)
+  .where(eq(MyCertificates.isFeatured, true))
+  .orderBy(asc(MyCertificates.date));
+---
+
+<section
+  class="mx-auto px-4 py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+>
+  <h2 class="text-4xl font-bold mb-8 text-center" transition:name="Mis-Certificados">Mis Certificados</h2>
+  <CertificatesCard certificates={certificates} />
+
+  <div class="text-center mt-12">
+    <a
+      href="/es/certificates"
+      class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
+      title="Ver todos los CErtificados"
+    >
+      Ver Todos los Certificados
+    </a>
+  </div>
+</section>

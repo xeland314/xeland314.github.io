@@ -1,5 +1,5 @@
 // astro:db/config.ts
-import { defineDb, defineTable, column } from 'astro:db';
+import { defineDb, defineTable, column } from "astro:db";
 
 export const Projects = defineTable({
   columns: {
@@ -12,10 +12,25 @@ export const Projects = defineTable({
     tags: column.json(),
     image: column.text({ optional: true }),
     slug: column.text({ unique: true }),
-    isFeatured: column.boolean({ default: false })
-  }
+    isFeatured: column.boolean({ default: false }),
+  },
+});
+
+export const MyCertificates = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true, autoIncrement: true }),
+    logo: column.text(),
+    title: column.text(),
+    issuer: column.text(),
+    issueDate: column.text(),
+    date: column.text(),
+    credentialId: column.text(),
+    credentialUrl: column.text(),
+    skills: column.json(),
+    isFeatured: column.boolean({ default: false }),
+  },
 });
 
 export default defineDb({
-  tables: { Projects }
+  tables: { Projects, MyCertificates },
 });

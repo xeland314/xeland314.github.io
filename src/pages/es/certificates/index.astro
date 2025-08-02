@@ -1,0 +1,70 @@
+---
+import { db, MyCertificates, asc } from "astro:db";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CertificatesCard from "../../../components/certificates/CertificatesCard.astro";
+
+// --- METADATA DE LA PÁGINA DE CERTIFICADOS ---
+const pageTitle = "Todos Mis Certificados - Christopher Villamarín";
+const pageDescription =
+  "Explora todos los certificados y logros de desarrollo web de Christopher Villamarín. Incluye certificaciones de Alura Latam, Oracle ONE, Microsoft y más.";
+const pageKeywords = [
+  "certificados de desarrollo",
+  "certificaciones web",
+  "Alura Latam",
+  "Oracle ONE",
+  "Microsoft",
+  "habilidades de programación",
+  "desarrollador web",
+  "Christopher Villamarín",
+  "xeland314",
+].join(", ");
+
+const pageAuthor = "Christopher Villamarín";
+const applicationName = "Portafolio de Christopher Villamarín";
+const pageUrl = "https://xeland314.github.io/es/certificates";
+const pageImage = "https://xeland314.github.io/images/gato.svg";
+const pageImageAlt =
+  "Ilustración de varios certificados de programación y desarrollo";
+const pageRobots = "index, follow";
+const pageCanonical = pageUrl;
+
+// Obtener todos los certificados de la DB
+const allCertificates = await db
+  .select()
+  .from(MyCertificates)
+  .orderBy(asc(MyCertificates.date));
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  applicationName={applicationName}
+  url={pageUrl}
+  image={pageImage}
+  imageAlt={pageImageAlt}
+  robots={pageRobots}
+  canonical={pageCanonical}
+>
+  <main
+    class="py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen"
+  >
+    <section class="max-w-6xl mx-auto px-6">
+      <h1 class="text-5xl font-extrabold text-center mb-6"
+      transition:name="Mis-Certificados"
+      >
+        Todos Mis Certificados
+      </h1>
+      {
+        allCertificates.length > 0 ? (
+          <CertificatesCard certificates={allCertificates} />
+        ) : (
+          <p class="text-center text-gray-500">
+            No se encontraron certificados.
+          </p>
+        )
+      }
+    </section>
+  </main>
+</BaseLayout>
