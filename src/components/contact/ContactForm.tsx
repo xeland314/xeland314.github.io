@@ -113,7 +113,7 @@ const ContactForm = () => {
         <div className="w-full flex justify-center items-center my-4 mobile:scale-100 scale-65 transition-transform duration-300">
           <ReCAPTCHA
             key={resolvedTheme}
-            sitekey={import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+            sitekey={import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY}
             onChange={handleRecaptchaChange}
             onExpired={handleRecaptchaExpired}
             theme={resolvedTheme as Theme}
