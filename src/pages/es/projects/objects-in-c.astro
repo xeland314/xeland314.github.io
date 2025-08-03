@@ -86,7 +86,7 @@ int differ(const void * self, const void * other);
 size_t sizeOf(const void * self);
 char * toString(const void * self);`}
         language="c"
-        client:load
+        client:visible
       />
     </section>
 
@@ -107,7 +107,7 @@ int main() {
     return 0;
 }`}
         language="c"
-        client:load
+        client:visible
       />
       <p class="mt-4">
         Este enfoque oculta el manejo de memoria en segundo plano, haciendo el
@@ -124,7 +124,7 @@ int main() {
           <CodeBlock
             code={`void * text = new(String, "Hello, world");`}
             language="c"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -132,12 +132,12 @@ int main() {
           <CodeBlock
             code="void * textCopy = clone(text);"
             language="c"
-            client:load
+            client:visible
           />
         </li>
         <li>
           <strong>Destructor:</strong> Libera la memoria del objeto usando:
-          <CodeBlock code="delete(text);" language="c" client:load />
+          <CodeBlock code="delete(text);" language="c" client:visible />
         </li>
         <li>
           <strong>toString:</strong> Retorna el contenido del objeto como una cadena
@@ -145,7 +145,7 @@ int main() {
           <CodeBlock
             code={`printf("text = %s\\n", toString(text));`}
             language="c"
-            client:load
+            client:visible
           />
         </li>
       </ul>
@@ -160,7 +160,7 @@ int main() {
       <CodeBlock
         code="make examples && make run_examples"
         language="sh"
-        client:load
+        client:visible
       />
       <p class="mt-4">
         El código de los ejemplos está en la carpeta <code>examples</code>.
@@ -173,7 +173,7 @@ int main() {
         Para verificar la integridad de las funciones implementadas, puedes
         ejecutar los tests con:
       </p>
-      <CodeBlock code="make tests" client:load />
+      <CodeBlock code="make tests" client:visible />
       <p class="mt-4">
         Los tests utilizan la librería{" "}
         <a
@@ -193,7 +193,7 @@ int main() {
       <p class="mb-4">
         Para eliminar todos los archivos compilados, utiliza el comando:
       </p>
-      <CodeBlock code="make clean" client:load />
+      <CodeBlock code="make clean" client:visible />
     </section>
   </div>
 </ProjectLayout>

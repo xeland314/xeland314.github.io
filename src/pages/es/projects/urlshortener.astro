@@ -177,7 +177,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`git clone https://github.com/xeland314/urlshortener.git\ncd urlshortener`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -187,7 +187,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`uv venv\nsource .venv/bin/activate\nuv pip install -r requirements.txt`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -198,7 +198,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`DATABASE_URL=sqlite:///db.sqlite3\nSECRET_KEY=your_django_secret_key\nREDIS_LOCATION=redis://127.0.0.1:6379/0`}
             language="env"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -206,7 +206,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`python manage.py makemigrations && python manage.py migrate`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -214,16 +214,16 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`python manage.py createsuperuser`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
           <strong>Instala dependencias de Node.js:</strong>
-          <CodeBlock code={`npm install`} language="bash" client:load />
+          <CodeBlock code={`npm install`} language="bash" client:visible />
         </li>
         <li>
           <strong>Compila Tailwind CSS:</strong>
-          <CodeBlock code={`npm run build:css`} language="bash" client:load />
+          <CodeBlock code={`npm run build:css`} language="bash" client:visible />
         </li>
       </ol>
     </section>
@@ -241,7 +241,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`docker run -d -p 6379:6379 redis/redis-stack-server:latest`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -250,7 +250,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`celery -A urlshortener worker -l info`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -259,7 +259,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`celery -A urlshortener beat -l info`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -268,7 +268,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
           <CodeBlock
             code={`python manage.py runserver`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
       </ol>
@@ -288,7 +288,7 @@ const canonical = "https://xeland314.github.io/es/projects/urlshortener/";
         El proyecto incluye un conjunto de pruebas exhaustivas para validar la
         lógica del modelo, la API y los flujos de redirección.
       </p>
-      <CodeBlock code={`python manage.py test`} language="bash" client:load />
+      <CodeBlock code={`python manage.py test`} language="bash" client:visible />
     </section>
 
     <section class="mb-8">

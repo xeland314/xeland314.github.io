@@ -157,7 +157,7 @@ const robots = "index, follow";
           <CodeBlock
             code={`git clone https://github.com/xeland314/geocoding_api.git\ncd geocoding_api`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -165,7 +165,7 @@ const robots = "index, follow";
           <CodeBlock
             code={`python -m venv .venv\nsource .venv/bin/activate`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
         <li>
@@ -173,7 +173,7 @@ const robots = "index, follow";
           <CodeBlock
             code={`pip install -r pyproject.toml`}
             language="bash"
-            client:load
+            client:visible
           />
         </li>
       </ol>
@@ -191,7 +191,7 @@ export NOMINATIM_USER_AGENT="MyGeocoderApp/1.0"
 export NOMINATIM_REVERSER_REPLICA_URL_1="http://127.0.0.1:8088/reverse"
 export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
         language="bash"
-        client:load
+        client:visible
       />
       <p class="mt-4">
         Alternativamente, usa el script `set_env.sh` proporcionado:
@@ -199,7 +199,7 @@ export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
       <CodeBlock
         code={`source ./scripts/set_env.sh`}
         language="bash"
-        client:load
+        client:visible
       />
     </section>
 
@@ -209,7 +209,7 @@ export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
       <CodeBlock
         code={`uvicorn main:app --host 0.0.0.0 --port 8000 --reload`}
         language="bash"
-        client:load
+        client:visible
       />
       <p class="mt-4">
         Documentación interactiva de la API disponible en:
@@ -233,7 +233,7 @@ export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
       <CodeBlock
         code={`curl -X GET "http://127.0.0.1:8000/reverse-geocode?latitude=40.748817&longitude=-73.985428&platform=geoapify"`}
         language="bash"
-        client:load
+        client:visible
       />
       <p class="mt-4">
         <strong>Respuesta de ejemplo</strong>:
@@ -256,7 +256,7 @@ export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
   "error": null
 }`}
         language="json"
-        client:load
+        client:visible
       />
 
       <h3 class="text-2xl font-semibold mt-8 mb-2">
@@ -268,7 +268,7 @@ export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
       <CodeBlock
         code={`curl -X GET "http://127.0.0.1:8000/geocoders"`}
         language="bash"
-        client:load
+        client:visible
       />
       <p class="mt-4">
         <strong>Respuesta de ejemplo</strong>:
@@ -295,7 +295,7 @@ export NOMINATIM_REVERSER_REPLICA_URL_2="http://127.0.0.1:8089/reverse"`}
   ]
 }`}
         language="json"
-        client:load
+        client:visible
       />
     </section>
 

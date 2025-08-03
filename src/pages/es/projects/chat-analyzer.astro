@@ -89,17 +89,17 @@ const robots = "index, follow";
       </p>
       <CodeBlock
         code={`git clone https://github.com/xeland314/chat-analyzer.git && cd chat-analyzer`}
-        client:load
+        client:visible
       />
       <p class="mt-4">Luego instala las dependencias necesarias:</p>
-      <CodeBlock code={`pip3 install -r requirements.txt`} client:load />
+      <CodeBlock code={`pip3 install -r requirements.txt`} client:visible />
       <p class="mt-4">
         Antes de analizar un chat, ejecuta el siguiente comando para descargar
         recursos de NLTK:
       </p>
-      <CodeBlock code={`python3 chat_analyzer.py --install`} client:load />
+      <CodeBlock code={`python3 chat_analyzer.py --install`} client:visible />
       <p>También puedes usar el atajo:</p>
-      <CodeBlock code={`python3 chat_analyzer.py -i`} client:load />
+      <CodeBlock code={`python3 chat_analyzer.py -i`} client:visible />
     </section>
 
     <section class="mb-8">
@@ -107,18 +107,18 @@ const robots = "index, follow";
       <p class="mb-4">
         Para analizar un chat, pasa el archivo del chat como argumento:
       </p>
-      <CodeBlock code={`python3 chat_analyzer.py chat.txt`} client:load />
+      <CodeBlock code={`python3 chat_analyzer.py chat.txt`} client:visible />
       <p class="mt-4">
         Puedes personalizar el número de palabras y emojis más comunes que se
         mostrarán en el resumen:
       </p>
       <CodeBlock
         code={`python3 chat_analyzer.py chat.txt -w 50 -e 20`}
-        client:load
+        client:visible
       />
       <CodeBlock
         code={`python3 chat_analyzer.py chat.txt --words 50 --emojis 20`}
-        client:load
+        client:visible
       />
       <p class="mt-4">
         Por defecto, se mostrarán las 30 palabras más utilizadas y los 15 emojis

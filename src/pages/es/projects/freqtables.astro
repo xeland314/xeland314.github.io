@@ -79,7 +79,7 @@ tabla4 = ft.FreqTableSimple(
     A = 3, B = 6, C = 1
 )`}
         language="python"
-        client:load
+        client:visible
       />
       <p class="mt-4">
         Cualquiera de estas inicializaciones dará como resultado una tabla
@@ -110,14 +110,14 @@ frecuencias = [47, 32, 25, 20, 12, 5, 4, 5]
 # Se inicializa la tabla con los intervalos y frecuencias:
 tabla_con_intervalos = ft.FreqTable(intervalos, frecuencias)`}
         language="python"
-        client:load
+        client:visible
       />
       <p class="mt-4">Esto dará como resultado:</p>
       <CodeBlock
         code={`print("Tabla #01".center(62, "~"))
 print(tabla_con_intervalos)`}
         language="python"
-        client:load
+        client:visible
       />
       <div class="text-center mt-4">
         <img
@@ -136,9 +136,9 @@ print(tabla_con_intervalos)`}
       </p>
       <CodeBlock
         code={`git clone https://github.com/xeland314/freqtables`}
-        client:load
+        client:visible
       />
-      <CodeBlock code={`pip3 install -r requirements.txt`} client:load />
+      <CodeBlock code={`pip3 install -r requirements.txt`} client:visible />
       <details class="mt-4">
         <summary class="cursor-pointer text-blue-600 hover:underline">
           requirements.txt
