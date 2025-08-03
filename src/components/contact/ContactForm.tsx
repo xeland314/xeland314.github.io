@@ -117,6 +117,7 @@ const ContactForm = () => {
             onChange={handleRecaptchaChange}
             onExpired={handleRecaptchaExpired}
             theme={resolvedTheme as Theme}
+            aria-label="reCAPTCHA response"
           />
         </div>
       )}
