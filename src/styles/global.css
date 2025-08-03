@@ -88,3 +88,23 @@ p {
     scale: 100%;
   }
 }
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark textarea:-webkit-autofill,
+.dark textarea:-webkit-autofill:hover,
+.dark textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #2d3748 inset !important; /* bg-gray-800 */
+  -webkit-text-fill-color: #f7fafc !important; /* text-gray-100 o similar */
+  caret-color: #f7fafc !important;
+}
+
+/*
+  Estos estilos son para los inputs normales en modo oscuro,
+  para que el borde y el color del texto sean consistentes
+*/
+.dark input,
+.dark textarea {
+  border-color: #4a5568 !important; /* border-gray-600 */
+}
