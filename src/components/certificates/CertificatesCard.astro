@@ -27,6 +27,7 @@ const { certificates } = Astro.props;
             width="100"
             height="100"
             transition:name={`logo-${cert.credentialId}`}
+            loading="lazy"
           />
           <h3
             class="text-xl font-bold"
