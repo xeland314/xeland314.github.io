@@ -8,7 +8,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/advent-calendar",
     demoLink: "https://xeland314.github.io/advent-calendar/",
     tags: ["React", "Frontend", "PixelArt", "TailwindCSS"],
-    image: "/images/advent_calendar_preview.png",
+    image: "/images/optimized/projects/advent_calendar/card.avif",
     isFeatured: true,
   },
   {
@@ -20,7 +20,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/PoliTetris",
     demoLink: "https://github.com/xeland314/PoliTetris/releases",
     tags: ["Java", "Swing"],
-    image: "/images/tetris.jpg",
+    image: "/images/optimized/projects/tetris/card.avif",
     isFeatured: true,
   },
   {
@@ -42,7 +42,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/memory-game",
     demoLink: "https://xeland314.github.io/memory-game/",
     tags: ["Html", "Css", "JavaScript"],
-    image: "/images/memorygame.png",
+    image: "/images/optimized/projects/memorygame/card.avif",
   },
   {
     title: "Encriptador de Texto",
@@ -53,7 +53,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/encriptador-de-texto",
     demoLink: "https://xeland314.github.io/encriptador-de-texto/",
     tags: ["Html", "Css", "JavaScript"],
-    image: "/images/encriptador.png",
+    image: "/images/optimized/projects/encriptador/card.avif",
   },
   {
     title: "Analizador-lexico",
@@ -63,7 +63,7 @@ export const projectData = [
     shortDescription: "Analizador léxico para sistemas numéricos y operadores.",
     githubLink: "https://github.com/xeland314/Analizador-lexico",
     tags: ["C", "Compiladores", "Expresiones Regulares", "Golang"],
-    image: "/images/analizador.png",
+    image: "/images/optimized/projects/analizador-lexico/card.avif",
   },
   {
     title: "SpeedTest",
@@ -83,7 +83,7 @@ export const projectData = [
     shortDescription: "Paquete en Python para tablas de frecuencias.",
     githubLink: "https://github.com/xeland314/freqtables",
     tags: ["Python", "Estadisticas", "TablasDeFrecuencias"],
-    image: "/images/freqtables.png",
+    image: "/images/optimized/projects/freqtables/card.avif",
   },
   {
     title: "objects-in-C",
@@ -103,7 +103,7 @@ export const projectData = [
     shortDescription: "Conversor de unidades con interfaz gráfica en Java.",
     githubLink: "https://github.com/xeland314/conversor-de-unidades",
     tags: ["Java", "Swing", "Conversion De Unidades"],
-    image: "/images/conversor.png",
+    image: "/images/optimized/projects/conversor-de-unidades/card.avif",
     isFeatured: true,
   },
   {
@@ -124,7 +124,7 @@ export const projectData = [
     shortDescription: "Buscador de ubicaciones en Ecuador con IA y caché.",
     githubLink: "https://github.com/xeland314/autocompleter",
     tags: ["FastAPI", "Python", "Nominatim", "Redis", "Reinforcement Learning"],
-    image: "/images/autocompleter-screen2.png",
+    image: "/images/optimized/projects/autocompleter/card.avif",
     isFeatured: true,
   },
   {
@@ -136,7 +136,7 @@ export const projectData = [
       "Acortador de URLs con Django y diferentes tipos de acceso.",
     githubLink: "https://github.com/xeland314/urlshortener",
     tags: ["Django", "DRF", "Python", "Celery", "HTMX", "Redis"],
-    image: "/images/shortener-screen.png",
+    image: "/images/optimized/projects/shortener/card.avif",
     isFeatured: true,
   },
   {
@@ -147,7 +147,7 @@ export const projectData = [
     shortDescription: "Estimador de proyectos de software con IA y Firebase.",
     githubLink: "https://github.com/xeland314/codecraft-estimator",
     tags: ["IA", "Vibe Coding", "Firebase Studio", "TypeScript", "Next.js"],
-    image: "/images/codecraft_estimator_preview.png",
+    image: "/images/optimized/projects/codecraft-estimator/card.avif",
     isFeatured: true,
   },
   {
@@ -167,7 +167,7 @@ export const projectData = [
       "Redis",
       "SQLite",
     ],
-    image: "/images/geocoding-api-screen.png",
+    image: "/images/optimized/projects/geocoding-api/card.avif",
     isFeatured: true,
   },
 ];
