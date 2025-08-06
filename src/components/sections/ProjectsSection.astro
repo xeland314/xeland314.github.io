@@ -13,13 +13,15 @@ const featuredProjects = allProjects.slice(0, 6);
 
 <section
     id="projects"
-    class="xl:px-32 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+    class="2xl:px-20 xl:px-28 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white place-items-center"
 >
     <h2 class="text-4xl font-bold text-center mb-12">
         Mis Proyectos Destacados
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div
+        class="max-w-[2700px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-8"
+    >
         {featuredProjects.map((project) => <ProjectCard project={project} />)}
     </div>
 
