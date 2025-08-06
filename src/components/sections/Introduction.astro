@@ -3,88 +3,92 @@ import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.as
 ---
 
 <article
-  id="about-me"
-  class="pt-20 xl:px-32 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6 py-10 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+    id="about-me"
+    class="pt-24 xl:px-32 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6 pb-16 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
 >
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 justify-between sm:gap-x-6 md:pb-0 pb-10"
-  >
-    <section id="about-me-text" class="flex flex-col">
-      <h2
-        class="text-center text-2xl font-medium mb-8 text-gray-900 dark:text-white"
-      >
-        <strong>Acerca de mí</strong>
-      </h2>
-      <div
-        class="flex mobile:flex-row flex-col justify-center items-center-safe gap-4 sm:gap-8 mb-4"
-      >
-        <img
-          src="/images/optimized/profile.avif"
-          alt="Christopher Villamarín - Foto de Perfil"
-          width={128}
-          height={128}
-          class="bg-slate-700 dark:bg-white rounded-md shadow-2xl transform hover:scale-105 transition-transform duration-300"
-          title="Foto de perfil de Christopher Villamarín"
-        />
-      </div>
-      <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
-        Soy un desarrollador <strong>Full Stack autodidacta</strong> con una fuerte
-        pasión y especialización en el desarrollo <strong>Backend</strong>. Mi
-        objetivo es crear
-        <strong class="font-semibold"> soluciones robustas</strong> que conecten
-        a las personas con la tecnología de manera significativa.
-      </p>
-
-      <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
-        Me especializo en el diseño y construcción de <strong
-          class="font-semibold">APIs RESTful</strong
-        > utilizando los ecosistemas de <strong class="font-semibold"
-          >Python</strong
-        > y <strong class="font-semibold">Go</strong>, seleccionando las
-        herramientas más adecuadas para cada desafío, desde frameworks completos
-        como <strong>Django</strong> y <strong>FastAPI</strong> hasta soluciones
-        más minimalistas.
-      </p>
-
-      <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
-        Actualmente estoy enfocado en perfeccionar la <strong
-          class="font-semibold">arquitectura de APIs</strong
-        >, implementar sistemas de <strong class="font-semibold"
-          >caché con Redis</strong
-        > y <strong class="font-semibold">colas de mensajes con RabbitMQ</strong
-        >, así como explorar el protocolo <strong class="font-semibold"
-          >gRPC</strong
-        > para comunicación de alto rendimiento. También priorizo la mejora continua
-        de mis <strong class="font-semibold">técnicas de testing</strong>
-        para garantizar la calidad del software.
-      </p>
-
-      <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
-        Me motiva aprender constantemente, enfrentar nuevos desafíos
-        tecnológicos, y resolver problemas complejos de manera eficiente o
-        mediante investigación.
-      </p>
-    </section>
-    <ProgrammingLanguages />
-  </div>
-  <p class="text-center mt-auto pt-4 text-gray-700 dark:text-gray-300">
-    Puedes explorar más de mi trabajo en mi{" "}
-    <a
-      href="https://github.com/xeland314"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-blue-500 underline hover:text-blue-600 transition-colors"
+    <div
+        class="grid grid-cols-1 md:grid-cols-2 justify-between sm:gap-x-6 md:pb-0 pb-10"
     >
-      <strong>GitHub</strong>
-    </a>{" "}
-    o conectar conmigo en{" "}
-    <a
-      href="https://linkedin.com/in/christopher-villamarin"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-blue-500 underline hover:text-blue-600 transition-colors"
-    >
-      <strong>LinkedIn</strong>
-    </a>.
-  </p>
+        <section id="about-me-text" class="flex flex-col">
+            <h2
+                class="text-center text-2xl font-medium mb-8 text-gray-900 dark:text-white"
+            >
+                <strong>Acerca de mí</strong>
+            </h2>
+            <div
+                class="flex mobile:flex-row flex-col justify-center items-center-safe gap-4 sm:gap-8 mb-4"
+            >
+                <img
+                    src="/images/optimized/profile.avif"
+                    alt="Christopher Villamarín - Foto de Perfil"
+                    width={128}
+                    height={128}
+                    class="bg-slate-700 dark:bg-white rounded-md shadow-2xl transform hover:scale-105 transition-transform duration-300"
+                    title="Foto de perfil de Christopher Villamarín"
+                />
+            </div>
+            <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
+                Soy un desarrollador <strong>Full Stack autodidacta</strong> con
+                una fuerte pasión y especialización en el desarrollo <strong
+                    >Backend</strong
+                >. Mi objetivo es crear
+                <strong class="font-semibold"> soluciones robustas</strong> que conecten
+                a las personas con la tecnología de manera significativa.
+            </p>
+
+            <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
+                Me especializo en el diseño y construcción de <strong
+                    class="font-semibold">APIs RESTful</strong
+                > utilizando los ecosistemas de <strong class="font-semibold"
+                    >Python</strong
+                > y <strong class="font-semibold">Go</strong>, seleccionando las
+                herramientas más adecuadas para cada desafío, desde frameworks
+                completos como <strong>Django</strong> y <strong>FastAPI</strong
+                > hasta soluciones más minimalistas.
+            </p>
+
+            <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
+                Actualmente estoy enfocado en perfeccionar la <strong
+                    class="font-semibold">arquitectura de APIs</strong
+                >, implementar sistemas de <strong class="font-semibold"
+                    >caché con Redis</strong
+                > y <strong class="font-semibold"
+                    >colas de mensajes con RabbitMQ</strong
+                >, así como explorar el protocolo <strong class="font-semibold"
+                    >gRPC</strong
+                > para comunicación de alto rendimiento. También priorizo la mejora
+                continua de mis <strong class="font-semibold"
+                    >técnicas de testing</strong
+                >
+                para garantizar la calidad del software.
+            </p>
+
+            <p class="text-justify mb-4 text-gray-700 dark:text-gray-300">
+                Me motiva aprender constantemente, enfrentar nuevos desafíos
+                tecnológicos, y resolver problemas complejos de manera eficiente
+                o mediante investigación.
+            </p>
+        </section>
+        <ProgrammingLanguages />
+    </div>
+    <p class="text-center mt-auto pt-4 text-gray-700 dark:text-gray-300">
+        Puedes explorar más de mi trabajo en mi{" "}
+        <a
+            href="https://github.com/xeland314"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-blue-500 underline hover:text-blue-600 transition-colors"
+        >
+            <strong>GitHub</strong>
+        </a>{" "}
+        o conectar conmigo en{" "}
+        <a
+            href="https://linkedin.com/in/christopher-villamarin"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-blue-500 underline hover:text-blue-600 transition-colors"
+        >
+            <strong>LinkedIn</strong>
+        </a>.
+    </p>
 </article>

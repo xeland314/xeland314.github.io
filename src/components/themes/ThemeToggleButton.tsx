@@ -9,7 +9,7 @@ export default function ThemeToggleButton() {
     // 1. Leer la preferencia del tema al montar el componente
     const storedTheme = localStorage.getItem("theme");
     const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
 
     // 2. Establecer el estado inicial
@@ -41,8 +41,15 @@ export default function ThemeToggleButton() {
   };
 
   return (
-    <label className="relative inline-flex items-center cursor-pointer">
+    <label
+      className="relative inline-flex items-center cursor-pointer"
+      htmlFor="theme-toggle"
+    >
+      <span className="sr-only">
+        {isDark ? "Desactivar modo oscuro" : "Activar modo oscuro"}
+      </span>
       <input
+        id="theme-toggle"
         type="checkbox"
         checked={isDark}
         onChange={toggleTheme}
