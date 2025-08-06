@@ -1,0 +1,15 @@
+@font-face {
+    font-display: swap;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/fonts/Inter-VariableFont_opsz,wght.ttf") format("ttf");
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "Inter Italic";
+    font-style: italic;
+    font-weight: 400;
+    src: url("/fonts/Inter-Italic-VariableFont_opsz,wght.ttf") format("ttf");
+}
