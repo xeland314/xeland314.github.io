@@ -11,14 +11,13 @@ export interface HitProps {
     image?: string; // Imagen opcional
     // Algolia hit también puede tener un 'objectID'
     objectID: string; // Algolia ID, útil para enlaces permanentes
+    url?: string; // URL opcional para enlaces externos
+    path?: string; // Ruta opcional para enlaces internos
   };
 }
 
 function Hit({ hit }: HitProps) {
-  const targetLink =
-    hit.links && hit.links.length > 0
-      ? hit.links[0]
-      : `/es/projects/${hit.objectID}/`; // Fallback al objectID si links está vacío
+  const targetLink = hit.path || hit.url || hit.objectID;
 
   return (
     <a
