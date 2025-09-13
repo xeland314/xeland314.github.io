@@ -38,7 +38,7 @@ const detailsPageLink = `/es/projects/${project.slug}`;
             project.image ? (
                 <img
                     transition:name={`img-${project.slug}`}
-                    class="h-full w-full object-contain"
+                    class="h-full w-full object-cover"
                     src={project.image}
                     alt={project.title}
                     loading="lazy"
@@ -51,20 +51,36 @@ const detailsPageLink = `/es/projects/${project.slug}`;
                     width="100%"
                     height="100%"
                     viewBox="0 0 500 150"
-                    class="bg-gray-900 dark:bg-gray-700"
                 >
                     <rect
                         width="100%"
                         height="100%"
-                        fill="currentColor"
-                        class="text-gray-900 dark:text-gray-700"
+                        fill="url(#pattern-squares)"
                     />
+                    <defs>
+                        <pattern
+                            id="pattern-squares"
+                            x="0"
+                            y="0"
+                            width="10"
+                            height="10"
+                            patternUnits="userSpaceOnUse"
+                        >
+                            <rect
+                                x="0"
+                                y="0"
+                                width="2"
+                                height="2"
+                                fill="var(--svg-pattern-color)"
+                            />
+                        </pattern>
+                    </defs>
                     <text
                         x="50%"
                         y="50%"
                         font-size="24"
                         font-family="Inter, Arial, sans-serif"
-                        fill="#FFFFFF"
+                        fill="currentColor"
                         text-anchor="middle"
                         alignment-baseline="middle"
                     >
@@ -173,3 +189,24 @@ const detailsPageLink = `/es/projects/${project.slug}`;
         </div>
     </div>
 </article>
+
+<style>
+    :root {
+        --svg-text-color: #4b5563; /* Tailwind gray-600 para modo claro */
+        --svg-pattern-color: rgba(
+            0,
+            0,
+            0,
+            0.25
+        ); /* Patrón semitransparente oscuro para modo claro */
+    }
+    html.dark {
+        --svg-text-color: #cbd5e0; /* Tailwind gray-300 para modo oscuro */
+        --svg-pattern-color: rgba(
+            255,
+            255,
+            255,
+            0.25
+        ); /* Patrón semitransparente claro para modo oscuro */
+    }
+</style>
