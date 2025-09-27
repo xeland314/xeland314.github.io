@@ -3,157 +3,219 @@ import CodeBlock from "../../../components/common/CodeBlock";
 import ProjectLayout from "../../../layouts/ProjectLayout.astro";
 
 // Metadatos
-const title = "📊 Simplex - Christopher Villamarín Projects";
+const title = "🛠️ Simplex Solver - Christopher Villamarín Projects";
 const description =
-  "Descubre el método Simplex aplicado a la programación lineal. Aprende a maximizar ganancias y resolver problemas de optimización con ejemplos prácticos.";
+    "Herramienta integral para Programación Lineal con múltiples interfaces: Command-Line, DSLs (String-based y Pythonic) y una GUI avanzada.";
 const keywords = [
-  "Simplex",
-  "programación lineal",
-  "optimización",
-  "matemáticas aplicadas",
-  "programación lineal ejemplos",
-  "método Simplex",
-  "proyectos",
-  "Christopher Villamarín",
-  "xeland314",
-  "Ecuador",
+    "Simplex",
+    "programación lineal",
+    "optimización",
+    "scipy",
+    "DSL",
+    "GUI PySide6",
+    "proyectos",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador",
 ].join(", ");
 const authors = "Christopher Alexander Villamarín Pila";
-const ogTitle = "📊 Simplex - Proyecto de Christopher Villamarín";
+const ogTitle = "🛠️ Simplex Solver - Proyecto de Christopher Villamarín";
 const ogDescription =
-  "Aprende a utilizar el método Simplex para resolver problemas de optimización en programación lineal con ejemplos detallados.";
+    "Descubre el Simplex Solver, una herramienta robusta y moderna para resolver problemas de optimización, ofreciendo interfaces programáticas y gráficas.";
 const ogUrl = "https://xeland314.github.io/es/projects/simplex/";
-const ogImage = "https://xeland314.github.io/images/simplex_preview.png";
-const imageAlt = "Vista previa del proyecto Simplex";
+const ogImage = "https://xeland314.github.io/images/simplex_preview.png"; // Asegúrate de actualizar esta imagen con una captura de la GUI!
+const imageAlt = "Vista previa de la Interfaz Gráfica (GUI) del Simplex Solver";
 const canonicalUrl = "https://xeland314.github.io/es/projects/simplex/";
 const robots = "index, follow";
 ---
 
 <ProjectLayout
-  title={title}
-  description={description}
-  keywords={keywords}
-  author={authors}
-  title={ogTitle}
-  description={ogDescription}
-  url={ogUrl}
-  image={ogImage}
-  imageAlt={imageAlt}
-  canonical={canonicalUrl}
-  applicationName="Simplex"
-  robots={robots}
+    title={title}
+    description={description}
+    keywords={keywords}
+    author={authors}
+    title={ogTitle}
+    description={ogDescription}
+    url={ogUrl}
+    image={ogImage}
+    imageAlt={imageAlt}
+    canonical={canonicalUrl}
+    applicationName="Simplex Solver"
+    robots={robots}
 >
-  <div class="p-0 sm:p-6">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4">📊 Simplex</h1>
-    </header>
+    <div class="p-0 sm:p-6">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold mb-4 text-center">
+                🛠️ Simplex Solver - App de escritorio
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Herramienta integral para <b>Programación Lineal</b> con múltiples
+                interfaces de definición y solución.
+            </p>
+        </header>
 
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">Ejemplo de uso práctico</h2>
-      <p class="mb-4">
-        Supongamos que tienes una empresa que produce dos productos, A y B. Cada
-        unidad de producto A que produces te genera una ganancia de $3 y cada
-        unidad de producto B te genera una ganancia de $4. Quieres maximizar tus
-        ganancias totales.
-      </p>
-      <p class="mb-4">
-        Sin embargo, tienes algunas restricciones en la producción. Cada unidad
-        de producto A requiere 2 horas de trabajo y cada unidad de producto B
-        requiere 3 horas de trabajo. Tienes un total de 100 horas de trabajo
-        disponibles. Además, cada unidad de producto A requiere 1 kg de materia
-        prima y cada unidad de producto B requiere 2 kg de materia prima. Tienes
-        un total de 80 kg de materia prima disponibles.
-      </p>
-      <p class="mb-4">
-        Este problema se puede formular como un problema de programación lineal
-        con la siguiente función objetivo y restricciones:
-      </p>
-      <CodeBlock
-        code={`Maximizar: 3A + 4B
-Sujeto a:
-    2A + 3B <= 100
-    A + 2B <= 80
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">
+                Core Solver y Funcionalidad
+            </h2>
+            <p class="mb-4">
+                El corazón del proyecto utiliza el potente módulo <b
+                    ><code>scipy.optimize.linprog</code></b
+                >
+                para proporcionar soluciones precisas de programación lineal. Maneja
+                de forma robusta:
+            </p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li>Objetivos de <b>Maximización</b> y <b>Minimización</b>.</li>
+                <li>Restricciones de <b>Desigualdad</b> \(\le, \ge\).</li>
+                <li>Restricciones de <b>Igualdad</b> \(=\).</li>
+                <li>
+                    Conversión automática de <b>Variables Libres</b> (sin restricción
+                    de no negatividad).
+                </li>
+            </ul>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">
+                Interfaces de Usuario Avanzadas
+            </h2>
+
+            <h3 class="text-2xl font-medium mb-3 mt-5">
+                1. Domain Specific Languages (DSLs)
+            </h3>
+            <p class="mb-3">
+                Define problemas de optimización de forma programática o legible
+                por humanos:
+            </p>
+
+            <ul class="list-disc pl-6 space-y-3 mb-5">
+                <li>
+                    <b>String-based DSL:</b> Para cargar problemas desde archivos
+                    <code>.lp</code> o directamente desde una cadena de texto en
+                    un formato estándar.
+                </li>
+                <li>
+                    <b>Pythonic DSL:</b> Una sintaxis elegante, inspirada en librerías
+                    matemáticas, que utiliza objetos y operadores de Python para
+                    construir el modelo de forma nativa.
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-medium mb-3 mt-5">
+                2. Interfaz Gráfica (GUI) - PySide6
+            </h3>
+            <p class="mb-3">
+                Una aplicación de escritorio completa construida con <b
+                    >PySide6 (Qt)</b
+                > que ofrece una experiencia interactiva. Incluye editor, tabla de
+                resultados y una consola de registro.
+            </p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li>
+                    <b>Visualización Gráfica</b>: Muestra la región factible y
+                    el punto óptimo para problemas de 2 variables.
+                </li>
+                <li>
+                    <b>UI Responsiva</b>: El <i>solver</i> corre en un hilo separado
+                    para evitar el congelamiento de la aplicación.
+                </li>
+            </ul>
+
+            <div class="flex flex-col md:flex-row gap-4 mt-6">
+                <img
+                    src="https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-43-53.jpg"
+                    alt="Captura de pantalla 1 de la Interfaz Gráfica: entrada y resultados"
+                    class="w-full md:w-1/2 rounded-lg shadow-lg"
+                    loading="lazy"
+                    width="756"
+                    height="542"
+                />
+                <img
+                    src="https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-44-25.jpg"
+                    alt="Captura de pantalla 2 de la Interfaz Gráfica: sección de plotting (gráfico)"
+                    class="w-full md:w-1/2 rounded-lg shadow-lg"
+                    loading="lazy"
+                    width="844"
+                    height="676"
+                />
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">
+                Ejemplo Práctico: Maximización de Ganancias
+            </h2>
+            <p class="mb-4">
+                El siguiente ejemplo de optimización (productos A y B) se define
+                de forma concisa utilizando el <b>String-based DSL</b>, que lee
+                un formato similar a un archivo <code>.lp</code> tradicional:
+            </p>
+
+            <CodeBlock
+                code={`from dsl import DSL
+problema_lp = DSL("""
+MAXIMIZE
+    Z = 3*A + 4*B
+SUBJECT TO
+    2*A + 3*B <= 100
+    1*A + 2*B <= 80
+BOUNDS
     A >= 0
-    B >= 0`}
-        client:visible
-      />
-      <p class="mb-4">
-        Donde <code>A</code> y <code>B</code> representan el número de unidades producidas
-        de los productos A y B, respectivamente.
-      </p>
-    </section>
+    B >= 0
+""")
+# 2*A + 3*B <= 100 # Horas de trabajo
+# 1*A + 2*B <= 80 # Materia prima
+solver = problema_lp.to_simplex()
+solver.solve_problem()
+solver.show_results()
+# Solución óptima: A=20, B=30, Z_max = $180
+`}
+                client:visible
+                language="python"
+            />
+        </section>
 
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">Ejemplo de entrada y salida</h2>
-      <p class="mb-4">
-        Para resolver este problema, puedes ingresar los siguientes valores:
-      </p>
-      <ul class="list-disc pl-6 space-y-4">
-        <li>Número de variables: <code>2</code></li>
-        <li>
-          Coeficientes de la función objetivo: <code>3</code> y <code>4</code>
-        </li>
-        <li>Maximizar o minimizar: <code>1</code> (maximizar)</li>
-        <li>Número de restricciones: <code>2</code></li>
-        <li>
-          Restricción 1:
-          <ul class="list-disc pl-6">
-            <li>Coeficientes: <code>2</code> y <code>3</code></li>
-            <li>Desigualdad: <code>&lt;=</code></li>
-            <li>Valor de <code>b</code>: <code>100</code></li>
-          </ul>
-        </li>
-        <li>
-          Restricción 2:
-          <ul class="list-disc pl-6">
-            <li>Coeficientes: <code>1</code> y <code>2</code></li>
-            <li>Desigualdad: <code>&lt;=</code></li>
-            <li>Valor de <code>b</code>: <code>80</code></li>
-          </ul>
-        </li>
-      </ul>
-      <p class="mt-4">
-        Después de ingresar estos valores, la solución óptima es producir 20
-        unidades del producto A y 30 unidades del producto B para obtener una
-        ganancia máxima de $180.
-      </p>
-    </section>
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">
+                Instalación y Uso Rápido
+            </h2>
 
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">Ejemplo adicional</h2>
-      <p class="mb-4">Otro ejemplo con diferentes valores de entrada:</p>
-      <ul class="list-disc pl-6 space-y-4">
-        <li>Número de variables: <code>2</code></li>
-        <li>
-          Coeficientes de la función objetivo: <code>4</code> y <code>1</code>
-        </li>
-        <li>Maximizar o minimizar: <code>0</code> (minimizar)</li>
-        <li>Número de restricciones: <code>3</code></li>
-        <li>
-          Restricción 1:
-          <ul class="list-disc pl-6">
-            <li>Coeficientes: <code>3</code> y <code>1</code></li>
-            <li>Desigualdad: <code>=</code></li>
-            <li>Valor de <code>b</code>: <code>3</code></li>
-          </ul>
-        </li>
-        <li>
-          Restricción 2:
-          <ul class="list-disc pl-6">
-            <li>Coeficientes: <code>4</code> y <code>3</code></li>
-            <li>Desigualdad: <code>&gt;=</code></li>
-            <li>Valor de <code>b</code>: <code>6</code></li>
-          </ul>
-        </li>
-        <li>
-          Restricción 3:
-          <ul class="list-disc pl-6">
-            <li>Coeficientes: <code>1</code> y <code>2</code></li>
-            <li>Desigualdad: <code>&lt;=</code></li>
-            <li>Valor de <code>b</code>: <code>4</code></li>
-          </ul>
-        </li>
-      </ul>
-    </section>
-  </div>
+            <h3 class="text-2xl font-medium mb-3">
+                Instalación de Dependencias
+            </h3>
+            <p class="mb-3">
+                Después de clonar el repositorio, usa <code>pip</code> para instalar
+                todo lo necesario:
+            </p>
+            <CodeBlock
+                code={`git clone https://github.com/xeland314/simplex.git
+cd simplex
+pip install -r requirements.txt`}
+                client:visible
+                language="bash"
+            />
+
+            <h3 class="text-2xl font-medium mb-3 mt-5">
+                Lanzamiento de Interfaces
+            </h3>
+            <p class="mb-3">
+                Ejecuta tu interfaz preferida con un solo comando:
+            </p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><b>GUI (Aplicación de Escritorio):</b></li>
+                <CodeBlock
+                    code={`python app.py`}
+                    client:visible
+                    language="bash"
+                />
+                <li><b>Command Line (CLI) Interactivo:</b></li>
+                <CodeBlock
+                    code={`python simplex.py`}
+                    client:visible
+                    language="bash"
+                />
+            </ul>
+        </section>
+    </div>
 </ProjectLayout>

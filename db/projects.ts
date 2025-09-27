@@ -21,7 +21,6 @@ export const projectData = [
     demoLink: "https://github.com/xeland314/PoliTetris/releases",
     tags: ["Java", "Swing"],
     image: "/images/optimized/projects/tetris/card.avif",
-    isFeatured: true,
   },
   {
     title: "Chat Analyzer",
@@ -107,14 +106,18 @@ export const projectData = [
     isFeatured: true,
   },
   {
-    title: "Simplex",
+    title: "Simplex Solver",
     slug: "simplex",
     description:
-      "Un proyecto en Python para resolver problemas de optimización utilizando el método simplex. Incluye ejemplos prácticos y una implementación en Jupyter Notebook.",
-    shortDescription: "Optimización con el método simplex en Python.",
+      "Herramienta integral para Programación Lineal con múltiples interfaces: DSLs (String-based y Pythonic), Command-Line, y una GUI avanzada con PySide6 que incluye visualización gráfica.",
+    shortDescription:
+      "Solver completo de Programación Lineal (LP) con DSLs y GUI.",
     githubLink: "https://github.com/xeland314/simplex",
-    tags: ["Python", "Optimizacion", "Simplex", "Jupyter"],
-    image: undefined,
+    demoLink: "https://github.com/xeland314/simplex/releases",
+    tags: ["Python", "Optimizacion", "Simplex", "DSLs", "PySide6", "GUI"],
+    image:
+      "https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-43-53.jpg",
+    isFeatured: true,
   },
   {
     title: "Buscador de Ubicaciones - Ecuador",
