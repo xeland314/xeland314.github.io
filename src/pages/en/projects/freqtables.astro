@@ -1,0 +1,149 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "📊 freqtables - Christopher Villamarín Projects";
+const description =
+  "Learn how to create simple frequency tables and tables with intervals using the freqtables package. Compatible with lists, tuples, and dictionaries for efficient data handling.";
+const keywords = [
+  "freqtables",
+  "frequency tables",
+  "intervals",
+  "data analysis",
+  "Python",
+  "FreqTableSimple",
+  "Christopher Villamarín",
+  "xeland314",
+  "projects",
+  "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "📊 freqtables - Christopher Villamarín Project";
+const ogDescription =
+  "Discover how to create simple frequency tables and tables with intervals using the freqtables package. Ideal for data analysis in Python.";
+const ogUrl = "https://xeland314.github.io/en/projects/freqtables/";
+const ogImage =
+  "https://raw.githubusercontent.com/xeland314/freqtables/refs/heads/main/examples/example0.png";
+const imageAlt = "Preview of the freqtables project";
+const canonicalUrl = "https://xeland314.github.io/en/projects/freqtables/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="freqtables"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  robots={robots}
+  lang="en"
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">📊 freqtables</h1>
+      <p class="text-lg">
+        This package allows you to create simple frequency tables given a set of
+        variables with their respective frequencies. This dataset can be a list,
+        tuple, or a dictionary.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🔹 freqtablesimple</h2>
+      <p class="mb-4">
+        Here are different ways to initialize <code>FreqTableSimple</code> using
+        lists, dictionaries, or individual arguments:
+      </p>
+      <CodeBlock
+        code={`import freqtable as ft
+
+table1 = ft.FreqTableSimple([
+    'A', 'A', 'A', 'B', 'B',
+    'B', 'B', 'B', 'B', 'C'
+])
+table2 = ft.FreqTableSimple({
+    'A':3, 'B':6, 'C':1
+})
+table3 = ft.FreqTableSimple(
+    'A', 'A', 'A', 'B', 'B',
+    'B', 'B', 'B', 'B', 'C'
+)
+table4 = ft.FreqTableSimple(
+    A = 3, B = 6, C = 1
+)`}
+        language="python"
+        client:visible
+      />
+      <p class="mt-4">
+        Any of these initializations will result in a table similar to this:
+      </p>
+      <div class="text-center mt-4">
+        <img
+          src="https://raw.githubusercontent.com/xeland314/freqtables/refs/heads/main/examples/example0.png"
+          alt="Simple Table"
+          class="rounded-lg shadow-md mx-auto"
+        />
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🔹 freqtable</h2>
+      <p class="mb-4">
+        It is also possible to create a frequency table with intervals using
+        <code>freqtable.py</code>. For example:
+      </p>
+      <CodeBlock
+        code={`# example1.py
+import freqtable as ft
+
+# 8 intervals are created from 0 with a width of 4:
+intervals = ft.create_intervals(8, 0, 4)
+frequencies = [47, 32, 25, 20, 12, 5, 4, 5]
+# The table is initialized with the intervals and frequencies:
+table_with_intervals = ft.FreqTable(intervals, frequencies)`}
+        language="python"
+        client:visible
+      />
+      <p class="mt-4">This will result in:</p>
+      <CodeBlock
+        code={`print("Table #01".center(62, "~"))
+print(table_with_intervals)`}
+        language="python"
+        client:visible
+      />
+      <div class="text-center mt-4">
+        <img
+          src="https://raw.githubusercontent.com/xeland314/freqtables/refs/heads/main/examples/example1.png"
+          alt="Table with intervals"
+          class="rounded-lg shadow-md mx-auto"
+        />
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📦 Installation</h2>
+      <p class="mb-4">
+        You can clone the repository and then install the necessary
+        dependencies:
+      </p>
+      <CodeBlock
+        code={`git clone https://github.com/xeland314/freqtables`}
+        client:visible
+      />
+      <CodeBlock code={`pip3 install -r requirements.txt`} client:visible />
+      <details class="mt-4">
+        <summary class="cursor-pointer text-blue-600 hover:underline">
+          requirements.txt
+        </summary>
+        <ul class="list-disc pl-6">
+          <li>tabulate &gt;= 0.8.10</li>
+        </ul>
+      </details>
+    </section>
+  </div>
+</ProjectLayout>

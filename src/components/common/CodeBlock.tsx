@@ -10,9 +10,27 @@ interface CodeBlockProps {
 export default function CodeBlock({ code, language = "bash" }: CodeBlockProps) {
   const [isCopied, setIsCopied] = useState(false);
   const { resolvedTheme } = useAstroTheme();
-  const [theme, setTheme] = useState(themes.github); // Predeterminado en modo claro
+  const [theme, setTheme] = useState(themes.github);
+  const [lang, setLang] = useState<"es" | "en">("es");
 
-  // Actualiza el tema cuando cambie `resolvedTheme`
+  useEffect(() => {
+    const currentLang = window.location.pathname.startsWith("/en") ? "en" : "es";
+    setLang(currentLang);
+  }, []);
+
+  const texts = {
+    es: {
+      copy: "Copiar",
+      copied: "¡Copiado!",
+    },
+    en: {
+      copy: "Copy",
+      copied: "Copied!",
+    },
+  };
+
+  const T = texts[lang];
+
   useEffect(() => {
     setTheme(resolvedTheme === "dark" ? themes.vsDark : themes.github);
   }, [resolvedTheme]);
@@ -55,7 +73,7 @@ export default function CodeBlock({ code, language = "bash" }: CodeBlockProps) {
           onClick={handleCopy}
           className="px-2 py-1 text-xs bg-blue-600 text-white rounded-sm hover:bg-blue-700 focus:outline-none"
         >
-          {isCopied ? "¡Copiado!" : "Copiar"}
+          {isCopied ? T.copied : T.copy}
         </button>
       </div>
     </div>

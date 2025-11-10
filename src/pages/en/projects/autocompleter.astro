@@ -1,0 +1,474 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "📍 Location Finder - Ecuador - Christopher Villamarín Projects";
+const description =
+  "A location finder that uses a local Nominatim server, filtering only results within Ecuador, built with FastAPI.";
+const keywords = [
+  "Location Finder",
+  "Ecuador",
+  "Nominatim",
+  "FastAPI",
+  "geocoding",
+  "autocompletion",
+  "Leaflet",
+  "Python",
+  "Christopher Villamarín",
+  "xeland314",
+  "projects",
+  "API",
+  "reinforcement learning",
+  "cache",
+  "Redis",
+  "SQLite",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "📍 Location Finder - Ecuador - Christopher Villamarín Project";
+const ogDescription =
+  "Discover a location finder for Ecuador, powered by Nominatim and FastAPI, with search history and an interactive map.";
+const ogUrl = "https://xeland314.github.io/en/projects/autocompleter/";
+const ogImage = "https://xeland314.github.io/images/autocompleter-screen.png";
+const imageAlt = "Preview of the Location Finder - Ecuador project";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/en/projects/autocompleter/";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="Location Finder - Ecuador"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="en"
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">📍 Location Finder - Ecuador</h1>
+      <p class="text-lg">
+        This project is a location finder that uses a local
+        <a
+          href="https://nominatim.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline">Nominatim</a
+        >
+        server, filtering only results within <strong>Ecuador</strong> since I have
+        locally configured Nominatim with data only from my country.
+      </p>
+      <img
+        src="/images/autocompleter-screen.png"
+        alt="Preview of the Location Finder - Ecuador project"
+        class="w-full max-w-2xl mx-auto mb-4 rounded-lg shadow-lg"
+      />
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">✨ Features</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Created with <strong>FastAPI</strong> and a simple HTML frontend.</li>
+        <li>Redirects user requests to the local Nominatim server.</li>
+        <li>Displays results on an HTML page.</li>
+        <li>Allows viewing a history of searches.</li>
+        <li>Easily copy the coordinates of a location.</li>
+        <li>
+          Option to open the location directly in <strong>Google Maps</strong>.
+        </li>
+        <li>
+          Displays the selected location on an interactive map using
+          <strong>Leaflet</strong>.
+        </li>
+        <li>
+          Allows copying responses in <strong>JSON</strong> and
+          <strong>XML</strong> formats.
+        </li>
+        <li>
+          Access to interactive API documentation via <strong>Swagger</strong> and
+          <strong>ReDoc</strong>.
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">💡 Usage</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>Enter an address or place in Ecuador.</li>
+        <li>View the results and select the desired location.</li>
+        <li>Observe the location on the interactive map.</li>
+        <li>Copy the coordinates or the responses in JSON or XML format.</li>
+        <li>Open the location in Google Maps or OSM.</li>
+        <li>Check the recent search history.</li>
+        <li>
+          Access the API documentation at <code>/docs</code> (Swagger) or
+          <code>/redoc</code> (ReDoc).
+        </li>
+      </ol>
+      <img
+        src="/images/autocompleter-screen2.png"
+        alt="Preview of the Location Finder - Ecuador project"
+        class="w-full max-w-2xl mx-auto mb-4 rounded-lg shadow-lg"
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🤖 Scoring System</h2>
+      <p class="mb-4">
+        The project uses a technique to improve the relevance of autocomplete
+        suggestions based on actual user usage. When a user selects a location,
+        this <strong>"feedback"</strong> is recorded in a <strong>SQLite</strong> database.
+      </p>
+      <p class="mb-4">
+        This system assigns a <strong>popularity "boost"</strong> to the most
+        selected results, causing them to appear at the top of future searches.
+        In this way, the search engine "learns" which locations are most
+        relevant to users in Ecuador. This process is similar to
+        <strong>reinforcement learning</strong>, where the system optimizes itself
+        based on user interactions.
+      </p>
+      <h3 class="text-xl font-semibold mt-6 mb-2">Technical Operation</h3>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          <strong>SQLite</strong> is used for persistent, long-term storage of user
+          feedback.
+        </li>
+        <li>
+          A custom <strong>AutocompleteScorer</strong> combines popularity from the
+          database with factors like fuzzy matching, Nominatim relevance, and
+          place type to generate a final score for each suggestion.
+        </li>
+      </ul>
+    </section>
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">Bootstrap Feedback</h2>
+      <p class="mb-4">
+        If you don't have users but want to simulate user responses or prioritize
+        certain places, you can use the <code>bootstrap_feedback.py</code> script to
+        generate initial feedback. This script allows you to load location data
+        and assign an initial score, which helps establish a starting point for
+        the scoring system.
+      </p>
+      <CodeBlock
+        code={`import sys
+import concurrent.futures
+import threading
+
+import requests
+
+from fuzzywuzzy import fuzz
+
+
+# Base URL of the FastAPI application
+FASTAPI_BASE_URL = "http://127.0.0.1:8089"
+
+# --- Path to the seed queries file ---
+SEED_QUERIES_FILE = "seed_queries.txt"
+
+# --- Thresholds for considering a suggestion "good" or "popular" ---
+MIN_NOMINATIM_IMPORTANCE = 0.01
+MIN_FUZZY_RATIO = 40
+MIN_TOKEN_SET_RATIO = 70
+
+# --- Threading Configuration ---
+# Number of concurrent threads.
+MAX_WORKERS = 10
+
+# Lock to protect console printing (to avoid messy output)
+print_lock = threading.Lock()
+
+def load_seed_queries(file_path: str) -> list[str]:
+    """Loads seed queries from a text file."""
+    queries = []
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                query = line.strip()
+                if query and not query.startswith(
+                    "#"
+                ):  # Ignore empty lines or comments
+                    queries.append(query)
+    except FileNotFoundError:
+        print(f"Error: The file '{file_path}' was not found.")
+        sys.exit(1)  # Use sys.exit to exit the script
+
+    return queries
+
+def record_simulated_selection(query: str, selected_item: dict):
+    """Simulates sending feedback to the FastAPI endpoint."""
+    feedback_url = f"{FASTAPI_BASE_URL}/feedback"
+    payload = {
+        "query": query,
+        "selected_item": {
+            "osm_id": selected_item.get("osm_id"),
+            "display_name": selected_item.get("display_name"),
+            "lat": selected_item.get("lat"),
+            "lon": selected_item.get("lon"),
+            "type": selected_item.get("type"),
+        },
+    }
+    try:
+        response = requests.post(feedback_url, json=payload, timeout=5)
+        response.raise_for_status()
+        with print_lock:  # Protect printing
+            print(
+                f"  ✅ Successful simulation: '{selected_item.get('display_name')}' for query '{query}'"
+            )
+        return True  # Indicate success
+    except requests.exceptions.RequestException as e:
+        with print_lock:  # Protect printing
+            print(f"  ❌ Error sending simulated feedback for '{query}': {e}")
+        return False  # Indicate failure
+
+def get_autocomplete_suggestions(query: str):
+    """Gets suggestions from your own /autocomplete endpoint."""
+    autocomplete_url = f"{FASTAPI_BASE_URL}/autocomplete?query={query}"
+    try:
+        response = requests.get(autocomplete_url, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        with print_lock:  # Protect printing
+            print(f"  Error getting suggestions from FastAPI for '{query}': {e}")
+        return []
+
+def process_query(query: str):
+    """
+    Function that processes a single query and simulates selection.
+    Designed to be run by a thread.
+    """
+    suggestions = get_autocomplete_suggestions(query)
+
+    if not suggestions:
+        with print_lock:
+            print(f"  ⚠️ No suggestions obtained from your API for '{query}'.")
+        return 0  # No selection was simulated
+
+    best_suggestion_for_query = None
+    highest_combined_bootstrap_score = -1
+
+    for item in suggestions:
+        display_name = item.get("display_name", "")
+        nominatim_importance = float(item.get("importance", 0.0))
+
+        query_lower = query.lower()
+        display_name_lower = display_name.lower()
+
+        fuzz_ratio = fuzz.ratio(query_lower, display_name_lower)
+        token_set_ratio = fuzz.token_set_ratio(query_lower, display_name_lower)
+
+        passes_importance = nominatim_importance >= MIN_NOMINATIM_IMPORTANCE
+        passes_fuzzy_or_token_set = (fuzz_ratio >= MIN_FUZZY_RATIO) or (
+            token_set_ratio >= MIN_TOKEN_SET_RATIO
+        )
+
+        current_bootstrap_score = (
+            (nominatim_importance * 0.4) + (token_set_ratio * 0.4) + (fuzz_ratio * 0.2)
+        )
+
+        with print_lock:  # Protect printing to avoid console clutter
+            print(
+                f"    - Suggestion: '{display_name}' (Imp: {nominatim_importance:.2f}, Fuzz: {fuzz_ratio}, TokenSet: {token_set_ratio})"
+            )
+
+            if passes_importance and passes_fuzzy_or_token_set:
+                print(
+                    f"      👍 Qualifies: Imp={passes_importance}, (Fuzz={fuzz_ratio}>={MIN_FUZZY_RATIO} OR TokenSet={token_set_ratio}>={MIN_TOKEN_SET_RATIO})"
+                )
+                if current_bootstrap_score > highest_combined_bootstrap_score:
+                    highest_combined_bootstrap_score = current_bootstrap_score
+                    best_suggestion_for_query = item
+            else:
+                imp_fail = (
+                    f"(Imp: {nominatim_importance:.2f} < {MIN_NOMINATIM_IMPORTANCE})"
+                    if not passes_importance
+                    else ""
+                )
+                fuzzy_fail = (
+                    f"(Fuzz: {fuzz_ratio} < {MIN_FUZZY_RATIO})"
+                    if (fuzz_ratio >= MIN_FUZZY_RATIO)
+                    else ""
+                )
+                token_set_fail = (
+                    f"(TokenSet: {token_set_ratio} < {MIN_TOKEN_SET_RATIO})"
+                    if not (token_set_ratio >= MIN_TOKEN_SET_RATIO)
+                    else ""
+                )
+                print(
+                    f"      👎 Does not qualify: Imp: {passes_importance} {imp_fail}, Fuzz/TokenSet: {passes_fuzzy_or_token_set} ({fuzzy_fail} {token_set_fail})"
+                )
+
+    if best_suggestion_for_query:
+        record_simulated_selection(query, best_suggestion_for_query)
+        return 1  # 1 selection was simulated
+    else:
+        with print_lock:
+            print(
+                f"  ❌ No 'good' suggestion found for '{query}' under the defined thresholds."
+            )
+        return 0  # No selection was simulated
+
+def bootstrap_feedback_db():
+    """
+    Simulates interactions to pre-populate the feedback database using threads.
+    """
+    print("Starting feedback database bootstrapping...")
+
+    # Load seed queries from the file
+    seed_queries = load_seed_queries(SEED_QUERIES_FILE)
+    if not seed_queries:
+        print("No queries found in the seed file. Aborting.")
+        return
+
+    # Make sure the FastAPI server is running before executing this
+    try:
+        requests.get(f"{FASTAPI_BASE_URL}/docs", timeout=5)
+        print("FastAPI server accessible.")
+    except requests.exceptions.ConnectionError:
+        print("Error: The FastAPI server is not running at", FASTAPI_BASE_URL)
+        print("Please start your FastAPI application before running this script.")
+        return
+
+    total_simulated_selections = 0
+
+    # Use ThreadPoolExecutor to run queries in parallel
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        # Map the process_query function to each seed query
+        # as_completed returns results as threads finish
+        futures = {
+            executor.submit(process_query, query): query for query in seed_queries
+        }
+
+        for future in concurrent.futures.as_completed(futures):
+            query = futures[future]
+            try:
+                # Each thread returns 1 if a selection was simulated, 0 otherwise.
+                total_simulated_selections += future.result()
+            except concurrent.futures.CancelledError as exc:
+                with print_lock:
+                    print(f"The query '{query}' was cancelled: {exc}")
+            except concurrent.futures.TimeoutError as exc:
+                with print_lock:
+                    print(f"The query '{query}' exceeded the timeout: {exc}")
+            except ValueError as exc:
+                with print_lock:
+                    print(f"The query '{query}' generated a ValueError: {exc}")
+            except TypeError as exc:
+                with print_lock:
+                    print(f"The query '{query}' generated a TypeError: {exc}")
+            except requests.exceptions.RequestException as exc:
+                with print_lock:
+                    print(f"The query '{query}' generated an HTTP request error: {exc}")
+
+    print("--- Bootstrapping Complete ---")
+    print(f"Total simulated selections: {total_simulated_selections}")
+    # Note: The DB_PATH is not printed directly from here, as cache.py already does it.
+    print("The feedback database has been updated.")
+    print("--- ATTENTION! ---")
+    print(f"Concurrency was used with {MAX_WORKERS} threads.")
+    print(
+        "This may cause your FastAPI server's rate limits to be reached more quickly."
+    )
+    print(
+        "If you see many 429 errors, consider reducing the number of MAX_WORKERS or increasing the limits in your 'rate_limiter.py'."
+    )
+    print(
+        "You can also adjust the thresholds (MIN_NOMINATIM_IMPORTANCE, MIN_FUZZY_RATIO, MIN_TOKEN_SET_RATIO) in this script."
+    )
+    print(f"You can add/modify queries in '{SEED_QUERIES_FILE}'.")
+
+
+if __name__ == "__main__":
+    try:
+        _ = fuzz.ratio("test", "test")
+    except ImportError:
+        print("Error: The 'fuzzywuzzy' library is not installed.")
+        print("Install it with: pip install fuzzywuzzy python-Levenshtein")
+        sys.exit(1)
+
+    bootstrap_feedback_db()
+`}
+        language="python"
+        client:visible
+      />
+    </section>
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        🚀 Query Caching with Redis
+      </h2>
+      <p class="mb-4">
+        To speed up responses and reduce the load on the local Nominatim server,
+        a short-term cache layer is implemented using <strong>Redis</strong>.
+      </p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          Upon receiving a query, the API first attempts to get the result from
+          the <strong>Redis</strong> cache.
+        </li>
+        <li>
+          If the query has been made recently (within 5 minutes), the response is
+          served instantly from the cache.
+        </li>
+        <li>
+          If there is no response in the cache, the query is made to the
+          Nominatim server, processed, and the final result is saved in Redis
+          for future requests.
+        </li>
+      </ul>
+      <p class="mt-4">
+        This strategy significantly improves performance for repeated searches,
+        providing a faster and more efficient user experience.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🛠️ Requirements</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Python 3.8+</li>
+        <li>FastAPI</li>
+        <li>
+          Local Nominatim server (although this one is configured only with data
+          from Ecuador)
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📦 Installation</h2>
+      <CodeBlock
+        code={`pip install fastapi uvicorn requests python-multipart`}
+        language="bash"
+        client:visible
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🚀 Execution</h2>
+      <CodeBlock
+        code={`uvicorn main:app --reload`}
+        language="bash"
+        client:visible
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⚠️ Disclaimer</h2>
+      <p class="mb-4">
+        This project is designed solely for personal use or in controlled
+        environments with a local Nominatim server configured with data from
+        Ecuador.
+      </p>
+      <p class="font-bold text-red-600 dark:text-red-400">Warning:</p>
+      <p>
+        Do not use this search engine with the original Nominatim server or with
+        platforms that do not allow the use of autocompletion or automated query
+        redirection. Misuse may violate the terms of service and result in
+        blocks or penalties.
+      </p>
+    </section>
+  </div>
+</ProjectLayout>

@@ -1,5 +1,52 @@
 ---
 import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.astro";
+
+const { lang = "es" } = Astro.props;
+
+const texts: Record<string, Record<string, string>> = {
+    es: {
+        about_me: "Acerca de mí",
+        profile_alt: "Christopher Villamarín - Foto de Perfil",
+        profile_title: "Foto de perfil de Christopher Villamarín",
+        profile_heading: "Perfil",
+        full_stack: "Full Stack Developer:",
+        full_stack_desc:
+            "Experiencia en backend con Go y Python y frontend en React y Flutter.",
+        focus: "Enfoque:",
+        focus_desc:
+            "Construyo sistemas escalables que automatizan procesos y generan impacto real en el negocio.",
+        languages: "Idiomas:",
+        languages_desc: "Español (nativo) e Inglés (fluido).",
+        passion_p1:
+            "Me apasiona transformar ideas en productos. He trabajado en dashboards, APIs de alto rendimiento y aplicaciones móviles, siempre cuidando la arquitectura, la eficiencia y la experiencia del usuario.",
+        passion_p2:
+            "Creo en el aprendizaje constante y en el poder de los datos para guiar decisiones. Aquí encontrarás proyectos donde combino creatividad, ingeniería y foco en resultados.",
+        explore_more: "Puedes explorar más de mi trabajo en mi",
+        connect_with_me: "o conectar conmigo en",
+    },
+    en: {
+        about_me: "About Me",
+        profile_alt: "Christopher Villamarín - Profile Picture",
+        profile_title: "Profile picture of Christopher Villamarín",
+        profile_heading: "Profile",
+        full_stack: "Full Stack Developer:",
+        full_stack_desc:
+            "Experience in backend with Go and Python and frontend in React and Flutter.",
+        focus: "Focus:",
+        focus_desc:
+            "I build scalable systems that automate processes and generate real business impact.",
+        languages: "Languages:",
+        languages_desc: "Spanish (native) and English (fluent).",
+        passion_p1:
+            "I am passionate about transforming ideas into products. I have worked on dashboards, high-performance APIs, and mobile applications, always taking care of architecture, efficiency, and user experience.",
+        passion_p2:
+            "I believe in constant learning and the power of data to guide decisions. Here you will find projects where I combine creativity, engineering, and a focus on results.",
+        explore_more: "You can explore more of my work on my",
+        connect_with_me: "or connect with me on",
+    },
+};
+
+const T = texts[lang];
 ---
 
 <article
@@ -13,18 +60,18 @@ import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.as
             <h2
                 class="text-center text-2xl font-medium mb-8 text-gray-900 dark:text-white"
             >
-                <strong>Acerca de mí</strong>
+                <strong>{T.about_me}</strong>
             </h2>
             <div
                 class="flex mobile:flex-row flex-col justify-center items-center-safe gap-4 sm:gap-8 mb-4"
             >
                 <img
                     src="/images/optimized/profile.avif"
-                    alt="Christopher Villamarín - Foto de Perfil"
+                    alt={T.profile_alt}
                     width={128}
                     height={128}
                     class="bg-slate-700 dark:bg-white rounded-md shadow-2xl transform hover:scale-105 transition-transform duration-300"
-                    title="Foto de perfil de Christopher Villamarín"
+                    title={T.profile_title}
                 />
             </div>
             <div
@@ -33,19 +80,20 @@ import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.as
                 <h3
                     class="text-xl font-semibold mb-2 text-blue-700 dark:text-blue-400"
                 >
-                    Perfil
+                    {T.profile_heading}
                 </h3>
                 <ul class="list-disc list-inside">
                     <li class="list-item py-1">
-                        <strong>Full Stack Developer:</strong> Experiencia en backend
-                        con Go y Python y frontend en React y Flutter.
+                        <strong>{T.full_stack}</strong>
+                        {T.full_stack_desc}
                     </li>
                     <li class="list-item py-1">
-                        <strong>Enfoque:</strong> Construyo sistemas escalables que
-                        automatizan procesos y generan impacto real en el negocio.
+                        <strong>{T.focus}</strong>
+                        {T.focus_desc}
                     </li>
                     <li class="list-item py-1">
-                        <strong>Idiomas:</strong> Español (nativo) e Inglés (fluido).
+                        <strong>{T.languages}</strong>
+                        {T.languages_desc}
                     </li>
                 </ul>
             </div>
@@ -53,23 +101,18 @@ import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.as
                 class="border-l-4 border-blue-700 bg-gray-100 dark:bg-gray-800 rounded-lg p-6 shadow-md mb-4"
             >
                 <p class="text-justify text-gray-700 dark:text-gray-300">
-                    Me apasiona transformar ideas en productos. He trabajado en
-                    dashboards, APIs de alto rendimiento y aplicaciones móviles,
-                    siempre cuidando la arquitectura, la eficiencia y la
-                    experiencia del usuario.
+                    {T.passion_p1}
                 </p>
 
                 <p class="text-justify text-gray-700 dark:text-gray-300">
-                    Creo en el aprendizaje constante y en el poder de los datos
-                    para guiar decisiones. Aquí encontrarás proyectos donde
-                    combino creatividad, ingeniería y foco en resultados.
+                    {T.passion_p2}
                 </p>
             </div>
         </section>
-        <ProgrammingLanguages />
+        <ProgrammingLanguages lang={lang} />
     </div>
     <p class="text-center mt-auto pt-4 text-gray-700 dark:text-gray-300">
-        Puedes explorar más de mi trabajo en mi{" "}
+        {T.explore_more}{" "}
         <a
             href="https://github.com/xeland314"
             target="_blank"
@@ -78,7 +121,7 @@ import ProgrammingLanguages from "../programingLanguages/ProgrammingLanguages.as
         >
             <strong>GitHub</strong>
         </a>{" "}
-        o conectar conmigo en{" "}
+        {T.connect_with_me}{" "}
         <a
             href="https://linkedin.com/in/christopher-villamarin"
             target="_blank"

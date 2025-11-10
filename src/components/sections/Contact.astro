@@ -1,5 +1,7 @@
 ---
 import ContactForm from "../contact/ContactForm";
+
+const { lang = "es" } = Astro.props;
 ---
 
 <section
@@ -7,6 +9,6 @@ import ContactForm from "../contact/ContactForm";
     class="w-full flex flex-col items-center justify-center pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
 >
     <div class="w-full flex mb-4 items-center justify-center">
-        <ContactForm client:visible />
+        <ContactForm client:visible lang={lang} />
     </div>
 </section>

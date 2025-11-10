@@ -4,36 +4,36 @@ import ProjectCard from "../../../components/projects/ProjectCard.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Projects, eq, desc } from "astro:db";
 
-// --- METADATA DE LA PÁGINA DE PROYECTOS ---
-const pageTitle = "Todos Mis Proyectos - Christopher Villamarín";
+// --- PROJECTS PAGE METADATA ---
+const pageTitle = "All My Projects - Christopher Villamarín";
 const pageDescription =
-    "Explora todos los proyectos de desarrollo web, portafolio y código creados por Christopher Villamarín. Encuentra ejemplos de Next.js, React, Astro, Node.js y más.";
+    "Explore all web development projects, portfolio, and code created by Christopher Villamarín. Find examples of Next.js, React, Astro, Node.js, and more.";
 const pageKeywords = [
-    "proyectos de desarrollo web",
-    "portafolio web",
-    "ejemplos de código",
-    "Next.js proyectos",
-    "React proyectos",
-    "Astro proyectos",
-    "Node.js proyectos",
-    "desarrollador web",
+    "web development projects",
+    "web portfolio",
+    "code examples",
+    "Next.js projects",
+    "React projects",
+    "Astro projects",
+    "Node.js projects",
+    "web developer",
     "Christopher Villamarín",
     "xeland314",
 ].join(", ");
 
 const pageAuthor = "Christopher Villamarín";
-const applicationName = "Portafolio de Christopher Villamarín";
-const pageUrl = "https://xeland314.github.io/es/projects/";
+const applicationName = "Christopher Villamarín Portfolio";
+const pageUrl = "https://xeland314.github.io/en/projects/";
 const pageImage = "https://xeland314.github.io/images/social_share_default.png";
-const pageImageAlt = "Ilustración de varios proyectos de desarrollo web";
+const pageImageAlt = "Illustration of various web development projects";
 const pageRobots = "index, follow";
 const pageCanonical = pageUrl;
 
-// Obtener todos los proyectos de la DB
+// Get all projects from the DB for English language
 const allProjects = await db
     .select()
     .from(Projects)
-    .where(eq(Projects.lang, "es"))
+    .where(eq(Projects.lang, "en"))
     .orderBy(desc(Projects.isFeatured), Projects.title);
 ---
 
@@ -48,24 +48,25 @@ const allProjects = await db
     imageAlt={pageImageAlt}
     robots={pageRobots}
     canonical={pageCanonical}
+    lang="en"
 >
     <main
         class="py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen"
     >
         <section class="max-w-[2700px] mx-auto px-6">
             <h1 class="text-5xl font-extrabold text-center mb-16 mt-6">
-                Explora Todos Mis Proyectos
+                Explore All My Projects
             </h1>
             {
                 allProjects.length > 0 ? (
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-8">
                         {allProjects.map((project) => (
-                            <ProjectCard project={project} />
+                            <ProjectCard project={project} lang={"en"}/>
                         ))}
                     </div>
                 ) : (
                     <p class="text-center text-gray-500">
-                        No se encontraron proyectos.
+                        No projects found.
                     </p>
                 )
             }

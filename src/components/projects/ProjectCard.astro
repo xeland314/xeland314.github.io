@@ -1,8 +1,6 @@
 ---
 // src/components/ProjectCard.astro
 
-// Define la interfaz de las props para el componente
-// Asegúrate de que coincida con la estructura de tu tabla Projects en Astro DB
 interface Props {
     project: {
         title: string;
@@ -15,10 +13,36 @@ interface Props {
         slug: string; // Importante para el enlace a la página de detalles
         isFeatured?: boolean; // Si es necesario, aunque no se usa aquí
     };
+    lang?: "es" | "en";
 }
 
 // Desestructurar las props
-const { project } = Astro.props;
+const { project, lang = "es" } = Astro.props;
+
+const texts = {
+    es: {
+        view_details: "Ver Detalles",
+        view_details_title: "Ver detalles del proyecto",
+        repository: "Repositorio",
+        repository_title: "Repositorio en GitHub",
+        repository_unavailable: "Repositorio no disponible para este proyecto",
+        demo: "Demo",
+        demo_title: "Ver demo en línea",
+        demo_unavailable: "Demo no disponible para este proyecto",
+    },
+    en: {
+        view_details: "View Details",
+        view_details_title: "View project details",
+        repository: "Repository",
+        repository_title: "GitHub Repository",
+        repository_unavailable: "Repository not available for this project",
+        demo: "Demo",
+        demo_title: "View online demo",
+        demo_unavailable: "Demo not available for this project",
+    },
+};
+
+const T = texts[lang];
 
 // Función para capitalizar la primera letra de una cadena (para las tags)
 function capitalizeFirstLetter(string: string) {
@@ -27,7 +51,7 @@ function capitalizeFirstLetter(string: string) {
 
 // Para el enlace de la página de detalles, que antes usabas project.links[0] o generabas en CardHeader
 // Ahora lo generamos aquí directamente usando el slug
-const detailsPageLink = `/es/projects/${project.slug}`;
+const detailsPageLink = `/${lang}/projects/${project.slug}`;
 ---
 
 <article
@@ -97,7 +121,7 @@ const detailsPageLink = `/es/projects/${project.slug}`;
             transition:name={`title-${project.slug}`}
         >
             <a
-                href={detailsPageLink}
+                href={detailsPageLink.replace("en/projects/", "")}
                 class="hover:text-blue-700 dark:hover:text-blue-400 text-gray-900 dark:text-white"
             >
                 {project.title}
@@ -125,9 +149,9 @@ const detailsPageLink = `/es/projects/${project.slug}`;
             <a
                 href={detailsPageLink}
                 class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-colors flex-grow md:flex-none"
-                title="Ver detalles del proyecto"
+                title={T.view_details_title}
             >
-                Ver Detalles
+                {T.view_details}
             </a>
             <a
                 href={project.githubLink ?? "#"}
@@ -140,10 +164,10 @@ const detailsPageLink = `/es/projects/${project.slug}`;
                 }`}
                 aria-disabled={!project.githubLink}
                 title={project.githubLink
-                    ? "Repositorio en GitHub"
-                    : "Repositorio no disponible para este proyecto"}
+                    ? T.repository_title
+                    : T.repository_unavailable}
             >
-                <span class="mr-2">Repositorio</span>
+                <span class="mr-2">{T.repository}</span>
                 <svg
                     role="img"
                     viewBox="0 0 24 24"
@@ -165,11 +189,9 @@ const detailsPageLink = `/es/projects/${project.slug}`;
                         : "border-2 border-gray-300 dark:border-gray-600 text-gray-400 cursor-not-allowed opacity-60"
                 }`}
                 aria-disabled={!project.demoLink}
-                title={project.demoLink
-                    ? "Ver demo en línea"
-                    : "Demo no disponible para este proyecto"}
+                title={project.demoLink ? T.demo_title : T.demo_unavailable}
             >
-                <span class="mr-2">Demo</span>
+                <span class="mr-2">{T.demo}</span>
                 <svg
                     class="w-5 h-5"
                     fill="currentColor"

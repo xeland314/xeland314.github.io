@@ -1,0 +1,317 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "🔗 URL Shortener - Christopher Villamarín Projects";
+const description =
+  "An efficient and complete URL shortener service, built with Django and Django REST Framework, that allows creating public, private, and password-protected URLs.";
+const keywords = [
+  "URL Shortener",
+  "URL shortener",
+  "Django",
+  "Django REST Framework",
+  "Celery",
+  "Redis",
+  "PostgreSQL",
+  "HTMX",
+  "Tailwind CSS",
+  "Christopher Villamarín",
+  "xeland314",
+  "projects",
+  "Python",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "🔗 URL Shortener - Christopher Villamarín Project";
+const ogDescription =
+  "Discover a URL shortener service in Django with user authentication, HTMX, Celery for asynchronous tasks, and three types of customizable URLs.";
+const ogUrl = "https://xeland314.github.io/en/projects/urlshortener/";
+const ogImage = "https://xeland314.github.io/images/urlshortener-screen.png";
+const imageAlt = "Preview of the URL Shortener project";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/en/projects/urlshortener/";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="URL Shortener - Christopher Villamarín Projects"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="en"
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">🔗 URL Shortener</h1>
+      <p class="text-lg mb-4">
+        A simple and efficient URL shortener service, built with
+        <strong>Django</strong> and <strong>Django REST Framework</strong>. This
+        service allows users to shorten long URLs, track how many times they are
+        accessed, and manage their URLs through a RESTful API.
+      </p>
+      <img
+        src="/images/shortener-screen.png"
+        alt="Preview of the URL Shortener project"
+        class="w-full max-w-2xl mx-auto mb-4 rounded-lg shadow-lg"
+      />
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🛠️ Technologies Used</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li><strong>Backend:</strong> Django, Django REST Framework</li>
+        <li>
+          <strong>Database:</strong> PostgreSQL (recommended), SQLite (default)
+        </li>
+        <li><strong>Cache/Broker:</strong> Redis</li>
+        <li><strong>Asynchronous Tasks:</strong> Celery</li>
+        <li><strong>Frontend:</strong> HTML, Tailwind CSS, HTMX</li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">✨ Main Features</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Shorten long URLs and retrieve the originals.</li>
+        <li>Track the number of accesses to a shortened URL.</li>
+        <li>RESTful API to create, get, update, and delete URLs.</li>
+        <li>
+          <strong>User Authentication:</strong> Registration, login, and logout.
+        </li>
+        <li>
+          <strong>User-Specific URLs:</strong> URLs can be associated with
+          authenticated users.
+        </li>
+        <li>
+          <strong>Permissions:</strong> Only the owner or a superuser can modify
+          or delete a URL.
+        </li>
+        <li>
+          <strong>Interactive Dashboard:</strong> Authenticated users can manage
+          their URLs (delete, change password, regenerate token) using
+          <strong>HTMX</strong>.
+        </li>
+        <li>
+          <strong>URL Expiration:</strong>
+          <ul class="list-circle pl-6 mt-2 space-y-1">
+            <li>Anonymous URLs expire and are deleted after a certain time.</li>
+            <li>User URLs expire and are marked as inactive.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Background Tasks:</strong> Uses Celery for asynchronous
+          operations like URL expiration.
+        </li>
+        <li>
+          <strong>Cache:</strong> Uses Redis as a cache to improve performance.
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🔑 URL Shortener Types</h2>
+      <p class="mb-4">
+        The service supports three types of shortened URLs, each with a
+        different access mechanism:
+      </p>
+      <ul class="list-disc pl-6 space-y-4">
+        <li>
+          <strong>Passwordless Shorteners (Public)</strong>
+          <p class="mt-2">
+            They behave like any traditional shortener. When clicking on the
+            shortened URL, the user is redirected directly to the original URL.
+          </p>
+        </li>
+        <li>
+          <strong>Token-based Shorteners (Private)</strong>
+          <p class="my-2">
+            These shorteners require an access token to be used. The token must
+            be passed as a parameter in the URL, in <strong>UUID4</strong> format.
+            For example: <code>/p_shorturl/?token=mytoken</code>.
+          </p>
+          <img
+            src="/images/shortener-token.png"
+            alt="Example of a token-shortened URL"
+            class="w-full max-w-2xl mx-auto mb-4 rounded-lg shadow-lg"
+          />
+        </li>
+        <li>
+          <strong>Password-protected Shorteners (Private)</strong>
+          <p class="my-2">
+            To access these URLs, the user must provide a password. The system
+            redirects the user to a password form or requires the password to be
+            sent via a POST request. Once authenticated, the browser session is
+            maintained for future redirections.
+          </p>
+          <img
+            src="/images/shortener-password.png"
+            alt="Example of a password-shortened URL"
+            class="w-full max-w-2xl mx-auto mb-4 rounded-lg shadow-lg"
+          />
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⚙️ Installation</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          <strong>Clone the repository:</strong>
+          <CodeBlock
+            code={`git clone https://github.com/xeland314/urlshortener.git\ncd urlshortener`}
+            language="bash"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Create a virtual environment and install dependencies (using `uv`):</strong>
+          <CodeBlock
+            code={`uv venv\nsource .venv/bin/activate\nuv pip install -r requirements.txt`}
+            language="bash"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Set up environment variables:</strong>
+          <p>Create a <code>.env</code> file in the project root and add:</p>
+          <CodeBlock
+            code={`DATABASE_URL=sqlite:///db.sqlite3\nSECRET_KEY=your_django_secret_key\nREDIS_LOCATION=redis://127.0.0.1:6379/0`}
+            language="env"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Apply migrations:</strong>
+          <CodeBlock
+            code={`python manage.py makemigrations && python manage.py migrate`}
+            language="bash"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Create a superuser (optional):</strong>
+          <CodeBlock
+            code={`python manage.py createsuperuser`}
+            language="bash"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Install Node.js dependencies:</strong>
+          <CodeBlock code={`npm install`} language="bash" client:visible />
+        </li>
+        <li>
+          <strong>Compile Tailwind CSS:</strong>
+          <CodeBlock code={`npm run build:css`} language="bash" client:visible />
+        </li>
+      </ol>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🚀 Running the Application</h2>
+      <p class="mb-4">
+        To run the full application, you need the Django server, a Redis
+        server, and Celery workers.
+      </p>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          <strong>Start the Redis Server:</strong>
+          <p>If you use Docker:</p>
+          <CodeBlock
+            code={`docker run -d -p 6379:6379 redis/redis-stack-server:latest`}
+            language="bash"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Start the Celery Worker:</strong>
+          <p>In a new terminal:</p>
+          <CodeBlock
+            code={`celery -A urlshortener worker -l info`}
+            language="bash"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Start Celery Beat:</strong>
+          <p>In another terminal (for scheduled tasks):</p>
+          <CodeBlock
+            code={`celery -A urlshortener beat -l info`}
+            language="bash"
+            client:visible
+          />
+        </li>
+        <li>
+          <strong>Run the Django Development Server:</strong>
+          <p>In your main terminal:</p>
+          <CodeBlock
+            code={`python manage.py runserver`}
+            language="bash"
+            client:visible
+          />
+        </li>
+      </ol>
+      <p class="mt-4">
+        Access the application at <a
+          href="http://127.0.0.1:8000/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline">http://127.0.0.1:8000/</a
+        >.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🧪 Unit Tests</h2>
+      <p class="mb-4">
+        The project includes a comprehensive set of tests to validate the model
+        logic, API, and redirection flows.
+      </p>
+      <CodeBlock code={`python manage.py test`}
+        language="bash"
+        client:visible
+      />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📄 License</h2>
+      <p class="mb-4">This project is under the MIT License.</p>
+      <p>
+        See the <a
+          href="https://github.com/xeland314/urlshortener/blob/main/LICENSE"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline">LICENSE</a
+        > file for more details.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🙏 Acknowledgements</h2>
+      <p>
+        This project was inspired and guided by the
+        <a
+          href="https://roadmap.sh/projects/url-shortening-service"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline"
+        >
+          URL Shortening Service Project
+        </a> from
+        <a
+          href="https://roadmap.sh/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline"
+        >
+          roadmap.sh
+        </a>.
+      </p>
+    </section>
+  </div>
+</ProjectLayout>

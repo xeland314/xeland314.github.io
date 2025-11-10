@@ -1,0 +1,228 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// --- METADATA ---
+const pageTitle = "Interactive Advent Calendar";
+const pageDescription =
+  "Discover the Interactive Advent Calendar, developed in Next.js with a pixel art style. Each day reveals a surprise as we celebrate the countdown to Christmas.";
+const pageKeywords = [
+  "Advent Calendar",
+  "interactive",
+  "Christmas",
+  "Next.js",
+  "React",
+  "pixelart",
+  "web development",
+  "projects",
+  "Christopher Villamarín",
+  "xeland314",
+  "Ecuador",
+].join(", ");
+
+const pageSlug = "interactive-advent-calendar";
+const pageAuthor = "Christopher Villamarín";
+const applicationName = "Christopher Villamarín Portfolio";
+const pageUrl = "https://xeland314.github.io/en/projects/interactive-advent-calendar/";
+const pageImage =
+  "https://xeland314.github.io/images/advent_calendar_preview.png";
+const pageImageAlt = "Preview of the Interactive Advent Calendar";
+const pageRobots = "index, follow";
+const pageCanonical = pageUrl;
+---
+
+<ProjectLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  applicationName={applicationName}
+  url={pageUrl}
+  image={pageImage}
+  imageAlt={pageImageAlt}
+  robots={pageRobots}
+  canonical={pageCanonical}
+  lang="en"
+>
+  <header class="text-center mb-8">
+    <h1 class="text-4xl font-bold mb-4">Interactive Advent Calendar</h1>
+    <img
+      transition:name={`img-${pageSlug}`}
+      src={pageImage}
+      alt={pageImageAlt}
+      class="w-full h-80 object-cover rounded-lg shadow-lg mb-8"
+    />
+  </header>
+
+  <section class="mb-8">
+    <h2 class="text-3xl text-center font-semibold mb-4">
+      🌟 Challenge of the Week: December 4th to 10th 🎄
+    </h2>
+    <p>
+      <strong>Theme: </strong>
+      Create a digital advent calendar to celebrate the countdown to Christmas!
+    </p>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Challenge Context: Alura Latam</h2>
+    <p class="mb-4">
+      This project was born as part of a "Challenge of the Week" organized by the
+      <a
+        href="https://discord.gg/alumini-one"
+        target="_blank"
+        class="text-blue-600 hover:underline">Alumini ONE</a
+      > group on Discord, a community of graduate students from the Oracle Next
+      Education (ONE) program at Alura Latam.
+    </p>
+    <img
+      src="/images/reto-calendario-adviento.jpg"
+      alt="Screenshot of the Alumini ONE week challenge"
+      class="mx-auto my-4 rounded-lg shadow-md"
+    />
+    <h3 class="text-3xl font-semibold mb-4">Recognition and Winners</h3>
+    <p class="mb-4">
+      I am pleased to share that this project was one of the winners of the December
+      challenge! The official announcement from the Alumini ONE group confirmed it:
+    </p>
+    <img
+      src="/images/ganador-calendario-adviento.jpg"
+      alt="Screenshot of the Alumini ONE winners announcement"
+      class="mx-auto my-4 rounded-lg shadow-md"
+    />
+    <p class="mb-4">
+      This recognition was a great incentive and demonstrates the value of
+      actively participating in development communities.
+    </p>
+  </section>
+
+  <section class="mb-8">
+    <div class="p-0 py-4 sm:p-6 sm:py-0">
+      <header class="mb-4 text-center">
+        <a
+          href="https://xeland314.github.io/advent-calendar/"
+          target="_blank"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          <h3 class="text-3xl font-bold">
+            Advent Calendar Preview
+          </h3>
+        </a>
+        <p class="text-gray-600 dark:text-white">Experience how it works!</p>
+      </header>
+      <div class="relative w-full h-96 border rounded-lg shadow-lg">
+        <iframe
+          src="https://xeland314.github.io/advent-calendar/"
+          title="Advent Calendar Interactive Preview"
+          class="w-full h-full rounded-lg border-none"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Description</h2>
+    <p class="mb-4">
+      This project is a digital advent calendar developed in Next.js and exported
+      as a static page. Each day, users can open a "window" that reveals a
+      message or virtual gift. The design is inspired by the holidays, using
+      red, green, and gold colors and a festive typography. Additionally, the
+      project has a pixel art style.
+    </p>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Details</h2>
+    <ul class="list-disc pl-6 space-y-2">
+      <li>
+        Displays a December calendar with 24 days represented as boxes.
+      </li>
+      <li>
+        Allows users to open a new box only on or after the corresponding day
+        (uses the system date).
+      </li>
+      <li>
+        Each box reveals surprise content (message, image, or a festive GIF).
+      </li>
+      <li>Uses smooth animations when opening the boxes.</li>
+      <li>Includes a counter that shows how many days are left until Christmas.</li>
+    </ul>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Technologies Used</h2>
+    <ul class="list-disc pl-6 space-y-2">
+      <li>
+        <strong>Next.js</strong>: React framework for creating web applications.
+      </li>
+      <li>
+        <strong>React</strong>: JavaScript library for building user interfaces.
+      </li>
+      <li>
+        <strong>Tailwind CSS and CSS</strong>: For design and animations.
+      </li>
+      <li>
+        <strong
+          ><a
+            href="https://github.com/aseprite/aseprite"
+            class="text-blue-600 hover:underline"
+          >
+            Aseprite:
+          </a></strong
+        >For the visual style used in the project and images created with a
+        pixel art style.
+      </li>
+    </ul>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Installation</h2>
+    <ol class="list-decimal pl-6 space-y-4">
+      <li>
+        <strong>Clone the repository:</strong>
+        <CodeBlock
+          code="git clone https://github.com/xeland314/advent-calendar.git"
+          client:visible
+        />
+      </li>
+      <li>
+        <strong>Navigate to the project directory:</strong>
+        <CodeBlock code="cd advent-calendar" client:visible />
+      </li>
+      <li>
+        <strong>Install the dependencies:</strong>
+        <CodeBlock code="npm install" client:visible />
+      </li>
+      <li>
+        <strong>Start the development server:</strong>
+        <CodeBlock code="npm run dev" client:visible />
+      </li>
+    </ol>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Deployment</h2>
+    <p>
+      The project is deployed as a static page and can be viewed at the
+      following link:
+    </p>
+    <a
+      href="https://xeland314.github.io/advent-calendar/"
+      class="text-blue-600 hover:underline"
+    >
+      🔗 Project: Advent Calendar
+    </a>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Author</h2>
+    <p>
+      <strong>Christopher Villamarín</strong> -{" "}
+      <a
+        href="https://github.com/xeland314"
+        class="text-blue-600 hover:underline"
+      >
+        GitHub
+      </a>
+    </p>
+  </section>
+</ProjectLayout>

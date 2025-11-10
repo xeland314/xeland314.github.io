@@ -13,6 +13,7 @@ export const Projects = defineTable({
     image: column.text({ optional: true }),
     slug: column.text({ unique: true }),
     isFeatured: column.boolean({ default: false }),
+    lang: column.text({ default: "es" }),
   },
 });
 
@@ -28,6 +29,7 @@ export const MyCertificates = defineTable({
     credentialUrl: column.text(),
     skills: column.json(),
     isFeatured: column.boolean({ default: false }),
+    lang: column.text({ default: "es" }),
   },
 });
 

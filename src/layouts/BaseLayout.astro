@@ -17,6 +17,7 @@ interface Props {
     imageAlt?: string;
     robots?: string;
     canonical?: string;
+    lang?: string;
 }
 
 const {
@@ -30,11 +31,12 @@ const {
     imageAlt = "Portafolio de Christopher Villamarín",
     robots = "index, follow",
     canonical,
+    lang = "es",
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />

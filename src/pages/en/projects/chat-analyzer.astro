@@ -1,0 +1,177 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "📊 chat-analyzer - Christopher Villamarín Projects";
+const description =
+  "Discover chat-analyzer, a tool that analyzes exported WhatsApp chats, showing the frequency of used words and emojis. It generates word clouds and detailed tables for visual analysis.";
+const keywords = [
+  "chat-analyzer",
+  "chat analysis",
+  "WhatsApp",
+  "emoji frequency",
+  "word frequency",
+  "word clouds",
+  "Python",
+  "Christopher Villamarín",
+  "xeland314",
+  "projects",
+  "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "📊 chat-analyzer - Christopher Villamarín Project";
+const ogDescription =
+  "Analyze WhatsApp chats with chat-analyzer. Discover the most used words and emojis and visualize them in word clouds and interactive tables.";
+const ogUrl = "https://xeland314.github.io/en/projects/chat-analyzer/";
+const ogImage =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQYzl7jxgLN9QGN4yvFYRzU5dMv3WMyJGhbeXYiEHwwtxUKDudXUINhxq3fhXmzv1JbmTVGImI07r0e/pubchart?oid=1886909932&format=image";
+
+const imageAlt = "Preview of the chat-analyzer project";
+const canonicalUrl = "https://xeland314.github.io/en/projects/chat-analyzer/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="chat-analyzer"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  robots={robots}
+  lang="en"
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">📊 chat-analyzer</h1>
+      <p class="text-lg">
+        Analyzes the frequency of use of emojis and words in an exported
+        WhatsApp chat.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        📦 Requirements and Installation
+      </h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          Python version: <code>3.9.2</code>
+        </li>
+        <li>
+          The required libraries are:
+          <ul class="list-disc pl-6">
+            <li>
+              <code>emoji==2.2.0</code>
+            </li>
+            <li>
+              <code>nltk==3.8</code>
+            </li>
+            <li>
+              <code>rich==13.3.1</code>
+            </li>
+            <li>
+              <code>typer==0.7.0</code>
+            </li>
+            <li>
+              <code>wordcloud==1.8.2.2</code>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <p class="mt-4">
+        Clone the repository and navigate to the project directory:
+      </p>
+      <CodeBlock
+        code={`git clone https://github.com/xeland314/chat-analyzer.git && cd chat-analyzer`}
+        client:visible
+      />
+      <p class="mt-4">Then install the necessary dependencies:</p>
+      <CodeBlock code={`pip3 install -r requirements.txt`} client:visible />
+      <p class="mt-4">
+        Before analyzing a chat, run the following command to download NLTK
+        resources:
+      </p>
+      <CodeBlock code={`python3 chat_analyzer.py --install`} client:visible />
+      <p>You can also use the shortcut:</p>
+      <CodeBlock code={`python3 chat_analyzer.py -i`} client:visible />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⚙️ Usage</h2>
+      <p class="mb-4">
+        To analyze a chat, pass the chat file as an argument:
+      </p>
+      <CodeBlock code={`python3 chat_analyzer.py chat.txt`} client:visible />
+      <p class="mt-4">
+        You can customize the number of most common words and emojis to be
+        displayed in the summary:
+      </p>
+      <CodeBlock
+        code={`python3 chat_analyzer.py chat.txt -w 50 -e 20`}
+        client:visible
+      />
+      <CodeBlock
+        code={`python3 chat_analyzer.py chat.txt --words 50 --emojis 20`}
+        client:visible
+      />
+      <p class="mt-4">
+        By default, the 30 most used words and the 15 most common emojis will be
+        displayed.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        📤 Export your chat from WhatsApp
+      </h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          Open WhatsApp and go to{" "}
+          <strong>
+            Settings &gt; Chats &gt; Chat History &gt; Export Chat
+          </strong>
+          .
+        </li>
+        <li>Select the chat you want to analyze.</li>
+        <li>Choose the option to export only text (without including files).</li>
+        <li>
+          Copy the exported file to your PC inside the repository directory.
+        </li>
+        <li>Now you are ready to analyze your chat!</li>
+      </ol>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📊 Results</h2>
+      <p class="mb-4">The program will generate the following results:</p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Table of most used words per person in the chat.</li>
+        <li>Table of most used emojis per person in the chat.</li>
+        <li>A word cloud with the most used words.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⏱️ Execution Time</h2>
+      <p class="mb-4">
+        The analysis can take from 1 to 3 minutes depending on the file size and
+        your computer's capabilities.
+      </p>
+      <div class="text-center mt-4">
+        <img
+          src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQYzl7jxgLN9QGN4yvFYRzU5dMv3WMyJGhbeXYiEHwwtxUKDudXUINhxq3fhXmzv1JbmTVGImI07r0e/pubchart?oid=1886909932&format=image"
+          alt="Execution Time"
+          class="rounded-lg shadow-md mx-auto"
+        />
+      </div>
+      <p class="mt-4 text-center">
+        Times may vary depending on your computer's performance.
+      </p>
+    </section>
+  </div>
+</ProjectLayout>

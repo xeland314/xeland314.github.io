@@ -3,36 +3,36 @@ import { db, MyCertificates, asc, eq } from "astro:db";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CertificatesCard from "../../../components/certificates/CertificatesCard.astro";
 
-// --- METADATA DE LA PÁGINA DE CERTIFICADOS ---
-const pageTitle = "Todos Mis Certificados - Christopher Villamarín";
+// --- CERTIFICATES PAGE METADATA ---
+const pageTitle = "All My Certificates - Christopher Villamarín";
 const pageDescription =
-    "Explora todos los certificados y logros de desarrollo web de Christopher Villamarín. Incluye certificaciones de Alura Latam, Oracle ONE, Microsoft y más.";
+    "Explore all web development certificates and achievements by Christopher Villamarín. Includes certifications from Alura Latam, Oracle ONE, Microsoft, and more.";
 const pageKeywords = [
-    "certificados de desarrollo",
-    "certificaciones web",
+    "development certificates",
+    "web certifications",
     "Alura Latam",
     "Oracle ONE",
     "Microsoft",
-    "habilidades de programación",
-    "desarrollador web",
+    "programming skills",
+    "web developer",
     "Christopher Villamarín",
     "xeland314",
 ].join(", ");
 
 const pageAuthor = "Christopher Villamarín";
-const applicationName = "Portafolio de Christopher Villamarín";
-const pageUrl = "https://xeland314.github.io/es/certificates";
+const applicationName = "Christopher Villamarín Portfolio";
+const pageUrl = "https://xeland314.github.io/en/certificates";
 const pageImage = "https://xeland314.github.io/images/gato.svg";
 const pageImageAlt =
-    "Ilustración de varios certificados de programación y desarrollo";
+    "Illustration of various programming and development certificates";
 const pageRobots = "index, follow";
 const pageCanonical = pageUrl;
 
-// Obtener todos los certificados de la DB
+// Get all certificates from the DB for English language
 const allCertificates = await db
     .select()
     .from(MyCertificates)
-    .where(eq(MyCertificates.lang, "es"))
+    .where(eq(MyCertificates.lang, "en"))
     .orderBy(
         asc(MyCertificates.date),
         MyCertificates.isFeatured,
@@ -51,6 +51,7 @@ const allCertificates = await db
     imageAlt={pageImageAlt}
     robots={pageRobots}
     canonical={pageCanonical}
+    lang="en"
 >
     <main
         class="py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen"
@@ -58,16 +59,19 @@ const allCertificates = await db
         <section class="max-w-[1500px] mx-auto px-6">
             <h1
                 class="text-5xl font-extrabold text-center mb-6"
-                transition:name="Mis-Certificados"
+                transition:name="My-Certificates"
             >
-                Todos Mis Certificados
+                All My Certificates
             </h1>
             {
                 allCertificates.length > 0 ? (
-                    <CertificatesCard certificates={allCertificates} />
+                    <CertificatesCard
+                        certificates={allCertificates}
+                        lang="en"
+                    />
                 ) : (
                     <p class="text-center text-gray-500">
-                        No se encontraron certificados.
+                        No certificates found.
                     </p>
                 )
             }

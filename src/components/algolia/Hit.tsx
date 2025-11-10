@@ -7,24 +7,35 @@ export interface HitProps {
     title: string;
     shortDescription: string;
     description: string;
-    links: string[]; // Ruta(s) asociadas al proyecto (e.g., /es/projects/mi-proyecto)
-    image?: string; // Imagen opcional
-    // Algolia hit también puede tener un 'objectID'
-    objectID: string; // Algolia ID, útil para enlaces permanentes
-    url?: string; // URL opcional para enlaces externos
-    path?: string; // Ruta opcional para enlaces internos
+    links: string[];
+    image?: string;
+    objectID: string;
+    url?: string;
+    path?: string;
+    lang?: "es" | "en";
   };
 }
 
 function Hit({ hit }: HitProps) {
   const targetLink = hit.path || hit.url || hit.objectID;
+  const lang = hit.lang || "es";
+
+  const texts = {
+    es: {
+      no_image: "Sin Imagen",
+    },
+    en: {
+      no_image: "No Image",
+    },
+  };
+
+  const T = texts[lang];
 
   return (
     <a
-      href={targetLink} // Usamos href para la navegación
+      href={targetLink}
       className="cursor-pointer flex flex-col sm:flex-row items-start bg-gray-100 dark:bg-gray-800 p-4 rounded-sm shadow-md hover:shadow-lg transition-shadow duration-300"
     >
-      {/* Imagen del proyecto */}
       <div className="image-container mb-2 mr-5 shrink-0 self-center">
         {hit.image ? (
           <img
@@ -34,18 +45,15 @@ function Hit({ hit }: HitProps) {
           />
         ) : (
           <div className="flex items-center justify-center w-32 h-32 bg-gray-300 dark:bg-gray-700 rounded-sm">
-            <p className="text-gray-500 dark:text-gray-400">No Image</p>
+            <p className="text-gray-500 dark:text-gray-400">{T.no_image}</p>
           </div>
         )}
       </div>
-      {/* Información del proyecto */}
       <div className="text-xs flex flex-col justify-center">
         <h3 className="font-bold mb-1 text-black dark:text-white">
           {hit.title}
         </h3>
         <p className="text-gray-700 dark:text-gray-300">{hit.description}</p>
-        {/* Puedes añadir más detalles si los necesitas, como shortDescription */}
-        {/* <p className="text-gray-700 dark:text-gray-300">{hit.shortDescription}</p> */}
       </div>
     </a>
   );

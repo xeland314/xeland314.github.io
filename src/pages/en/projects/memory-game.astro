@@ -1,0 +1,127 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "🎮 Memory Game - Christopher Villamarín Projects";
+const description =
+  "Explore the Memory Game, an interactive project developed with Vanilla JavaScript, CSS, and HTML. Enjoy different difficulty levels and a dynamic experience from scratch.";
+const keywords = [
+  "Memory Game",
+  "memory games",
+  "JavaScript",
+  "CSS",
+  "HTML",
+  "projects",
+  "web development",
+  "interactivity",
+  "Christopher Villamarín",
+  "xeland314",
+  "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "🎮 Memory Game - Christopher Villamarín Project";
+const ogDescription =
+  "Discover the Memory Game, an interactive game developed with Vanilla JavaScript, CSS, and HTML. Ideal for players of all levels.";
+const ogUrl = "https://xeland314.github.io/memory-game/";
+const ogImage = "https://xeland314.github.io/images/memorygame.png";
+const imageAlt = "Preview of the Memory Game project";
+const canonicalUrl = "https://xeland314.github.io/en/projects/memory-game/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="Memory Game"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  robots={robots}
+  lang="en"
+>
+  <div class="justify-center p-0 sm:p-6">
+    <header class="items-center justify-center text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">🎮 Memory Game</h1>
+      <p class="text-lg text-center mb-4">
+        This game was developed with Vanilla JavaScript, CSS, and HTML,
+        highlighting a clean and efficient approach to creating an interactive
+        experience from scratch.
+      </p>
+      <a
+        href="https://xeland314.github.io/memory-game/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-blue-600 hover:underline"
+      >
+        See the live game here
+      </a>
+      <div class="mt-4 w-full h-96 border rounded-lg shadow-lg">
+        <iframe
+          src="https://xeland314.github.io/memory-game/"
+          title="Memory Game Preview"
+          class="w-full h-full rounded-lg border-none"></iframe>
+      </div>
+    </header>
+
+    <section class="flex flex-col justify-center items-center mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🎮 Game Difficulties</h2>
+      <p class="mb-4 text-lg">
+        The game offers different difficulty levels to suit players of all
+        levels. Each mode increases the number of card pairs and total cards,
+        providing a growing challenge.
+      </p>
+      <table class="w-auto table-auto border-collapse text-center">
+        <thead>
+          <tr>
+            <th class="border px-4 py-2">Game Mode</th>
+            <th class="border px-4 py-2">Card Pairs</th>
+            <th class="border px-4 py-2">Cards</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="border px-4 py-2">Easy</td>
+            <td class="border px-4 py-2">6</td>
+            <td class="border px-4 py-2">12</td>
+          </tr>
+          <tr>
+            <td class="border px-4 py-2">Normal</td>
+            <td class="border px-4 py-2">9</td>
+            <td class="border px-4 py-2">18</td>
+          </tr>
+          <tr>
+            <td class="border px-4 py-2">Hard</td>
+            <td class="border px-4 py-2">12</td>
+            <td class="border px-4 py-2">24</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 class="text-center text-2xl font-semibold mb-4">
+        🚀 Technologies Used
+      </h2>
+      <p class="text-left text-lg">
+        This project was developed entirely using basic web technologies:
+      </p>
+      <ul class="list-disc pl-6 text-left text-lg">
+        <li>
+          <strong>Vanilla JavaScript:</strong> For all game logic and dynamic
+          interactions.
+        </li>
+        <li>
+          <strong>CSS:</strong> For the visual styles of the game, ensuring an
+          attractive and professional appearance.
+        </li>
+        <li>
+          <strong>HTML:</strong> To structure the content and layout of the game
+          elements.
+        </li>
+      </ul>
+    </section>
+  </div>
+</ProjectLayout>

@@ -6,8 +6,37 @@ import { useAstroTheme } from "../../hooks/useAstroThemes";
 
 type Theme = "light" | "dark";
 
-const ContactForm = () => {
+interface ContactFormProps {
+  lang: "es" | "en";
+}
+
+const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
   const { mounted, resolvedTheme } = useAstroTheme();
+
+  const texts = {
+    es: {
+      contact_me: "Contáctame",
+      email_label: "Correo electrónico:",
+      name_label: "Nombre:",
+      message_label: "Mensaje:",
+      characters: "caracteres",
+      recaptcha_aria: "reCAPTCHA response",
+      submit_button: "Enviar",
+      limit_reached: "Has alcanzado el límite diario de correos",
+    },
+    en: {
+      contact_me: "Contact Me",
+      email_label: "Email:",
+      name_label: "Name:",
+      message_label: "Message:",
+      characters: "characters",
+      recaptcha_aria: "reCAPTCHA response",
+      submit_button: "Send",
+      limit_reached: "You have reached the daily email limit",
+    },
+  };
+
+  const T = texts[lang];
 
   const {
     content,
@@ -18,13 +47,13 @@ const ContactForm = () => {
     errors,
     emailCount,
     sendEmail,
-  } = useEmailForm();
+  } = useEmailForm({ lang });
 
   const buttonText = (() => {
     if (emailCount >= 2 || emailCount < 0) {
-      return `Has alcanzado el límite diario de correos (${emailCount}/2)`;
+      return `${T.limit_reached} (${emailCount}/2)`;
     }
-    return `Enviar (${emailCount}/2)`;
+    return `${T.submit_button} (${emailCount}/2)`;
   })();
 
   return (
@@ -34,14 +63,14 @@ const ContactForm = () => {
       className="space-y-4 w-full max-w-lg bg-gray-200 dark:bg-gray-700 rounded-lg shadow-lg p-6"
     >
       <h3 className="w-full text-2xl font-bold text-center pb-4 mx-4 text-gray-800 dark:text-white">
-        Contáctame
+        {T.contact_me}
       </h3>
       <div>
         <label
           htmlFor="email"
           className="block text-sm font-medium pb-1 text-gray-700 dark:text-gray-300"
         >
-          Correo electrónico:
+          {T.email_label}
         </label>
         <input
           type="email"
@@ -63,7 +92,7 @@ const ContactForm = () => {
           htmlFor="name"
           className="block text-sm font-medium pb-1 text-gray-700 dark:text-gray-300"
         >
-          Nombre:
+          {T.name_label}
         </label>
         <input
           type="text"
@@ -85,7 +114,7 @@ const ContactForm = () => {
           htmlFor="message"
           className="block text-sm font-medium pb-1 text-gray-700 dark:text-gray-300"
         >
-          Mensaje:
+          {T.message_label}
         </label>
         <textarea
           id="message"
@@ -97,11 +126,11 @@ const ContactForm = () => {
           minLength={1}
           rows={10}
           autoComplete="off"
-          className="w-full block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-white dark:border-gray-600" // <--- Contraste mejorado
+          className="w-full block px-3 py-2 border bg-white text-black border-gray-300 rounded-md shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-white dark:border-gray-600"
         />
         <div className="flex flex-row justify-end">
           <p className="text-sm pt-1">
-            {content.message?.length || 0}/2000 caracteres
+            {content.message?.length || 0}/2000 {T.characters}
           </p>
         </div>
         {errors.message && (
@@ -117,7 +146,7 @@ const ContactForm = () => {
             onChange={handleRecaptchaChange}
             onExpired={handleRecaptchaExpired}
             theme={resolvedTheme as Theme}
-            aria-label="reCAPTCHA response"
+            aria-label={T.recaptcha_aria}
           />
         </div>
       )}

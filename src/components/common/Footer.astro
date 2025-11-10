@@ -1,5 +1,17 @@
 ---
+const currentPath = Astro.url.pathname;
+const lang = currentPath.startsWith("/en") ? "en" : "es";
 
+const texts: Record<string, Record<string, string>> = {
+    es: {
+        text: "Desarrollado con esmero y mucho código por",
+    },
+    en: {
+        text: "Developed with care and a lot of code by",
+    },
+};
+
+const T = texts[lang];
 ---
 
 <footer class="py-8 px-8 bg-gray-900 text-white">
@@ -7,9 +19,8 @@
         class="flex flex-col items-center gap-6 md:flex-row md:justify-between md:items-center mt-6"
     >
         <p class="text-center text-sm text-gray-400 md:text-left">
-            Desarrollado con esmero y mucho código por <span class="font-bold"
-                >xeland314</span
-            >.
+            {T.text}
+            <span class="font-bold">xeland314</span>.
         </p>
         <div class="flex space-x-4 items-center">
             <a

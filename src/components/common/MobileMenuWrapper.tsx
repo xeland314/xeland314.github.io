@@ -3,9 +3,32 @@
 import { useState, useEffect, useRef } from "react";
 import ThemeToggleButton from "../themes/ThemeToggleButton.tsx";
 
-export default function MobileMenuWrapper() {
+interface MobileMenuWrapperProps {
+  lang?: "es" | "en";
+}
+
+export default function MobileMenuWrapper({
+  lang = "es",
+}: MobileMenuWrapperProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuWrapperRef = useRef<HTMLDivElement>(null);
+
+  const texts = {
+    es: {
+      about_me: "Acerca de mí",
+      projects: "Proyectos",
+      certificates: "Certificados",
+      contact_me: "Contáctame",
+    },
+    en: {
+      about_me: "About Me",
+      projects: "Projects",
+      certificates: "Certificates",
+      contact_me: "Contact Me",
+    },
+  };
+
+  const T = texts[lang];
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -13,7 +36,6 @@ export default function MobileMenuWrapper() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Verifica si el clic ocurrió fuera del contenedor del menú y del botón
       if (
         menuWrapperRef.current &&
         !menuWrapperRef.current.contains(event.target as Node)
@@ -22,19 +44,16 @@ export default function MobileMenuWrapper() {
       }
     };
 
-    // Agregar el listener solo cuando el menú está abierto para optimizar el rendimiento
     if (isMenuOpen) {
       document.addEventListener("click", handleClickOutside);
     }
 
-    // Limpiar el listener al cerrar el menú o al desmontar el componente
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [isMenuOpen]);
 
   return (
-    // Usa `ref` para el contenedor para poder detectar clics fuera de él
     <div ref={menuWrapperRef} className="flex">
       <div className="md:hidden">
         <button
@@ -49,45 +68,44 @@ export default function MobileMenuWrapper() {
 
       <ul
         id="mobileMenu"
-        // Clases de Tailwind CSS para gestionar la visibilidad y transición del menú
         className={`absolute z-1000 top-full right-0 items-center max-md:w-full bg-gray-900 md:px-4 list-none overflow-hidden md:static md:flex md:flex-row md:space-x-1 transition-all duration-300 ease-in-out ${
           isMenuOpen ? "max-h-96" : "max-h-0"
         } md:max-h-full`}
       >
         <li>
           <a
-            href="/#about-me"
-            className="block p-2 hover:bg-gray-700"
-            onClick={() => setIsMenuOpen(false)} // Cierra el menú al hacer clic en un enlace
-          >
-            Acerca de mí
-          </a>
-        </li>
-        <li>
-          <a
-            href="/#projects"
-            className="block p-2 hover:bg-gray-700"
-            onClick={() => setIsMenuOpen(false)} // Cierra el menú al hacer clic en un enlace
-          >
-            Proyectos
-          </a>
-        </li>
-        <li>
-          <a
-            href="/#certificates"
+            href={`/${lang === "en" ? "en/": ""}#about-me`}
             className="block p-2 hover:bg-gray-700"
             onClick={() => setIsMenuOpen(false)}
           >
-            Certificados
+            {T.about_me}
           </a>
         </li>
         <li>
           <a
-            href="/#contact"
+            href={`/${lang === "en" ? "en/": ""}#projects`}
             className="block p-2 hover:bg-gray-700"
             onClick={() => setIsMenuOpen(false)}
           >
-            Contáctame
+            {T.projects}
+          </a>
+        </li>
+        <li>
+          <a
+            href={`/${lang === "en" ? "en/": ""}#certificates`}
+            className="block p-2 hover:bg-gray-700"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {T.certificates}
+          </a>
+        </li>
+        <li>
+          <a
+            href={`/${lang === "en" ? "en/": ""}#contact`}
+            className="block p-2 hover:bg-gray-700"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {T.contact_me}
           </a>
         </li>
         <li className="flex items-center justify-center py-2">

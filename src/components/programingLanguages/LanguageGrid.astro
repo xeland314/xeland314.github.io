@@ -4,10 +4,29 @@
 
 import LanguageCategory from "./LanguageCategory.astro";
 import LanguageImage from "./LanguageImage.astro";
+
+const { lang = "es" } = Astro.props;
+
+const texts: Record<string, Record<string, string>> = {
+    es: {
+        backend: "Backend",
+        frontend: "Frontend",
+        database: "Bases de Datos & Cache",
+        cloud: "Nube & Otros",
+    },
+    en: {
+        backend: "Backend",
+        frontend: "Frontend",
+        database: "Databases & Cache",
+        cloud: "Cloud & Others",
+    },
+};
+
+const T = texts[lang];
 ---
 
 <div class="w-full justify-between space-y-4">
-    <LanguageCategory title="Backend">
+    <LanguageCategory title={T.backend}>
         <LanguageImage title="Golang" image="go" />
         <LanguageImage title="Java" image="java" />
         <LanguageImage title="Python" image="py" />
@@ -17,7 +36,7 @@ import LanguageImage from "./LanguageImage.astro";
         <LanguageImage title="Bash" image="bash" />
     </LanguageCategory>
 
-    <LanguageCategory title="Frontend">
+    <LanguageCategory title={T.frontend}>
         <LanguageImage title="JavaScript" image="js" />
         <LanguageImage title="TypeScript" image="ts" />
         <LanguageImage title="HTML" image="html" />
@@ -30,14 +49,14 @@ import LanguageImage from "./LanguageImage.astro";
         <LanguageImage title="Flutter" image="flutter" />
     </LanguageCategory>
 
-    <LanguageCategory title="Bases de Datos & Cache">
+    <LanguageCategory title={T.database}>
         <LanguageImage title="Sqlite" image="sqlite" />
         <LanguageImage title="Postgres" image="postgres" />
         <LanguageImage title="Redis" image="redis" />
         <LanguageImage title="RabbitMQ" image="rabbitmq" />
     </LanguageCategory>
 
-    <LanguageCategory title="Cloud & Others">
+    <LanguageCategory title={T.cloud}>
         <LanguageImage title="AWS" image="aws" />
         <LanguageImage title="Cloudflare" image="cloudflare" />
         <LanguageImage title="Linux" image="linux" />

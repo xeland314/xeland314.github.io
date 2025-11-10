@@ -1,0 +1,107 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "Poli - Tetris - Christopher Villamarín Projects";
+const description =
+  "Discover Poli - Tetris, a video game project inspired by the classic Tetris, developed in Java. Learn to play, use customizable controls, and set different difficulty levels.";
+const keywords = [
+  "Poli Tetris",
+  "video games",
+  "Tetris",
+  "Java",
+  "projects",
+  "Christopher Villamarín",
+  "xeland314",
+  "game development",
+  "Linux",
+  "technology",
+  "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+
+const ogDescription =
+  "Discover Poli - Tetris, a video game inspired by the classic Tetris, developed in Java. Set difficulty levels, control pieces, and experience it on Linux.";
+const ogUrl = "https://xeland314.github.io/projects/en/poli-tetris/";
+const ogImage = "https://raw.githubusercontent.com/xeland314/PoliTetris/ff11e56a969100a17380a9b8b5713eb340b8ce19/images/tetris.png";
+const imageAlt = "Preview of the Poli - Tetris project";
+const canonicalUrl = "https://xeland314.github.io/en/projects/tetris/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="Tetris"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  robots={robots}
+  lang="en"
+>
+  <div class="p-0 sm:p-6">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold mb-4">Poli - Tetris</h1>
+      <img
+        src="https://raw.githubusercontent.com/xeland314/PoliTetris/ff11e56a969100a17380a9b8b5713eb340b8ce19/images/tetris.png"
+        alt="Tetris"
+        class="mx-auto mb-6"
+      />
+    </div>
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Start the game</h2>
+      <p class="mb-4">
+        On Linux, running the commands via terminal depends on your Java
+        version:
+      </p>
+      <div>
+        <h3 class="text-xl font-bold mb-2">Java 11</h3>
+        <CodeBlock code="java -jar Tetris-11.jar" client:visible />
+      </div>
+      <div class="mt-4">
+        <h3 class="text-xl font-bold mb-2">Java 17</h3>
+        <CodeBlock code="java -jar Tetris-17.jar" client:visible />
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4">Controls</h2>
+      <p class="mb-4">
+        The graphical interface has no buttons. Keyboard methods have been
+        implemented to play the game as shown in the bottom right corner of the
+        Tetris game.
+      </p>
+      <div class="mb-6">
+        <h3 class="text-xl font-bold mb-2">Movements</h3>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>↑: Rotate piece 45°</li>
+          <li>↓: Move piece down</li>
+          <li>←: Move piece left</li>
+          <li>→: Move piece right</li>
+          <li>Space: Move piece to the bottom</li>
+        </ul>
+      </div>
+      <div class="mb-6">
+        <h3 class="text-xl font-bold mb-2">Change difficulties</h3>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>1: Easy</li>
+          <li>2: Normal</li>
+          <li>3: Hard</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold mb-2">Others</h3>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>P: Pause game</li>
+          <li>R: Start a new game</li>
+          <li>T: Show scoreboard</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</ProjectLayout>

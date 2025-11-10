@@ -17,11 +17,36 @@ const validateEmail = (email: string) => {
   return re.test(String(email).toLowerCase());
 };
 
-const useEmailForm = () => {
+interface UseEmailFormProps {
+  lang: "es" | "en";
+}
+
+const useEmailForm = ({ lang }: UseEmailFormProps) => {
   const [content, setContent] = useState<EmailContent>({});
   const [status, setStatus] = useState("");
   const [errors, setErrors] = useState<EmailErrors>({});
   const [emailCount, setEmailCount] = useState(0);
+
+  const texts = {
+    es: {
+      invalid_email: "Por favor, ingresa un correo electrónico válido.",
+      empty_message: "El mensaje no puede estar vacío.",
+      recaptcha_missing: "Por favor, completa el reCAPTCHA.",
+      limit_exceeded: "Has alcanzado el límite de correos enviados por hoy.",
+      success: "¡Mensaje enviado correctamente!",
+      error: "Error al enviar el mensaje. Inténtalo de nuevo.",
+    },
+    en: {
+      invalid_email: "Please enter a valid email address.",
+      empty_message: "The message cannot be empty.",
+      recaptcha_missing: "Please complete the reCAPTCHA.",
+      limit_exceeded: "You have reached the daily email limit.",
+      success: "Message sent successfully!",
+      error: "Error sending message. Please try again.",
+    },
+  };
+
+  const T = texts[lang];
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -60,10 +85,10 @@ const useEmailForm = () => {
   const validateForm = () => {
     const newErrors: EmailErrors = {};
     if (content.email && !validateEmail(content.email)) {
-      newErrors.email = "Por favor, ingresa un correo electrónico válido.";
+      newErrors.email = T.invalid_email;
     }
     if (content.message && content.message.trim() === "") {
-      newErrors.message = "El mensaje no puede estar vacío.";
+      newErrors.message = T.empty_message;
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -73,7 +98,7 @@ const useEmailForm = () => {
     e.preventDefault();
 
     if (!content["g-recaptcha-response"]) {
-      setStatus("Por favor, completa el reCAPTCHA.");
+      setStatus(T.recaptcha_missing);
       return;
     }
 
@@ -82,7 +107,7 @@ const useEmailForm = () => {
     }
 
     if (emailCount >= 2) {
-      setStatus("Has alcanzado el límite de correos enviados por hoy.");
+      setStatus(T.limit_exceeded);
       return;
     }
 
@@ -100,7 +125,7 @@ const useEmailForm = () => {
     });
 
     if (res.status === 200) {
-      setStatus("Mensaje enviado correctamente!");
+      setStatus(T.success);
       setContent({
         email: "",
         message: "",
@@ -113,7 +138,7 @@ const useEmailForm = () => {
         return newCount;
       });
     } else {
-      setStatus("Error al enviar el mensaje. Inténtalo de nuevo.");
+      setStatus(T.error);
     }
   };
 

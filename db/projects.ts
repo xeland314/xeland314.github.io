@@ -1,7 +1,7 @@
 export const projectData = [
   {
     title: "Calendario de Adviento Interactivo",
-    slug: "calendario-adviento-interactivo",
+    slug: "interactive-advent-calendar",
     description:
       "Crea un calendario de adviento digital en React con animaciones y diseño festivo. Permite abrir cajas según el día correspondiente revelando mensajes o regalos virtuales.",
     shortDescription: "Calendario de adviento digital interactivo en React.",
@@ -45,7 +45,7 @@ export const projectData = [
   },
   {
     title: "Encriptador de Texto",
-    slug: "encriptador-de-texto",
+    slug: "text-encryptor",
     description:
       "Proyecto desarrollado como parte del reto Alura Latam. Este encriptador de texto permite cifrar y descifrar mensajes utilizando técnicas básicas de criptografía.",
     shortDescription: "Reto Alura Latam: Encriptador de texto.",
@@ -56,7 +56,7 @@ export const projectData = [
   },
   {
     title: "Analizador-lexico",
-    slug: "analizador-lexico",
+    slug: "lexical-analyzer",
     description:
       "Un analizador léxico que reconoce y recupera errores en las distintas etapas de compilación. Este proyecto destaca por su uso de expresiones regulares para reconocer sistemas numéricos, operadores aritméticos y funciones matemáticas.",
     shortDescription: "Analizador léxico para sistemas numéricos y operadores.",
@@ -96,7 +96,7 @@ export const projectData = [
   },
   {
     title: "Conversor de Unidades",
-    slug: "conversor-de-unidades",
+    slug: "unit-converter",
     description:
       "Un conversor de unidades desarrollado para el Challenge #2 de Oracle Next Education. Permite convertir entre diferentes unidades de longitud, tiempo, temperatura y divisas con una interfaz gráfica sencilla.",
     shortDescription: "Conversor de unidades con interfaz gráfica en Java.",

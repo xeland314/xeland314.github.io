@@ -1,0 +1,207 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "🛠️ Simplex Solver - Christopher Villamarín Projects";
+const description =
+    "Comprehensive tool for Linear Programming with multiple interfaces: Command-Line, DSLs (String-based and Pythonic), and an advanced GUI.";
+const keywords = [
+    "Simplex",
+    "linear programming",
+    "optimization",
+    "scipy",
+    "DSL",
+    "PySide6 GUI",
+    "projects",
+    "Christopher Villamarín",
+    "xeland314",
+    "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "🛠️ Simplex Solver - Christopher Villamarín Project";
+const ogDescription =
+    "Discover the Simplex Solver, a robust and modern tool for solving optimization problems, offering programmatic and graphical interfaces.";
+const ogUrl = "https://xeland314.github.io/en/projects/simplex/";
+const ogImage = "https://xeland314.github.io/images/simplex_preview.png"; // Make sure to update this image with a screenshot of the GUI!
+const imageAlt = "Preview of the Simplex Solver Graphical User Interface (GUI)";
+const canonicalUrl = "https://xeland314.github.io/en/projects/simplex/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+    title={title}
+    description={description}
+    keywords={keywords}
+    author={authors}
+    applicationName="Simplex Solver"
+    url={ogUrl}
+    image={ogImage}
+    imageAlt={imageAlt}
+    canonical={canonicalUrl}
+    robots={robots}
+    lang="en"
+>
+    <div class="p-0 sm:p-6">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold mb-4 text-center">
+                🛠️ Simplex Solver - Desktop App
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Comprehensive tool for <b>Linear Programming</b> with multiple
+                definition and solution interfaces.
+            </p>
+        </header>
+
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">Core Solver and Functionality</h2>
+            <p class="mb-4">
+                The heart of the project uses the powerful
+                <b><code>scipy.optimize.linprog</code></b> module to provide
+                accurate linear programming solutions. It robustly handles:
+            </p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><b>Maximization</b> and <b>Minimization</b> objectives.</li>
+                <li><b>Inequality</b> constraints (\(\le, \ge\)).</li>
+                <li><b>Equality</b> constraints (\(=\)).</li>
+                <li>
+                    Automatic conversion of <b>Free Variables</b> (without non-negativity
+                    constraint).
+                </li>
+            </ul>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">Advanced User Interfaces</h2>
+
+            <h3 class="text-2xl font-medium mb-3 mt-5">
+                1. Domain Specific Languages (DSLs)
+            </h3>
+            <p class="mb-3">
+                Define optimization problems programmatically or in a human-readable
+                way:
+            </p>
+
+            <ul class="list-disc pl-6 space-y-3 mb-5">
+                <li>
+                    <b>String-based DSL:</b> To load problems from
+                    <code>.lp</code> files or directly from a text string in a
+                    standard format.
+                </li>
+                <li>
+                    <b>Pythonic DSL:</b> An elegant syntax, inspired by mathematical
+                    libraries, that uses Python objects and operators to build the
+                    model natively.
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-medium mb-3 mt-5">
+                2. Graphical User Interface (GUI) - PySide6
+            </h3>
+            <p class="mb-3">
+                A complete desktop application built with <b>PySide6 (Qt)</b> that
+                offers an interactive experience. It includes an editor, results
+                table, and a logging console.
+            </p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li>
+                    <b>Graphical Visualization</b>: Displays the feasible region and
+                    the optimal point for 2-variable problems.
+                </li>
+                <li>
+                    <b>Responsive UI</b>: The solver runs in a separate thread to
+                    prevent the application from freezing.
+                </li>
+            </ul>
+
+            <div class="flex flex-col md:flex-row gap-4 mt-6">
+                <img
+                    src="https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-43-53.jpg"
+                    alt="Screenshot 1 of the GUI: input and results"
+                    class="w-full md:w-1/2 rounded-lg shadow-lg"
+                    loading="lazy"
+                    width="756"
+                    height="542"
+                />
+                <img
+                    src="https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-44-25.jpg"
+                    alt="Screenshot 2 of the GUI: plotting section"
+                    class="w-full md:w-1/2 rounded-lg shadow-lg"
+                    loading="lazy"
+                    width="844"
+                    height="676"
+                />
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">
+                Practical Example: Profit Maximization
+            </h2>
+            <p class="mb-4">
+                The following optimization example (products A and B) is defined
+                concisely using the <b>String-based DSL</b>, which reads a format
+                similar to a traditional <code>.lp</code> file:
+            </p>
+
+            <CodeBlock
+                code={`from dsl import DSL
+problem_lp = DSL("""
+MAXIMIZE
+    Z = 3*A + 4*B
+SUBJECT TO
+    2*A + 3*B <= 100
+    1*A + 2*B <= 80
+BOUNDS
+    A >= 0
+    B >= 0
+""")
+# 2*A + 3*B <= 100 # Work hours
+# 1*A + 2*B <= 80 # Raw material
+solver = problem_lp.to_simplex()
+solver.solve_problem()
+solver.show_results()
+# Optimal solution: A=20, B=30, Z_max = $180
+`}
+                client:visible
+                language="python"
+            />
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4">Quick Installation and Usage</h2>
+
+            <h3 class="text-2xl font-medium mb-3">Dependency Installation</h3>
+            <p class="mb-3">
+                After cloning the repository, use <code>pip</code> to install
+                everything needed:
+            </p>
+            <CodeBlock
+                code={`git clone https://github.com/xeland314/simplex.git
+cd simplex
+pip install -r requirements.txt`}
+                client:visible
+                language="bash"
+            />
+
+            <h3 class="text-2xl font-medium mb-3 mt-5">Launching Interfaces</h3>
+            <p class="mb-3">
+                Run your preferred interface with a single command:
+            </p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><b>GUI (Desktop Application):</b></li>
+                <CodeBlock
+                    code={`python app.py`}
+                    client:visible
+                    language="bash"
+                />
+                <li><b>Interactive Command Line (CLI):</b></li>
+                <CodeBlock
+                    code={`python simplex.py`}
+                    client:visible
+                    language="bash"
+                />
+            </ul>
+        </section>
+    </div>
+</ProjectLayout>

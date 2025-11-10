@@ -1,0 +1,168 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "🔐 Text Encryptor - Christopher Villamarín Projects";
+const description =
+  "Explore the Text Encryptor, a project developed to encrypt and decrypt text using specific rules. It includes an intuitive graphical interface created with HTML, CSS, and JavaScript.";
+const keywords = [
+  "Text Encryptor",
+  "encryption",
+  "decryption",
+  "HTML",
+  "CSS",
+  "JavaScript",
+  "text validation",
+  "projects",
+  "Christopher Villamarín",
+  "xeland314",
+  "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "🔐 Text Encryptor - Christopher Villamarín Project";
+const ogDescription =
+  "Encrypt and decrypt text using specific rules with this project developed as part of the Alura ONE course. It includes an intuitive graphical interface.";
+const ogUrl = "https://xeland314.github.io/en/projects/text-encryptor/";
+const ogImage = "https://xeland314.github.io/images/encriptador.png";
+const imageAlt = "Preview of the Text Encryptor project";
+const canonicalUrl = "https://xeland314.github.io/en/projects/text-encryptor/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="Text Encryptor"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  robots={robots}
+  lang="en"
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">🔐 Text Encryptor</h1>
+      <p class="text-lg">
+        A simple project developed to encrypt and decrypt text using specific
+        rules. Designed as part of the Alura ONE course.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📋 Description</h2>
+      <p class="mb-4">
+        This text encryptor allows transforming strings entered by the user with
+        a set of predefined rules for encryption and decryption. It also has a
+        simple graphical interface developed in HTML, CSS, and JavaScript.
+      </p>
+      <p class="mb-4">
+        The main functions are to validate the text, encrypt, decrypt, and
+        handle the processed text, allowing it to be displayed, copied, or
+        cleared.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">⚙️ Features</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>
+          Encrypt text based on the following rules:
+          <ul class="list-disc pl-6">
+            <li>
+              <code>e → enter</code>
+            </li>
+            <li>
+              <code>i → imes</code>
+            </li>
+            <li>
+              <code>a → ai</code>
+            </li>
+            <li>
+              <code>o → ober</code>
+            </li>
+            <li>
+              <code>u → ufat</code>
+            </li>
+          </ul>
+        </li>
+        <li>Decrypt text to recover the original message.</li>
+        <li>Validate that the entered text is in lowercase and without accents.</li>
+        <li>
+          Display the encrypted or decrypted text in an intuitive user
+          interface.
+        </li>
+        <li>Copy the processed text to the clipboard.</li>
+        <li>Clear the input and output fields.</li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🚀 Installation</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          Clone the repository from GitHub:
+          <CodeBlock
+            code={`git clone https://github.com/xeland314/encriptador-de-texto.git`}
+            client:visible
+          />
+        </li>
+        <li>Open the project in your favorite text editor.</li>
+        <li>
+          Run the <code>index.html</code> file in your browser to start the
+          application.
+        </li>
+      </ol>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📜 Usage</h2>
+      <ol class="list-decimal pl-6 space-y-4">
+        <li>
+          Write the text you want to encrypt or decrypt in the corresponding
+          field.
+        </li>
+        <li>
+          Press the <strong>Encrypt</strong> or <strong>Decrypt</strong> button
+          as appropriate.
+        </li>
+        <li>The result will appear in the output text area.</li>
+        <li>
+          Use the <strong>Copy</strong> or <strong>Clear</strong> functions as
+          needed.
+        </li>
+      </ol>
+      <p class="mt-4">
+        Note: If the entered text is not valid (e.g., it contains uppercase
+        letters or accents), an alert message will be displayed.
+      </p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">📊 Results</h2>
+      <div class="relative w-full h-96 border rounded-lg shadow-lg my-8">
+        <iframe
+          src="https://xeland314.github.io/encriptador-de-texto/"
+          title="Text Encryptor Preview"
+          class="w-full h-full rounded-lg border-none"></iframe>
+      </div>
+    </section>
+
+    <footer class="text-center">
+      <h2 class="text-lg">
+        Developed by{" "}
+        <a
+          href="http://github.com/xeland314/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-600 hover:underline"
+        >
+          xeland314
+        </a>
+      </h2>
+    </footer>
+  </div>
+</ProjectLayout>

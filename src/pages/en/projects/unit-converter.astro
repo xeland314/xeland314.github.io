@@ -1,0 +1,184 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+// Metadata
+const title = "📏 Unit Converter - Christopher Villamarín Projects";
+const description =
+  "Explore the Unit Converter, a project developed as part of Oracle Next Education's Challenge #2. Convert between units of length, time, temperature, and currencies through an intuitive graphical interface created with Java Swing.";
+const keywords = [
+  "Unit converter",
+  "Java",
+  "Swing",
+  "application development",
+  "length conversions",
+  "time conversions",
+  "temperature conversions",
+  "currency conversions",
+  "Christopher Villamarín",
+  "xeland314",
+  "Ecuador",
+].join(", ");
+const authors = "Christopher Alexander Villamarín Pila";
+const ogTitle = "📏 Unit Converter - Christopher Villamarín Project";
+const ogDescription =
+  "Convert units of length, time, temperature, and currencies with this intuitive project developed in Java Swing. Part of Oracle Next Education's Challenge #2.";
+const ogUrl = "https://xeland314.github.io/en/projects/unit-converter/";
+const ogImage =
+  "https://raw.githubusercontent.com/xeland314/conversor-de-unidades/refs/heads/main/src/main/resources/conversor.png";
+const imageAlt = "Preview of the Unit Converter project";
+const canonicalUrl = "https://xeland314.github.io/en/projects/unit-converter/";
+const robots = "index, follow";
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={authors}
+  applicationName="Unit Converter"
+  url={ogUrl}
+  image={ogImage}
+  imageAlt={imageAlt}
+  canonical={canonicalUrl}
+  robots={robots}
+  lang="en"
+>
+  <div class="p-0 sm:p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4">
+        📏 Unit Converter - Oracle Next Education (ONE) Challenge #2
+      </h1>
+      <p class="text-lg">
+        This is a unit conversion project developed as part of the Oracle Next
+        Education (ONE) Challenge #2.
+      </p>
+    </header>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🎯 Project Description</h2>
+      <p>
+        The converter has a simple graphical interface and can perform
+        conversions between various units of length, time, temperature, and
+        currencies.
+      </p>
+    </section>
+
+    <section class="mb-8 text-center">
+      <h2 class="text-3xl font-semibold mb-4">🎥 Demo</h2>
+      <p class="text-lg">Watch a demonstration of the unit converter in action:</p>
+      <div class="mt-4 flex justify-center">
+        <img
+          src="https://camo.githubusercontent.com/386f0895c30b88ec4e8a6f7e989e79a9dce4dbaf1c26a1d3b0917bb0fa89d38d/68747470733a2f2f6d656469612e67697068792e636f6d2f6d656469612f76312e59326c6b505463354d4749334e6a45784d475a685a6a46695a47526a5a6a4d77597a6c6b4d44566c5a6d46694f5759305a544d314e445a6c5a6d526d4f474d355a6d59784f535a6c634431324d563970626e526c636d35686246396e61575a7a583264705a6b6c6b4a6d4e305057632f5041476f565071336b34446d766344326c6a2f67697068792e676966"
+          alt="Unit Converter Demo"
+          class="max-w-full h-auto rounded-lg shadow-lg"
+        />
+      </div>
+    </section>
+
+    <section class="mb-8 text-center">
+      <h2 class="text-3xl font-semibold mb-4">🖥️ Graphical Interface</h2>
+      <p>
+        This project features a graphical interface developed in Java Swing to
+        facilitate user interaction. View the full interface:
+      </p>
+      <div class="mt-4 flex justify-center">
+        <img
+          src="https://raw.githubusercontent.com/xeland314/conversor-de-unidades/refs/heads/main/src/main/resources/conversor.png"
+          alt="Unit Converter Interface"
+          class="max-w-full h-auto rounded-lg shadow-lg"
+        />
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🔄 Features</h2>
+      <h3 class="text-2xl font-bold mb-2">Conversion Types:</h3>
+      <ul class="list-disc pl-6 space-y-4">
+        <li>
+          <strong>Length:</strong>
+          <ul class="list-disc pl-6">
+            <li>Millimeters (mm)</li>
+            <li>Centimeters (cm)</li>
+            <li>Decimeters (dm)</li>
+            <li>Meters (m)</li>
+            <li>Decameters (dam)</li>
+            <li>Hectometers (hm)</li>
+            <li>Kilometers (km)</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Time:</strong>
+          <ul class="list-disc pl-6">
+            <li>Seconds (s)</li>
+            <li>Minutes (min)</li>
+            <li>Days (d)</li>
+            <li>Weeks</li>
+            <li>Months</li>
+            <li>Years</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Temperature:</strong>
+          <ul class="list-disc pl-6">
+            <li>Celsius (°C)</li>
+            <li>Fahrenheit (°F)</li>
+            <li>Rankine (°R)</li>
+            <li>Kelvin (K)</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Currencies:</strong>
+          <ul class="list-disc pl-6">
+            <li>Euro (EUR)</li>
+            <li>Dollar (USD)</li>
+            <li>Japanese Yen (JPY)</li>
+            <li>South Korean Won (KRW)</li>
+            <li>British Pound (GBP)</li>
+            <li>Colombian Peso (COP) (data as of April 25, 2023)</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">🛠️ Tools Used</h2>
+      <ul class="list-disc pl-6 space-y-4">
+        <li>
+          <strong>Programming Language:</strong> Java (OpenJDK 17.0.6).
+        </li>
+        <li>
+          <strong>Graphical Interface:</strong> Swing.
+        </li>
+        <li>
+          <strong>Package Manager:</strong> Maven.
+        </li>
+        <li>
+          <strong>Version Control:</strong> Git & GPG.
+        </li>
+        <li>
+          <strong>IDEs:</strong> Visual Studio Code (for unit tests) and Eclipse
+          (for the user interface and compilation).
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-3xl font-semibold mb-4">
+        ⚙️ How to run the converter?
+      </h2>
+      <p class="mb-4">
+        You can download the executable file corresponding to your Java version
+        and run the command in your console:
+      </p>
+      <div>
+        <h3 class="text-2xl font-bold">Java 11</h3>
+        <CodeBlock code="java -jar conversor_11.jar" client:visible />
+      </div>
+      <div class="mt-4">
+        <h3 class="text-2xl font-bold">Java 17</h3>
+        <CodeBlock code="java -jar conversor_17.jar" client:visible />
+      </div>
+    </section>
+  </div>
+</ProjectLayout>

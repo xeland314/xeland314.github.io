@@ -2,16 +2,32 @@
 // src/components/ProgrammingLanguages.astro
 // Componente Astro puro
 
-import LanguageGrid from './LanguageGrid.astro';
+import LanguageGrid from "./LanguageGrid.astro";
+
+const { lang = "es" } = Astro.props;
+
+const texts: Record<string, Record<string, string>> = {
+    es: {
+        title: "Tecnologías",
+    },
+    en: {
+        title: "Technologies",
+    },
+};
+
+const T = texts[lang];
 ---
+
 <section
-  id="programming-languages"
-  class="w-full flex flex-col items-center mb-6"
+    id="programming-languages"
+    class="w-full flex flex-col items-center mb-6"
 >
-  <div class="w-full flex flex-col text-center items-center justify-center">
-    <h3 class="pt-4 md:pt-0 text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-      Tecnologías
-    </h3>
-    <LanguageGrid />
-  </div>
+    <div class="w-full flex flex-col text-center items-center justify-center">
+        <h3
+            class="pt-4 md:pt-0 text-2xl font-bold mb-4 text-gray-900 dark:text-white"
+        >
+            {T.title}
+        </h3>
+        <LanguageGrid />
+    </div>
 </section>
