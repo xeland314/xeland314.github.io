@@ -17,7 +17,7 @@
     "@types/react-dom": "^19.1.6",
     "@types/react-google-recaptcha": "^2.1.9",
     "algoliasearch": "^5.35.0",
-    "astro": "^5.11.0",
+    "astro": "^5.15.6",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
