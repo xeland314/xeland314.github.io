@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, passthroughImageService } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 import db from "@astrojs/db";
@@ -41,4 +41,7 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
+  image: {
+    service: passthroughImageService()
+  }
 });

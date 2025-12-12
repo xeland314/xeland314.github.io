@@ -27,6 +27,8 @@
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
-    "@types/algoliasearch": "^3.34.11"
+    "@types/algoliasearch": "^3.34.11",
+    "prettier": "3.7.4",
+    "prettier-plugin-astro": "0.14.1"
   }
 }
