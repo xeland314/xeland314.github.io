@@ -6,47 +6,47 @@ const { lang = "es" } = Astro.props;
 
 // Textos traducibles
 const texts: Record<string, { title: string; button: string }> = {
-    es: {
-        title: "Mis Certificados",
-        button: "Ver Todos los Certificados",
-    },
-    en: {
-        title: "My Certificates",
-        button: "View All Certificates",
-    },
+  es: {
+    title: "Mis Certificados",
+    button: "Ver Todos los Certificados",
+  },
+  en: {
+    title: "My Certificates",
+    button: "View All Certificates",
+  },
 };
 
 const certificates = await db
-    .select()
-    .from(MyCertificates)
-    .where(
-        and(eq(MyCertificates.isFeatured, true), eq(MyCertificates.lang, lang)),
-    )
-    .orderBy(asc(MyCertificates.date));
+  .select()
+  .from(MyCertificates)
+  .where(
+    and(eq(MyCertificates.isFeatured, true), eq(MyCertificates.lang, lang)),
+  )
+  .orderBy(asc(MyCertificates.date));
 
 const T = texts[lang];
 const certificatesLink = `/${lang}/certificates`;
 ---
 
 <section
-    class="mx-auto px-4 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
-    id="certificates"
+  class="flex flex-col mx-auto px-1 mobile:px-6 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+  id="certificates"
 >
-    <h2
-        class="text-4xl font-bold mb-8 text-center"
-        transition:name="Mis-Certificados"
-    >
-        {T.title}
-    </h2>
-    <CertificatesCard certificates={certificates} lang={lang} />
+  <h2
+    class="text-4xl font-bold mb-8 text-center"
+    transition:name="Mis-Certificados"
+  >
+    {T.title}
+  </h2>
+  <CertificatesCard certificates={certificates} lang={lang} />
 
-    <div class="text-center mt-12">
-        <a
-            href={certificatesLink}
-            class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
-            title={T.button}
-        >
-            {T.button}
-        </a>
-    </div>
+  <div class="text-center mt-12">
+    <a
+      href={certificatesLink}
+      class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
+      title={T.button}
+    >
+      {T.button}
+    </a>
+  </div>
 </section>
