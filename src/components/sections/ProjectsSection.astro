@@ -1,26 +1,27 @@
 ---
 import ProjectCard from "../../components/projects/ProjectCard.astro";
-import { db, Projects, eq, and } from "astro:db";
+import { db, Projects, eq, and, desc } from "astro:db";
 
 const { lang = "es" } = Astro.props;
 
 // Textos traducibles
 const texts: Record<string, { title: string; button: string }> = {
-    es: {
-        title: "Mis Proyectos Destacados",
-        button: "Ver Todos los Proyectos",
-    },
-    en: {
-        title: "My Featured Projects",
-        button: "View All Projects",
-    },
+  es: {
+    title: "Mis Proyectos Destacados",
+    button: "Ver Todos los Proyectos",
+  },
+  en: {
+    title: "My Featured Projects",
+    button: "View All Projects",
+  },
 };
 
 // 1. Obtener todos los proyectos de la DB según el idioma
 const allProjects = await db
-    .select()
-    .from(Projects)
-    .where(and(eq(Projects.isFeatured, true), eq(Projects.lang, lang)));
+  .select()
+  .from(Projects)
+  .where(and(eq(Projects.isFeatured, true), eq(Projects.lang, lang)))
+  .orderBy(desc(Projects.isFeatured), Projects.title);
 
 // 2. Limitar a los primeros 6 proyectos destacados
 const featuredProjects = allProjects.slice(0, 6);
@@ -30,28 +31,28 @@ const projectsLink = `/${lang}/projects`;
 ---
 
 <section
-    id="projects"
-    class="2xl:px-20 xl:px-28 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white place-items-center"
+  id="projects"
+  class="2xl:px-20 xl:px-28 lg:px-24 md:px-16 sm:px-12 xs:px-10 px-6 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white place-items-center"
 >
-    <h2 class="text-4xl font-bold text-center mb-12">{T.title}</h2>
+  <h2 class="text-4xl font-bold text-center mb-12">{T.title}</h2>
 
-    <div
-        class="max-w-[2700px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-8"
+  <div
+    class="max-w-[2700px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+  >
+    {
+      featuredProjects.map((project) => (
+        <ProjectCard project={project} lang={lang} />
+      ))
+    }
+  </div>
+
+  <div class="text-center mt-12">
+    <a
+      href={projectsLink}
+      class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
+      title={T.button}
     >
-        {
-            featuredProjects.map((project) => (
-                <ProjectCard project={project} lang={lang} />
-            ))
-        }
-    </div>
-
-    <div class="text-center mt-12">
-        <a
-            href={projectsLink}
-            class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
-            title={T.button}
-        >
-            {T.button}
-        </a>
-    </div>
+      {T.button}
+    </a>
+  </div>
 </section>

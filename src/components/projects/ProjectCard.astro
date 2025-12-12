@@ -2,51 +2,51 @@
 // src/components/ProjectCard.astro
 
 interface Props {
-    project: {
-        title: string;
-        description: string; // La descripción completa (si se pasara aquí)
-        shortDescription: string; // La descripción corta para la card
-        githubLink?: string | null | undefined;
-        demoLink?: string | null | undefined;
-        tags: string[] | unknown;
-        image?: string | undefined | null;
-        slug: string; // Importante para el enlace a la página de detalles
-        isFeatured?: boolean; // Si es necesario, aunque no se usa aquí
-    };
-    lang?: "es" | "en";
+  project: {
+    title: string;
+    description: string; // La descripción completa (si se pasara aquí)
+    shortDescription: string; // La descripción corta para la card
+    githubLink?: string | null | undefined;
+    demoLink?: string | null | undefined;
+    tags: string[] | unknown;
+    image?: string | undefined | null;
+    slug: string; // Importante para el enlace a la página de detalles
+    isFeatured?: boolean; // Si es necesario, aunque no se usa aquí
+  };
+  lang?: "es" | "en";
 }
 
 // Desestructurar las props
 const { project, lang = "es" } = Astro.props;
 
 const texts = {
-    es: {
-        view_details: "Ver Detalles",
-        view_details_title: "Ver detalles del proyecto",
-        repository: "Repositorio",
-        repository_title: "Repositorio en GitHub",
-        repository_unavailable: "Repositorio no disponible para este proyecto",
-        demo: "Demo",
-        demo_title: "Ver demo en línea",
-        demo_unavailable: "Demo no disponible para este proyecto",
-    },
-    en: {
-        view_details: "View Details",
-        view_details_title: "View project details",
-        repository: "Repository",
-        repository_title: "GitHub Repository",
-        repository_unavailable: "Repository not available for this project",
-        demo: "Demo",
-        demo_title: "View online demo",
-        demo_unavailable: "Demo not available for this project",
-    },
+  es: {
+    view_details: "Ver Detalles",
+    view_details_title: "Ver detalles del proyecto",
+    repository: "GitHub",
+    repository_title: "Repositorio en GitHub",
+    repository_unavailable: "Repositorio no disponible para este proyecto",
+    demo: "Demo",
+    demo_title: "Ver demo en línea",
+    demo_unavailable: "Demo no disponible para este proyecto",
+  },
+  en: {
+    view_details: "View Details",
+    view_details_title: "View project details",
+    repository: "GitHub",
+    repository_title: "GitHub Repository",
+    repository_unavailable: "Repository not available for this project",
+    demo: "Demo",
+    demo_title: "View online demo",
+    demo_unavailable: "Demo not available for this project",
+  },
 };
 
 const T = texts[lang];
 
 // Función para capitalizar la primera letra de una cadena (para las tags)
 function capitalizeFirstLetter(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 // Para el enlace de la página de detalles, que antes usabas project.links[0] o generabas en CardHeader
@@ -55,180 +55,157 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
 ---
 
 <article
-    class="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden h-auto bg-gray-200 dark:bg-gray-700 flex flex-col"
+  class="rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden h-auto bg-gray-200 dark:bg-gray-700 flex flex-col"
 >
-    <div class="flex flex-auto justify-center bg-transparent h-48">
-        {
-            project.image ? (
-                <img
-                    transition:name={`img-${project.slug}`}
-                    class="h-full w-full object-cover"
-                    src={project.image}
-                    alt={project.title}
-                    loading="lazy"
-                    height="150"
-                    width="500"
-                />
-            ) : (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 500 150"
-                >
-                    <rect
-                        width="100%"
-                        height="100%"
-                        fill="url(#pattern-squares)"
-                    />
-                    <defs>
-                        <pattern
-                            id="pattern-squares"
-                            x="0"
-                            y="0"
-                            width="10"
-                            height="10"
-                            patternUnits="userSpaceOnUse"
-                        >
-                            <rect
-                                x="0"
-                                y="0"
-                                width="2"
-                                height="2"
-                                fill="var(--svg-pattern-color)"
-                            />
-                        </pattern>
-                    </defs>
-                    <text
-                        x="50%"
-                        y="50%"
-                        font-size="24"
-                        font-family="Inter, Arial, sans-serif"
-                        fill="currentColor"
-                        text-anchor="middle"
-                        alignment-baseline="middle"
-                    >
-                        {project.title}
-                    </text>
-                </svg>
-            )
-        }
+  <div class="flex flex-auto justify-center bg-transparent h-48">
+    {
+      project.image ? (
+        <img
+          transition:name={`img-${project.slug}`}
+          class="h-full w-full object-cover"
+          src={project.image}
+          alt={project.title}
+          loading="lazy"
+          height="150"
+          width="500"
+        />
+      ) : (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+          viewBox="0 0 500 150"
+        >
+          <rect width="100%" height="100%" fill="url(#pattern-squares)" />
+          <defs>
+            <pattern
+              id="pattern-squares"
+              x="0"
+              y="0"
+              width="10"
+              height="10"
+              patternUnits="userSpaceOnUse"
+            >
+              <rect
+                x="0"
+                y="0"
+                width="2"
+                height="2"
+                fill="var(--svg-pattern-color)"
+              />
+            </pattern>
+          </defs>
+          <text
+            x="50%"
+            y="50%"
+            font-size="24"
+            font-family="Inter, Arial, sans-serif"
+            fill="currentColor"
+            text-anchor="middle"
+            alignment-baseline="middle"
+          >
+            {project.title}
+          </text>
+        </svg>
+      )
+    }
+  </div>
+
+  <div class="p-4 flex flex-col flex-grow">
+    <h3
+      class="text-xl font-bold mb-2"
+      transition:name={`title-${project.slug}`}
+    >
+      <a
+        href={detailsPageLink.replace("en/projects/", "")}
+        class="hover:text-blue-700 dark:hover:text-blue-400 text-gray-900 dark:text-white"
+      >
+        {project.title}
+      </a>
+    </h3>
+
+    <p class="text-gray-600 dark:text-gray-300 text-sm mb-2 flex-grow">
+      {project.description}
+    </p>
+
+    <div class="flex flex-wrap gap-2 mb-2 mt-auto">
+      {/* mt-auto para empujar al fondo */}
+      {
+        (project.tags as string[]).map((tag) => (
+          <span class="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full">
+            {capitalizeFirstLetter(tag)}
+          </span>
+        ))
+      }
     </div>
 
-    <div class="p-4 flex flex-col flex-grow">
-        <h3
-            class="text-xl font-bold mb-2"
-            transition:name={`title-${project.slug}`}
+    <div class="grid grid-cols-2 items-center justify-between gap-2 mt-4">
+      <a
+        href={detailsPageLink}
+        class="inline-flex items-center justify-center px-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow-md transition-colors flex-grow md:flex-none"
+        title={T.view_details_title}
+      >
+        <svg
+          class="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
         >
-            <a
-                href={detailsPageLink.replace("en/projects/", "")}
-                class="hover:text-blue-700 dark:hover:text-blue-400 text-gray-900 dark:text-white"
-            >
-                {project.title}
-            </a>
-        </h3>
-
-        <p class="text-gray-600 dark:text-gray-300 text-sm mb-2 flex-grow">
-            {project.description}
-        </p>
-
-        <div class="flex flex-wrap gap-2 mb-2 mt-auto">
-            {/* mt-auto para empujar al fondo */}
-            {
-                (project.tags as string[]).map((tag) => (
-                    <span class="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full">
-                        {capitalizeFirstLetter(tag)}
-                    </span>
-                ))
-            }
-        </div>
-
-        <div
-            class="grid grid-cols-1 xs:grid-cols-2 items-center justify-between gap-2 mt-4"
+          <path
+            d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"
+          ></path>
+          <path
+            d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"
+          ></path>
+        </svg>
+        <span class="ml-2">{T.view_details}</span>
+      </a>
+      <a
+        href={project.githubLink ?? "#"}
+        target="_blank"
+        rel="noopener noreferrer"
+        class={`inline-flex items-center justify-center px-2 py-3 font-medium text-sm rounded-lg transition-colors flex-grow md:flex-none shadow-md ${
+          project.githubLink
+            ? "bg-gray-600 hover:bg-gray-500 text-white"
+            : "bg-gray-400 dark:bg-gray-300 text-gray-400 cursor-not-allowed opacity-60"
+        }`}
+        aria-disabled={!project.githubLink}
+        title={project.githubLink
+          ? T.repository_title
+          : T.repository_unavailable}
+      >
+        <svg
+          role="img"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          class="inline-block w-5 h-5 self-center-safe invert"
+          ><title>GitHub</title><path
+            d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+          ></path></svg
         >
-            <a
-                href={detailsPageLink}
-                class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-md transition-colors flex-grow md:flex-none"
-                title={T.view_details_title}
-            >
-                {T.view_details}
-            </a>
-            <a
-                href={project.githubLink ?? "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                class={`inline-flex items-center justify-center px-6 py-3 font-medium rounded-lg transition-colors flex-grow md:flex-none shadow-md ${
-                    project.githubLink
-                        ? "bg-gray-600 hover:bg-gray-500 text-white"
-                        : "bg-gray-400 dark:bg-gray-300 text-gray-400 cursor-not-allowed opacity-60"
-                }`}
-                aria-disabled={!project.githubLink}
-                title={project.githubLink
-                    ? T.repository_title
-                    : T.repository_unavailable}
-            >
-                <span class="mr-2">{T.repository}</span>
-                <svg
-                    role="img"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="inline-block w-6 h-6 mr-2 self-center-safe invert"
-                    ><title>GitHub</title><path
-                        d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-                    ></path></svg
-                >
-            </a>
-
-            <a
-                href={project.demoLink ?? "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                class={`inline-flex items-center justify-center px-6 py-3 font-medium rounded-lg transition-colors flex-grow md:flex-none shadow-md ${
-                    project.demoLink
-                        ? "border-2 border-gray-400 dark:border-gray-500 hover:border-gray-600 dark:hover:border-gray-400 text-gray-700 dark:text-gray-300"
-                        : "border-2 border-gray-300 dark:border-gray-600 text-gray-400 cursor-not-allowed opacity-60"
-                }`}
-                aria-disabled={!project.demoLink}
-                title={project.demoLink ? T.demo_title : T.demo_unavailable}
-            >
-                <span class="mr-2">{T.demo}</span>
-                <svg
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <>
-                        <path
-                            d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"
-                        ></path>
-                        <path
-                            d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"
-                        ></path>
-                    </>
-                </svg>
-            </a>
-        </div>
+        <span class="ml-2">{T.repository}</span>
+      </a>
     </div>
+  </div>
 </article>
 
 <style>
-    :root {
-        --svg-text-color: #4b5563; /* Tailwind gray-600 para modo claro */
-        --svg-pattern-color: rgba(
-            0,
-            0,
-            0,
-            0.25
-        ); /* Patrón semitransparente oscuro para modo claro */
-    }
-    html.dark {
-        --svg-text-color: #cbd5e0; /* Tailwind gray-300 para modo oscuro */
-        --svg-pattern-color: rgba(
-            255,
-            255,
-            255,
-            0.25
-        ); /* Patrón semitransparente claro para modo oscuro */
-    }
+  :root {
+    --svg-text-color: #4b5563; /* Tailwind gray-600 para modo claro */
+    --svg-pattern-color: rgba(
+      0,
+      0,
+      0,
+      0.25
+    ); /* Patrón semitransparente oscuro para modo claro */
+  }
+  html.dark {
+    --svg-text-color: #cbd5e0; /* Tailwind gray-300 para modo oscuro */
+    --svg-pattern-color: rgba(
+      255,
+      255,
+      255,
+      0.25
+    ); /* Patrón semitransparente claro para modo oscuro */
+  }
 </style>
