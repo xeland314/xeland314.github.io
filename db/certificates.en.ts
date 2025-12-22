@@ -77,7 +77,7 @@ export const certificatesEN = [
     credentialUrl:
       "https://app.aluracursos.com/degree/certificate/b1cbca66-ead1-4041-bf05-6635d213eb47",
     skills: ["Java", "OOP"], // POO (Programación Orientada a Objetos)
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
   {
@@ -166,7 +166,7 @@ export const certificatesEN = [
       "https://www.netacad.com/certificates?issuanceId=9e478f48-c9e0-4ac2-9211-0d7ac1d898ae",
     credentialId: "9e478f48-c9e0-4ac2-9211-0d7ac1d898ae",
     skills: ["Linux", "Bash", "Commands"], // Comandos
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
 ];

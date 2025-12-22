@@ -64,9 +64,12 @@ const T = texts[lang];
           <p class="text-gray-600 dark:text-gray-400 self-center">
             {cert.issuer}
           </p>
-          <p class="text-gray-500 dark:text-gray-300 text-sm self-center">
+          <time
+            class="text-gray-500 dark:text-gray-300 text-sm self-center"
+            datetime={cert.date}
+          >
             {cert.issueDate}
-          </p>
+          </time>
         </main>
       </div>
     ))
