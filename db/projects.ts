@@ -30,7 +30,7 @@ export const projectData = [
     shortDescription: "Analiza chats de WhatsApp en cualquier dispositivo",
     githubLink: "https://github.com/xeland314/chat_analyzer_ui",
     tags: ["WhatsApp", "Dart", "Flutter", "Rust", "Multiplataforma"],
-    image: undefined,
+    image: "/assets/chat_analyzer.png",
     isFeatured: true,
   },
   {

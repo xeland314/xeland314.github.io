@@ -32,7 +32,7 @@ export const projectDataEN = [
     shortDescription: "Analyzes WhatsApp chats with Python.",
     githubLink: "https://github.com/xeland314/chat-analyzer",
     tags: ["Dart", "WhatsApp", "Flutter", "Rust", "Multiplatform"],
-    image: undefined,
+    image: "/assets/chat_analyzer.png",
     lang: "en",
     isFeatured: true,
   },
