@@ -1,15 +1,18 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Introduction from "../../components/sections/Introduction.astro";
 import Hero from "../../components/sections/Hero.astro";
+import Education from "../../components/sections/EducationSection.astro";
 import ProjectsSection from "../../components/sections/ProjectsSection.astro";
 import Certificates from "../../components/sections/Certificates.astro";
 import Contact from "../../components/sections/Contact.astro";
 
 // Metadata for the English version
-const siteTitle = "Christopher Villamarín - Backend Developer in Quito, Ecuador";
-const siteDescription = "Discover the portfolio of Christopher Villamarín, a backend developer specialized in creating scalable solutions for web, mobile, and desktop applications.";
-const siteKeywords = "programmer, backend developer, Python, django, django rest framework, Quito, Ecuador, scalable systems, professional portfolio";
+const siteTitle =
+  "Christopher Villamarín - Backend Developer in Quito, Ecuador";
+const siteDescription =
+  "Discover the portfolio of Christopher Villamarín, a backend developer specialized in creating scalable solutions for web, mobile, and desktop applications.";
+const siteKeywords =
+  "programmer, backend developer, Python, django, django rest framework, Quito, Ecuador, scalable systems, professional portfolio";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
 const siteApplicationName = "Christopher Villamarín Portfolio";
 const siteUrl = "https://xeland314.github.io/en/";
@@ -17,21 +20,23 @@ const siteImage = "https://xeland314.github.io/images/preview.png";
 ---
 
 <BaseLayout
-    title={siteTitle}
-    description={siteDescription}
-    keywords={siteKeywords}
-    author={siteAuthor}
-    applicationName={siteApplicationName}
-    url={siteUrl}
-    image={siteImage}
-    canonical={siteUrl}
-    lang="en"
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  applicationName={siteApplicationName}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+  lang="en"
 >
-    <main class="mx-auto py-0">
-        <Hero lang="en" />
-        <Introduction lang="en" />
-        <ProjectsSection lang="en" />
-        <Certificates lang="en" />
-        <Contact lang="en" />
-    </main>
+  <main class="mx-auto py-0 dark:bg-gray-900">
+    <Hero lang="en" />
+    <ProjectsSection lang="en" />
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <Education lang="en" />
+      <Certificates lang="en" />
+    </div>
+    <Contact lang="en" />
+  </main>
 </BaseLayout>

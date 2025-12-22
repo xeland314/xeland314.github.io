@@ -84,7 +84,7 @@ export const certificates = [
     credentialUrl:
       "https://app.aluracursos.com/degree/certificate/f30ed67f-fda6-4414-968c-90569e209d88",
     skills: ["Gestión", "Agilidad", "Empresas"],
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     logo: "/images/alura_latam_logo.jpeg",
@@ -143,6 +143,7 @@ export const certificates = [
     credentialUrl:
       "https://learn.microsoft.com/es-es/training/achievements/learn.wwl.get-started-querying-with-transact-sql.trophy?username=christopher-villamarin&sharingId=A342BA23E2F906B1",
     skills: ["SQL"],
+    isFeatured: true,
   },
   {
     logo:"/images/netacad_logo_black.svg",

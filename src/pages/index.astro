@@ -1,18 +1,18 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Introduction from "../components/sections/Introduction.astro";
 import Hero from "../components/sections/Hero.astro";
-import ProjectsSection from "../components/sections/ProjectsSection.astro";
+import Projects from "../components/sections/ProjectsSection.astro";
+import Education from "../components/sections/EducationSection.astro";
 import Certificates from "../components/sections/Certificates.astro";
 import Contact from "../components/sections/Contact.astro";
 
 // Datos para la metadata (los mismos que tenías en Next.js)
 const siteTitle =
-    "Christopher Villamarín - Backend Developer en Quito, Ecuador";
+  "Christopher Villamarín - Backend Developer en Quito, Ecuador";
 const siteDescription =
-    "Descubre el portafolio de Christopher Villamarín, desarrollador backend especializado en crear soluciones escalables para aplicaciones web, móviles y de escritorio.";
+  "Descubre el portafolio de Christopher Villamarín, desarrollador backend especializado en crear soluciones escalables para aplicaciones web, móviles y de escritorio.";
 const siteKeywords =
-    "programador, desarrollador backend, Python, django, django rest framework, Quito, Ecuador, sistemas escalables, portafolio profesional";
+  "programador, desarrollador backend, Python, django, django rest framework, Quito, Ecuador, sistemas escalables, portafolio profesional";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
 const siteApplicationName = "Christopher Villamarín Portfolio";
 const siteUrl = "https://xeland314.github.io/";
@@ -20,20 +20,22 @@ const siteImage = "https://xeland314.github.io/images/preview.png";
 ---
 
 <BaseLayout
-    title={siteTitle}
-    description={siteDescription}
-    keywords={siteKeywords}
-    author={siteAuthor}
-    applicationName={siteApplicationName}
-    url={siteUrl}
-    image={siteImage}
-    canonical={siteUrl}
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  applicationName={siteApplicationName}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
 >
-    <main class="mx-auto py-0">
-        <Hero />
-        <Introduction />
-        <ProjectsSection />
-        <Certificates />
-        <Contact />
-    </main>
+  <main class="mx-auto py-0 dark:bg-gray-900">
+    <Hero />
+    <Projects />
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <Education />
+      <Certificates />
+    </div>
+    <Contact />
+  </main>
 </BaseLayout>

@@ -9,7 +9,7 @@ export const projectDataEN = [
     demoLink: "https://xeland314.github.io/advent-calendar/",
     tags: ["React", "Frontend", "PixelArt", "TailwindCSS"],
     image: "/images/optimized/projects/advent_calendar/card.avif",
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
   {
@@ -28,12 +28,13 @@ export const projectDataEN = [
     title: "Chat Analyzer",
     slug: "en/projects/chat-analyzer",
     description:
-      "A WhatsApp chat analysis tool developed in Python. It uses NLTK to process natural language and provides detailed statistics about conversations.",
+      "A WhatsApp chat analysis tool developed in Dart/Flutter and Rust. Avaible on Windows, Linux and Android. It provides a simple UI to understand a group interaction in a WhatsApp chat, statistics per user and sentiment analysis. Everything is calculated on your own device without an internet conection. You can analyze 100000 messages in just 10 seconds.",
     shortDescription: "Analyzes WhatsApp chats with Python.",
     githubLink: "https://github.com/xeland314/chat-analyzer",
-    tags: ["Python", "WhatsApp", "Nltk", "Cli"],
+    tags: ["Dart", "WhatsApp", "Flutter", "Rust", "Multiplatform"],
     image: undefined,
     lang: "en",
+    isFeatured: true,
   },
   {
     title: "Memory Game",
@@ -104,7 +105,7 @@ export const projectDataEN = [
     lang: "en",
   },
   {
-    title: "Unit Converter", // Conversor de Unidades
+    title: "Unit Converter",
     slug: "en/projects/unit-converter",
     description:
       "A unit converter developed for Oracle Next Education Challenge #2. It allows converting between different units of length, time, temperature, and currencies with a simple graphical interface.",
@@ -112,7 +113,7 @@ export const projectDataEN = [
     githubLink: "https://github.com/xeland314/conversor-de-unidades",
     tags: ["Java", "Swing", "Unit Conversion"],
     image: "/images/optimized/projects/conversor-de-unidades/card.avif",
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
   {
@@ -158,12 +159,12 @@ export const projectDataEN = [
     title: "CodeCraft Estimator",
     slug: "en/projects/codecraft-estimator",
     description:
-      "AI-powered software project estimator, created with Vibe Coding and Firebase Studio. The tool calculates project time and cost, manages risks, and allows for task augmentation, based on the three-point estimation formula.",
-    shortDescription: "Software project estimator with AI and Firebase.",
+      "AI-powered software project estimator. The tool calculates project time and cost, manages risks, and allows for task augmentation, based on a three-point estimation formula.",
+    shortDescription: "Software project estimator with AI (Gemini).",
     githubLink: "https://github.com/xeland314/codecraft-estimator",
-    tags: ["AI", "Vibe Coding", "Firebase Studio", "TypeScript", "Next.js"],
+    tags: ["AI", "Gemini", "TypeScript", "Next.js"],
     image: "/images/optimized/projects/codecraft-estimator/card.avif",
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
   {

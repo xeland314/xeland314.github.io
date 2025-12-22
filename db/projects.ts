@@ -9,7 +9,7 @@ export const projectData = [
     demoLink: "https://xeland314.github.io/advent-calendar/",
     tags: ["React", "Frontend", "PixelArt", "TailwindCSS"],
     image: "/images/optimized/projects/advent_calendar/card.avif",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "Tetris",
@@ -26,11 +26,12 @@ export const projectData = [
     title: "Chat Analyzer",
     slug: "chat-analyzer",
     description:
-      "Una herramienta de análisis de chats de WhatsApp desarrollada en Python. Utiliza NLTK para procesar el lenguaje natural y proporciona estadísticas detalladas sobre las conversaciones.",
-    shortDescription: "Analiza chats de WhatsApp con Python.",
-    githubLink: "https://github.com/xeland314/chat-analyzer",
-    tags: ["Python", "WhatsApp", "Nltk", "Cli"],
+      "Una herramienta de análisis de chats de WhatsApp desarrollada en Dart/Flutter y Rust. Disponible en Windows, Linux y Android. Provee una interfaz sencilla para entender la interacción de un grupo de WhatsApp, estadísticas por usuario y análsis de sentimientos. Todo de manera local sin enviar datos fuera de tu dispositivo. Puedes analizar hasta 100000 mensajes en menos de 10 segundos.",
+    shortDescription: "Analiza chats de WhatsApp en cualquier dispositivo",
+    githubLink: "https://github.com/xeland314/chat_analyzer_ui",
+    tags: ["WhatsApp", "Dart", "Flutter", "Rust", "Multiplataforma"],
     image: undefined,
+    isFeatured: true,
   },
   {
     title: "Memory Game",
@@ -103,7 +104,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/conversor-de-unidades",
     tags: ["Java", "Swing", "Conversion De Unidades"],
     image: "/images/optimized/projects/conversor-de-unidades/card.avif",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "Simplex Solver",
@@ -146,12 +147,12 @@ export const projectData = [
     title: "CodeCraft Estimator",
     slug: "codecraft-estimator",
     description:
-      "Estimador de proyectos de software impulsado por IA, creado con Vibe Coding y Firebase Studio. La herramienta calcula el tiempo y costo de proyectos, gestiona riesgos y permite el aumento de tareas, basándose en la fórmula de estimación de tres puntos.",
-    shortDescription: "Estimador de proyectos de software con IA y Firebase.",
+      "Estimador de proyectos de software impulsado por IA. La herramienta calcula el tiempo y costo de proyectos, gestiona riesgos y permite el aumento de tareas y módulos, basándose en una fórmula de estimación de tres puntos.",
+    shortDescription: "Estimador de proyectos de software con IA (Gemini).",
     githubLink: "https://github.com/xeland314/codecraft-estimator",
-    tags: ["IA", "Vibe Coding", "Firebase Studio", "TypeScript", "Next.js"],
+    tags: ["IA", "TypeScript", "Next.js"],
     image: "/images/optimized/projects/codecraft-estimator/card.avif",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "Geocoding API",

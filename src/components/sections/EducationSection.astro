@@ -1,0 +1,145 @@
+---
+const { lang = "es" } = Astro.props;
+
+const texts: Record<
+  string,
+  {
+    title: string;
+    verifiedCert: string;
+    oracle: {
+      title: string;
+      desc: string;
+    };
+    epn: {
+      title: string;
+      subtitle: string;
+      desc: string;
+      project: string;
+    };
+  }
+> = {
+  es: {
+    title: "Educación",
+    verifiedCert: "Certificado Verificado",
+    oracle: {
+      title: "Oracle Next Education - Especialización Backend",
+      desc: "Programa intensivo (343h) en desarrollo Backend con Java y Spring Framework.",
+    },
+    epn: {
+      title: "Ingeniería de Software",
+      subtitle: "Escuela Politécnica Nacional",
+      desc: "Bases sólidas en algoritmia, estructuras de datos, Java y Linux.",
+      project:
+        "Proyecto destacado: Intérprete de expresiones matemáticas con Lex/Yacc.",
+    },
+  },
+  en: {
+    title: "Education",
+    verifiedCert: "Verified Certificate",
+    oracle: {
+      title: "Oracle Next Education - Backend Specialization",
+      desc: "Intensive Backend development program (343h) with Java and Spring Framework.",
+    },
+    epn: {
+      title: "Software Engineering",
+      subtitle: "Escuela Politécnica Nacional",
+      desc: "Strong foundations in algorithms, data structures, Java, and Linux.",
+      project:
+        "Featured project: Mathematical expression interpreter using Lex/Yacc.",
+    },
+  },
+};
+
+const T = texts[lang];
+---
+
+<section
+  class="max-w-4xl flex flex-col mx-auto px-1 mobile:px-6 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+  id="education"
+  aria-label={lang === "es" ? "Formación académica" : "Academic background"}
+>
+  <h2
+    class="text-4xl text-center font-bold text-gray-900 dark:text-gray-100 mb-8"
+  >
+    {T.title}
+  </h2>
+
+  <div class="space-y-6">
+    <!-- Oracle ONE -->
+    <article
+      class="border-l-4 border-green-500 dark:border-green-400 pl-4 py-2"
+      data-period="2022-2023"
+      data-institution="oracle"
+      data-type="certification"
+    >
+      <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+          {T.oracle.title}
+        </h3>
+        <time
+          datetime="2022/2023"
+          class="text-sm font-semibold text-gray-500 dark:text-gray-400"
+        >
+          2022 - 2023
+        </time>
+      </div>
+
+      <p class="text-gray-700 dark:text-gray-300 text-sm mb-2">
+        {T.oracle.desc}
+      </p>
+
+      <a
+        href="https://app.aluracursos.com/program/certificate/ef287555-cb92-4c6b-8ab7-1d455047cb23?lang"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1 text-sm text-green-600 dark:text-green-400 hover:underline"
+        aria-label={`${T.verifiedCert} - ${lang === "es" ? "Abre en nueva ventana" : "Opens in new window"}`}
+        data-certificate="oracle-one"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {T.verifiedCert}
+      </a>
+    </article>
+
+    <!-- EPN -->
+    <article
+      class="border-l-4 border-blue-500 dark:border-blue-400 pl-4 py-2"
+      data-period="2019-2022"
+      data-institution="epn"
+      data-type="university"
+    >
+      <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+            {T.epn.title}
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            {T.epn.subtitle}
+          </p>
+        </div>
+        <time
+          datetime="2019/2022"
+          class="text-sm font-semibold text-gray-500 dark:text-gray-400"
+        >
+          2019 - 2022
+        </time>
+      </div>
+
+      <p class="text-gray-700 dark:text-gray-300 text-sm mb-1">
+        {T.epn.desc}
+      </p>
+    </article>
+  </div>
+</section>
