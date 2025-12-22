@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from "react";
 
-const LanguageSwitcher = () => {
+interface LanguageSwitcherProps {
+  dynamic?: boolean;
+}
+
+const LanguageSwitcher = ({ dynamic = false }: LanguageSwitcherProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [currentUrl, setCurrentUrl] = useState("");
   const [otherLangUrl, setOtherLangUrl] = useState("");
@@ -89,24 +93,32 @@ const LanguageSwitcher = () => {
   if (!isMounted || !isValidRoute) {
     if (!isMounted) {
       return (
-        <div className="w-20 h-10 bg-gray-200 dark:bg-gray-800 rounded-md animate-pulse"></div>
+        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-md animate-pulse"></div>
       );
     }
     return null;
   }
 
+  // Se definen las clases dinámicas
+  // Si dynamic es true: fondo transparente, texto gris que cambia a blanco en dark mode.
+  // Si dynamic es false: mantiene tu estilo original (fondo oscuro, texto blanco).
+  const selectClasses = dynamic
+    ? "bg-transparent text-gray-600 dark:text-gray-400 cursor-pointer focus:outline-none"
+    : "bg-gray-900 text-white rounded-md p-2 cursor-pointer";
+
   return (
-    <div className="relative">
+    <div className="relative inline-block">
       <select
         value={currentUrl}
         onChange={handleLanguageChange}
-        className="bg-gray-900 text-white rounded-md p-2"
+        className={`${selectClasses} appearance-none uppercase text-sm font-thin`}
+        aria-label="Change language"
       >
-        <option value={currentUrl} className={"text-white"}>
-          {currentLang.toUpperCase()}
+        <option value={currentUrl} className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+          {currentLang}
         </option>
-        <option value={otherLangUrl} className={"text-white"}>
-          {otherLang.toUpperCase()}
+        <option value={otherLangUrl} className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+          {otherLang}
         </option>
       </select>
     </div>

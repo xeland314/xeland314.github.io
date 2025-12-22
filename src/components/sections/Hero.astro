@@ -1,11 +1,13 @@
 ---
+import ThemeToggleButton from "../themes/ThemedToggleIconButton.tsx";
+import LanguageSwitcher from "../common/LanguageSwitcher.tsx";
+
 const { lang = "es" } = Astro.props;
 const heroImage = "/images/gato.svg";
 
 const texts: Record<
   string,
   {
-    greeting: string;
     name: string;
     role: string;
     specialty: string;
@@ -14,31 +16,35 @@ const texts: Record<
     github_aria: string;
     image_alt: string;
     image_title: string;
+    experience: string;
+    contact: string;
   }
 > = {
   es: {
-    greeting: "Hola, soy",
     name: "Christopher Villamarín",
     role: "Desarrollador",
     specialty: "Backend",
     motto:
-      "Diseño y desarrollo soluciones Backend de alto rendimiento para sistemas críticos.",
+      "Diseño y desarrollo soluciones Backend de alto rendimiento con Python & Go para sistemas críticos.",
     linkedin_aria: "Mi perfil de LinkedIn",
     github_aria: "Mi perfil de GitHub",
     image_alt: "Gato programando en la computadora",
     image_title: "¿Por qué hay un gato aquí?",
+    experience: "+2 años de experiencia",
+    contact: "Contáctame",
   },
   en: {
-    greeting: "Hi, I'm",
     name: "Christopher Villamarín",
     role: "Developer",
     specialty: "Backend",
     motto:
-      "Designing and developing high-performance Backend solutions for critical systems.",
+      "Designing and developing high-performance Backend solutions with Python & Go for critical systems.",
     linkedin_aria: "My LinkedIn profile",
     github_aria: "My GitHub profile",
     image_alt: "Cat programming on the computer",
     image_title: "Why is there a cat here?",
+    experience: "+2 years of experience",
+    contact: "Contact Me",
   },
 };
 
@@ -47,13 +53,13 @@ const T = texts[lang];
 
 <section
   id="about-me"
-  class="relative flex flex-col items-center justify-center min-h-[90vh] px-4 py-0 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white overflow-hidden"
+  class="relative flex flex-col items-center justify-center px-4 sm:px-8 pt-8 pb-0 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white overflow-hidden"
 >
   <div
-    class="relative z-10 flex flex-col md:flex-row items-center justify-start gap-y-6 md:gap-12 max-w-6xl mx-auto pt-8 md:pt-0"
+    class="relative z-10 flex flex-col sm:flex-row items-center justify-start gap-y-4 sm:gap-12 max-w-6xl mx-auto pt-0"
   >
     <div
-      class="flex-shrink-0 w-full h-auto mobile:w-48 mobile:h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300"
+      class="flex-shrink-0 w-44 h-44 overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300"
     >
       <img
         src={heroImage}
@@ -62,72 +68,121 @@ const T = texts[lang];
         loading="eager"
         title={T.image_title}
         fetchpriority="high"
-        height="128"
-        width="128"
+        height="176px"
+        width="176px"
       />
     </div>
 
-    <div class="text-center md:text-left max-w-xl">
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
-        {T.greeting}
-        <span class="text-blue-600 dark:text-blue-400">{T.name}</span>
+    <div class="text-center md:text-left max-w-3xl">
+      <h1
+        class="text-center sm:text-left text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight"
+      >
+        <span class="text-blue-600 dark:text-blue-500">{T.name}</span>
       </h1>
-      <p class="text-xl sm:text-2xl font-light">
-        <span class={lang === "es" ? "" : "font-bold"}
-          >{lang === "es" ? T.role : T.specialty}</span
+      <p
+        class="text-center sm:text-left text-xl sm:text-2xl font-light flex items-center justify-center sm:justify-start"
+      >
+        <span>
+          <span class={lang === "es" ? "" : "font-bold"}
+            >{lang === "es" ? T.role : T.specialty}</span
+          >
+          <span class={lang === "es" ? "font-bold" : ""}
+            >{lang === "es" ? T.specialty : T.role}</span
+          >
+        </span>
+
+        <span
+          class="ml-4 flex items-center px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800"
         >
-        <span class={lang === "es" ? "font-bold" : ""}
-          >{lang === "es" ? T.specialty : T.role}</span
-        >
-      </p>
-      <p class="mt-8 text-md sm:text-lg text-gray-700 dark:text-gray-300">
-        {T.motto}
+          {T.experience}
+        </span>
       </p>
     </div>
   </div>
-  <div class="w-full flex flex-col sm:flex-row justify-center gap-4 mt-8">
-    <a
-      href="https://linkedin.com/in/christopher-villamarin"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="flex items-center justify-center px-8 py-3 border-2 font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50"
-      aria-label={T.linkedin_aria}
-    >
-      <svg
-        role="img"
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        class="w-6 h-6 mr-2 text-gray-800 dark:text-white"
-        ><path
-          d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
-        ></path><rect width="4" height="12" x="2" y="9"></rect><circle
-          cx="4"
-          cy="4"
-          r="2"></circle></svg
+  <p
+    class="text-center sm:text-left my-4 sm:mb-0 text-center text-md sm:text-lg text-gray-700 dark:text-gray-300"
+  >
+    {T.motto}
+  </p>
+  <div
+    class="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 mt-4 mb-1"
+  >
+    <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center">
+      <a
+        href="https://linkedin.com/in/christopher-villamarin"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center justify-center font-thin text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        aria-label={T.linkedin_aria}
       >
-      Linkedin
-    </a>
-    <a
-      href="https://github.com/xeland314"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="flex items-center justify-center px-8 py-3 border-2 font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50"
-      aria-label={T.github_aria}
-    >
-      <svg
-        role="img"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6 mr-2"
-        fill="currentColor"
-        ><title>GitHub</title><path
-          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-        ></path></svg
+        <svg
+          role="img"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="w-4 h-4 mr-2"
+          ><path
+            d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
+          ></path><rect width="4" height="12" x="2" y="9"></rect><circle
+            cx="4"
+            cy="4"
+            r="2"></circle></svg
+        >
+        Linkedin
+      </a>
+      <a
+        href="https://github.com/xeland314"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center justify-center font-thin text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+        aria-label={T.github_aria}
       >
-      xeland314
-    </a>
+        <svg
+          role="img"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-4 h-4 mr-2"
+          fill="currentColor"
+          ><title>GitHub</title><path
+            d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+          ></path></svg
+        >
+        xeland314
+      </a>
+
+      <span class="hidden sm:block opacity-20 text-gray-500">|</span>
+
+      <a
+        href="#contact"
+        class="flex items-center justify-center font-thin text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-4 h-4 mr-2"
+          ><path
+            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+          ></path><polyline points="22,6 12,13 2,6"></polyline></svg
+        >
+        {T.contact}
+      </a>
+    </div>
+
+    <div class="flex items-center gap-2 font-thin text-gray-500">
+      <LanguageSwitcher dynamic={true} client:idle />
+      <span class="opacity-20 mx-2">|</span>
+      <ThemeToggleButton client:idle />
+    </div>
   </div>
 </section>

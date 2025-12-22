@@ -1,59 +1,61 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import Header from "../components/common/Header.astro";
+import Footer from "../components/common/Footer.astro";
 
 interface Props {
-    title: string;
-    description: string;
-    keywords: string;
-    author: string;
-    applicationName: string;
-    url: string;
-    image: string;
-    imageAlt: string;
-    robots: string;
-    canonical: string;
-    lang: string;
+  title: string;
+  description: string;
+  keywords: string;
+  author: string;
+  applicationName: string;
+  url: string;
+  image: string;
+  imageAlt: string;
+  robots: string;
+  canonical: string;
+  lang: string;
 }
 
 const {
-    title,
-    description,
-    keywords,
-    author,
-    applicationName,
-    url,
-    image,
-    imageAlt,
-    robots,
-    canonical,
-    lang = "es",
+  title,
+  description,
+  keywords,
+  author,
+  applicationName,
+  url,
+  image,
+  imageAlt,
+  robots,
+  canonical,
+  lang = "es",
 }: Props = Astro.props;
 ---
 
 <BaseLayout
-    title={title}
-    description={description}
-    keywords={keywords}
-    author={author}
-    applicationName={applicationName}
-    url={url}
-    image={image}
-    imageAlt={imageAlt}
-    robots={robots}
-    canonical={canonical}
-    lang={lang}
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang={lang}
 >
-    <main
-        class="py-16 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
-    >
-        <article class="max-w-4xl mx-auto px-6">
-            <a
-                href="/es/projects"
-                class="text-blue-600 dark:text-blue-400 hover:underline mb-8 block"
-            >
-                &larr; Volver a todos los proyectos
-            </a>
-            <slot />
-        </article>
-    </main>
+  <Header />
+  <main class="py-16 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <article class="max-w-4xl mx-auto px-6">
+      <a
+        href="/es/projects"
+        class="text-blue-600 dark:text-blue-400 hover:underline mb-8 block"
+      >
+        &larr; Volver a todos los proyectos
+      </a>
+      <slot />
+    </article>
+  </main>
+  <Footer />
 </BaseLayout>
