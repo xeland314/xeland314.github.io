@@ -2,13 +2,109 @@
 import ContactForm from "../contact/ContactForm";
 
 const { lang = "es" } = Astro.props;
+
+const contactTexts: Record<
+  string,
+  { title: string; subtitle: string; description: string }
+> = {
+  es: {
+    title: "Contacto",
+    subtitle: "¿Tienes un reto técnico o una vacante en mente?",
+    description:
+      "Actualmente estoy abierto a nuevas oportunidades profesionales y colaboraciones en proyectos backend. ¡Hablemos!",
+  },
+  en: {
+    title: "Contact",
+    subtitle: "Have a technical challenge or a job opening?",
+    description:
+      "I'm currently open to new professional opportunities and collaborations on backend projects. Let's talk!",
+  },
+};
+
+const T = contactTexts[lang];
 ---
 
 <section
-    id="contact"
-    class="w-full flex flex-col items-center justify-center pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+  id="contact"
+  class="w-full flex flex-col items-center justify-center pb-24 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
 >
-    <div class="w-full flex mb-4 items-center justify-center">
-        <ContactForm client:visible lang={lang} />
-    </div>
+  <div class="max-w-4xl w-full px-4 text-center mb-12">
+    <span
+      class="text-blue-600 dark:text-blue-400 font-mono text-sm tracking-widest uppercase"
+    >
+      {T.title}
+    </span>
+
+    <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 mb-4">
+      {T.subtitle}
+    </h2>
+
+    <p
+      class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light leading-relaxed"
+    >
+      {T.description}
+    </p>
+  </div>
+
+  <div class="w-full flex px-4 items-center justify-center">
+    <ContactForm client:visible lang={lang} />
+  </div>
+
+  <div class="mt-8 flex flex-col items-center">
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2 font-thin">
+      {
+        lang === "es"
+          ? "O si prefieres el método directo:"
+          : "Or if you prefer the direct way:"
+      }
+    </p>
+
+    <button
+      id="copy-email"
+      class="group flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+      title={lang === "es" ? "Copiar correo" : "Copy email"}
+    >
+      <span class="text-xs font-mono text-gray-600 dark:text-gray-300">
+        {/* Solo se muestra una parte o un placeholder inicial */}
+        ch********@protonmail.com
+      </span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-4 w-4 text-gray-400 group-hover:text-blue-500"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+        ></path>
+      </svg>
+    </button>
+
+    <span
+      id="copy-success"
+      class="text-[10px] text-green-500 mt-2 opacity-0 transition-opacity uppercase tracking-widest font-bold"
+    >
+      {lang === "es" ? "¡Copiado!" : "Copied!"}
+    </span>
+  </div>
 </section>
+<script>
+  const copyBtn = document.getElementById("copy-email");
+  const successMsg = document.getElementById("copy-success");
+
+  // Ofuscación básica: el correo no está completo en el HTML plano
+  const u = "christopher.villamarin";
+  const d = "protonmail.com";
+
+  copyBtn?.addEventListener("click", () => {
+    navigator.clipboard.writeText(`${u}@${d}`);
+
+    // Feedback visual
+    successMsg?.classList.remove("opacity-0");
+    setTimeout(() => successMsg?.classList.add("opacity-0"), 2000);
+  });
+</script>
