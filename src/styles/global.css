@@ -60,11 +60,6 @@ html {
   opacity: 0;
 }
 
-p {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
 }
