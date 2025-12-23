@@ -25,28 +25,33 @@ const certificates = await db
   .orderBy(asc(MyCertificates.date));
 
 const T = texts[lang];
-const certificatesLink = `/${lang}/certificates`;
 ---
 
-<section
-  class="flex flex-col mx-auto px-1 mobile:px-6 pb-16 pt-24 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
-  id="certificates"
->
-  <h2
-    class="text-4xl font-bold mb-8 text-center"
-    transition:name="Mis-Certificados"
+<section id="certificates" class="max-w-7xl mx-auto px-6 py-12 bg-transparent">
+  <div
+    class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4"
   >
-    {T.title}
-  </h2>
-  <CertificatesCard certificates={certificates} lang={lang} />
-
-  <div class="text-center mt-12">
+    <div>
+      <h2
+        class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white"
+      >
+        {T.title}
+      </h2>
+      <div class="h-1.5 w-60 bg-blue-600 mt-2 rounded-full"></div>
+    </div>
     <a
-      href={certificatesLink}
-      class="inline-block px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
-      title={T.button}
+      href={`/${lang}/certificates`}
+      class="text-blue-600 dark:text-blue-400 font-medium hover:underline flex items-center"
     >
       {T.button}
+      <svg
+        class="w-4 h-4 ml-1"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"><path d="M9 5l7 7-7 7"></path></svg
+      >
     </a>
   </div>
+
+  <CertificatesCard certificates={certificates} lang={lang} />
 </section>
