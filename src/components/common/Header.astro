@@ -1,5 +1,4 @@
 ---
-import SearchbarWrapper from "../algolia/Search";
 import MobileMenuWrapper from "./MobileMenuWrapper";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -17,7 +16,6 @@ const homeLink = lang === "en" ? "/en" : "/";
       <a href={homeLink} class="text-lg font-bold hover:text-blue-500"> xeland314 </a>
     </div>
     <div class="flex flex-row gap-x-4">
-      <SearchbarWrapper client:idle lang={lang} />
       <LanguageSwitcher client:idle />
       <MobileMenuWrapper client:idle lang={lang} />
     </div>
