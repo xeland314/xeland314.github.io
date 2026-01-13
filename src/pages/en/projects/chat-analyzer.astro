@@ -1,177 +1,489 @@
 ---
-import CodeBlock from "../../../components/common/CodeBlock.tsx";
-import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import chatAnalyzerImg from "../../../../public/assets/chat_analyzer.png";
 
-// Metadata
-const title = "📊 chat-analyzer - Christopher Villamarín Projects";
+const title = "Chat Analyzer - Export, Parse, and Analyze WhatsApp Chats";
 const description =
-  "Discover chat-analyzer, a tool that analyzes exported WhatsApp chats, showing the frequency of used words and emojis. It generates word clouds and detailed tables for visual analysis.";
-const keywords = [
-  "chat-analyzer",
-  "chat analysis",
-  "WhatsApp",
-  "emoji frequency",
-  "word frequency",
-  "word clouds",
-  "Python",
-  "Christopher Villamarín",
-  "xeland314",
-  "projects",
-  "Ecuador",
-].join(", ");
-const authors = "Christopher Alexander Villamarín Pila";
-const ogTitle = "📊 chat-analyzer - Christopher Villamarín Project";
-const ogDescription =
-  "Analyze WhatsApp chats with chat-analyzer. Discover the most used words and emojis and visualize them in word clouds and interactive tables.";
-const ogUrl = "https://xeland314.github.io/en/projects/chat-analyzer/";
-const ogImage =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQYzl7jxgLN9QGN4yvFYRzU5dMv3WMyJGhbeXYiEHwwtxUKDudXUINhxq3fhXmzv1JbmTVGImI07r0e/pubchart?oid=1886909932&format=image";
+  "A cross-platform Flutter application to analyze your chat logs, providing detailed statistics, visualizations, and sentiment analysis.";
+const keywords =
+  "chat analyzer, whatsapp analysis, flutter, statistics, sentiment analysis, data visualization";
+const author = "Christopher Villamarín";
+const applicationName = "Chat Analyzer";
+const url = "https://xeland314.github.io/en/projects/chat-analyzer/";
+const image = "/assets/chat_analyzer.png";
+const imageAlt = "Chat Analyzer Dashboard Preview";
 
-const imageAlt = "Preview of the chat-analyzer project";
-const canonicalUrl = "https://xeland314.github.io/en/projects/chat-analyzer/";
-const robots = "index, follow";
+const downloads = [
+  {
+    os: "Android",
+    icon: "android",
+    link: "https://github.com/xeland314/chat_analyzer_ui/releases",
+    desc: "Download .apk",
+  },
+  {
+    os: "Windows",
+    icon: "windows",
+    link: "https://github.com/xeland314/chat_analyzer_ui/releases",
+    desc: "Download .exe (NSIS)",
+  },
+  {
+    os: "Linux",
+    icon: "linux",
+    link: "https://github.com/xeland314/chat_analyzer_ui/releases",
+    desc: "Download .AppImage",
+  },
+];
+
+const features = [
+  {
+    title: "General Statistics",
+    desc: "Total messages, words, emojis per participant.",
+    icon: "bar-chart",
+  },
+  {
+    title: "Temporal Analysis",
+    desc: "Activity heatmaps and hourly activity charts.",
+    icon: "calendar",
+  },
+  {
+    title: "Sentiment Analysis",
+    desc: "Analyze the emotional tone of conversations.",
+    icon: "heart",
+  },
+  {
+    title: "Interaction Metrics",
+    desc: "Who replies to whom? Response times and network graphs.",
+    icon: "users",
+  },
+  {
+    title: "Cross-Platform",
+    desc: "Available on Android, Windows and Linux.",
+    icon: "device",
+  },
+  {
+    title: "Privacy Focused",
+    desc: "All analysis happens locally on your device.",
+    icon: "shield",
+  },
+];
 ---
 
-<ProjectLayout
+<BaseLayout
   title={title}
   description={description}
   keywords={keywords}
-  author={authors}
-  applicationName="chat-analyzer"
-  url={ogUrl}
-  image={ogImage}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
   imageAlt={imageAlt}
-  canonical={canonicalUrl}
-  robots={robots}
   lang="en"
 >
-  <div class="p-0 sm:p-6">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4">📊 chat-analyzer</h1>
-      <p class="text-lg">
-        Analyzes the frequency of use of emojis and words in an exported
-        WhatsApp chat.
-      </p>
-    </header>
-
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">
-        📦 Requirements and Installation
-      </h2>
-      <ul class="list-disc pl-6 space-y-2">
-        <li>
-          Python version: <code>3.9.2</code>
-        </li>
-        <li>
-          The required libraries are:
-          <ul class="list-disc pl-6">
-            <li>
-              <code>emoji==2.2.0</code>
-            </li>
-            <li>
-              <code>nltk==3.8</code>
-            </li>
-            <li>
-              <code>rich==13.3.1</code>
-            </li>
-            <li>
-              <code>typer==0.7.0</code>
-            </li>
-            <li>
-              <code>wordcloud==1.8.2.2</code>
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <p class="mt-4">
-        Clone the repository and navigate to the project directory:
-      </p>
-      <CodeBlock
-        code={`git clone https://github.com/xeland314/chat-analyzer.git && cd chat-analyzer`}
-        client:visible
-      />
-      <p class="mt-4">Then install the necessary dependencies:</p>
-      <CodeBlock code={`pip3 install -r requirements.txt`} client:visible />
-      <p class="mt-4">
-        Before analyzing a chat, run the following command to download NLTK
-        resources:
-      </p>
-      <CodeBlock code={`python3 chat_analyzer.py --install`} client:visible />
-      <p>You can also use the shortcut:</p>
-      <CodeBlock code={`python3 chat_analyzer.py -i`} client:visible />
-    </section>
-
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">⚙️ Usage</h2>
-      <p class="mb-4">
-        To analyze a chat, pass the chat file as an argument:
-      </p>
-      <CodeBlock code={`python3 chat_analyzer.py chat.txt`} client:visible />
-      <p class="mt-4">
-        You can customize the number of most common words and emojis to be
-        displayed in the summary:
-      </p>
-      <CodeBlock
-        code={`python3 chat_analyzer.py chat.txt -w 50 -e 20`}
-        client:visible
-      />
-      <CodeBlock
-        code={`python3 chat_analyzer.py chat.txt --words 50 --emojis 20`}
-        client:visible
-      />
-      <p class="mt-4">
-        By default, the 30 most used words and the 15 most common emojis will be
-        displayed.
-      </p>
-    </section>
-
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">
-        📤 Export your chat from WhatsApp
-      </h2>
-      <ol class="list-decimal pl-6 space-y-4">
-        <li>
-          Open WhatsApp and go to{" "}
-          <strong>
-            Settings &gt; Chats &gt; Chat History &gt; Export Chat
-          </strong>
-          .
-        </li>
-        <li>Select the chat you want to analyze.</li>
-        <li>Choose the option to export only text (without including files).</li>
-        <li>
-          Copy the exported file to your PC inside the repository directory.
-        </li>
-        <li>Now you are ready to analyze your chat!</li>
-      </ol>
-    </section>
-
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">📊 Results</h2>
-      <p class="mb-4">The program will generate the following results:</p>
-      <ul class="list-disc pl-6 space-y-2">
-        <li>Table of most used words per person in the chat.</li>
-        <li>Table of most used emojis per person in the chat.</li>
-        <li>A word cloud with the most used words.</li>
-      </ul>
-    </section>
-
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">⏱️ Execution Time</h2>
-      <p class="mb-4">
-        The analysis can take from 1 to 3 minutes depending on the file size and
-        your computer's capabilities.
-      </p>
-      <div class="text-center mt-4">
-        <img
-          src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQYzl7jxgLN9QGN4yvFYRzU5dMv3WMyJGhbeXYiEHwwtxUKDudXUINhxq3fhXmzv1JbmTVGImI07r0e/pubchart?oid=1886909932&format=image"
-          alt="Execution Time"
-          class="rounded-lg shadow-md mx-auto"
-        />
+  <main
+    class="w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-inter"
+  >
+    <!-- Hero Section -->
+    <section
+      class="relative min-h-[90vh] h-auto flex items-center justify-center overflow-hidden"
+    >
+      <!-- Background Gradients -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-teal-50/50 via-white to-teal-50/20 dark:from-gray-900 dark:via-gray-900 dark:to-teal-900/20 z-0"
+      >
       </div>
-      <p class="mt-4 text-center">
-        Times may vary depending on your computer's performance.
-      </p>
+      <div
+        class="absolute top-0 right-0 w-1/2 h-1/2 bg-teal-200/20 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"
+      >
+      </div>
+      <div
+        class="absolute bottom-0 left-0 w-1/2 h-1/2 bg-teal-300/20 dark:bg-teal-600/10 blur-[100px] rounded-full pointer-events-none"
+      >
+      </div>
+
+      <div
+        class="container mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+      >
+        <div class="mt-16 lg:mt-0 text-center lg:text-left">
+          <h1
+            class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400"
+          >
+            Chat Analyzer
+          </h1>
+          <p
+            class="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0"
+          >
+            Unlock insights from your WhatsApp chats. visualize statistics,
+            understand communication patterns, and explore sentiment analysis
+            with this powerful cross-platform tool.
+          </p>
+          <div
+            class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+          >
+            <a
+              href="#downloads"
+              class="px-8 py-4 rounded-xl bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold shadow-lg hover:shadow-teal-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                ></path>
+              </svg>
+              Download Now
+            </a>
+            <a
+              href="https://github.com/xeland314/chat_analyzer_ui"
+              target="_blank"
+              class="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 font-bold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-all flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                ></path>
+              </svg>
+              View on GitHub
+            </a>
+          </div>
+        </div>
+        <div
+          class="relative mx-auto lg:ml-auto w-full max-w-md lg:max-w-full flex justify-center items-center"
+        >
+          <Image
+            src={chatAnalyzerImg}
+            alt={imageAlt}
+            class="relative self-center rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 w-3/4 sm:w-1/2 h-auto transform transition group-hover:scale-[1.01]"
+          />
+        </div>
+      </div>
     </section>
-  </div>
-</ProjectLayout>
+
+    <!-- Features Section -->
+    <section class="py-24 bg-white dark:bg-gray-800/50">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2
+            class="text-3xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white"
+          >
+            Powerful Features
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Everything you need to analyze your chat history in depth.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {
+            features.map((feature) => (
+              <div class="group p-8 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-teal-500/30 hover:shadow-xl hover:shadow-teal-500/5 transition-all duration-300">
+                <div class="w-14 h-14 mb-6 rounded-xl bg-teal-100 dark:bg-teal-900/50 flex items-center justify-center text-teal-600 dark:text-teal-400 group-hover:scale-110 transition-transform">
+                  {feature.icon === "bar-chart" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-7 h-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      />
+                    </svg>
+                  )}
+                  {feature.icon === "calendar" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-7 h-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  )}
+                  {feature.icon === "heart" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-7 h-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                      />
+                    </svg>
+                  )}
+                  {feature.icon === "users" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-7 h-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                      />
+                    </svg>
+                  )}
+                  {feature.icon === "device" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-7 h-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                  )}
+                  {feature.icon === "shield" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-7 h-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
+                  )}
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+                  {feature.title}
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {feature.desc}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Downloads Section -->
+    <section id="downloads" class="py-24 bg-teal-50 dark:bg-gray-900 relative">
+      <div class="container mx-auto px-6 relative z-10">
+        <div class="text-center mb-16">
+          <span
+            class="text-teal-600 dark:text-teal-400 font-semibold tracking-wider uppercase text-sm"
+            >Get Started</span
+          >
+          <h2
+            class="text-3xl md:text-5xl font-bold mt-2 mb-6 text-gray-900 dark:text-white"
+          >
+            Download Chat Analyzer
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-300">
+            Choose your platform and start analyzing.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {
+            downloads.map((item) => (
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+                <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-700 dark:text-gray-200">
+                  {item.icon === "android" && (
+                    <img
+                      src="/icons/android.svg"
+                      alt="Linux"
+                      class="w-10 h-10"
+                    />
+                  )}
+                  {item.icon === "windows" && (
+                    <svg
+                      class="w-10 h-10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801" />
+                    </svg>
+                  )}
+                  {item.icon === "linux" && (
+                    <img src="/icons/linux.svg" alt="Linux" class="w-10 h-10" />
+                  )}
+                </div>
+                <h3 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                  {item.os}
+                </h3>
+                <p class="text-gray-500 mb-6">{item.desc}</p>
+                <a
+                  href={item.link}
+                  target="_blank"
+                  class="block w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold shadow-md hover:shadow-lg transition-colors"
+                >
+                  Download
+                </a>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="py-24 bg-white dark:bg-gray-800">
+      <div class="container mx-auto px-6 text-center">
+        <h2 class="text-3xl font-bold mb-12 text-gray-900 dark:text-white">
+          Built with Modern Tech
+        </h2>
+        <div
+          class="flex flex-wrap justify-center gap-8 md:gap-16 items-center opacity-70 grayscale hover:grayscale-0 transition-all duration-500"
+        >
+          <!-- Flutter -->
+          <div class="flex flex-col items-center gap-2">
+            <img
+              src="https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png"
+              alt="Flutter"
+              class="h-12 md:h-16 w-auto"
+            />
+            <span class="font-semibold text-gray-700 dark:text-gray-300"
+              >Flutter</span
+            >
+          </div>
+          <!-- Dart -->
+          <div class="flex flex-col items-center gap-2">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Dart-logo.png"
+              alt="Dart"
+              class="h-12 md:h-16 w-auto"
+            />
+            <span class="font-semibold text-gray-700 dark:text-gray-300"
+              >Dart</span
+            >
+          </div>
+          <!-- Material Design -->
+          <div class="flex flex-col items-center gap-2">
+            <svg
+              class="h-12 md:h-16 w-auto text-blue-500"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              ><path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+              ></path></svg
+            >
+            <span class="font-semibold text-gray-700 dark:text-gray-300"
+              >Material 3</span
+            >
+          </div>
+          <!-- Rust -->
+          <div class="flex flex-col items-center gap-2">
+            <img
+              src="https://rust-lang.org/static/images/rust-logo-blk.svg"
+              alt="Rust"
+              class="h-12 md:h-16 w-auto"
+            />
+            <span class="font-semibold text-gray-700 dark:text-gray-300"
+              >Rust</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Custom Footer Section -->
+    <footer
+      class="bg-gray-50 dark:bg-gray-900 pt-20 pb-10 border-t border-gray-200 dark:border-gray-800"
+    >
+      <div class="container mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          <div>
+            <h3 class="text-xl font-bold mb-4 text-teal-700 dark:text-teal-400">
+              Chat Analyzer
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              An open-source application to analyze chat histories with advanced
+              visualizations and detailed statistics.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-bold mb-4 text-gray-900 dark:text-white">Links</h4>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="https://github.com/xeland314/chat_analyzer_ui"
+                  class="text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400"
+                  >Source Code</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://github.com/xeland314/chat_analyzer_ui/issues"
+                  class="text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400"
+                  >Report Issue</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/en/projects"
+                  class="text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400"
+                  >More Projects</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-4 text-gray-900 dark:text-white">
+              Support
+            </h4>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              If you like this project, give it a star on GitHub!
+            </p>
+            <a
+              href="https://github.com/xeland314/chat_analyzer_ui"
+              target="_blank"
+              class="inline-flex items-center px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"
+                ><path
+                  d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"
+                ></path></svg
+              >
+              Star on GitHub
+            </a>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-200 dark:border-gray-800 pt-8 text-center text-gray-500 text-sm"
+        >
+          &copy; {new Date().getFullYear()} Christopher Villamarín.
+        </div>
+      </div>
+    </footer>
+  </main>
+</BaseLayout>
+
