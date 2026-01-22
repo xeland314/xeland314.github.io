@@ -1,5 +1,8 @@
 ---
 // src/components/ProjectCard.astro
+
+import { Image } from "astro:assets";
+
 interface Props {
   project: {
     title: string;
@@ -38,12 +41,15 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
   <div class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
     {
       project.image ? (
-        <img
+        <Image
           transition:name={`img-${project.slug}`}
           class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           src={project.image}
           alt={project.title}
+          title={project.title}
           loading="lazy"
+          height="196"
+          width="250"
         />
       ) : (
         <div class="flex items-center justify-center h-full text-gray-400 font-mono text-[10px] uppercase tracking-tighter">

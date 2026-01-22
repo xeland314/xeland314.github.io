@@ -152,7 +152,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/codecraft-estimator",
     tags: ["IA", "TypeScript", "Next.js"],
     image: "/images/optimized/projects/codecraft-estimator/card.avif",
-    isFeatured: false,
+    isFeatured: true,
   },
   {
     title: "Geocoding API",

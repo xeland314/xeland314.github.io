@@ -1,0 +1,80 @@
+---
+import LanguageImage from "../programingLanguages/LanguageImage.astro";
+
+const languages = [
+  { title: "Golang", image: "go" },
+  { title: "Python", image: "py" },
+  { title: "Django", image: "django" },
+  { title: "FastAPI", image: "fastapi" },
+  { title: "HTML", image: "html" },
+  { title: "CSS", image: "css" },
+  { title: "JavaScript", image: "js" },
+  { title: "TypeScript", image: "ts" },
+  { title: "React", image: "react" },
+  { title: "Next.js", image: "nextjs" },
+  { title: "Astro", image: "astro" },
+  { title: "Dart", image: "dart" },
+  { title: "Flutter", image: "flutter" },
+  { title: "Java", image: "java" },
+  { title: "SQLite", image: "sqlite" },
+  { title: "Postgres", image: "postgres" },
+  { title: "Docker", image: "docker" },
+  { title: "Linux", image: "linux" },
+  { title: "Git", image: "git" },
+];
+
+// Duplicate the list to ensure seamless scrolling
+const marqueeItems = [...languages, ...languages];
+---
+
+<section
+  class="py-5 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800 overflow-hidden"
+>
+  <div class="relative w-full">
+    <div
+      class="absolute left-0 top-0 bottom-0 w-24 h-full bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10"
+    >
+    </div>
+    <div
+      class="absolute right-0 top-0 bottom-0 w-24 h-full bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10"
+    >
+    </div>
+
+    <div class="marquee-container flex">
+      <div class="marquee-content flex gap-8 items-center animate-marquee">
+        {
+          marqueeItems.map((lang) => (
+            <div class="flex-shrink-0 w-16 h-16 flex items-center justify-center transition-all duration-300 opacity-70 hover:opacity-100">
+              <LanguageImage
+                title={lang.title}
+                image={lang.image}
+                isTitleHidden={false}
+                width="32px"
+                height="32px"
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+
+  .marquee-content:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+</style>

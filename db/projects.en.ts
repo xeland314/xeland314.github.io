@@ -164,7 +164,7 @@ export const projectDataEN = [
     githubLink: "https://github.com/xeland314/codecraft-estimator",
     tags: ["AI", "Gemini", "TypeScript", "Next.js"],
     image: "/images/optimized/projects/codecraft-estimator/card.avif",
-    isFeatured: false,
+    isFeatured: true,
     lang: "en",
   },
   {
