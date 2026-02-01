@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "@xterm/xterm/css/xterm.css";
+
+// EXTERN LIBS
+import wasmUrl from "../extern_libs/calculadora.wasm?url";
+import fastfetchUrl from "../extern_libs/fastfetch-web.wasm?url";
+
+const title = "Terminal - Calculadora WASM";
+const description =
+  "Terminal interactiva ejecutando una calculadora WebAssembly.";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="terminal, wasm, calculadora, xterm"
+  author="Christopher Villamarín"
+  applicationName="Terminal"
+  url={Astro.url.toString()}
+  image="/assets/terminal-preview.png"
+>
+  <div class="container mx-auto p-4 h-[calc(100vh-100px)] flex flex-col">
+    <h1 class="text-2xl font-bold mb-4">Terminal WASM</h1>
+    <div
+      id="terminal-container"
+      data-wasm-url={wasmUrl}
+      data-fastfetch-wasm-url={fastfetchUrl}
+      class="flex-grow bg-black overflow-hidden shadow-xl border border-8 border-gray-700"
+    >
+    </div>
+  </div>
+</BaseLayout>
+
+<script src="../scripts/terminal.js"></script>

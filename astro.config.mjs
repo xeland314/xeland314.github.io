@@ -15,8 +15,32 @@ export default defineConfig({
   site: MY_SITE,
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      headers: {
+        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Cross-Origin-Opener-Policy": "same-origin",
+      },
+    },
+    preview: {
+      headers: {
+        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Cross-Origin-Opener-Policy": "same-origin",
+      },
+    },
   },
   integrations: [
+    {
+      name: "sab-headers",
+      hooks: {
+        "astro:server:setup": ({ server }) => {
+          server.middlewares.use((_req, res, next) => {
+            res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+            res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+            next();
+          });
+        },
+      },
+    },
     db(),
     react(),
     sitemap({
