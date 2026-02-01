@@ -72,6 +72,8 @@ const {
     <link rel="sitemap" href="/sitemap-index.xml" />
     {canonical && <link rel="canonical" href={canonical} />}
 
+    <script is:inline src="/coi-serviceworker.js"></script>
+
     <ClientRouter />
 
     <script
@@ -79,7 +81,6 @@ const {
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
       async
       defer></script>
-    <script is:inline src="/scripts/coi-serviceworker.js" async defer></script>
   </head>
   <body class="font-inter bg-white text-black dark:bg-gray-800 dark:text-white">
     <div class="min-h-screen mx-auto pt-0">
