@@ -1,0 +1,193 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "HTTP Methods Comparison: DELETE, OPTIONS; Summary";
+const description = "Comparación de métodos HTTP: DELETE y OPTIONS";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div
+    class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full"
+  >
+    <RadiographyHeader
+      categoryText="Protocolos Web"
+      categoryColorClass="text-purple-400"
+      titlePrefix="Tipos de "
+      titleHighlightText="HTTP Methods"
+      titleHighlightColorClass="text-sky-400"
+      subtitle="Comparación de métodos de comunicación HTTP"
+    />
+
+    <!-- Grid de 2 columnas x 3 filas -->
+    <div class="grid grid-cols-2 gap-6 mb-0">
+      <!-- DELETE -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-rose-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-rose-400 font-bold text-2xl">DELETE</h3>
+          <span
+            class="px-3 py-1 bg-rose-500/20 text-rose-300 text-lg font-bold rounded-full uppercase"
+            >Idempotente</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Elimina un recurso específico del servidor de forma permanente.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400">✓</span>
+            <span class="text-slate-400">Elimina recurso permanentemente</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400">✓</span>
+            <span class="text-slate-400">Idempotente (múltiples = 1 vez)</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400">✓</span>
+            <span class="text-slate-400">Generalmente sin body</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">!</span>
+            <span class="text-slate-400">Acción irreversible</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-lg text-rose-300 mb-1">
+            DELETE /api/users/123
+          </p>
+          <p class="text-slate-500 text-lg">
+            → 204 No Content (eliminado exitosamente)
+          </p>
+        </div>
+      </div>
+
+      <!-- OPTIONS -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-cyan-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-cyan-400 font-bold text-2xl">OPTIONS</h3>
+          <span
+            class="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-lg font-bold rounded-full uppercase"
+            >Metadata</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Describe las opciones de comunicación disponibles para el recurso
+          destino.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-cyan-400">✓</span>
+            <span class="text-slate-400">Consulta métodos permitidos</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-cyan-400">✓</span>
+            <span class="text-slate-400">Usado en preflight CORS</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-cyan-400">✓</span>
+            <span class="text-slate-400">Safe & Idempotente</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-cyan-400">✓</span>
+            <span class="text-slate-400">No modifica recursos</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-lg text-cyan-300 mb-1">OPTIONS /api/users</p>
+          <p class="text-slate-500 text-lg">→ Allow: GET, POST, PUT, DELETE</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla resumen rápida -->
+    <div class="mt-4 mb-8 feature-card p-6 rounded-xl">
+      <h3
+        class="text-purple-400 font-bold text-xl mb-4 uppercase tracking-wide"
+      >
+        Resumen Rápido
+      </h3>
+      <div class="grid grid-cols-7 gap-2 text-center text-lg font-mono">
+        <div class="text-slate-500 font-bold">Método</div>
+        <div class="text-slate-500 font-bold">Safe</div>
+        <div class="text-slate-500 font-bold">Idempotente</div>
+        <div class="text-slate-500 font-bold">Cacheable</div>
+        <div class="text-slate-500 font-bold">Body</div>
+        <div class="text-slate-500 font-bold">Acción</div>
+        <div class="text-slate-500 font-bold">Código</div>
+
+        <div class="text-emerald-400 font-bold">GET</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-slate-400">Leer</div>
+        <div class="text-slate-400">200</div>
+
+        <div class="text-purple-400 font-bold">POST</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-slate-400">Crear</div>
+        <div class="text-slate-400">201</div>
+
+        <div class="text-sky-400 font-bold">PUT</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-slate-400">Reemplazar</div>
+        <div class="text-slate-400">200</div>
+
+        <div class="text-amber-400 font-bold">PATCH</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-amber-400">~</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-slate-400">Modificar</div>
+        <div class="text-slate-400">200</div>
+
+        <div class="text-rose-400 font-bold">DELETE</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-slate-400">Eliminar</div>
+        <div class="text-slate-400">204</div>
+
+        <div class="text-cyan-400 font-bold">OPTIONS</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-emerald-400">✓</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-rose-400">✗</div>
+        <div class="text-slate-400">Info</div>
+        <div class="text-slate-400">200</div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">CRUD</span> operations • <span class="text-purple-400 font-black italic">REST</span> standard.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</BlogPostLayout>

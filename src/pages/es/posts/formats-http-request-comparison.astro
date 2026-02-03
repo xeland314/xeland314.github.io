@@ -1,0 +1,224 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "HTTP Methods Comparison";
+const description = "Comparación de métodos HTTP";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div
+    class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full"
+  >
+    <RadiographyHeader
+      categoryText="Protocolos Web"
+      categoryColorClass="text-purple-400"
+      titlePrefix="Tipos de "
+      titleHighlightText="HTTP Methods"
+      titleHighlightColorClass="text-sky-400"
+      subtitle="Comparación de métodos de comunicación HTTP"
+    />
+
+    <!-- Grid de 2 columnas x 3 filas -->
+    <div class="grid grid-cols-2 gap-1 z-100">
+      <!-- GET -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-emerald-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-emerald-400 font-bold text-2xl">GET</h3>
+          <span
+            class="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-lg font-bold rounded-full uppercase"
+            >Safe & Idempotente</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Solicita la representación de un recurso. Solo recupera datos sin
+          modificar el servidor.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400">✓</span>
+            <span class="text-slate-400">Parámetros en URL (query string)</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400">✓</span>
+            <span class="text-slate-400">Cacheable por navegadores</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400">✓</span>
+            <span class="text-slate-400"
+              >Guardado en historial del navegador</span
+            >
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400">✗</span>
+            <span class="text-slate-400"
+              >No debe usarse para datos sensibles</span
+            >
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-emerald-300 mb-1">
+            GET /api/users?role=admin&limit=10
+          </p>
+          <p class="text-slate-500 text-xs">→ 200 OK (lista de usuarios)</p>
+        </div>
+      </div>
+
+      <!-- POST -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-purple-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-purple-400 font-bold text-2xl">POST</h3>
+          <span
+            class="px-3 py-1 bg-purple-500/20 text-purple-300 text-lg font-bold rounded-full uppercase"
+            >No Idempotente</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Envía datos al servidor para crear un nuevo recurso. Puede tener
+          efectos secundarios.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-purple-400">✓</span>
+            <span class="text-slate-400">Datos en el body (no en URL)</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-purple-400">✓</span>
+            <span class="text-slate-400">Crea recursos nuevos</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-purple-400">✓</span>
+            <span class="text-slate-400">Sin límite de tamaño de datos</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400">✗</span>
+            <span class="text-slate-400">No cacheable</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-purple-300 mb-1">
+            POST /api/users<br />
+            Body: {`{"name": "Ana", "email": "ana@example.com"}`}
+          </p>
+          <p class="text-slate-500 text-xs">→ 201 Created (recurso creado)</p>
+        </div>
+      </div>
+
+      <!-- PUT -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-sky-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sky-400 font-bold text-2xl">PUT</h3>
+          <span
+            class="px-3 py-1 bg-sky-500/20 text-sky-300 text-lg font-bold rounded-full uppercase"
+            >Idempotente</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Reemplaza completamente un recurso existente o lo crea si no existe.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-sky-400">✓</span>
+            <span class="text-slate-400"
+              >Actualización completa del recurso</span
+            >
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-sky-400">✓</span>
+            <span class="text-slate-400"
+              >Idempotente (mismo resultado repetido)</span
+            >
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-sky-400">✓</span>
+            <span class="text-slate-400">Debe enviar todos los campos</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">!</span>
+            <span class="text-slate-400">Sobrescribe datos existentes</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-sky-300 mb-1">
+            PUT /api/users/123<br />
+            Body: {`{"name": "Ana Updated", "email": "ana@new.com"}`}
+          </p>
+          <p class="text-slate-500 text-xs">→ 200 OK (recurso actualizado)</p>
+        </div>
+      </div>
+
+      <!-- PATCH -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-amber-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-amber-400 font-bold text-2xl">PATCH</h3>
+          <span
+            class="px-3 py-1 bg-amber-500/20 text-amber-300 text-lg font-bold rounded-full uppercase"
+            >Parcial</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Aplica modificaciones parciales a un recurso. Solo actualiza los
+          campos enviados.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">✓</span>
+            <span class="text-slate-400">Actualización parcial selectiva</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">✓</span>
+            <span class="text-slate-400">Más eficiente que PUT</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">✓</span>
+            <span class="text-slate-400">Solo envía campos a cambiar</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">!</span>
+            <span class="text-slate-400">Puede no ser idempotente</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-amber-300 mb-1">
+            PATCH /api/users/123<br />
+            Body: {`{"email": "newemail@example.com"}`}
+          </p>
+          <p class="text-slate-500 text-xs">
+            → 200 OK (solo email actualizado)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">CRUD</span> operations • <span class="text-purple-400 font-black italic">REST</span> standard.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</BlogPostLayout>
