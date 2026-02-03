@@ -1,0 +1,188 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+// Definir metadatos
+const title = "Web Standards 2026";
+const description = "X-Ray: /llms.txt - The LLM-Friendly Web Map";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-gray-300"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="es"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link (Manual implementation for now) -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/en/posts/ai-llms-txt"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        EN
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Estándares Web 2026"
+      categoryColorClass="text-sky-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="/llms.txt"
+      titleHighlightColorClass="highlight-blue"
+      subtitle="The LLM-Friendly Web Map"
+    />
+
+    <div
+      class="feature-card rounded-3xl p-6 md:p-10 mb-5 relative flex flex-row gap-8 items-stretch"
+    >
+      <div
+        class="code-font text-xl leading-relaxed flex-1 border-r border-white/10 pr-6"
+      >
+        <p
+          class="text-sky-400 font-bold text-3xl underline decoration-sky-400/20"
+        >
+          # Nombre del Proyecto
+        </p>
+        <p class="text-slate-400 mt-1 italic font-medium">
+          &gt; Resumen breve optimizado para contexto.
+        </p>
+        <p class="mt-1 text-slate-400 text-sm italic">
+          // Info de interpretación...
+        </p>
+
+        <p class="text-slate-200 font-bold text-2xl">## Docs</p>
+        <p>
+          <span class="text-emerald-400 font-semibold text-xl"
+            >- [Guía Rápida](https://site.com/docs.md)</span>
+        </p>
+        <p>
+          <span class="text-emerald-400 font-semibold text-xl"
+            >- [Referencia API](https://site.com/api.md)</span>
+        </p>
+
+        <p
+          class="text-slate-500 font-bold text-2xl underline decoration-slate-500/30"
+        >
+          ## Opcional
+        </p>
+        <p class="text-slate-500 text-lg">
+          - [Info Secundaria](https://site.com/extra.md)
+        </p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-sky-500",
+            shadowRgba: "rgba(14,165,233,0.5)",
+            textColor: "text-sky-400",
+            title: "Identidad (H1)",
+            description:
+              "Nombre del sitio y resumen <br>esencial para el modelo.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-400",
+            title: "Recursos Primarios",
+            description:
+              "URLs directas a archivos Markdown <br>(.md) sin ruido.",
+          },
+          {
+            bgColor: "bg-slate-600",
+            shadowRgba: "rgba(71,85,105,0.5)",
+            textColor: "text-slate-500",
+            title: "Sección Opcional",
+            description:
+              'Contenido prescindible si la <br>"ventana de contexto" es limitada.',
+          },
+        ]}
+        gap="gap-8"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 items-start mb-24">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="highlight-blue font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Autor y Origen
+          </h4>
+          <p class="text-slate-200 leading-snug">
+            Propuesto por <span class="font-bold text-white">Jeremy Howard</span
+            > (Fast.ai) en Sept. 2024 para estandarizar cómo los LLMs consumen sitios
+            web.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="highlight-blue font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            El Problema
+          </h4>
+          <p class="text-slate-200 leading-snug text-md">
+            HTML tiene demasiado "ruido" (JS, ads, menús) para la limitada <span
+              class="italic text-white">ventana de contexto</span
+            > de una IA.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Inferencia</h3>
+          <p class="text-slate-400 text-md">
+            Diseñado para uso en tiempo real, no solo entrenamiento.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Conciso</h3>
+          <p class="text-slate-400 text-md">
+            A diferencia de sitemap, este es un resumen experto.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Predictivo</h3>
+          <p class="text-slate-400 text-md">
+            Usa Markdown: el formato que mejor entienden los modelos.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Ubicación</h3>
+          <p class="text-slate-400 text-md">
+            Se coloca en la raíz del sitio: <span class="code-font text-white"
+              >/llms.txt</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-sky-400 font-black italic">/llms.txt</span> resume • <span class="text-blue-400 font-black italic">IA</span> navega.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(56, 189, 248, 0.03);
+      border: 1px solid rgba(56, 189, 248, 0.1);
+    }
+
+    .glass-tag {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .highlight-blue {
+      color: #38bdf8;
+    }
+  </style>
+</BlogPostLayout>

@@ -1,0 +1,208 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  // Metadatos SEO
+  metaTitle: string;
+  metaDescription: string;
+  lang?: string;
+
+  // Props visuales del End Slide
+  firstColor?: string;
+  secondColor?: string;
+  tailwindFirstColor?: string;
+  tailwindSecondColor?: string;
+  firstText?: string;
+  secondText?: string;
+  finalText?: string;
+  descriptionLine1?: string;
+  descriptionLine2?: string;
+  likeText?: string;
+  commentText?: string;
+  saveText?: string;
+}
+
+const {
+  metaTitle,
+  metaDescription,
+  lang = "es",
+  firstColor = "#3b82f6",
+  secondColor = "#fb923c",
+  tailwindFirstColor = "blue",
+  tailwindSecondColor = "pink",
+  firstText = "",
+  secondText = "",
+  finalText = "Desarrollo • Localización • Código",
+  descriptionLine1 = "If you like software development and technology,",
+  descriptionLine2 = "consider following me for more content.",
+  likeText = "Like",
+  commentText = "Comment",
+  saveText = "Save",
+} = Astro.props;
+
+// Construimos los estilos dinámicos para el gradiente de texto
+const gradientStyle = `background: linear-gradient(to right, ${firstColor}, ${secondColor}); -webkit-background-clip: text; -webkit-text-fill-color: transparent;`;
+---
+
+<BaseLayout
+  title={metaTitle}
+  description={metaDescription}
+  keywords={finalText}
+  author="xeland314"
+  applicationName="xeland314 Blog"
+  url={Astro.url.href}
+  canonical={Astro.url.href}
+  image="/assets/images/logo_v3.png"
+  lang={lang}
+>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400&display=swap"
+    rel="stylesheet"
+    slot="head"
+  />
+
+  <div
+    class="min-h-screen flex items-center justify-center bg-gray-200 overflow-hidden"
+  >
+    <div id="scaler-wrapper-end" class="relative">
+      <div
+        id="canvas-target-end"
+        class="canvas relative overflow-hidden flex flex-col items-center justify-center p-20 text-center bg-[#0f172a] text-white shadow-2xl origin-top-left"
+        style="width: 1080px; height: 1080px; flex-shrink: 0;"
+      >
+        <!-- Orbes de fondo decorativos -->
+        <div
+          class={`absolute top-0 left-0 w-96 h-96 bg-${tailwindFirstColor}-600/10 rounded-full blur-[120px]`}
+        >
+        </div>
+        <div
+          class={`absolute bottom-0 right-0 w-96 h-96 bg-${tailwindSecondColor}-600/10 rounded-full blur-[120px]`}
+        >
+        </div>
+
+        <!-- Logo -->
+        <div class="relative z-10 mb-8">
+          <div
+            class={`p-2 bg-gradient-to-tr from-${tailwindFirstColor}-500 to-${tailwindSecondColor}-500 rounded-2xl shadow-2xl`}
+          >
+            <img
+              src="/assets/images/logo_v3.png"
+              alt="logo"
+              title="logo"
+              class="w-32 h-32 rounded-xl bg-[#f8e6c7] object-cover"
+              width="128"
+              height="128"
+            />
+          </div>
+        </div>
+
+        <!-- Username -->
+        <h2
+          class="relative z-10 text-5xl font-black text-white mb-12 tracking-tight"
+        >
+          xeland314
+        </h2>
+
+        <!-- Título principal -->
+        <h1
+          class="relative z-10 text-5xl md:text-6xl font-black text-white leading-tight mb-8"
+        >
+          {firstText}
+          <br />
+          <span style={gradientStyle}>{secondText}</span>
+        </h1>
+
+        <!-- Descripción -->
+        <p
+          class="relative z-10 text-xl md:text-2xl text-slate-400 max-w-2xl mb-16 leading-relaxed"
+        >
+          {descriptionLine1}
+          <br />
+          {descriptionLine2}
+        </p>
+
+        <!-- Botones de acción -->
+        <div class="relative z-10 flex flex-wrap justify-center gap-8">
+          <!-- Like -->
+          <div class="flex flex-col items-center gap-2">
+            <div
+              class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-3xl border border-slate-700"
+            >
+              ❤️
+            </div>
+            <span class="text-slate-500 font-bold">{likeText}</span>
+          </div>
+
+          <!-- Comentar -->
+          <div class="flex flex-col items-center gap-2">
+            <div
+              class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-3xl border border-slate-700"
+            >
+              💬
+            </div>
+            <span class="text-slate-500 font-bold">{commentText}</span>
+          </div>
+
+          <!-- Guardar -->
+          <div class="flex flex-col items-center gap-2">
+            <div
+              class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-3xl text-white border border-slate-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-bookmark-icon lucide-bookmark"
+              >
+                <path
+                  d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"
+                ></path>
+              </svg>
+            </div>
+            <span class="text-slate-500 font-bold">{saveText}</span>
+          </div>
+        </div>
+
+        <!-- Footer text -->
+        <div
+          class="absolute bottom-10 text-slate-600 font-mono text-sm tracking-[0.3em] uppercase"
+        >
+          {finalText}
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  function scaleCanvas() {
+    const wrapper = document.getElementById("scaler-wrapper-end");
+    const canvas = document.getElementById("canvas-target-end");
+    if (!wrapper || !canvas) return;
+
+    const screenWidth = window.innerWidth;
+    const targetWidth = 1080;
+
+    if (screenWidth < targetWidth) {
+      const scale = screenWidth / targetWidth;
+      canvas.style.transform = `scale(${scale})`;
+      wrapper.style.width = `${targetWidth * scale}px`;
+      wrapper.style.height = `${1080 * scale}px`;
+    } else {
+      canvas.style.transform = "none";
+      wrapper.style.width = "";
+      wrapper.style.height = "";
+    }
+  }
+
+  window.addEventListener("resize", scaleCanvas);
+  window.addEventListener("DOMContentLoaded", scaleCanvas);
+  document.addEventListener("astro:page-load", scaleCanvas);
+  scaleCanvas();
+</script>

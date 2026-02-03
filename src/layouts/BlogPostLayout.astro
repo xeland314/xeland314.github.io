@@ -1,0 +1,107 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  bgColor?: string;
+  extraFonts?: string;
+  lang?: string;
+}
+
+const {
+  title,
+  description,
+  bgColor = "bg-gray-200",
+  extraFonts = "",
+  lang = "es",
+} = Astro.props;
+
+// Construimos la URL de las fuentes adicionales si existen
+// El BaseLayout ya incluye Inter, aquí añadimos otras si se piden
+const googleFontUrl = extraFonts
+  ? `https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900${extraFonts}&display=swap`
+  : "";
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={title}
+  author="xeland314"
+  applicationName="xeland314 Blog"
+  url={Astro.url.href}
+  canonical={Astro.url.href}
+  image="/assets/images/logo_v3.png"
+  lang={lang}
+>
+  {googleFontUrl && <link rel="stylesheet" href={googleFontUrl} slot="head" />}
+
+  <div
+    class={`min-h-screen ${bgColor} flex items-center justify-center overflow-hidden`}
+  >
+    <div id="scaler-wrapper-post" class="relative">
+      <div
+        id="canvas-target-post"
+        class="canvas bg-[#0f172a] shadow-2xl overflow-hidden relative origin-top-left"
+      >
+        <slot />
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  function scaleCanvas() {
+    const wrapper = document.getElementById("scaler-wrapper-post");
+    const canvas = document.getElementById("canvas-target-post");
+    if (!wrapper || !canvas) return;
+
+    const screenWidth = window.innerWidth;
+    const targetWidth = 1080;
+
+    if (screenWidth < targetWidth) {
+      const scale = screenWidth / targetWidth;
+      canvas.style.transform = `scale(${scale})`;
+      wrapper.style.width = `${targetWidth * scale}px`;
+      wrapper.style.height = `${1080 * scale}px`;
+    } else {
+      canvas.style.transform = "none";
+      wrapper.style.width = "";
+      wrapper.style.height = "";
+    }
+  }
+
+  window.addEventListener("resize", scaleCanvas);
+  window.addEventListener("DOMContentLoaded", scaleCanvas);
+  document.addEventListener("astro:page-load", scaleCanvas);
+  scaleCanvas();
+</script>
+
+<style is:global>
+  /* Global blog post styles migrated from header.php and common patterns */
+  .code-font {
+    font-family: "Fira Code", monospace;
+  }
+
+  /* Common utility for transparency/glass effect */
+  .glass-tag {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .highlight-blue {
+    color: #38bdf8;
+  }
+
+  .canvas {
+    width: 1080px;
+    height: 1080px;
+    background: #0f172a;
+  }
+</style>

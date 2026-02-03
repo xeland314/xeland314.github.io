@@ -1,0 +1,20 @@
+---
+interface Props {
+  categoryText: string;
+  categoryColorClass: string;
+  titlePrefix: string;
+  titleHighlightText: string;
+  titleHighlightColorClass: string;
+  subtitle: string;
+}
+
+const { categoryText, categoryColorClass, titlePrefix, titleHighlightText, titleHighlightColorClass, subtitle } = Astro.props;
+---
+
+<div class="mb-8">
+  <span class={`${categoryColorClass} font-bold tracking-[0.2em] uppercase text-sm`}>{categoryText}</span>
+  <h1 class="text-5xl md:text-6xl font-black mt-2">
+    {titlePrefix} <span class={titleHighlightColorClass}>{titleHighlightText}</span>
+  </h1>
+  <p class="text-slate-400 text-xl md:text-2xl mt-4">{subtitle}</p>
+</div>

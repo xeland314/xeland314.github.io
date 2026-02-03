@@ -1,0 +1,17 @@
+---
+interface Props {
+  message?: string;
+  user?: string;
+  logo?: string;
+}
+
+const { message = "Evita la deuda técnica", user = "xeland314", logo = "/assets/images/logo_v3.png" } = Astro.props;
+---
+
+<div class="relative z-10 bg-slate-900/50 mt-8 py-4 px-8 flex items-center justify-between rounded-xl border border-slate-700">
+  <div class="flex items-center gap-3">
+    <img src={logo} alt="logo" class="w-10 h-10 rounded-lg shadow-md border border-slate-600" />
+    <span class="text-slate-400 font-bold text-xl tracking-tight">{user}</span>
+  </div>
+  <p class="text-slate-300 font-medium">{message}</p>
+</div>
