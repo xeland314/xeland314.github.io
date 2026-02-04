@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { Image } from "astro:assets";
-import chatAnalyzerImg from "../../../../public/assets/chat_analyzer.png";
+import chatAnalyzerImg from "../../../../public/assets/chat_analyzer_logo_app.jpg";
 
 const title = "Chat Analyzer - Export, Parse, and Analyze WhatsApp Chats";
 const description =
@@ -11,7 +11,7 @@ const keywords =
 const author = "Christopher Villamarín";
 const applicationName = "Chat Analyzer";
 const url = "https://xeland314.github.io/en/projects/chat-analyzer/";
-const image = "/assets/chat_analyzer.png";
+const image = "/assets/chat_analyzer_logo_app.jpg";
 const imageAlt = "Chat Analyzer Dashboard Preview";
 
 const downloads = [
@@ -106,7 +106,7 @@ const features = [
       >
         <div class="mt-16 lg:mt-0 text-center lg:text-left">
           <h1
-            class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400"
+            class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight pb-4 mb-8 bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-emerald-600 dark:from-teal-400 dark:to-emerald-400"
           >
             Chat Analyzer
           </h1>
@@ -294,6 +294,95 @@ const features = [
       </div>
     </section>
 
+    <section class="w-full h-[100dvh] bg-black relative border-y border-gray-200 dark:border-gray-800">
+      <div class="absolute top-4 left-4 z-20 pointer-events-none">
+        <span class="px-3 py-1 rounded-full bg-teal-500/20 text-teal-400 text-xs font-bold backdrop-blur-md border border-teal-500/30">
+          LIVE DEMO
+        </span>
+      </div>
+      <iframe 
+        src="https://xeland314.github.io/chat_analyzer_ui/" 
+        class="w-full h-full border-none"
+        title="Chat Analyzer Live Demo"
+        loading="lazy"
+        allow="clipboard-read; clipboard-write"
+      ></iframe>
+    </section>
+
+    <section class="py-24 bg-gray-50 dark:bg-gray-900">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <div class="flex flex-col mobile:flex-row items-center gap-4 mb-12">
+            <div class="p-3 rounded-2xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Troubleshooting</h2>
+              <p class="text-gray-600 dark:text-gray-400">Common errors and optimization for Linux environments.</p>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                Rendering or GPU Issues
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                If you experience flickering or <code class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm">ReadPixels</code> errors (common on legacy hardware), you can force software rendering (CPU):
+              </p>
+              <div class="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                <code class="text-sm text-emerald-400 font-mono">
+                  LIBGL_ALWAYS_SOFTWARE=1 ./ChatAnalyzer-x86_64.AppImage
+                </code>
+              </div>
+              <p class="mt-4 text-sm text-gray-500 italic">
+                Note: This will use <strong>llvmpipe</strong>. Analysis speed remains unaffected, though animations may be disabled.
+              </p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                AppImage fails to run
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                Ensure the file has execution permissions after downloading:
+              </p>
+              <div class="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                <code class="text-sm text-emerald-400 font-mono">
+                  chmod +x ChatAnalyzer-x86_64.AppImage<br/>
+                  ./ChatAnalyzer-x86_64.AppImage
+                </code>
+              </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
+                <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                Known Limitations
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+                Flutter relies on GPU acceleration. If the app fails to load, it is likely due to outdated graphics drivers.
+                In the <strong>web version</strong>, file browsing is currently restricted; please use <strong>Drag & Drop</strong> to analyze your chats.
+              </p>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                For Linux users facing browser rendering issues, try the following configuration:
+              </p>
+              <div class="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                <code class="text-sm text-emerald-400 font-mono">
+                  MESA_LOADER_DRIVER_OVERRIDE=llvmpipe MESA_GL_VERSION_OVERRIDE=3.3 MESA_GLSL_VERSION_OVERRIDE=330 /usr/bin/brave-browser-stable
+                </code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
     <!-- Downloads Section -->
     <section id="downloads" class="py-24 bg-teal-50 dark:bg-gray-900 relative">
       <div class="container mx-auto px-6 relative z-10">
@@ -362,12 +451,12 @@ const features = [
           Built with Modern Tech
         </h2>
         <div
-          class="flex flex-wrap justify-center gap-8 md:gap-16 items-center opacity-70 grayscale hover:grayscale-0 transition-all duration-500"
+          class="flex flex-wrap justify-center gap-8 md:gap-16 items-center opacity-70"
         >
           <!-- Flutter -->
           <div class="flex flex-col items-center gap-2">
             <img
-              src="https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png"
+                src="/icons/flutter.png"
               alt="Flutter"
               class="h-12 md:h-16 w-auto"
             />
@@ -378,7 +467,7 @@ const features = [
           <!-- Dart -->
           <div class="flex flex-col items-center gap-2">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Dart-logo.png"
+                src="/icons/dart.png"
               alt="Dart"
               class="h-12 md:h-16 w-auto"
             />
@@ -403,7 +492,7 @@ const features = [
           <!-- Rust -->
           <div class="flex flex-col items-center gap-2">
             <img
-              src="https://rust-lang.org/static/images/rust-logo-blk.svg"
+                src="/icons/rust.svg"
               alt="Rust"
               class="h-12 md:h-16 w-auto"
             />
