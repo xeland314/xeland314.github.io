@@ -1,0 +1,116 @@
+---
+// src/components/projects/ProjectCardAPI.astro
+
+interface Props {
+  project: {
+    title: string;
+    description: string;
+    shortDescription: string;
+    githubLink?: string | null | undefined;
+    demoLink?: string | null | undefined;
+    tags: string[] | unknown;
+    slug: string;
+  };
+  lang?: "es" | "en";
+}
+
+const { project, lang = "es" } = Astro.props;
+
+// Normalización de slugs para evitar rutas duplicadas tipo /en/projects//en/projects/
+const cleanSlug = project.slug.split("/").filter(Boolean).pop();
+const apiLink = `/api/${lang}/project/${cleanSlug}`;
+
+// Enlace a la página visual del proyecto (ajusta si la ruta es distinta)
+const detailsPageLink = `/${lang}/projects/${cleanSlug}`;
+---
+
+<article
+  class="font-mono border border-gray-200 dark:border-gray-800 rounded-md overflow-hidden bg-white dark:bg-gray-950 shadow-sm"
+>
+  <div
+    class="flex items-center bg-gray-50 dark:bg-gray-900 p-2 border-b border-gray-200 dark:border-gray-800 gap-2 overflow-hidden"
+  >
+    <span
+      class="bg-green-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0"
+      >GET</span
+    >
+
+    <a
+      href={apiLink}
+      class="text-xs text-blue-600 dark:text-blue-400 hover:underline truncate break-all block"
+      title="View JSON Source"
+    >
+      {apiLink}
+    </a>
+
+    <span
+      class="ml-auto text-[9px] text-gray-400 italic shrink-0 hidden sm:inline"
+      >200 OK</span
+    >
+  </div>
+
+  <div class="p-4">
+    <h3 class="text-base font-bold mb-2 group">
+      <span class="text-gray-400 text-sm">"title":</span>
+      <a
+        href={detailsPageLink}
+        class="text-gray-900 dark:text-white hover:text-blue-500 transition-colors"
+      >
+        "{project.title}"
+      </a>
+    </h3>
+
+    <p
+      class="text-xs text-gray-500 dark:text-gray-400 mb-4 italic leading-relaxed"
+    >
+      // {project.shortDescription || project.description}
+    </p>
+
+    <div class="space-y-3 text-[11px]">
+      <div
+        class="bg-gray-100 dark:bg-black/40 p-2 rounded border border-gray-200/50 dark:border-white/5 overflow-hidden"
+      >
+        <span class="text-purple-500 font-bold">"links"</span>: &#123;
+        <div class="pl-4 space-y-1">
+          <div class="truncate">
+            <span class="text-blue-500">"github"</span>:
+            <a
+              href={project.githubLink}
+              target="_blank"
+              class="text-orange-600 dark:text-orange-400 hover:underline break-all"
+            >
+              "{project.githubLink || "null"}"
+            </a>
+          </div>
+          <div class="truncate">
+            <span class="text-blue-500">"demo"</span>:
+            <a
+              href={project.demoLink}
+              target="_blank"
+              class="text-orange-600 dark:text-orange-400 hover:underline break-all"
+            >
+              "{project.demoLink || "null"}"
+            </a>
+          </div>
+        </div>
+        &#125;
+      </div>
+
+      <div
+        class="bg-gray-100 dark:bg-black/40 p-2 rounded border border-gray-200/50 dark:border-white/5"
+      >
+        <span class="text-purple-500 font-bold">"tags"</span>: [
+        <span class="text-blue-500">
+          {
+            (project.tags as string[]).map((tag, i, arr) => (
+              <span>
+                "{tag}"{i < arr.length - 1 ? ", " : ""}
+              </span>
+            ))
+          }
+        </span>
+        ]
+      </div>
+    </div>
+  </div>
+</article>

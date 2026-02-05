@@ -1,0 +1,46 @@
+---
+// src/components/ProjectCard.astro
+
+interface Props {
+  project: {
+    title: string;
+    description: string;
+    shortDescription: string;
+    githubLink?: string | null | undefined;
+    demoLink?: string | null | undefined;
+    tags: string[] | unknown;
+    image?: string | undefined | null;
+    slug: string;
+  };
+  lang?: "es" | "en";
+}
+
+const { project, lang = "es" } = Astro.props;
+
+const detailsPageLink = `/${lang}/projects/${project.slug}`;
+---
+<article class="py-2 border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors px-2 -mx-2">
+  <div class="flex items-baseline gap-3 mb-1">
+    <span class="text-gray-400 dark:text-gray-600 text-xs font-mono">→</span>
+    <h3 class="font-semibold text-gray-900 dark:text-white">
+      <a href={detailsPageLink} class="hover:underline">
+        {project.title}
+      </a>
+    </h3>
+    <div class="flex gap-2 ml-auto text-xs font-mono">
+      {project.githubLink && (
+        <a href={project.githubLink} class="text-blue-600 dark:text-blue-400 hover:underline">
+          code
+        </a>
+      )}
+    </div>
+  </div>
+  <p class="text-sm text-gray-600 dark:text-gray-400 ml-6">
+    {project.shortDescription}
+  </p>
+  <div class="flex gap-2 ml-6 mt-1">
+    {(project.tags as string[]).slice(0, 4).map((tag) => (
+      <span class="text-xs text-gray-400 font-mono">#{tag}</span>
+    ))}
+  </div>
+</article>

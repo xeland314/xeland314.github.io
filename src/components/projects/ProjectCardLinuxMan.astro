@@ -1,0 +1,79 @@
+---
+// src/components/ProjectCard.astro
+
+interface Props {
+  project: {
+    title: string;
+    description: string;
+    shortDescription: string;
+    githubLink?: string | null | undefined;
+    demoLink?: string | null | undefined;
+    tags: string[] | unknown;
+    image?: string | undefined | null;
+    slug: string;
+  };
+  lang?: "es" | "en";
+}
+
+const { project, lang = "es" } = Astro.props;
+
+const detailsPageLink = `/${lang}/projects/${project.slug}`;
+---
+
+<article
+  class="bg-black border border-gray-800 p-4 font-mono text-sm text-gray-100"
+>
+  <div class="mb-3">
+    <h3 class="text-white font-bold uppercase mb-1">
+      {project.title}(1)
+    </h3>
+    <div class="text-gray-500 text-xs mb-2">User Commands</div>
+  </div>
+
+  <div class="space-y-3">
+    <div>
+      <div class="text-white font-bold mb-1">DESCRIPTION</div>
+      <div class="text-gray-300 pl-7">
+        {project.shortDescription || project.description}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-white font-bold mb-1">TAGS</div>
+      <div class="flex flex-wrap text-gray-300 pl-7 space-x-3">
+        {(project.tags as string[]).map((tag) => <span>{tag}</span>)}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-white font-bold mb-1">SEE ALSO</div>
+      <div class="text-gray-300 pl-7 space-x-4">
+        <a href={detailsPageLink} class="underline hover:text-white">
+          details(7)
+        </a>
+        {
+          project.githubLink && (
+            <a
+              href={project.githubLink}
+              target="_blank"
+              class="underline hover:text-white"
+            >
+              source(1)
+            </a>
+          )
+        }
+        {
+          project.demoLink && (
+            <a
+              href={project.demoLink}
+              target="_blank"
+              class="underline hover:text-white"
+            >
+              demo(1)
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</article>

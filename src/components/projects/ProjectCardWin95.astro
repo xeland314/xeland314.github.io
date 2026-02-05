@@ -1,0 +1,82 @@
+---
+// src/components/ProjectCard.astro
+
+interface Props {
+  project: {
+    title: string;
+    description: string;
+    shortDescription: string;
+    githubLink?: string | null | undefined;
+    demoLink?: string | null | undefined;
+    tags: string[] | unknown;
+    image?: string | undefined | null;
+    slug: string;
+  };
+  lang?: "es" | "en";
+}
+
+const { project, lang = "es" } = Astro.props;
+
+const detailsPageLink = `/${lang}/projects/${project.slug}`;
+---
+
+<article
+  class="flex flex-col border border-gray-400 dark:border-gray-600 bg-gray-100 dark:bg-gray-950"
+>
+  <!-- Barra de título estilo ventana Windows 95 -->
+  <div
+    class="bg-blue-600 text-white px-2 py-1 flex items-center justify-between text-xs font-bold"
+  >
+    <span>PROJECT.EXE - {project.title.toUpperCase()}</span>
+    <div class="flex gap-1">
+      {
+        project.githubLink && (
+          <span class="bg-gray-300 text-gray-900 px-2">GIT</span>
+        )
+      }
+      {
+        project.demoLink && (
+          <span class="bg-gray-300 text-gray-900 px-2">RUN</span>
+        )
+      }
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <div class="flex-1 p-3 font-mono text-xs">
+    <div class="text-gray-600 dark:text-gray-400 mb-2">
+      C:\PROJECTS\{project.slug.toUpperCase()}>
+    </div>
+    <p class="text-gray-900 dark:text-gray-100 mb-3">
+      {project.shortDescription}
+    </p>
+    <div class="flex flex-wrap gap-2">
+      {
+        (project.tags as string[])
+          .map((tag) => (
+            <span class="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-1">
+              {tag.toUpperCase()}
+            </span>
+          ))
+      }
+    </div>
+  </div>
+
+  <!-- Footer con links -->
+  <div
+    class="border-t border-gray-400 dark:border-gray-600 bg-gray-200 dark:bg-gray-900 px-2 py-1 flex gap-2 text-xs"
+  >
+    <a href={detailsPageLink} class="underline hover:no-underline">DETAILS</a>
+    {
+      project.githubLink && (
+        <a
+          href={project.githubLink}
+          target="_blank"
+          class="underline hover:no-underline"
+        >
+          SOURCE
+        </a>
+      )
+    }
+  </div>
+</article>

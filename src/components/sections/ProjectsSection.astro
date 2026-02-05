@@ -1,18 +1,31 @@
 ---
 import ProjectCard from "../../components/projects/ProjectCard.astro";
+import ProjectCardBrutal from "../../components/projects/ProjectCardBrutal.astro";
+import ProjectCardLinux from "../../components/projects/ProjectCardLinux.astro";
+import ProjectCardLinuxMan from "../../components/projects/ProjectCardLinuxMan.astro";
+import ProjectCardMini from "../../components/projects/ProjectCardMini.astro";
+import ProjectCardMinimalista from "../../components/projects/ProjectCardMinimalista.astro";
+import ProjectCardWin95 from "../../components/projects/ProjectCardWin95.astro";
+import ProjectCardAPI from "../../components/projects/ProjectCardAPI.astro";
+
 import { db, Projects, eq, and, desc } from "astro:db";
 
 const { lang = "es" } = Astro.props;
 
 // Textos traducibles
-const texts: Record<string, { title: string; button: string }> = {
+const texts: Record<
+  string,
+  { title: string; button: string; styleLabel: string }
+> = {
   es: {
     title: "Mis Proyectos",
     button: "Ver Todos los Proyectos",
+    styleLabel: "Estilo:",
   },
   en: {
     title: "My Projects",
     button: "View All Projects",
+    styleLabel: "Style:",
   },
 };
 
@@ -30,7 +43,10 @@ const T = texts[lang];
 const projectsLink = `/${lang}/projects`;
 ---
 
-<section id="projects" class="max-w-7xl mx-auto px-6 py-12 bg-gray-50 dark:bg-gray-900">
+<section
+  id="projects"
+  class="max-w-7xl mx-auto px-6 py-12 bg-gray-50 dark:bg-gray-900"
+>
   <div
     class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4"
   >
@@ -55,12 +71,155 @@ const projectsLink = `/${lang}/projects`;
       >
     </a>
   </div>
+  <!-- Style Selector -->
+  <div class="mb-6 flex items-center gap-3">
+    <label
+      for="design-style"
+      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+    >
+      {T.styleLabel}
+    </label>
+    <select
+      id="design-style"
+      class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+    >
+      <option value="api">API</option>
+      <option value="minimalista">Minimalista</option>
+      <option value="original">Original</option>
+      <option value="mini">Mini</option>
+      <option value="brutal">Brutalist</option>
+      <option value="linux">Linux Terminal</option>
+      <option value="linuxman">Man Page</option>
+      <option value="win95">Windows 95</option>
+    </select>
+  </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+  <!-- Projects Grid - API -->
+  <div id="grid-api" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    {
+      featuredProjects.map((project) => (
+        <ProjectCardAPI project={project} lang={lang} />
+      ))
+    }
+  </div>
+
+  <!-- Projects Grid - Original -->
+  <div
+    id="grid-original"
+    class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+  >
     {
       featuredProjects.map((project) => (
         <ProjectCard project={project} lang={lang} />
       ))
     }
   </div>
+
+  <!-- Projects Grid - Minimalista -->
+  <div
+    id="grid-minimalista"
+    class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+  >
+    {
+      featuredProjects.map((project) => (
+        <ProjectCardMinimalista project={project} lang={lang} />
+      ))
+    }
+  </div>
+
+  <!-- Projects Grid - Mini -->
+  <div
+    id="grid-mini"
+    class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+  >
+    {
+      featuredProjects.map((project) => (
+        <ProjectCardMini project={project} lang={lang} />
+      ))
+    }
+  </div>
+
+  <!-- Projects Grid - Brutal -->
+  <div
+    id="grid-brutal"
+    class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+  >
+    {
+      featuredProjects.map((project) => (
+        <ProjectCardBrutal project={project} lang={lang} />
+      ))
+    }
+  </div>
+
+  <!-- Projects Grid - Linux -->
+  <div
+    id="grid-linux"
+    class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+  >
+    {
+      featuredProjects.map((project) => (
+        <ProjectCardLinux project={project} lang={lang} />
+      ))
+    }
+  </div>
+
+  <!-- Projects Grid - LinuxMan -->
+  <div
+    id="grid-linuxman"
+    class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+  >
+    {
+      featuredProjects.map((project) => (
+        <ProjectCardLinuxMan project={project} lang={lang} />
+      ))
+    }
+  </div>
+
+  <!-- Projects Grid - Win95 -->
+  <div
+    id="grid-win95"
+    class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+  >
+    {
+      featuredProjects.map((project) => (
+        <ProjectCardWin95 project={project} lang={lang} />
+      ))
+    }
+  </div>
 </section>
+
+<script>
+  const styleSelector = document.getElementById(
+    "design-style",
+  ) as HTMLSelectElement;
+
+  const grids = {
+    api: document.getElementById("grid-api"),
+    original: document.getElementById("grid-original"),
+    minimalista: document.getElementById("grid-minimalista"),
+    mini: document.getElementById("grid-mini"),
+    brutal: document.getElementById("grid-brutal"),
+    linux: document.getElementById("grid-linux"),
+    linuxman: document.getElementById("grid-linuxman"),
+    win95: document.getElementById("grid-win95"),
+  };
+
+  styleSelector?.addEventListener("change", (e) => {
+    const selectedStyle = (e.target as HTMLSelectElement).value;
+
+    // Ocultar todos los grids
+    Object.values(grids).forEach((grid) => {
+      if (grid) {
+        grid.classList.add("hidden");
+        grid.classList.remove("grid");
+      }
+    });
+
+    // Mostrar el grid seleccionado
+    const activeGrid = grids[selectedStyle as keyof typeof grids];
+    if (activeGrid) {
+      activeGrid.classList.remove("hidden");
+      activeGrid.classList.add("grid");
+    }
+  });
+</script>

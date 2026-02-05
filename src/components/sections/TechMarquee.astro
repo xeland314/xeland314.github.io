@@ -1,57 +1,60 @@
 ---
-import LanguageImage from "../programingLanguages/LanguageImage.astro";
+// src/components/StackMarquee.astro
 
 const languages = [
-  { title: "Golang", image: "go" },
-  { title: "Python", image: "py" },
-  { title: "Django", image: "django" },
-  { title: "FastAPI", image: "fastapi" },
-  { title: "HTML", image: "html" },
-  { title: "CSS", image: "css" },
-  { title: "JavaScript", image: "js" },
-  { title: "TypeScript", image: "ts" },
-  { title: "React", image: "react" },
-  { title: "Next.js", image: "nextjs" },
-  { title: "Astro", image: "astro" },
-  { title: "Dart", image: "dart" },
-  { title: "Flutter", image: "flutter" },
-  { title: "Java", image: "java" },
-  { title: "SQLite", image: "sqlite" },
-  { title: "Postgres", image: "postgres" },
-  { title: "Docker", image: "docker" },
-  { title: "Linux", image: "linux" },
-  { title: "Git", image: "git" },
+  { title: "Golang", color: "text-blue-500" },
+  { title: "Python", color: "text-yellow-600" },
+  { title: "Django", color: "text-green-800" },
+  { title: "FastAPI", color: "text-teal-500" },
+  { title: "HTML", color: "text-orange-600" },
+  { title: "CSS", color: "text-blue-600" },
+  { title: "JavaScript", color: "text-yellow-400" },
+  { title: "TypeScript", color: "text-blue-500" },
+  { title: "React", color: "text-cyan-400" },
+  { title: "Next.js", color: "text-black dark:text-white" },
+  { title: "Astro", color: "text-orange-500" },
+  { title: "Dart", color: "text-blue-400" },
+  { title: "Flutter", color: "text-blue-300" },
+  { title: "Java", color: "text-red-600" },
+  { title: "SQLite", color: "text-blue-400" },
+  { title: "Postgres", color: "text-blue-700" },
+  { title: "Docker", color: "text-blue-500" },
+  { title: "Linux", color: "text-gray-500" },
+  { title: "Git", color: "text-orange-600" },
 ];
 
-// Duplicate the list to ensure seamless scrolling
 const marqueeItems = [...languages, ...languages];
 ---
 
 <section
-  class="py-5 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800 overflow-hidden"
+  class="py-8 bg-white dark:bg-gray-950 border-y border-gray-100 dark:border-gray-900 overflow-hidden group"
 >
   <div class="relative w-full">
     <div
-      class="absolute left-0 top-0 bottom-0 w-24 h-full bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10"
+      class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white dark:from-gray-950 to-transparent z-10"
     >
     </div>
     <div
-      class="absolute right-0 top-0 bottom-0 w-24 h-full bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10"
+      class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white dark:from-gray-950 to-transparent z-10"
     >
     </div>
 
-    <div class="marquee-container flex">
-      <div class="marquee-content flex gap-8 items-center animate-marquee">
+    <div class="flex marquee-container">
+      <div
+        class="flex gap-12 items-center animate-marquee whitespace-nowrap group-hover:pause"
+      >
         {
           marqueeItems.map((lang) => (
-            <div class="flex-shrink-0 w-16 h-16 flex items-center justify-center transition-all duration-300 opacity-70 hover:opacity-100">
-              <LanguageImage
-                title={lang.title}
-                image={lang.image}
-                isTitleHidden={false}
-                width="32px"
-                height="32px"
-              />
+            <div class="flex items-center gap-2 font-mono text-sm md:text-base transition-transform hover:scale-110">
+              <span class="text-gray-400 dark:text-gray-600 font-bold">
+                &lt;
+              </span>
+              <span class={`${lang.color} font-extrabold tracking-tight`}>
+                {lang.title}
+              </span>
+              <span class="text-gray-400 dark:text-gray-600 font-bold">
+                /&gt;
+              </span>
             </div>
           ))
         }
@@ -62,10 +65,12 @@ const marqueeItems = [...languages, ...languages];
 
 <style>
   .animate-marquee {
+    display: flex;
+    width: max-content;
     animation: marquee 40s linear infinite;
   }
 
-  .marquee-content:hover {
+  .group-hover\:pause:hover {
     animation-play-state: paused;
   }
 

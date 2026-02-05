@@ -29,8 +29,9 @@ export const projectData = [
       "Una herramienta de análisis de chats de WhatsApp desarrollada en Dart/Flutter y Rust. Disponible en Windows, Linux y Android. Provee una interfaz sencilla para entender la interacción de un grupo de WhatsApp, estadísticas por usuario y análsis de sentimientos. Todo de manera local sin enviar datos fuera de tu dispositivo. Puedes analizar hasta 100000 mensajes en menos de 10 segundos.",
     shortDescription: "Analiza chats de WhatsApp en cualquier dispositivo",
     githubLink: "https://github.com/xeland314/chat_analyzer_ui",
+    demoLink: "https://xeland314.github.io/chat_analyzer_ui/",
     tags: ["WhatsApp", "Dart", "Flutter", "Rust", "Multiplataforma"],
-    image: "/assets/chat_analyzer.png",
+    image: "/assets/chat_analyzer_logo_app.jpg",
     isFeatured: true,
   },
   {

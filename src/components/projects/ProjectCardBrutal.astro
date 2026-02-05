@@ -1,0 +1,72 @@
+---
+// src/components/ProjectCard.astro (Versión Brutalista)
+
+interface Props {
+  project: {
+    title: string;
+    description: string;
+    shortDescription: string;
+    githubLink?: string | null | undefined;
+    demoLink?: string | null | undefined;
+    tags: string[] | unknown;
+    image?: string | undefined | null;
+    slug: string;
+  };
+  lang?: "es" | "en";
+}
+
+const { project, lang = "es" } = Astro.props;
+const detailsPageLink = `/${lang}/projects/${project.slug}`;
+---
+
+<article
+  class="flex flex-col border-2 border-gray-900 dark:border-gray-100 bg-white dark:bg-gray-900 p-4 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 transition-colors duration-75"
+>
+  <div class="flex items-start justify-between gap-4 mb-3">
+    <h3 class="text-xl font-black uppercase tracking-tight">
+      <a href={detailsPageLink}>
+        {project.title}
+      </a>
+    </h3>
+    <span class="text-4xl font-black opacity-10 select-none"
+      >{(project.tags as string[])[0]?.slice(0, 2).toUpperCase()}</span
+    >
+  </div>
+
+  <p class="flex-1 text-sm mb-4 leading-snug">
+    {project.shortDescription || project.description}
+  </p>
+
+  <div class="flex gap-0 border-t-2 border-gray-900 dark:border-gray-100 pt-2">
+    <a
+      href={detailsPageLink}
+      class="flex-1 text-center py-1 text-xs font-bold uppercase hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 border-r border-gray-900 dark:border-gray-100"
+    >
+      Read
+    </a>
+    {
+      project.githubLink && (
+        <a
+          href={project.githubLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex-1 text-center py-1 text-xs font-bold uppercase hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900 border-r border-gray-900 dark:border-gray-100"
+        >
+          Code
+        </a>
+      )
+    }
+    {
+      project.demoLink && (
+        <a
+          href={project.demoLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex-1 text-center py-1 text-xs font-bold uppercase hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900"
+        >
+          Demo
+        </a>
+      )
+    }
+  </div>
+</article>
