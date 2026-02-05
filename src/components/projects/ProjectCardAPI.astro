@@ -18,7 +18,7 @@ const { project, lang = "es" } = Astro.props;
 
 // Normalización de slugs para evitar rutas duplicadas tipo /en/projects//en/projects/
 const cleanSlug = project.slug.split("/").filter(Boolean).pop();
-const apiLink = `/api/${lang}/project/${cleanSlug}`;
+const apiLink = `/api/${lang}/project/${cleanSlug}.json`;
 
 // Enlace a la página visual del proyecto (ajusta si la ruta es distinta)
 const detailsPageLink = `/${lang}/projects/${cleanSlug}`;
