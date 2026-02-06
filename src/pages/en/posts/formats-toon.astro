@@ -1,0 +1,171 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Efficiency for AI";
+const description = "Radiography: .TOON - Token-Oriented Object Notation";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-gray-300"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/formats-toon"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Efficiency for AI"
+      categoryColorClass="text-yellow-200"
+      titlePrefix="X-Ray:"
+      titleHighlightText=".TOON"
+      titleHighlightColorClass="highlight-yellow"
+      subtitle="Token-Oriented Object Notation"
+    />
+
+    <div
+      class="feature-card rounded-3xl p-10 mb-10 relative flex flex-col md:flex-row gap-8 items-stretch"
+    >
+      <div
+        class="code-font text-2xl leading-relaxed flex-1 border-r border-white/10 pr-8"
+      >
+        <p>
+          <span
+            class="text-yellow-400 font-bold underline decoration-yellow-400/30"
+            >context:</span
+          >
+        </p>
+        <p class="ml-8">
+          <span class="text-slate-400">location:</span> Boulder
+        </p>
+        <p>
+          <span
+            class="text-blue-400 font-bold underline decoration-blue-400/30"
+            >hikes[3]{"{"}id,name,companion{"}"}:</span
+          >
+        </p>
+        <p class="ml-8 text-emerald-400 font-medium">1,Blue Lake Trail,ana</p>
+        <p class="ml-8 text-emerald-400 font-medium">2,Ridge Overlook,luis</p>
+        <p class="ml-8 text-emerald-400 font-medium">3,Wildflower Loop,sam</p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-yellow-400",
+            shadowRgba: "rgba(250,204,21,0.5)",
+            textColor: "text-yellow-400",
+            title: "YAML Structure",
+            description:
+              "Indentation hierarchy. <br>Saves token braces {}.",
+          },
+          {
+            bgColor: "bg-blue-400",
+            shadowRgba: "rgba(96,165,250,0.5)",
+            textColor: "text-blue-400",
+            title: "Field Header",
+            description: "Defines [N] elements and {fields} only once.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-500",
+            title: "Tabular Data",
+            description:
+              "CSV Style. Optimized for <br>long lists of objects.",
+          },
+        ]}
+        gap="gap-8"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="highlight-yellow font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Purpose
+          </h4>
+          <p class="text-slate-200 leading-snug">
+            Designed to be the <span class="font-bold">ideal input for LLMs</span>. Replaces JSON to reduce costs and improve model accuracy.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="highlight-yellow font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Key Fact
+          </h4>
+          <p class="text-slate-200 leading-snug">
+            Achieves up to <span class="text-white font-bold"
+              >~40% token savings</span
+            > compared to JSON, while maintaining 74% accuracy.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-yellow font-bold text-xl mb-2">Compact</h3>
+          <p class="text-slate-400 text-sm">
+            Removes unnecessary quotes, braces and brackets.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-yellow font-bold text-xl mb-2">Guardrails</h3>
+          <p class="text-slate-400 text-sm">
+            [N] count helps the model not skip data.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-yellow font-bold text-xl mb-2">Lossless</h3>
+          <p class="text-slate-400 text-sm">
+            Perfect round-trip conversion with JSON.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-yellow font-bold text-xl mb-2">LLM-First</h3>
+          <p class="text-slate-400 text-sm">
+            Designed for AI to "understand" the structure better.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-yellow-400 font-black italic">.TOON</span> saves • <span class="text-slate-400 font-black italic">LLMs</span> appreciate.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(254, 243, 192, 0.03);
+      border: 1px solid rgba(254, 243, 192, 0.1);
+    }
+
+    .glass-tag {
+      background: rgba(254, 243, 192, 0.05);
+      border: 1px solid rgba(254, 243, 192, 0.2);
+    }
+
+    .highlight-yellow {
+      color: #fef3c0;
+    }
+  </style>
+</BlogPostLayout>

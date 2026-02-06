@@ -1,0 +1,189 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Estructura de Archivos";
+const description = "Radiografía: .ARB - Application Resource Bundle";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-gray-300"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="es"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/en/posts/flutter-arb-files"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        EN
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Estructura de Archivos"
+      categoryColorClass="text-blue-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText=".ARB"
+      titleHighlightColorClass="text-blue-500"
+      subtitle="Application Resource Bundle"
+    />
+
+    <div
+      class="feature-card rounded-3xl py-10 px-6 mb-8 relative flex flex-col md:flex-row gap-8"
+    >
+      <div
+        class="code-font text-xl leading-relaxed flex-1 border-r border-white/10 pr-8"
+      >
+        <p>
+          <span class="text-yellow-500 font-bold">"@@locale"</span>: <span
+            class="text-emerald-400">"es"</span
+          >,
+        </p>
+        <p>
+          <span
+            class="text-pink-500 font-bold underline decoration-pink-500/30"
+            >"welcome"</span
+          >: <span class="text-emerald-400">"Hola, {"{name}"}"</span>,
+        </p>
+        <p class="text-slate-500 ml-4">// Metadatos para el traductor</p>
+        <p>
+          <span
+            class="text-blue-400 font-bold underline decoration-blue-400/30"
+            >"@welcome"</span
+          >: {"{"}
+        </p>
+        <p class="ml-8">
+          <span class="text-slate-300">"description"</span>: <span
+            class="text-emerald-400">"Saludo en el Home"</span
+          >,
+        </p>
+        <p class="ml-8">
+          <span class="text-slate-300">"placeholders"</span>: {"{"}
+          <span class="text-blue-400">"name"</span>:
+          {"{"}
+          <span class="text-slate-300">"type"</span>: <span
+            class="text-emerald-400">"String"</span
+          >
+          {"}"}
+          {"}"}
+        </p>
+        <p class="ml-2">{"}"}</p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-yellow-500",
+            shadowRgba: "rgba(234, 179, 8, 0.5)",
+            textColor: "text-yellow-500",
+            title: "Locale Global",
+            description: "Define el idioma base del archivo.",
+          },
+          {
+            bgColor: "bg-pink-500",
+            shadowRgba: "rgba(236,72,153,0.5)",
+            textColor: "text-pink-500",
+            title: "La Clave",
+            description: "Identificador único del recurso.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-400",
+            title: "El Valor",
+            description: "Contenido traducible (ICU).",
+          },
+          {
+            bgColor: "bg-blue-400",
+            shadowRgba: "rgba(96,165,250,0.5)",
+            textColor: "text-blue-400",
+            title: "El Contexto",
+            description: "Atributos adicionales (@).",
+          },
+        ]}
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <div class="space-y-4">
+        <div class="glass-tag p-4 rounded-xl">
+          <h4
+            class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Origen y Propósito
+          </h4>
+          <p class="text-slate-200 leading-snug text-md">
+            Creado por <span class="font-bold text-white">Google</span> en <span
+              class="font-bold text-white">2012</span
+            > como un estándar para simplificar el flujo entre desarrolladores y agencias
+            de traducción profesional.
+          </p>
+        </div>
+        <div class="glass-tag p-4 rounded-xl">
+          <h4
+            class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            ¿Por qué usarlo?
+          </h4>
+          <p class="text-slate-200 leading-snug text-md">
+            A diferencia del JSON simple, ARB soporta la sintaxis de <span
+              class="italic text-emerald-400">Mensajes ICU</span
+            >, permitiendo que una misma clave maneje plurales y géneros
+            gramaticales complejos sin ensuciar el código Dart.
+          </p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-auto">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-blue-400 font-bold text-xl mb-2">JSON Based</h3>
+          <p class="text-slate-400">
+            Fácil de leer para humanos y máquinas.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-blue-400 font-bold text-xl mb-2">Soporte ICU</h3>
+          <p class="text-slate-400">
+            Maneja plurales, géneros y formatos complejos.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-blue-400 font-bold text-xl mb-2">Type Safe</h3>
+          <p class="text-slate-400">
+            Flutter genera código Dart tipado automáticamente.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-blue-400 font-bold text-xl mb-2">Tooling</h3>
+          <p class="text-slate-400">
+            Compatible con herramientas externas de traducción.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-pink-400 font-black italic">.ARB</span> estandariza'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .glass-tag {
+      background: rgba(34, 197, 94, 0.05);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+  </style>
+</BlogPostLayout>

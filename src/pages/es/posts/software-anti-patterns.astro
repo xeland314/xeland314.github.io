@@ -1,0 +1,155 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "5 Antipatrones";
+const description =
+  "Ingeniería de Software: Lo que NO debes hacer (pero todos hemos hecho)";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="es"
+>
+  <div
+    class="relative p-12 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/en/posts/software-anti-patterns"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        EN
+      </a>
+    </div>
+
+    <div class="mb-8 text-center">
+      <span class="text-rose-400 font-bold tracking-[0.3em] uppercase text-sm"
+        >Ingeniería de Software</span
+      >
+      <h1 class="text-4xl md:text-6xl font-black mt-2 mb-2">
+        5 <span class="text-rose-500">Antipatrones</span>
+      </h1>
+      <p class="text-slate-400 text-lg md:text-xl">
+        Lo que NO debes hacer (pero todos hemos hecho)
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 flex-1 mb-16">
+      <!-- 1. Spaghetti -->
+      <div
+        class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-6"
+      >
+        <div
+          class="bg-yellow-500/20 p-4 rounded-xl text-4xl flex-shrink-0 w-16 h-16 flex items-center justify-center"
+        >
+          🍝
+        </div>
+        <div>
+          <h3 class="font-bold text-xl md:text-2xl text-yellow-400">
+            Código Spaghetti
+          </h3>
+          <p class="text-slate-300 text-md md:text-lg leading-tight">
+            Flujo enredado, saltos (GOTO), y dependencias caóticas. Imposible de
+            mantener sin romper algo.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. God Object -->
+      <div
+        class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-6"
+      >
+        <div
+          class="bg-purple-500/20 p-4 rounded-xl text-4xl flex-shrink-0 w-16 h-16 flex items-center justify-center"
+        >
+          🌩️
+        </div>
+        <div>
+          <h3 class="font-bold text-xl md:text-2xl text-purple-400">
+            Clase Dios (God Object)
+          </h3>
+          <p class="text-slate-300 text-md md:text-lg leading-tight">
+            Una clase que "lo sabe todo" y "lo hace todo". Miles de líneas y
+            responsabilidad infinita.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. Magic Numbers -->
+      <div
+        class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-6"
+      >
+        <div
+          class="bg-blue-500/20 p-4 rounded-xl text-4xl flex-shrink-0 w-16 h-16 flex items-center justify-center"
+        >
+          🔢
+        </div>
+        <div>
+          <h3 class="font-bold text-xl md:text-2xl text-blue-400">
+            Números Mágicos
+          </h3>
+          <p class="text-slate-300 text-md md:text-lg leading-tight">
+            Valores hardcodeados sin contexto. <br /><code
+              class="text-sm bg-black/30 px-2 py-1 rounded font-mono text-emerald-400"
+              >if (status == 3) ...</code
+            > (¿Qué es 3? ¿Error? ¿Éxito?)
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. Poltergeists -->
+      <div
+        class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-6"
+      >
+        <div
+          class="bg-emerald-500/20 p-4 rounded-xl text-4xl flex-shrink-0 w-16 h-16 flex items-center justify-center"
+        >
+          👻
+        </div>
+        <div>
+          <h3 class="font-bold text-xl md:text-2xl text-emerald-400">
+            Poltergeists
+          </h3>
+          <p class="text-slate-300 text-md md:text-lg leading-tight">
+            Clases sin vida propia (ej. excesivos Utils o Managers vacíos) que
+            solo invocan métodos de otros.
+          </p>
+        </div>
+      </div>
+
+      <!-- 5. Golden Hammer -->
+      <div
+        class="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-6"
+      >
+        <div
+          class="bg-orange-500/20 p-4 rounded-xl text-4xl flex-shrink-0 w-16 h-16 flex items-center justify-center"
+        >
+          🔨
+        </div>
+        <div>
+          <h3 class="font-bold text-xl md:text-2xl text-orange-400">
+            Martillo de Oro
+          </h3>
+          <p class="text-slate-300 text-md md:text-lg leading-tight">
+            "Si tienes un martillo, todo parece un clavo". Usar la misma
+            tecnología (ej. Web) para TODO problema.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar middleHtml="Evita la deuda técnica" />
+  </div>
+
+  <style>
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

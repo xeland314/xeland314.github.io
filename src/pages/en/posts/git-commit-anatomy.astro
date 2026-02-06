@@ -1,0 +1,197 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Best Practices";
+const description = "Radiography: Git Commit - Conventional Commits in action";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-gray-300"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/git-commit-anatomy"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Best Practices"
+      categoryColorClass="text-emerald-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="Git Commit"
+      titleHighlightColorClass="text-emerald-500"
+      subtitle="Conventional Commits in action"
+    />
+
+    <div
+      class="feature-card rounded-3xl p-5 mb-4 relative flex flex-col md:flex-row gap-8 items-stretch"
+    >
+      <div
+        class="code-font text-xl leading-relaxed flex-1 border-r border-white/10 pr-8"
+      >
+        <p class="text-slate-500 font-bold mb-2">
+          $ git commit <span
+            class="text-orange-500 underline decoration-orange-500/30">-S</span
+          > -m 
+        </p>
+        <p class="ml-4">
+          <span
+            class="text-pink-500 font-bold underline decoration-pink-500/30"
+            >"feat</span
+          >
+          <span
+            class="text-blue-400 font-bold underline decoration-blue-400/30"
+            >(auth)</span
+          >
+          <span class="text-white">: </span>
+          <span
+            class="text-emerald-400 font-bold underline decoration-emerald-400/30"
+            >"add Google OAuth login"</span
+          > 
+        </p>
+        <p class="ml-4 text-slate-500">-m \</p>
+        <p class="ml-4">
+          <span class="text-purple-400 italic"
+            >"Implements Google authentication</span
+          >
+        </p>
+        <p class="ml-4">
+          <span class="text-purple-400 italic"
+            >using Firebase Auth SDK v10.2"</span
+          >
+        </p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-orange-500",
+            shadowRgba: "rgba(249,115,22,0.4)",
+            textColor: "text-orange-500",
+            title: "GPG Signature (-S)",
+            description: "Verifies commit authorship.",
+          },
+          {
+            bgColor: "bg-pink-500",
+            shadowRgba: "rgba(236,72,153,0.4)",
+            textColor: "text-pink-500",
+            title: "Type",
+            description: "feat, fix, docs, refactor, etc.",
+          },
+          {
+            bgColor: "bg-blue-400",
+            shadowRgba: "rgba(96,165,250,0.4)",
+            textColor: "text-blue-400",
+            title: "Scope",
+            description: "Affected module or part.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.4)",
+            textColor: "text-emerald-500",
+            title: "Description",
+            description: "Short summary in imperative mood.",
+          },
+          {
+            bgColor: "bg-purple-500",
+            shadowRgba: "rgba(168,85,247,0.4)",
+            textColor: "text-purple-500",
+            title: "Body",
+            description: "Details and motivation for the change.",
+          },
+        ]}
+        gap="gap-5"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <div class="space-y-4">
+        <div class="glass-tag p-4 rounded-xl">
+          <h4
+            class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Why this format?
+          </h4>
+          <p class="text-slate-200 leading-snug text-lg">
+            <span class="font-bold text-white">Conventional Commits</span>
+            is a standard that allows generating
+            <span class="italic text-blue-400">automatic changelogs</span>,
+            determining semantic versions, and facilitating history navigation.
+          </p>
+        </div>
+        <div class="glass-tag p-4 rounded-xl">
+          <h4
+            class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Base structure
+          </h4>
+          <p class="text-slate-200 leading-snug text-lg code-font">
+            <span class="text-pink-400">type</span><span class="text-blue-400"
+              >(scope)</span
+            >: <span class="text-emerald-400">description</span>
+          </p>
+          <p class="text-slate-400 text-lg mt-2">
+            Scope is optional but recommended for large projects.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-auto">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Readability</h3>
+          <p class="text-slate-400 text-lg">
+            Clear and navigable history for the entire team.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Automation</h3>
+          <p class="text-slate-400 text-lg">
+            CI/CD can act based on commit type.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Changelog</h3>
+          <p class="text-slate-400 text-lg">
+            Automatically generates release notes.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">SemVer</h3>
+          <p class="text-slate-400 text-lg">
+            feat → minor, fix → patch, BREAKING → major.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-pink-400 font-black italic">Commits</span> clear • <span class="text-emerald-400 font-black italic">Teams</span> happy.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

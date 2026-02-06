@@ -1,0 +1,209 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Punto Flotante IEEE 754";
+const description = "Radiografía: Binary32 - Estructura de Precisión Simple (32-bit)";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/en/posts/ieee754-anatomy"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        EN
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Punto Flotante IEEE 754"
+      categoryColorClass="text-amber-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Binary32"
+      titleHighlightColorClass="text-sky-400"
+      subtitle="Estructura de Precisión Simple (32-bit)"
+    />
+
+    <div class="feature-card rounded-3xl px-4 py-4 mb-5 relative">
+      <div
+        class="code-font text-2xl leading-relaxed tracking-widest flex flex-wrap"
+      >
+        <div class="mr-4 group">
+          <span class="text-rose-500 font-bold text-4xl">1</span>
+          <div class="flex flex-col border-t border-rose-500/30 mt-2">
+            <p class="bit-label text-rose-500 text-md">1bit Signo</p>
+            <p class="text-slate-100 text-sm italic mt-1 font-sans">
+              0(+)|1(-)
+            </p>
+          </div>
+        </div>
+
+        <div class="mr-4 group">
+          <span class="text-amber-400 font-bold text-4xl">01111011</span>
+          <div class="flex flex-col border-t border-amber-400/30 mt-2">
+            <p class="bit-label text-amber-400 text-lg">8bits Exponente</p>
+            <p class="text-slate-100 text-sm italic mt-1 font-sans">
+              Sesgo: 127
+            </p>
+          </div>
+        </div>
+
+        <div class="flex-1">
+          <span class="text-sky-400 font-bold text-4xl"
+            >10011001100110011001101</span
+          >
+          <div class="flex flex-col border-t border-sky-400/30 mt-2">
+            <p class="bit-label text-sky-400 text-lg">
+              23bits
+              <span class="font-serif italic"
+                >[±1.18×10<sup>-38</sup>, ±3.4×10<sup>38</sup>]</span
+              >
+              Mantisa / Fracción
+            </p>
+            <p class="text-slate-100 text-sm italic mt-1 font-sans">
+              Bits de precisión tras el punto decimal
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="mt-4 py-4 border-t border-white/5 flex items-center justify-center gap-6"
+      >
+        <div class="flex flex-col px-2 py-5">
+          <div
+            class="text-left text-slate-400 text-sm uppercase font-bold tracking-tighter"
+          >
+            Fórmula:
+          </div>
+          <div class="invert scale-125 justify-center flex">
+            <img
+              src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54b39569cea7460ee389211f45b76d6b7e817e56"
+              class="mwe-math-fallback-image-inline mw-invert skin-invert"
+              aria-hidden="true"
+              style="vertical-align: -3.171ex; width:81.557ex; height:7.509ex;"
+              alt="Formula"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+        <div class="flex flex-col gap-2">
+          <div
+            class="text-slate-400 text-sm uppercase font-bold tracking-tighter"
+          >
+            Valor Real:
+          </div>
+          <div
+            class="text-sky-400 font-mono text-xl bg-sky-400/5 p-3 rounded-lg border border-sky-400/20"
+          >
+            -0.1
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <div
+            class="text-slate-400 text-sm uppercase font-bold tracking-tighter"
+          >
+            Almacenado en Float:
+          </div>
+          <div
+            class="text-amber-400 font-mono text-xl bg-amber-400/5 p-3 rounded-lg border border-amber-400/20"
+          >
+            -0.100000001490116119384765625
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-amber-400">
+          <h4
+            class="text-amber-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            El Sesgo
+          </h4>
+          <p class="text-slate-200 leading-snug text-lg">
+            En lugar de un entero con signo, el exponente usa un <span
+              class="font-bold text-white">sesgo de 127</span
+            > para representar potencias tanto positivas como negativas.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-sky-400">
+          <h4
+            class="text-sky-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Bit Oculto
+          </h4>
+          <p class="text-slate-200 leading-snug text-lg">
+            Para ahorrar espacio, el primer dígito (1.) es <span
+              class="text-white font-bold">implícito</span
+            > y no se guarda en los 23 bits de la mantisa.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-5">
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-rose-500 font-bold text-xl mb-2">NaN</h3>
+          <p class="text-slate-400 text-lg">
+            Resultado de operaciones indefinidas como 0/0.
+          </p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-amber-400 font-bold text-xl mb-2">Infinity</h3>
+          <p class="text-slate-400 text-lg">
+            Exponente todo 1s, Mantisa todo 0s.
+          </p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-sky-400 font-bold text-xl mb-2">Precisión</h3>
+          <p class="text-slate-400 text-lg">
+            Aprox. 7 dígitos decimales de precisión.
+          </p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-white font-bold text-xl mb-2">Underflow</h3>
+          <p class="text-slate-400 text-lg">
+            Números demasiado pequeños para ser representados.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-rose-500 font-black italic">1s</span> signo • <span class="text-amber-400 font-black italic">8e</span> rango • <span class="text-sky-400 font-black italic">23m</span> precisión.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .bit-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 800;
+      margin-top: 0.6rem;
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

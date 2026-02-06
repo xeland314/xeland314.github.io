@@ -1,0 +1,201 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Localizador Uniforme de Recursos";
+const description = "Radiografía: URL - Anatomía de una dirección web";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/en/posts/url-anatomy"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        EN
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Localizador Uniforme de Recursos"
+      categoryColorClass="text-sky-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="URL"
+      titleHighlightColorClass="text-emerald-400"
+      subtitle="Anatomía de una dirección web"
+    />
+
+    <!-- Ejemplo visual de URL completa -->
+    <div class="rounded-3xl p-6 mb-6 relative">
+      <div class="font-mono text-2xl break-all leading-relaxed mb-4">
+        <span class="text-emerald-400 font-extrabold">https</span>://<span
+          class="text-purple-400 font-extrabold">blog</span
+        >.<span class="text-sky-400 font-extrabold">ejemplo</span>.<span
+          class="text-amber-400 font-extrabold">com</span
+        ><span class="text-rose-400 font-extrabold">/recursos/articulo</span
+        ><span class="text-cyan-400 font-extrabold">?id=10</span><span
+          class="text-lime-400 font-extrabold">#comentarios</span
+        >
+      </div>
+      <p class="text-slate-300 text-lg leading-relaxed">
+        Una URL (Uniform Resource Locator) es la dirección única de un recurso
+        en internet. Guía al navegador para localizar y mostrar información
+        específica.
+      </p>
+    </div>
+
+    <!-- Card único con todos los componentes -->
+    <div class="feature-card rounded-3xl p-8 mb-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+        <!-- Columna 1 -->
+        <div>
+          <!-- Protocol -->
+          <div class="flex items-start gap-4 mb-4">
+            <div
+              class="min-w-[0.75rem] h-[0.75rem] rounded-full mt-[0.35rem] bg-emerald-400"
+            >
+            </div>
+            <div class="flex-1">
+              <h3 class="text-emerald-400 font-bold text-xl mb-1">Protocolo</h3>
+              <p class="text-slate-300 text-lg mb-1">
+                Reglas de transmisión. HTTPS es seguro.
+              </p>
+              <p class="font-mono text-slate-400 text-lg">https://, http://</p>
+            </div>
+          </div>
+
+          <!-- Subdomain -->
+          <div class="flex items-start gap-4 mb-4">
+            <div
+              class="min-w-[0.75rem] h-[0.75rem] rounded-full mt-[0.35rem] bg-purple-400"
+            >
+            </div>
+            <div class="flex-1">
+              <h3 class="text-purple-400 font-bold text-xl mb-1">Subdominio</h3>
+              <p class="text-slate-300 text-lg mb-1">
+                Organiza secciones de contenido.
+              </p>
+              <p class="font-mono text-slate-400 text-lg">www, blog, api</p>
+            </div>
+          </div>
+
+          <!-- Domain -->
+          <div class="flex items-start gap-4 mb-4">
+            <div
+              class="min-w-[0.75rem] h-[0.75rem] rounded-full mt-[0.35rem] bg-sky-400"
+            >
+            </div>
+            <div class="flex-1">
+              <h3 class="text-sky-400 font-bold text-xl mb-1">Dominio</h3>
+              <p class="text-slate-300 text-lg mb-1">
+                Identificador único del sitio.
+              </p>
+              <p class="font-mono text-slate-400 text-lg">
+                ejemplo, google, bing
+              </p>
+            </div>
+          </div>
+
+          <!-- TLD -->
+          <div class="flex items-start gap-4 mb-4">
+            <div
+              class="min-w-[0.75rem] h-[0.75rem] rounded-full mt-[0.35rem] bg-amber-400"
+            >
+            </div>
+            <div class="flex-1">
+              <h3 class="text-amber-400 font-bold text-xl mb-1">
+                Extensión (TLD)
+              </h3>
+              <p class="text-slate-300 text-lg mb-1">
+                Indicador de tipo u origen.
+              </p>
+              <p class="font-mono text-slate-400 text-lg">.com, .org, .es</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna 2 -->
+        <div>
+          <!-- Path -->
+          <div class="flex items-start gap-4 mb-4">
+            <div
+              class="min-w-[0.75rem] h-[0.75rem] rounded-full mt-[0.35rem] bg-rose-400"
+            >
+            </div>
+            <div class="flex-1">
+              <h3 class="text-rose-400 font-bold text-xl mb-1">Ruta</h3>
+              <p class="text-slate-300 text-lg mb-1">
+                Ubicación del recurso en el servidor.
+              </p>
+              <p class="font-mono text-slate-400 text-lg">/recursos/articulo</p>
+            </div>
+          </div>
+
+          <!-- Query -->
+          <div class="flex items-start gap-4 mb-4">
+            <div
+              class="min-w-[0.75rem] h-[0.75rem] rounded-full mt-[0.35rem] bg-cyan-400"
+            >
+            </div>
+            <div class="flex-1">
+              <h3 class="text-cyan-400 font-bold text-xl mb-1">Consulta</h3>
+              <p class="text-slate-300 text-lg mb-1">
+                Parámetros para filtrar resultados.
+              </p>
+              <p class="font-mono text-slate-400 text-lg">?id=10&lang=es</p>
+            </div>
+          </div>
+
+          <!-- Fragment -->
+          <div class="flex items-start gap-4 mb-4">
+            <div
+              class="min-w-[0.75rem] h-[0.75rem] rounded-full mt-[0.35rem] bg-lime-400"
+            >
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lime-400 font-bold text-xl mb-1">Fragmento</h3>
+              <p class="text-slate-300 text-lg mb-1">
+                Sección de página. No se envía al servidor.
+              </p>
+              <p class="font-mono text-slate-400 text-lg">#comentarios</p>
+            </div>
+          </div>
+
+          <!-- Info adicional -->
+          <div class="mt-4 p-3 bg-white/5 rounded-lg">
+            <p class="text-slate-400 text-lg italic">
+              Las URLs guían navegadores a recursos exactos mediante direcciones
+              estructuradas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">BROWSER</span> interpreta • <span class="text-sky-400 font-black italic">SERVER</span> responde.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

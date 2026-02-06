@@ -1,0 +1,239 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Types of Commit";
+const description = "Cheatsheet: Conventional Commits - Types and Uses";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-12 flex flex-col text-white overflow-hidden h-full">
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/git-commit-cheatsheet"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <div class="mb-8 flex flex-col md:flex-row justify-between items-end">
+      <div>
+        <span
+          class="text-emerald-400 font-bold tracking-[0.3em] uppercase text-sm"
+          >Best Practices 2026</span
+        >
+        <h1 class="text-4xl md:text-6xl font-black mt-2 tracking-tighter">
+          Types of <span class="text-emerald-500">Commit</span>
+        </h1>
+      </div>
+      <div class="text-right pb-1 mt-4 md:mt-0">
+        <span class="text-slate-500 font-bold code-font text-xl uppercase"
+          >Conventional Commits</span
+        >
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <!-- Feat -->
+      <div
+        class="tipo-card rounded-2xl p-5 border-l-4 border-emerald-500 shadow-lg shadow-emerald-500/5"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="code-font text-2xl font-bold text-emerald-400"
+            >feat</span
+          >
+          <span
+            class="bg-emerald-500/10 text-emerald-400 text-md px-2 py-1 rounded border border-emerald-500/20 font-black"
+            >NEW FEATURE</span
+          >
+        </div>
+        <p class="text-slate-300 text-md mb-3">
+          Adds a new feature to the product.
+        </p>
+        <div class="bg-black/30 p-2 rounded-lg">
+          <p class="code-font text-md text-emerald-300/80">
+            feat(api): add user oauth login
+          </p>
+        </div>
+      </div>
+
+      <!-- Fix -->
+      <div
+        class="tipo-card rounded-2xl p-5 border-l-4 border-red-500 shadow-lg shadow-red-500/5"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="code-font text-2xl font-bold text-red-400">fix</span>
+          <span
+            class="bg-red-500/10 text-red-400 text-md px-2 py-1 rounded border border-red-500/20 font-black"
+            >FIX</span
+          >
+        </div>
+        <p class="text-slate-300 text-md mb-3">
+          Resolves a bug or unexpected behavior.
+        </p>
+        <div class="bg-black/30 p-2 rounded-lg">
+          <p class="code-font text-md text-red-300/80">
+            fix(ui): resolve button jump on hover
+          </p>
+        </div>
+      </div>
+
+      <!-- Refactor -->
+      <div
+        class="tipo-card rounded-2xl p-5 border-l-4 border-purple-500 shadow-lg shadow-purple-500/5"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="code-font text-2xl font-bold text-purple-400"
+            >refactor</span
+          >
+          <span
+            class="bg-purple-500/10 text-purple-400 text-md px-2 py-1 rounded border border-purple-500/20 font-black"
+            >STRUCTURE</span
+          >
+        </div>
+        <p class="text-slate-300 text-md mb-3">
+          Improves code without altering external logic.
+        </p>
+        <div class="bg-black/30 p-2 rounded-lg">
+          <p class="code-font text-md text-purple-300/80">
+            refactor: extract validation logic
+          </p>
+        </div>
+      </div>
+
+      <!-- Chore -->
+      <div
+        class="tipo-card rounded-2xl p-5 border-l-4 border-cyan-500 shadow-lg shadow-cyan-500/5"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="code-font text-2xl font-bold text-cyan-400">chore</span>
+          <span
+            class="bg-cyan-500/10 text-cyan-400 text-md px-2 py-1 rounded border border-cyan-500/20 font-black"
+            >MAINTENANCE</span
+          >
+        </div>
+        <p class="text-slate-300 text-md mb-3">
+          Dependency updates or routine tasks.
+        </p>
+        <div class="bg-black/30 p-2 rounded-lg">
+          <p class="code-font text-md text-cyan-300/80">
+            chore(deps): update react to v19
+          </p>
+        </div>
+      </div>
+
+      <!-- Perf -->
+      <div
+        class="tipo-card rounded-2xl p-5 border-l-4 border-yellow-500 shadow-lg shadow-yellow-500/5"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="code-font text-2xl font-bold text-yellow-400">perf</span>
+          <span
+            class="bg-yellow-500/10 text-yellow-400 text-md px-2 py-1 rounded border border-yellow-500/20 font-black"
+            >PERFORMANCE</span
+          >
+        </div>
+        <p class="text-slate-300 text-md mb-3">
+          Code improvements that optimize speed or resource usage.
+        </p>
+        <div class="bg-black/30 p-2 rounded-lg">
+          <p class="code-font text-md text-yellow-300/80">
+            perf(db): optimize query indexing
+          </p>
+        </div>
+      </div>
+
+      <!-- Docs -->
+      <div
+        class="tipo-card rounded-2xl p-5 border-l-4 border-blue-500 shadow-lg shadow-blue-500/5"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="code-font text-2xl font-bold text-blue-400">docs</span>
+          <span
+            class="bg-blue-500/10 text-blue-400 text-md px-2 py-1 rounded border border-blue-500/20 font-black"
+            >DOCUMENTATION</span
+          >
+        </div>
+        <p class="text-slate-300 text-md mb-3">
+          Changes exclusively to documentation files (README, manuals).
+        </p>
+        <div class="bg-black/30 p-2 rounded-lg">
+          <p class="code-font text-md text-blue-300/80">
+            docs: update api endpoint reference
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breaking Change -->
+    <div
+      class="breaking-gradient border-2 border-red-500/50 rounded-2xl p-6 mb-auto relative overflow-hidden"
+    >
+      <div class="absolute right-5 top-8 opacity-50 pointer-events-none">
+        <span class="text-9xl font-black text-red-500">!</span>
+      </div>
+      <div class="flex items-center gap-3 mb-2">
+        <div
+          class="bg-red-500 text-slate-900 font-black px-2 py-0.5 rounded text-md italic"
+        >
+          BREAKING CHANGE
+        </div>
+        <span class="text-red-400 font-bold uppercase tracking-widest text-md"
+          >Incompatible Changes</span
+        >
+      </div>
+      <p class="text-slate-200 text-md leading-relaxed max-w-2xl">
+        Use a <span class="code-font text-red-400 font-bold text-lg">!</span> after
+        the type or add the footer <span
+          class="code-font text-white bg-red-900/40 px-1"
+          >BREAKING CHANGE:</span
+        > to notify major version changes.
+      </p>
+      <div
+        class="mt-3 code-font text-red-300 bg-red-950/30 p-2 rounded border border-red-500/20 inline-block"
+      >
+        feat(auth)!: drop support for legacy api
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-pink-400 font-black italic text-shadow-sm">Commits</span> clear • <span class="text-emerald-400 font-black italic text-shadow-sm">Teams</span> happy.'
+      rightHtml={`
+      <div class="flex gap-2">
+        <span class="bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-tighter">#git</span>
+        <span class="bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-tighter">#productivity</span>
+        <span class="bg-slate-800/50 border border-slate-700 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-tighter">#standards</span>
+      </div>
+    `}
+    />
+  </div>
+
+  <style>
+    .tipo-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(4px);
+    }
+    .breaking-gradient {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(239, 68, 68, 0.1),
+        rgba(239, 68, 68, 0.1) 10px,
+        rgba(15, 23, 42, 0.1) 10px,
+        rgba(15, 23, 42, 0.1) 20px
+      );
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

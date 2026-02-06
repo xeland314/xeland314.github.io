@@ -1,0 +1,187 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Web Standards 2026";
+const description = "Radiography: /llms.txt - The LLM-Friendly Web Map";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-gray-300"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/ai-llms-txt"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Web Standards 2026"
+      categoryColorClass="text-sky-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="/llms.txt"
+      titleHighlightColorClass="highlight-blue"
+      subtitle="The LLM-Friendly Web Map"
+    />
+
+    <div
+      class="feature-card rounded-3xl p-6 md:p-10 mb-5 relative flex flex-row gap-8 items-stretch"
+    >
+      <div
+        class="code-font text-xl leading-relaxed flex-1 border-r border-white/10 pr-6"
+      >
+        <p
+          class="text-sky-400 font-bold text-3xl underline decoration-sky-400/20"
+        >
+          # Project Name
+        </p>
+        <p class="text-slate-400 mt-1 italic font-medium">
+          &gt; Brief summary optimized for context.
+        </p>
+        <p class="mt-1 text-slate-400 text-sm italic">
+          // Interpretation info...
+        </p>
+
+        <p class="text-slate-200 font-bold text-2xl">## Docs</p>
+        <p>
+          <span class="text-emerald-400 font-semibold text-xl"
+            >- [Quick Guide](https://site.com/docs.md)</span
+          >
+        </p>
+        <p>
+          <span class="text-emerald-400 font-semibold text-xl"
+            >- [API Reference](https://site.com/api.md)</span
+          >
+        </p>
+
+        <p
+          class="text-slate-500 font-bold text-2xl underline decoration-slate-500/30"
+        >
+          ## Optional
+        </p>
+        <p class="text-slate-500 text-lg">
+          - [Secondary Info](https://site.com/extra.md)
+        </p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-sky-500",
+            shadowRgba: "rgba(14,165,233,0.5)",
+            textColor: "text-sky-400",
+            title: "Identity (H1)",
+            description: "Site name and essential <br>summary for the model.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-400",
+            title: "Primary Resources",
+            description: "Direct URLs to Markdown <br>(.md) files without noise.",
+          },
+          {
+            bgColor: "bg-slate-600",
+            shadowRgba: "rgba(71,85,105,0.5)",
+            textColor: "text-slate-500",
+            title: "Optional Section",
+            description:
+              'Disposable content if the <br>"context window" is limited.',
+          },
+        ]}
+        gap="gap-8"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-24">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="highlight-blue font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Author & Origin
+          </h4>
+          <p class="text-slate-200 leading-snug">
+            Proposed by <span class="font-bold text-white">Jeremy Howard</span>
+            (Fast.ai) in Sept. 2024 to standardize how LLMs consume websites.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="highlight-blue font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            The Problem
+          </h4>
+          <p class="text-slate-200 leading-snug text-md">
+            HTML has too much "noise" (JS, ads, menus) for the limited <span
+              class="italic text-white">context window</span
+            > of an AI.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Inference</h3>
+          <p class="text-slate-400 text-md">
+            Designed for real-time use, not just training.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Concise</h3>
+          <p class="text-slate-400 text-md">
+            Unlike sitemap, this is an expert summary.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Predictive</h3>
+          <p class="text-slate-400 text-md">
+            Uses Markdown: the format that models understand best.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="highlight-blue font-bold text-xl mb-2">Location</h3>
+          <p class="text-slate-400 text-md">
+            It is placed at the site root: <span class="code-font text-white"
+              >/llms.txt</span
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-sky-400 font-black italic">/llms.txt</span> summarizes • <span class="text-blue-400 font-black italic">AI</span> navigates.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(56, 189, 248, 0.03);
+      border: 1px solid rgba(56, 189, 248, 0.1);
+    }
+
+    .glass-tag {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .highlight-blue {
+      color: #38bdf8;
+    }
+  </style>
+</BlogPostLayout>

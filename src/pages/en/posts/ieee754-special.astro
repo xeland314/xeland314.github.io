@@ -1,0 +1,152 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "IEEE 754 Floating Point";
+const description = "Radiography: Special Cases - How edge values behave";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/ieee754-special"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="IEEE 754 Floating Point"
+      categoryColorClass="text-rose-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="Special Cases"
+      titleHighlightColorClass="text-sky-400"
+      subtitle="How edge values behave in real computations"
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-0">
+      <!-- +Infinity -->
+      <div class="feature-card p-6 rounded-2xl border-l-4 border-sky-400">
+        <h3 class="text-sky-400 font-bold text-xl mb-2">+Infinity (+∞)</h3>
+        <p class="text-slate-300 mb-3 text-md">
+          Result of overflow or division by zero.
+        </p>
+        <p class="font-mono text-lg text-slate-400 break-words">
+          <span class="text-rose-400">0</span> |
+          <span class="text-amber-400">11111111</span> |
+          <span class="text-sky-400">00000000000000000000000</span>
+        </p>
+      </div>
+
+      <!-- -Infinity -->
+      <div class="feature-card p-6 rounded-2xl border-l-4 border-sky-400">
+        <h3 class="text-sky-400 font-bold text-xl mb-2">-Infinity (-∞)</h3>
+        <p class="text-slate-300 mb-3 text-lg">
+          Negative overflow or division by -0.
+        </p>
+        <p class="font-mono text-lg text-slate-400 break-words">
+          <span class="text-rose-400">1</span> |
+          <span class="text-amber-400">11111111</span> |
+          <span class="text-sky-400">00000000000000000000000</span>
+        </p>
+      </div>
+
+      <!-- NaN -->
+      <div
+        class="feature-card p-4 rounded-xl border-l-4 border-rose-500 col-span-1 md:col-span-2"
+      >
+        <h3 class="text-rose-500 font-bold text-xl mb-1">NaN</h3>
+        <p class="text-slate-300 text-lg mb-2">Undefined results</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+          <div>
+            <p class="text-rose-400 font-bold mb-3 text-lg">
+              Quiet NaN (qNaN)
+            </p>
+            <p class="font-mono text-lg text-slate-400 break-words">
+              <span class="text-rose-400">1</span> |
+              <span class="text-amber-400">11111111</span> |
+              <span class="text-sky-400">1MMMMMMMMMMMMMMMMMMMMMM</span>
+            </p>
+            <p class="text-slate-400 mt-1 text-lg">Propagates silently</p>
+          </div>
+          <div>
+            <p class="text-amber-400 font-bold mb-3 text-lg">
+              Signaling NaN (sNaN)
+            </p>
+            <p class="font-mono text-lg text-slate-400 break-words">
+              <span class="text-rose-400">1</span> |
+              <span class="text-amber-400">11111111</span> |
+              <span class="text-sky-400">0MMMMMMMMMMMMMMMMMMMMMM</span>
+            </p>
+            <p class="text-slate-400 mt-1 text-lg">
+              Raises exception; M ≠ 0
+            </p>
+          </div>
+        </div>
+
+        <pre
+          class="font-mono text-center text-sm md:text-lg bg-black/30 p-2 rounded mt-2 overflow-x-auto">0 / 0 → NaN ; NaN ≠ NaN → true ; NaN &lt; x → false ; NaN &gt; x → false ; x ≠ NaN → true</pre>
+      </div>
+
+      <!-- +0 / -0 -->
+      <div class="feature-card p-4 rounded-xl border-l-4 border-purple-400">
+        <h3 class="text-purple-400 font-bold text-lg mb-1">±0</h3>
+        <p class="text-slate-300 text-lg mb-2">Two distinct zeros</p>
+        <p class="font-mono text-lg text-slate-400 break-words">
+          <span class="text-rose-400">±</span> |
+          <span class="text-amber-400">00000000</span> |
+          <span class="text-sky-400">00000000000000000000000</span>
+        </p>
+        <pre
+          class="font-mono text-lg text-center bg-black/30 p-2 rounded overflow-x-auto">1 / +0 → +∞ ; 1 / -0 → -∞
++0 == -0</pre>
+      </div>
+
+      <!-- Subnormal -->
+      <div class="feature-card p-4 rounded-xl border-l-4 border-amber-400">
+        <h3 class="text-amber-400 font-bold text-lg mb-1 mt-3">Subnormal</h3>
+        <p class="text-slate-300 text-lg mb-2">Near-zero numbers</p>
+        <p class="font-mono text-lg text-slate-400 mb-2 break-words">
+          <span class="text-rose-400">±</span> |
+          <span class="text-amber-400">00000000</span> |
+          <span class="text-sky-400">MMMMMMMMMMMMMMMMMMMMMMM</span>
+        </p>
+        <p class="text-slate-400 text-lg italic">
+          Smooth underflow; M ≠ 0
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center text-slate-500 text-lg italic">
+      IEEE 754 favors propagation over interruption: computations continue instead of crashing.
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-rose-400 font-bold">NaN</span> → Breaks ordering, not execution<br><span class="text-sky-400 font-bold">±0</span> → Preserves directional information'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

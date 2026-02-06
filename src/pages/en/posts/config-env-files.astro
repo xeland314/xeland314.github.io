@@ -1,0 +1,171 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Environment Variables";
+const description = "Radiography: .ENV - Environment Variables File";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-gray-300"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/config-env-files"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Environment Variables"
+      categoryColorClass="text-emerald-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText=".ENV"
+      titleHighlightColorClass="text-emerald-500"
+      subtitle="Environment Variables File"
+    />
+
+    <div
+      class="feature-card rounded-3xl p-6 md:p-10 mb-10 relative flex flex-col md:flex-row gap-8 items-center"
+    >
+      <div
+        class="code-font text-2xl leading-relaxed flex-1 border-r border-white/10 pr-8"
+      >
+        <p class="text-slate-500 italic mb-4"># Server Configuration</p>
+        <p>
+          <span class="text-blue-400 font-bold">PORT</span>=<span
+            class="text-yellow-400">3000</span
+          >
+        </p>
+        <p>
+          <span class="text-blue-400 font-bold">API_KEY</span>=<span
+            class="text-yellow-400">"sk_test_51Mz..."</span
+          >
+        </p>
+        <p>
+          <span class="text-blue-400 font-bold">DEBUG</span>=<span
+            class="text-yellow-400">true</span
+          >
+        </p>
+        <p class="text-slate-500 italic mt-4"># Database</p>
+        <p>
+          <span class="text-blue-400 font-bold">DB_URL</span>=<span
+            class="text-yellow-400">"postgresql://user:pw@host"</span
+          >
+        </p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-blue-400",
+            shadowRgba: "rgba(96,165,250,0.4)",
+            textColor: "text-blue-400",
+            title: "Variable (Key)",
+            description: "Parameter name in the environment.",
+          },
+          {
+            bgColor: "bg-yellow-400",
+            shadowRgba: "rgba(250,204,21,0.4)",
+            textColor: "text-yellow-400",
+            title: "Value / Secret",
+            description: "Sensitive data or configuration.",
+          },
+          {
+            bgColor: "bg-slate-500",
+            shadowRgba: "rgba(148,163,184,0.4)",
+            textColor: "text-slate-500",
+            title: "Comment Field",
+            description: "Notes ignored by the system.",
+          },
+        ]}
+        gap="gap-8"
+        minWidth="min-w-[220px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Origin
+          </h4>
+          <p class="text-slate-200 leading-snug">
+            Popularized by the <span class="font-bold text-white"
+              >12-Factor App</span
+            > methodology (2011) to decouple configuration from source code.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl">
+          <h4
+            class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Why use it?
+          </h4>
+          <p class="text-slate-200 leading-snug">
+            Allows the same code to run in <span class="text-white font-bold"
+              >Local, Staging or Production</span
+            > by simply changing the values in the file.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Security</h3>
+          <p class="text-slate-400 text-sm">
+            Avoid uploading sensitive credentials to Git.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Invisible</h3>
+          <p class="text-slate-400 text-sm">
+            The initial "." hides it on Unix/Linux systems.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Universal</h3>
+          <p class="text-slate-400 text-sm">
+            Supported in Node, Python, Docker, Flutter, etc.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Simplicity</h3>
+          <p class="text-slate-400 text-sm">
+            Key-value pairs without complex syntax.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">.ENV</span> configures • <span class="text-yellow-400 font-black italic">Git</span> ignores.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .glass-tag {
+      background: rgba(34, 197, 94, 0.05);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+  </style>
+</BlogPostLayout>
