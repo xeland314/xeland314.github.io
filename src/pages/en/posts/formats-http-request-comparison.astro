@@ -1,0 +1,224 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "HTTP Methods Comparison";
+const description = "Comparison of HTTP methods";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full"
+  >
+    <RadiographyHeader
+      categoryText="Web Protocols"
+      categoryColorClass="text-purple-400"
+      titlePrefix="Types of "
+      titleHighlightText="HTTP Methods"
+      titleHighlightColorClass="text-sky-400"
+      subtitle="Comparison of HTTP communication methods"
+    />
+
+    <!-- 2 column x 3 row grid -->
+    <div class="grid grid-cols-2 gap-1 z-100">
+      <!-- GET -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-emerald-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-emerald-400 font-bold text-2xl">GET</h3>
+          <span
+            class="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-lg font-bold rounded-full uppercase"
+            >Safe & Idempotent</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Requests a representation of a resource. Only retrieves data without
+          modifying the server.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400">✓</span>
+            <span class="text-slate-400">URL Parameters (query string)</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400">✓</span>
+            <span class="text-slate-400">Cacheable by browsers</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald-400">✓</span>
+            <span class="text-slate-400"
+              >Saved in browser history</span
+            >
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400">✗</span>
+            <span class="text-slate-400"
+              >Should not be used for sensitive data</span
+            >
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-emerald-300 mb-1">
+            GET /api/users?role=admin&limit=10
+          </p>
+          <p class="text-slate-500 text-xs">→ 200 OK (user list)</p>
+        </div>
+      </div>
+
+      <!-- POST -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-purple-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-purple-400 font-bold text-2xl">POST</h3>
+          <span
+            class="px-3 py-1 bg-purple-500/20 text-purple-300 text-lg font-bold rounded-full uppercase"
+            >Not Idempotent</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Sends data to the server to create a new resource. Can have
+          side effects.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-purple-400">✓</span>
+            <span class="text-slate-400">Data in body (not in URL)</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-purple-400">✓</span>
+            <span class="text-slate-400">Creates new resources</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-purple-400">✓</span>
+            <span class="text-slate-400">No data size limit</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-rose-400">✗</span>
+            <span class="text-slate-400">Not cacheable</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-purple-300 mb-1">
+            POST /api/users<br />
+            Body: {`{"name": "Jane", "email": "jane@example.com"}`}
+          </p>
+          <p class="text-slate-500 text-xs">→ 201 Created (resource created)</p>
+        </div>
+      </div>
+
+      <!-- PUT -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-sky-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sky-400 font-bold text-2xl">PUT</h3>
+          <span
+            class="px-3 py-1 bg-sky-500/20 text-sky-300 text-lg font-bold rounded-full uppercase"
+            >Idempotent</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Completely replaces an existing resource or creates it if it doesn't exist.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-sky-400">✓</span>
+            <span class="text-slate-400"
+              >Full resource update</span
+            >
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-sky-400">✓</span>
+            <span class="text-slate-400"
+              >Idempotent (repeated same result)</span
+            >
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-sky-400">✓</span>
+            <span class="text-slate-400">Must send all fields</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">!</span>
+            <span class="text-slate-400">Overwrites existing data</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-sky-300 mb-1">
+            PUT /api/users/123<br />
+            Body: {`{"name": "Jane Updated", "email": "jane@new.com"}`}
+          </p>
+          <p class="text-slate-500 text-xs">→ 200 OK (resource updated)</p>
+        </div>
+      </div>
+
+      <!-- PATCH -->
+      <div class="feature-card p-6 rounded-xl border-l-4 border-amber-400">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-amber-400 font-bold text-2xl">PATCH</h3>
+          <span
+            class="px-3 py-1 bg-amber-500/20 text-amber-300 text-lg font-bold rounded-full uppercase"
+            >Partial</span
+          >
+        </div>
+
+        <p class="text-slate-300 text-lg mb-4">
+          Applies partial modifications to a resource. Only updates the
+          fields sent.
+        </p>
+
+        <div class="space-y-2 text-lg mb-4">
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">✓</span>
+            <span class="text-slate-400">Selective partial update</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">✓</span>
+            <span class="text-slate-400">More efficient than PUT</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">✓</span>
+            <span class="text-slate-400">Only sends fields to change</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-amber-400">!</span>
+            <span class="text-slate-400">May not be idempotent</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-black/30 rounded-lg">
+          <p class="font-mono text-xs text-amber-300 mb-1">
+            PATCH /api/users/123<br />
+            Body: {`{"email": "newemail@example.com"}`}
+          </p>
+          <p class="text-slate-500 text-xs">
+            → 200 OK (only email updated)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">CRUD</span> operations • <span class="text-purple-400 font-black italic">REST</span> standard.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</BlogPostLayout>

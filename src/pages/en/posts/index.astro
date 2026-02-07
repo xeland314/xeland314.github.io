@@ -1,0 +1,116 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { db, Posts, eq } from "astro:db";
+
+const posts = await db.select().from(Posts).where(eq(Posts.lang, "en"));
+---
+
+<BaseLayout title="Post Gallery">
+  <main class="min-h-screen bg-slate-950 p-4 md:p-8 text-white">
+    <div class="max-w-7xl mx-auto">
+      <header
+        class="mb-12 border-b border-slate-800 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+      >
+        <div>
+          <h1 class="text-4xl font-black text-white tracking-tighter">
+            POSTS<span class="text-emerald-500">_</span>
+          </h1>
+          <p class="text-slate-400 mt-2 font-medium">Visual technical guides</p>
+        </div>
+
+        <div class="flex items-center gap-4 w-full md:w-auto">
+          <!-- Search Bar -->
+          <div class="relative flex-1 md:w-80">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search posts..."
+              class="block w-full pl-10 pr-3 py-2 border border-slate-800 rounded-xl bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
+            />
+          </div>
+
+          <a
+            href="/es/posts"
+            class="glass-tag px-4 py-2 rounded-xl text-slate-300 hover:text-white transition-all font-bold border border-slate-800 bg-slate-900/50 h-10 flex items-center"
+          >
+            ES
+          </a>
+        </div>
+      </header>
+
+      <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          posts.map((post) => (
+            <div 
+              class="post-card group relative bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 transition-all hover:border-emerald-500/50 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)]"
+              data-title={post.title.toLowerCase()}
+            >
+              <div class="aspect-square w-full overflow-hidden bg-slate-950">
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  width="128"
+                  height="128"
+                />
+                <a
+                  href={post.url}
+                  class="absolute inset-0 z-10"
+                  aria-label={`View post: ${post.title}`}
+                />
+              </div>
+
+              <div class="p-4 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm">
+                <h3 class="text-sm font-bold text-slate-200 truncate uppercase tracking-wider">
+                  {post.title}
+                </h3>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- No results message -->
+      <div id="no-results" class="hidden text-center py-20">
+        <p class="text-slate-500 text-xl font-medium">No posts found matching your search.</p>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const postCards = document.querySelectorAll('.post-card');
+  const noResults = document.getElementById('no-results');
+
+  searchInput?.addEventListener('input', (e) => {
+    const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+    let hasResults = false;
+
+    postCards.forEach((card) => {
+      const title = (card as HTMLElement).dataset.title || '';
+      if (title.includes(searchTerm)) {
+        (card as HTMLElement).style.display = 'block';
+        hasResults = true;
+      } else {
+        (card as HTMLElement).style.display = 'none';
+      }
+    });
+
+    if (noResults) {
+      noResults.style.display = hasResults ? 'none' : 'block';
+    }
+  });
+</script>
+
+<style>
+  .glass-tag {
+    backdrop-filter: blur(10px);
+  }
+</style>

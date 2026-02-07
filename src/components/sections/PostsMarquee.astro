@@ -1,0 +1,116 @@
+---
+import { db, Posts, eq } from "astro:db";
+
+interface Props {
+  lang: "es" | "en";
+}
+
+const { lang } = Astro.props;
+
+const posts = await db.select().from(Posts).where(eq(Posts.lang, lang));
+const marqueeItems = [...posts, ...posts]; // Duplicate for infinite effect
+
+const viewAllText = lang === "es" ? "Ver todos los posts" : "View all posts";
+const latestPostsText = lang === "es" ? "Últimos Posts" : "Latest Posts";
+---
+
+<section
+  class="py-16 bg-white dark:bg-slate-950 overflow-hidden relative group border-t border-gray-100 dark:border-slate-900"
+>
+  <!-- Title Overlay -->
+  <div class="absolute top-10 left-0 w-full text-center z-20 -translate-y-1/2">
+    <span
+      class="bg-white dark:bg-slate-950 px-4 py-1 text-slate-500 dark:text-slate-400 text-xs font-mono tracking-widest border border-gray-200 dark:border-slate-800 rounded-full uppercase shadow-sm"
+    >
+      {latestPostsText}
+    </span>
+  </div>
+
+  <div class="relative w-full mt-4">
+    <!-- Gradient Masks -->
+    <div
+      class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white dark:from-slate-950 to-transparent z-10"
+    >
+    </div>
+    <div
+      class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white dark:from-slate-950 to-transparent z-10"
+    >
+    </div>
+
+    <div class="flex marquee-container">
+      <div
+        class="flex gap-6 items-center animate-marquee whitespace-nowrap group-hover:pause pl-6"
+      >
+        {
+          marqueeItems.map((post) => (
+            <a
+              href={post.url}
+              class="relative flex-shrink-0 w-64 h-64 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-800 transition-all hover:scale-105 hover:border-emerald-500/50 hover:shadow-2xl shadow-emerald-500/10 block"
+              aria-label={post.title}
+            >
+              <img
+                src={post.image}
+                alt={post.title}
+                class="w-full h-full object-cover"
+                loading="lazy"
+                width="48"
+                height="48"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60" />
+              <div class="absolute bottom-3 left-3 right-3">
+                <p class="text-white font-bold text-sm bg-slate-900/80 backdrop-blur-sm px-2 py-1 rounded-md inline-block border border-slate-700">
+                  {post.title}
+                </p>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA View All -->
+  <div class="mt-12 text-center relative z-20">
+    <a
+      href={`/${lang}/posts`}
+      class="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-emerald-500 hover:bg-slate-800 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold rounded-xl transition-all hover:scale-105 hover:shadow-lg active:scale-95 group/cta border border-slate-800 dark:border-transparent"
+    >
+      {viewAllText}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 transform transition-transform group-hover/cta:translate-x-1"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 7l5 5m0 0l-5 5m5-5H6"
+        />
+      </svg>
+    </a>
+  </div>
+</section>
+
+<style>
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 60s linear infinite;
+  }
+
+  .group-hover\:pause:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+</style>

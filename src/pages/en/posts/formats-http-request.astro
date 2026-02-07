@@ -1,0 +1,270 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "HTTP Request Anatomy";
+const description = "Radiography of an HTTP Request";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div
+    class="relative p-12 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/formats-http-request"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Web Protocols"
+      categoryColorClass="text-purple-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="HTTP Request"
+      titleHighlightColorClass="text-purple-400"
+      subtitle="Client-Server Communication Structure"
+    />
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-2 gap-8 mb-8">
+      <!-- Left Col: Code Visual -->
+      <div
+        class="feature-card rounded-3xl p-6 relative flex flex-col justify-center"
+      >
+        <div class="font-mono text-lg leading-loose">
+          <!-- Request Line -->
+          <div class="mb-3">
+            <span
+              class="text-purple-400 font-bold border-b border-purple-400/30"
+              >POST</span
+            >
+            <span class="text-white"> </span>
+            <span class="text-purple-300">/api/v1/users</span>
+            <span class="text-white"> </span>
+            <span class="text-slate-500">HTTP/1.1</span>
+          </div>
+
+          <!-- Headers -->
+          <div class="text-sky-400 mb-2 text-md leading-none">
+            <p>
+              <span class="font-bold text-sky-300">Host:</span> api.example.com
+            </p>
+            <p>
+              <span class="font-bold text-sky-300">Authorization:</span> Bearer eyJhbGc...
+            </p>
+            <p>
+              <span class="font-bold text-sky-300">Content-Type:</span> application/json
+            </p>
+            <p>
+              <span class="font-bold text-sky-300">Accept:</span> application/json
+            </p>
+            <p>
+              <span class="font-bold text-sky-300">User-Agent:</span> Chrome/120.0
+            </p>
+            <p>
+              <span class="font-bold text-sky-300">Content-Length:</span> 89
+            </p>
+          </div>
+
+          <!-- Empty Line indicator -->
+          <div
+            class="h-6 w-full bg-slate-800/50 rounded border border-dashed border-slate-600 mb-2 flex items-center justify-center"
+          >
+            <span
+              class="text-xs text-slate-500 uppercase tracking-widest font-sans font-bold"
+              >Empty Line</span
+            >
+          </div>
+
+          <!-- Body -->
+          <div class="text-emerald-400 text-sm">
+            <p>{`{`}</p>
+            <p class="pl-4">"name": "Jane Doe",</p>
+            <p class="pl-4">"email": "jane@example.com",</p>
+            <p class="pl-4">"role": "admin"</p>
+            <p>{`}`}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Col: Explanations -->
+      <div class="flex flex-col gap-5 justify-center">
+        <!-- Intro -->
+        <p class="text-slate-300 text-lg leading-snug">
+          Defines the action (e.g., <span class="font-bold text-purple-400"
+            >GET</span
+          >, <span class="font-bold text-purple-400">POST</span>) that the client
+          requests from the server on a specific resource.
+        </p>
+
+        <!-- Request Line Card -->
+        <div class="flex gap-4 items-start">
+          <div
+            class="w-2 h-full min-h-[50px] bg-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]"
+          >
+          </div>
+          <div>
+            <h3
+              class="text-purple-400 font-bold text-xl uppercase tracking-wider"
+            >
+              Request Line
+            </h3>
+            <p class="text-slate-400 text-md mt-1">
+              <span class="text-white font-bold">Method:</span> Action (GET, POST).<br
+              />
+              <span class="text-white font-bold">URI:</span> Path (/users/1).<br
+              />
+              <span class="text-white font-bold">Version:</span> HTTP/1.1 or HTTP/2.
+            </p>
+          </div>
+        </div>
+
+        <!-- Headers Card -->
+        <div class="flex gap-4 items-start">
+          <div
+            class="w-2 h-full min-h-[50px] bg-sky-500 rounded-full shadow-[0_0_15px_rgba(14,165,233,0.5)]"
+          >
+          </div>
+          <div>
+            <h3 class="text-sky-400 font-bold text-xl uppercase tracking-wider">
+              Headers
+            </h3>
+            <p class="text-slate-400 text-md mt-1">
+              Key-value metadata (Host, Auth, Content-Type) providing context
+              to the request.
+            </p>
+          </div>
+        </div>
+
+        <!-- Body Card -->
+        <div class="flex gap-4 items-start">
+          <div
+            class="w-2 h-full min-h-[50px] bg-emerald-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+          >
+          </div>
+          <div>
+            <h3
+              class="text-emerald-400 font-bold text-xl uppercase tracking-wider"
+            >
+              Body (Optional)
+            </h3>
+            <p class="text-slate-400 text-md mt-1">
+              Data sent to the server (JSON, Form), common in POST/PUT.
+              Separated by an empty line.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Essential Headers -->
+    <div class="mb-4">
+      <h3 class="text-sky-400 font-bold text-2xl mb-2 uppercase tracking-wide">
+        Essential Headers
+      </h3>
+      <div class="p-4 rounded-xl">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <div class="flex items-start gap-3 mb-3">
+              <span
+                class="text-sky-400 font-bold font-mono text-lg min-w-[140px]"
+                >Authorization</span
+              >
+              <span class="text-slate-400 text-lg"
+                >Authentication credentials</span
+              >
+            </div>
+            <div class="flex items-start gap-3 mb-3">
+              <span
+                class="text-sky-400 font-bold font-mono text-lg min-w-[140px]"
+                >Content-Type</span
+              >
+              <span class="text-slate-400 text-lg"
+                >Data type in the body</span
+              >
+            </div>
+            <div class="flex items-start gap-3 mb-3">
+              <span
+                class="text-sky-400 font-bold font-mono text-lg min-w-[140px]"
+                >Accept</span
+              >
+              <span class="text-slate-400 text-lg"
+                >Formats the client accepts</span
+              >
+            </div>
+          </div>
+          <div>
+            <div class="flex items-start gap-3 mb-3">
+              <span
+                class="text-sky-400 font-bold font-mono text-lg min-w-[140px]"
+                >User-Agent</span
+              >
+              <span class="text-slate-400 text-lg"
+                >Browser information</span
+              >
+            </div>
+            <div class="flex items-start gap-3 mb-3">
+              <span
+                class="text-sky-400 font-bold font-mono text-lg min-w-[140px]"
+                >Cookie</span
+              >
+              <span class="text-slate-400 text-lg"
+                >Client session data</span
+              >
+            </div>
+            <div class="flex items-start gap-3 mb-3">
+              <span
+                class="text-sky-400 font-bold font-mono text-lg min-w-[140px]"
+                >Host</span
+              >
+              <span class="text-slate-400 text-lg"
+                >Target server domain</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note on HTTPS -->
+    <div
+      class="p-5 rounded-xl border-l-4 border-purple-500 mb-auto"
+    >
+      <p class="text-slate-300 text-lg leading-relaxed">
+        <span class="text-purple-400 font-bold text-lg">🔒 HTTPS:</span>
+        In HTTPS connections, the entire request (request line, headers, and body)
+        travels
+        <span class="text-purple-300 font-bold">encrypted via TLS</span>,
+        protecting sensitive data like passwords, tokens, and personal information
+        from malicious intermediaries.
+      </p>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-purple-400 font-black italic">CLIENT</span> requests • <span class="text-sky-400 font-black italic">SERVER</span> processes.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

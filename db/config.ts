@@ -33,6 +33,16 @@ export const MyCertificates = defineTable({
   },
 });
 
+export const Posts = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true, autoIncrement: true }),
+    title: column.text(),
+    url: column.text(),
+    image: column.text(),
+    lang: column.text({ default: "es" }),
+  },
+});
+
 export default defineDb({
-  tables: { Projects, MyCertificates },
+  tables: { Projects, MyCertificates, Posts },
 });
