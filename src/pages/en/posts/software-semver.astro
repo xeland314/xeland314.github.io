@@ -1,0 +1,123 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Semantic Versioning";
+const description = "Radiography: SemVer x.y.z - The industry standard";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/es/posts/software-semver" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Software Standards"
+      categoryColorClass="text-emerald-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="SemVer"
+      titleHighlightColorClass="highlight-emerald"
+      subtitle="Semantic Versioning 2.0.0"
+    />
+
+    <div class="feature-card rounded-3xl p-6 mb-6 relative flex flex-row gap-8 items-center justify-center">
+      <div class="code-font text-8xl font-black tracking-tighter flex items-baseline">
+        <span class="text-slate-500 text-4xl mr-2">v</span>
+        <span class="text-rose-500">2</span>
+        <span class="text-slate-600">.</span>
+        <span class="text-blue-400">4</span>
+        <span class="text-slate-600">.</span>
+        <span class="text-emerald-400">1</span>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-rose-500",
+            shadowRgba: "rgba(244,63,94,0.5)",
+            textColor: "text-rose-400",
+            title: "MAJOR (X)",
+            description: "Incompatible changes <br>that break the API.",
+          },
+          {
+            bgColor: "bg-blue-500",
+            shadowRgba: "rgba(59,130,246,0.5)",
+            textColor: "text-blue-400",
+            title: "MINOR (Y)",
+            description: "Backward compatible <br>new functionality.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-400",
+            title: "PATCH (Z)",
+            description: "Backward compatible <br>bug fixes.",
+          },
+        ]}
+        gap="gap-8"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 items-start mb-auto text-lg">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-emerald-500">
+          <h4 class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-1">Golden Rule</h4>
+          <p class="text-slate-200 leading-snug">
+            If you change something that forces your users to <span class="font-bold text-white">modify their code</span> to keep it working, you MUST increment the <span class="text-rose-400 font-black">MAJOR</span> version.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-blue-400">
+          <h4 class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1">Pre-releases</h4>
+          <p class="text-slate-200 leading-snug">
+            You can add suffixes for unstable versions: <span class="code-font text-white bg-slate-800 px-2 rounded">1.0.0-alpha.1</span> or <span class="code-font text-white bg-slate-800 px-2 rounded">2.0.0-rc.2</span>.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-rose-500 font-bold text-xl mb-2">0.y.z</h3>
+          <p class="text-slate-400 text-lg">Initial development. Anything can change at any time.</p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-blue-400 font-bold text-xl mb-2">Logic</h3>
+          <p class="text-slate-400 text-lg">Avoids "Dependency Hell".</p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">Automatable</h3>
+          <p class="text-slate-400 text-lg">Tools can decide whether to update based on the range.</p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-white font-bold text-xl mb-2">Standard</h3>
+          <p class="text-slate-400 text-lg">Created by Tom Preston-Werner (GitHub co-founder).</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-rose-500 font-black italic">BREAKING</span> • <span class="text-blue-400 font-black italic">FEATURE</span> • <span class="text-emerald-400 font-black italic">FIX</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(16, 185, 129, 0.03);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+    }
+    .glass-tag {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .highlight-emerald { color: #10b981; }
+  </style>
+</BlogPostLayout>
