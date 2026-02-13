@@ -163,6 +163,7 @@ export const projectDataEN = [
       "AI-powered software project estimator. The tool calculates project time and cost, manages risks, and allows for task augmentation, based on a three-point estimation formula.",
     shortDescription: "Software project estimator with AI (Gemini).",
     githubLink: "https://github.com/xeland314/codecraft-estimator",
+    demoLink: "https://codecraft-estimator.vercel.app/",
     tags: ["AI", "Gemini", "TypeScript", "Next.js"],
     image: "/images/optimized/projects/codecraft-estimator/card.avif",
     isFeatured: true,

@@ -151,6 +151,7 @@ export const projectData = [
       "Estimador de proyectos de software impulsado por IA. La herramienta calcula el tiempo y costo de proyectos, gestiona riesgos y permite el aumento de tareas y módulos, basándose en una fórmula de estimación de tres puntos.",
     shortDescription: "Estimador de proyectos de software con IA (Gemini).",
     githubLink: "https://github.com/xeland314/codecraft-estimator",
+    demoLink: "https://codecraft-estimator.vercel.app/",
     tags: ["IA", "TypeScript", "Next.js"],
     image: "/images/optimized/projects/codecraft-estimator/card.avif",
     isFeatured: true,

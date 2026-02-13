@@ -4,13 +4,11 @@ import ProjectLayout from "../../../layouts/ProjectLayout.astro";
 // Metadata
 const title = "✨ CodeCraft Estimator - Christopher Villamarín Projects";
 const description =
-  "An AI-powered software project estimator, developed with Vibe Coding and Firebase Studio, that calculates time and costs, manages risks, and allows for task augmentation.";
+  "An AI-powered software project estimator that calculates time and costs, manages risks, and allows for task augmentation.";
 const keywords = [
   "CodeCraft Estimator",
   "project estimation",
   "AI",
-  "Vibe Coding",
-  "Firebase Studio",
   "requirements management",
   "time calculation",
   "project risks",
@@ -24,7 +22,7 @@ const keywords = [
 const authors = "Christopher Alexander Villamarín Pila";
 const ogTitle = "✨ CodeCraft Estimator - Christopher Villamarín Project";
 const ogDescription =
-  "Discover CodeCraft Estimator, an innovative tool for software project estimation, developed with AI and Vibe Coding, that optimizes planning and budgeting.";
+  "Discover CodeCraft Estimator, an innovative tool for software project estimation, developed with AI, that optimizes planning and budgeting.";
 const ogUrl = "https://xeland314.github.io/en/projects/codecraft-estimator/";
 const ogImage =
   "https://xeland314.github.io/images/codecraft_estimator_preview.png";
@@ -50,83 +48,47 @@ const canonicalUrl =
   <div class="p-0 sm:p-6">
     <header class="text-center mb-8">
       <h1 class="text-4xl font-bold mb-4">✨ CodeCraft Estimator</h1>
-      <p class="text-lg">
+      <p class="text-lg mb-6">
         An AI-powered software project estimator, designed to optimize the
         planning and budgeting process.
       </p>
-    </header>
-
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">
-        💡 Project Origin and Vibe Coding
-      </h2>
-      <p class="mb-4">
-        This project was conceived and developed using the
-        <strong>Vibe Coding with Firebase Studio</strong> methodology, an innovative
-        approach that combines AI-assisted code generation with an integrated
-        development environment. The central idea of time estimation,
-        particularly the weighted average formula for tasks, was inspired by a
-        video from Luisina of TodoCode, using the same calculation logic she
-        presents in her Excel spreadsheet.
-      </p>
-      <p class="mb-4">
+      <div class="flex justify-center mb-8">
         <a
-          href="https://youtu.be/nrTedUJMuhI"
+          href="https://codecraft-estimator.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-blue-600 hover:underline"
-          >Watch Luisina from TodoCode's video here:</a
+          class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 flex items-center gap-2"
         >
-      </p>
-      <div class="flex flex-col items-center justify-center mb-6">
-        <iframe
-          width="560"
-          height="315"
-          src="https://www.youtube.com/embed/nrTedUJMuhI?si=R3DNU1wiPkQ5m_hW"
-          title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen></iframe>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-6 h-6"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+          Try WEB version
+        </a>
       </div>
+    </header>
 
-      <h3 class="text-2xl font-semibold mt-6 mb-2">
-        Development with Vibe Coding and Firebase Studio
-      </h3>
-      <p class="mb-4">
-        Vibe Coding with Firebase Studio allows for seamless interaction with a
-        large language model (LLM) to generate and refactor code, which
-        significantly speeds up the development process. However, this
-        methodology presents its own challenges:
+    <section class="mb-8 text-center">
+      <h2 class="text-3xl font-semibold mb-4">
+        💡 Project Origin
+      </h2>
+      <p class="mb-4 max-w-3xl mx-auto">
+        This project was conceived to modernize time estimation in software development.
+        The central idea of time estimation, particularly the weighted average formula for tasks,
+        was inspired by a video from Luisina of TodoCode, using the same
+        calculation logic she presents in her project management methodology.
       </p>
-      <ul class="list-disc pl-6 space-y-2">
-        <li>
-          <strong>Constant Review of Changes:</strong> It is crucial to continuously
-          monitor the code generated by the AI, as it can introduce unexpected or
-          suboptimal solutions.
-        </li>
-        <li>
-          <strong>Correction of Typing Errors:</strong> Despite using TypeScript,
-          the AI sometimes generates code with typing errors that require manual
-          correction.
-        </li>
-        <li>
-          <strong>Tracking AI Changes:</strong> Keeping a clear record of which
-          parts of the code were generated by the AI and which were manually
-          modified is essential for version control and debugging.
-        </li>
-        <li>
-          <strong>Small Manual Corrections:</strong> Fine-tuning and manual
-          adjustments are often required to adapt the generated code to the
-          specific business logic or project conventions.
-        </li>
-        <li>
-          <strong><code>npm build</code> and Deployment Errors:</strong> The final
-          integration and compilation can present challenges, requiring
-          additional debugging to resolve build errors and ensure a successful
-          deployment.
-        </li>
-      </ul>
     </section>
 
     <section class="mb-8">
@@ -210,47 +172,7 @@ const canonicalUrl =
         </li>
       </ul>
     </section>
-
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">
-        ✅ Recommendations for Future Implementations with Vibe Coding
-      </h2>
-      <p class="mb-4">
-        To maximize efficiency and quality in future projects using Vibe
-        Coding, the following practices are suggested:
-      </p>
-      <ul class="list-disc pl-6 space-y-2">
-        <li>
-          <strong>Define a Clear Architecture Upfront:</strong> Before starting
-          Vibe Coding, having a well-defined high-level architecture
-          (components, data flow, responsibilities) can better guide the AI and
-          reduce the need for major refactoring.
-        </li>
-        <li>
-          <strong>Maintain a Detailed <code>changelog.md</code>:</strong> In
-          addition to version control with Git, a dedicated
-          <code>changelog.md</code> file can serve as a manual record of
-          significant changes made by the AI and human interventions, facilitating
-          debugging and understanding the project's history.
-        </li>
-        <li>
-          <strong>Establish Robust Tests from the Start:</strong> Implementing
-          unit and integration tests early in the development cycle helps to
-          quickly identify and correct errors introduced by the AI, ensuring
-          code consistency and reliability.
-        </li>
-        <li>
-          <strong>Iterate in Small Steps:</strong> Making incremental changes and
-          testing them frequently can help isolate problems and better
-          understand how the AI interprets and generates code.
-        </li>
-        <li>
-          <strong>Understand the LLM's Capabilities and Limitations:</strong>
-          Familiarizing yourself with the specific strengths and weaknesses of
-          the LLM used can help formulate more effective prompts and anticipate
-          potential problem areas.
-        </li>
-      </ul>
-    </section>
+  </div>
+</ProjectLayout>
   </div>
 </ProjectLayout>
