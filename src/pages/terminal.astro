@@ -5,6 +5,7 @@ import "@xterm/xterm/css/xterm.css";
 // EXTERN LIBS
 import wasmUrl from "../extern_libs/calculadora.wasm?url";
 import fastfetchUrl from "../extern_libs/fastfetch-web.wasm?url";
+import pythonUrl from "../extern_libs/python.wasm?url";
 
 const title = "Terminal - Calculadora WASM";
 const description =
@@ -26,6 +27,7 @@ const description =
       id="terminal-container"
       data-wasm-url={wasmUrl}
       data-fastfetch-wasm-url={fastfetchUrl}
+      data-python-wasm-url={pythonUrl}
       class="flex-grow bg-black overflow-hidden shadow-xl border border-8 border-gray-700"
     >
     </div>

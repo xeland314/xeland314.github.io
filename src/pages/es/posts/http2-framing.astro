@@ -1,0 +1,136 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "HTTP/2 Framing";
+const description = "Radiografía: Estructura Binaria de HTTP/2 - Headers y Data";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/http2-framing" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Protocolos Web"
+      categoryColorClass="text-purple-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="HTTP/2 Frames"
+      titleHighlightColorClass="highlight-purple"
+      subtitle="De Texto a Binario"
+    />
+
+    <!-- Comparison Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      
+      <!-- HTTP/1.1 Source -->
+      <div class="feature-card rounded-2xl p-6 relative">
+        <h3 class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-4">Input: HTTP/1.1 (Texto)</h3>
+        <div class="code-font text-sm leading-relaxed space-y-4">
+          <div class="bg-purple-500/10 border border-purple-500/30 p-3 rounded-lg">
+            <p class="text-purple-300">GET /resource HTTP/1.1</p>
+            <p class="text-purple-300">Host: example.com</p>
+            <p class="text-purple-300">Accept: application/json</p>
+          </div>
+          <div class="bg-blue-500/10 border border-blue-500/30 p-3 rounded-lg">
+            <p class="text-blue-300">{"{"}</p>
+            <p class="text-blue-300 pl-4">"msg": "hello"</p>
+            <p class="text-blue-300">{"}"}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HTTP/2 Output -->
+      <div class="feature-card rounded-2xl p-6 relative">
+        <h3 class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-4">Output: HTTP/2 (Binario)</h3>
+        
+        <!-- HEADERS FRAME -->
+        <div class="mb-6 relative">
+          <div class="absolute -left-3 top-4 -bottom-4 w-1 bg-purple-500 rounded-full"></div>
+          <div class="pl-4">
+            <div class="flex justify-between items-baseline mb-1">
+              <span class="text-purple-400 font-bold text-lg">HEADERS FRAME</span>
+              <span class="text-slate-500 text-xs font-mono">0x1</span>
+            </div>
+            <div class="bg-black/40 p-3 rounded-lg font-mono text-xs text-slate-300 grid grid-cols-4 gap-2 text-center border border-white/5">
+              <div class="col-span-3 bg-purple-900/30 rounded py-1 border border-purple-500/20">Length: 24</div>
+              <div class="bg-purple-900/30 rounded py-1 border border-purple-500/20">Type: 1</div>
+              <div class="bg-purple-900/30 rounded py-1 border border-purple-500/20">Flags: 4</div>
+              <div class="col-span-3 bg-purple-900/30 rounded py-1 border border-purple-500/20">Stream ID: 1</div>
+              <div class="col-span-4 bg-purple-500/20 text-purple-200 py-2 rounded mt-1 border border-purple-500/40">
+                HPACK Block Fragment
+                <p class="text-[10px] text-purple-300/70 mt-1">(Índices + Huffman)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DATA FRAME -->
+        <div class="relative">
+          <div class="absolute -left-3 top-4 -bottom-4 w-1 bg-blue-500 rounded-full"></div>
+          <div class="pl-4">
+            <div class="flex justify-between items-baseline mb-1">
+              <span class="text-blue-400 font-bold text-lg">DATA FRAME</span>
+              <span class="text-slate-500 text-xs font-mono">0x0</span>
+            </div>
+            <div class="bg-black/40 p-3 rounded-lg font-mono text-xs text-slate-300 grid grid-cols-4 gap-2 text-center border border-white/5">
+              <div class="col-span-3 bg-blue-900/30 rounded py-1 border border-blue-500/20">Length: 16</div>
+              <div class="bg-blue-900/30 rounded py-1 border border-blue-500/20">Type: 0</div>
+              <div class="bg-blue-900/30 rounded py-1 border border-blue-500/20">Flags: 1</div>
+              <div class="col-span-3 bg-blue-900/30 rounded py-1 border border-blue-500/20">Stream ID: 1</div>
+              <div class="col-span-4 bg-blue-500/20 text-blue-200 py-2 rounded mt-1 border border-blue-500/40 break-all">
+                7b226d7367223a202268656c6c6f227d
+                <p class="text-[10px] text-blue-300/70 mt-1">ASCII: {"{"}"msg": "hello"{"}"}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Algorithm Explanation -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mb-auto">
+      <div class="glass-tag p-5 rounded-xl border-l-4 border-purple-500">
+        <h4 class="text-purple-400 font-bold text-lg uppercase tracking-widest mb-1">HPACK (Headers)</h4>
+        <p class="text-slate-200 leading-snug text-sm">
+          No envía texto plano. Usa 3 técnicas:
+          <br>1. <span class="text-white font-bold">Tabla Estática:</span> Índices predefinidos (ej. <code class="bg-slate-800 px-1">:method: GET</code> es índice 2).
+          <br>2. <span class="text-white font-bold">Tabla Dinámica:</span> Memoriza headers vistos en la conexión.
+          <br>3. <span class="text-white font-bold">Huffman:</span> Comprime strings literales.
+        </p>
+      </div>
+      <div class="glass-tag p-5 rounded-xl border-l-4 border-blue-500">
+        <h4 class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1">Binary Framing (Data)</h4>
+        <p class="text-slate-200 leading-snug text-sm">
+          Divide el mensaje en trozos (Frames). El <span class="text-white font-bold">Stream ID</span> es vital: permite mezclar (multiplexar) múltiples peticiones en una sola conexión TCP sin bloquearse (Head-of-Line Blocking).
+        </p>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-purple-400 font-black italic">HPACK</span> comprime • <span class="text-blue-400 font-black italic">FRAMES</span> encapsulan.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(168, 85, 247, 0.03);
+      border: 1px solid rgba(168, 85, 247, 0.1);
+    }
+    .glass-tag {
+      background: rgba(168, 85, 247, 0.05);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+    }
+    .highlight-purple { color: #a855f7; }
+  </style>
+</BlogPostLayout>

@@ -1,11 +1,26 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { db, Posts, eq } from "astro:db";
+import { db, Posts, eq, and } from "astro:db";
 
-const posts = await db.select().from(Posts).where(eq(Posts.lang, "es"));
+const posts = await db.select().from(Posts).where(and(eq(Posts.lang, "es"), eq(Posts.isPublished, true)));
+
+const siteTitle = "Galería de Posts - Christopher Villamarín";
+const siteDescription = "Explora mi colección de guías visuales técnicas sobre desarrollo de software, arquitectura y herramientas de programación.";
+const siteKeywords = "blog técnico, desarrollo software, programación, guías visuales, Christopher Villamarín";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/es/posts/";
+const siteImage = "https://xeland314.github.io/images/preview.png";
 ---
 
-<BaseLayout title="Galería de Posts">
+<BaseLayout 
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  lang="es"
+>
   <main class="min-h-screen bg-slate-950 p-4 md:p-8 text-white">
     <div class="max-w-7xl mx-auto">
       <header

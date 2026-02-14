@@ -1,0 +1,118 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "AWK Anatomy";
+const description = "Radiography: AWK command structure - File processing line by line";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/es/posts/linux-awk-anatomy" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Linux Tools"
+      categoryColorClass="text-amber-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="AWK"
+      titleHighlightColorClass="highlight-amber"
+      subtitle="Pattern Scanning & Processing"
+    />
+
+    <div class="feature-card rounded-3xl p-6 md:p-8 mb-6 relative flex flex-col">
+      <div class="font-mono text-sm md:text-lg bg-black/40 p-6 rounded-xl border border-white/5 leading-relaxed mb-6">
+        <span class="text-slate-500">awk '</span><br/>
+        <span class="text-rose-400 font-bold">BEGIN</span> {"{"} <span class="text-rose-300">FS=":"</span> {"}"} <br/>
+        <span class="text-sky-400 font-bold">$3 &gt; 100</span> {"{"} <span class="text-sky-300">print $1</span> {"}"} <br/>
+        <span class="text-emerald-400 font-bold">END</span> {"{"} <span class="text-emerald-300">print "Done"</span> {"}"} <br/>
+        <span class="text-slate-500">' /etc/passwd</span>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-rose-500",
+            shadowRgba: "rgba(244,63,94,0.5)",
+            textColor: "text-rose-400",
+            title: "BEGIN (Init)",
+            description: "Runs once at the start. <br>Ideal for defining the FS.",
+          },
+          {
+            bgColor: "bg-sky-500",
+            shadowRgba: "rgba(14,165,233,0.5)",
+            textColor: "text-sky-400",
+            title: "Pattern / Action",
+            description: "Condition ($3 > 100) and <br>action (print) for each line.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-400",
+            title: "END (Finish)",
+            description: "Runs once after <br>processing all lines.",
+          },
+        ]}
+        gap="gap-6"
+        minWidth="min-w-[220px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-amber-500">
+          <h4 class="text-amber-400 font-bold text-sm uppercase mb-1">Field Variables</h4>
+          <p class="text-slate-300 text-xs">
+            <span class="text-white font-bold">$0</span>: The full line.<br/>
+            <span class="text-white font-bold">$1, $2, ...</span>: Specific columns based on the separator.
+          </p>
+        </div>
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-blue-400">
+          <h4 class="text-blue-400 font-bold text-sm uppercase mb-1">Counters</h4>
+          <p class="text-slate-300 text-xs">
+            <span class="text-white font-bold">NR</span>: (Number of Record) Current line number.<br/>
+            <span class="text-white font-bold">NF</span>: (Number of Fields) Column count in the current line.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-amber-400 font-bold text-sm mb-1">Line by Line</h3>
+          <p class="text-slate-400 text-[10px]">AWK processes the file record by record sequentially.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-amber-400 font-bold text-sm mb-1">C Power</h3>
+          <p class="text-slate-400 text-[10px]">Supports loops (for, while) and if/else like the C language.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-amber-400 font-bold text-sm mb-1">Regex</h3>
+          <p class="text-slate-400 text-[10px]">Patterns can be regular expressions: /error/ {"{...}"}</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-amber-400 font-bold text-sm mb-1">Filtering</h3>
+          <p class="text-slate-400 text-[10px]">Extremely fast for extracting data from logs and CSVs.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-rose-400 font-black italic">BEGIN</span> • <span class="text-sky-400 font-black italic">BODY</span> • <span class="text-emerald-400 font-black italic">END</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card { background: rgba(245, 158, 11, 0.03); border: 1px solid rgba(245, 158, 11, 0.1); }
+    .glass-tag { background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .highlight-amber { color: #f59e0b; }
+  </style>
+</BlogPostLayout>

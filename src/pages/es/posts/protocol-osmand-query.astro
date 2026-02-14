@@ -1,0 +1,123 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Protocolo OsmAnd URL";
+const description = "Radiografía: Protocolo OsmAnd por parámetros URL / Query - El original para rastreo";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/protocol-osmand-query" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Protocolos IoT / GPS"
+      categoryColorClass="text-emerald-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="OsmAnd URL"
+      titleHighlightColorClass="highlight-emerald"
+      subtitle="Estructura de parámetros GET / POST"
+    />
+
+    <div class="feature-card rounded-3xl p-6 md:p-8 mb-6 relative flex flex-col">
+      <div class="font-mono text-xs md:text-sm bg-black/40 p-4 rounded-xl border border-white/5 break-all leading-relaxed mb-6">
+        <span class="text-slate-500 italic">http://servidor:5055/?</span><br/>
+        <span class="text-rose-400 font-bold">id</span>=12345&<br/>
+        <span class="text-sky-400 font-bold">lat</span>=-0.1806&<span class="text-sky-400 font-bold">lon</span>=-78.4678&<br/>
+        <span class="text-emerald-400 font-bold">timestamp</span>=1609459200&<br/>
+        <span class="text-yellow-400 font-bold">batt</span>=85&<span class="text-yellow-400 font-bold">charge</span>=false&<br/>
+        <span class="text-purple-400 font-bold">speed</span>=12.5&<span class="text-purple-400 font-bold">bearing</span>=90
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-rose-500",
+            shadowRgba: "rgba(244,63,94,0.5)",
+            textColor: "text-rose-400",
+            title: "Identidad (ID)",
+            description: "ID único del dispositivo. <br>Parámetro obligatorio.",
+          },
+          {
+            bgColor: "bg-sky-500",
+            shadowRgba: "rgba(14,165,233,0.5)",
+            textColor: "text-sky-400",
+            title: "Ubicación",
+            description: "Lat, Lon, Altitude, Speed <br>y Heading (dirección).",
+          },
+          {
+            bgColor: "bg-yellow-500",
+            shadowRgba: "rgba(234,179,8,0.5)",
+            textColor: "text-yellow-400",
+            title: "Telemetría",
+            description: "Batería, estado de carga <br>y precisión (HDOP).",
+          },
+        ]}
+        gap="gap-4 md:gap-12"
+        minWidth="min-w-[200px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-emerald-500">
+          <h4 class="text-emerald-400 font-bold text-sm uppercase mb-1">Flexibilidad Total</h4>
+          <p class="text-slate-300 text-xs leading-relaxed">
+            Cualquier parámetro extra (ej. <code class="text-white italic">&temp=22</code>) es tratado como un <span class="font-bold text-white">atributo personalizado</span> y se guarda automáticamente en el servidor.
+          </p>
+        </div>
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-sky-400">
+          <h4 class="text-sky-400 font-bold text-sm uppercase mb-1">Formatos de Tiempo</h4>
+          <p class="text-slate-300 text-xs leading-relaxed">
+            Soporta <span class="text-white font-bold">Epoch (ms/s)</span>, ISO 8601 o incluso formato legible "yyyy-MM-dd HH:mm:ss". Muy versátil.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-emerald-400 font-bold text-lg mb-1">LBS</h3>
+          <p class="text-slate-400 text-[10px]">Permite enviar info de celdas (cell) y WiFi para posicionamiento sin GPS.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-emerald-400 font-bold text-lg mb-1">Minimal</h3>
+          <p class="text-slate-400 text-[10px]">Sin headers complejos ni JSON. Solo pares clave=valor.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-emerald-400 font-bold text-lg mb-1">Universal</h3>
+          <p class="text-slate-400 text-[10px]">Compatible con casi cualquier cliente GPS genérico.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-emerald-400 font-bold text-lg mb-1">Valid</h3>
+          <p class="text-slate-400 text-[10px]">Parámetro 'valid' indica si el fix GPS es de confianza.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-rose-400 font-black italic">GET / POST</span> • <span class="text-sky-400 font-black italic">QUERIES</span> • <span class="text-emerald-400 font-black italic">GPS</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(16, 185, 129, 0.03);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+    }
+    .glass-tag {
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .highlight-emerald { color: #10b981; }
+  </style>
+</BlogPostLayout>

@@ -127,8 +127,7 @@ export const projectDataEN = [
     githubLink: "https://github.com/xeland314/simplex",
     demoLink: "https://github.com/xeland314/simplex/releases",
     tags: ["Python", "Optimization", "Simplex", "DSLs", "PySide6", "GUI"],
-    image:
-      "https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-43-53.jpg",
+    image: "/images/optimized/projects/simplex/card.avif",
     isFeatured: true,
     lang: "en",
   },
@@ -141,7 +140,7 @@ export const projectDataEN = [
     githubLink: "https://github.com/xeland314/autocompleter",
     tags: ["FastAPI", "Python", "Nominatim", "Redis", "Reinforcement Learning"],
     image: "/images/optimized/projects/autocompleter/card.avif",
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
   {

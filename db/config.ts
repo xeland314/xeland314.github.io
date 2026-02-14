@@ -40,6 +40,7 @@ export const Posts = defineTable({
     url: column.text(),
     image: column.text(),
     lang: column.text({ default: "es" }),
+    isPublished: column.boolean({ default: false }),
   },
 });
 

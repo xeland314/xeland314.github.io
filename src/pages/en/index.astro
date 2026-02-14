@@ -1,24 +1,27 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Hero from "../../components/sections/Hero.astro";
-import Education from "../../components/sections/EducationSection.astro";
-import ProjectsSection from "../../components/sections/ProjectsSection.astro";
-import Certificates from "../../components/sections/Certificates.astro";
-import Contact from "../../components/sections/Contact.astro";
+import BentoGato from "../../components/sections/BentoGato.astro";
+import BentoProjects from "../../components/sections/BentoProjects";
+import BentoPosts from "../../components/sections/BentoPosts";
+import BentoEducation from "../../components/sections/BentoEducation.astro";
+import ContactForm from "../../components/contact/ContactForm";
 import TechMarquee from "../../components/sections/TechMarquee.astro";
-import PostsMarquee from "../../components/sections/PostsMarquee.astro";
 
-// Metadata for the English version
+import { projectDataEN } from "../../../db/projects.en";
+import { postDataEN } from "../../../db/posts.en";
+
 const siteTitle =
-  "Christopher Villamarín - Backend Developer in Quito, Ecuador";
+  "Christopher Villamarín - Software Developer | Backend | Programmer";
 const siteDescription =
-  "Discover the portfolio of Christopher Villamarín, a backend developer specialized in creating scalable solutions for web, mobile, and desktop applications.";
+  "Christopher Villamarín - Transforming business challenges into robust and scalable applications for Web, Mobile, and Desktop.";
 const siteKeywords =
-  "programmer, backend developer, Python, django, django rest framework, Quito, Ecuador, scalable systems, professional portfolio";
+  "digital solutions, software development, web applications, mobile applications, desktop applications, tech consulting, Quito, Ecuador";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
-const siteApplicationName = "Christopher Villamarín Portfolio";
 const siteUrl = "https://xeland314.github.io/en/";
-const siteImage = "https://xeland314.github.io/images/preview.png";
+const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
+
+const featuredProjects = projectDataEN.filter((p) => p.isFeatured).slice(0, 10);
+const recentPosts = postDataEN.filter((p) => p.isPublished).slice(0, 10);
 ---
 
 <BaseLayout
@@ -26,21 +29,40 @@ const siteImage = "https://xeland314.github.io/images/preview.png";
   description={siteDescription}
   keywords={siteKeywords}
   author={siteAuthor}
-  applicationName={siteApplicationName}
   url={siteUrl}
   image={siteImage}
   canonical={siteUrl}
   lang="en"
 >
-  <main class="mx-auto py-0 bg-gray-50 dark:bg-gray-900">
-    <Hero lang="en" />
-    <TechMarquee />
-    <ProjectsSection lang="en" />
-    <PostsMarquee lang="en" />
-    <div class="grid grid-cols-1 md:grid-cols-2">
-      <Education lang="en" />
-      <Certificates lang="en" />
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto">
+      {/* Bento Grid Layout */}
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr lg:auto-rows-[minmax(18rem,auto)]"
+      >
+        <div class="lg:col-start-1 lg:row-start-1">
+          <BentoGato lang="en" />
+        </div>
+        <div class="max-h-80 lg:col-start-1 lg:row-start-2">
+          <BentoPosts client:load posts={recentPosts} lang="en" />
+        </div>
+
+        <div class="max-h-90 lg:col-start-2 lg:row-start-1">
+          <BentoProjects client:load projects={featuredProjects} lang="en" />
+        </div>
+        <div class="max-h-90 lg:col-start-2 lg:row-start-2">
+          <BentoEducation lang="en" />
+        </div>
+
+        <div class="lg:col-start-3 lg:row-start-1 row-span-2">
+          <ContactForm client:load lang={"en"} />
+        </div>
+      </div>
+
+      {/* Footer: Marquee (Large Screens) */}
+      <div class="hidden lg:block mt-12">
+        <TechMarquee />
+      </div>
     </div>
-    <Contact lang="en" />
   </main>
 </BaseLayout>

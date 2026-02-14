@@ -1,0 +1,147 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Cron Syntax";
+const description = "Radiografía de la sintaxis Cron para la programación de tareas en sistemas Unix/Linux";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-6 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/linux-cron-syntax" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Linux Automation"
+      categoryColorClass="text-purple-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Cron Job"
+      titleHighlightColorClass="highlight-purple"
+      subtitle="Programación de Tareas (Crontab)"
+    />
+
+    <!-- Main Visual breakdown -->
+    <div class="feature-card rounded-3xl p-8 mb-8 relative flex flex-col items-center justify-center">
+      <div class="flex gap-4 md:gap-8 items-center mb-10">
+        <div class="flex flex-col items-center">
+          <span class="text-rose-500 font-black text-5xl md:text-7xl">*</span>
+          <span class="text-slate-500 text-[10px] font-bold mt-2">MIN</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-blue-400 font-black text-5xl md:text-7xl">*</span>
+          <span class="text-slate-500 text-[10px] font-bold mt-2">HORA</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-emerald-400 font-black text-5xl md:text-7xl">*</span>
+          <span class="text-slate-500 text-[10px] font-bold mt-2">DOM</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-amber-400 font-black text-5xl md:text-7xl">*</span>
+          <span class="text-slate-500 text-[10px] font-bold mt-2">MES</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <span class="text-purple-400 font-black text-5xl md:text-7xl">*</span>
+          <span class="text-slate-500 text-[10px] font-bold mt-2">DOW</span>
+        </div>
+      </div>
+
+      <div class="w-full">
+        <RadiographyLegend
+          items={[
+            {
+              bgColor: "bg-rose-500",
+              shadowRgba: "rgba(244,63,94,0.5)",
+              textColor: "text-rose-400",
+              title: "Minuto (0-59)",
+              description: "Momento exacto de la hora.",
+            },
+            {
+              bgColor: "bg-blue-500",
+              shadowRgba: "rgba(59,130,246,0.5)",
+              textColor: "text-blue-400",
+              title: "Hora (0-23)",
+              description: "Formato de 24 horas.",
+            },
+            {
+              bgColor: "bg-emerald-500",
+              shadowRgba: "rgba(16,185,129,0.5)",
+              textColor: "text-emerald-400",
+              title: "DOM (1-31)",
+              description: "Día del Mes (Day of Month).",
+            },
+            {
+              bgColor: "bg-amber-500",
+              shadowRgba: "rgba(245,158,11,0.5)",
+              textColor: "text-amber-400",
+              title: "Mes (1-12)",
+              description: "Enero a Diciembre.",
+            },
+            {
+              bgColor: "bg-purple-500",
+              shadowRgba: "rgba(168,85,247,0.5)",
+              textColor: "text-purple-400",
+              title: "DOW (0-6)",
+              description: "Día de la Semana (Dom=0).",
+            },
+          ]}
+          gap="gap-2 md:gap-6"
+          minWidth="min-w-[140px]"
+        />
+      </div>
+    </div>
+
+    <!-- Real Example -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-auto">
+      <div class="glass-tag p-5 rounded-2xl border-l-4 border-emerald-500 bg-emerald-500/5">
+        <h4 class="text-emerald-400 font-bold text-sm uppercase mb-3 tracking-widest italic">Ejemplo Real: Backup Diario</h4>
+        <div class="code-font text-sm">
+          <div class="bg-black/40 p-4 rounded-xl border border-white/5 mb-3">
+            <p class="text-white font-bold"><span class="text-rose-400">30</span> <span class="text-blue-400">02</span> <span class="text-emerald-400">*</span> <span class="text-amber-400">*</span> <span class="text-purple-400">1</span> <span class="text-slate-500">/usr/bin/backup.sh</span></p>
+          </div>
+          <p class="text-slate-300 text-xs leading-relaxed">
+            "Ejecuta el script a las <span class="text-white font-bold">02:30 AM</span> todos los <span class="text-white font-bold">Lunes</span> (1), sin importar el día del mes o el mes."
+          </p>
+        </div>
+      </div>
+
+      <!-- Special Operators -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-purple-400 font-bold text-lg mb-1">*</h3>
+          <p class="text-slate-400 text-[10px]">Comodín: "Todos los valores posibles".</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-purple-400 font-bold text-lg mb-1">/</h3>
+          <p class="text-slate-400 text-[10px]">Intervalos: <code class="text-white italic">*/15</code> significa "cada 15 minutos".</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-purple-400 font-bold text-lg mb-1">,</h3>
+          <p class="text-slate-400 text-[10px]">Lista: <code class="text-white italic">1,3,5</code> significa solo esos valores.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-purple-400 font-bold text-lg mb-1">-</h3>
+          <p class="text-slate-400 text-[10px]">Rango: <code class="text-white italic">1-5</code> significa del 1 al 5 inclusive.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-rose-400 font-black italic">MIN</span> • <span class="text-blue-400 font-black italic">HOUR</span> • <span class="text-emerald-400 font-black italic">DOM</span> • <span class="text-amber-400 font-black italic">MONTH</span> • <span class="text-purple-400 font-black italic">DOW</span>'
+    />
+  </div>
+
+  <style>
+    .highlight-purple { color: #a855f7; }
+    .feature-card { background: rgba(168, 85, 247, 0.03); border: 1px solid rgba(168, 85, 247, 0.1); }
+    .glass-tag { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
+  </style>
+</BlogPostLayout>

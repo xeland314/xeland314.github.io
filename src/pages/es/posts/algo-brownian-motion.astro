@@ -1,0 +1,131 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Movimiento Browniano Modificado";
+const description = "Radiografía: Algoritmos para simulación de trayectorias realistas vs aleatoriedad pura";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-6 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/algo-brownian-motion" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Algoritmos de Simulación"
+      categoryColorClass="text-emerald-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Brownian Motion"
+      titleHighlightColorClass="highlight-emerald"
+      subtitle="Trayectorias Realistas"
+    />
+
+    <div class="grid grid-cols-1 gap-8 mb-6 flex-1">
+      
+      <!-- Comparison: Random vs Brownian -->
+      <div class="feature-card rounded-3xl p-6 border border-white/5 bg-white/5">
+        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Evolución del Movimiento</h3>
+        <div class="space-y-4">
+          <div class="flex items-center gap-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20">
+            <span class="text-2xl">🎲</span>
+            <div>
+              <p class="text-rose-400 font-bold text-sm">Aleatoriedad Pura</p>
+              <p class="text-slate-400 text-[10px]">Errático, saltos imposibles. Ideal solo para tests de carga.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <span class="text-2xl">🦿</span>
+            <div>
+              <p class="text-emerald-400 font-bold text-sm">Browniano Modificado</p>
+              <p class="text-slate-400 text-[10px]">Basado en estado previo (ΔΘ, ΔV). Movimiento natural.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
+            <span class="text-2xl">🏎️</span>
+            <div>
+              <p class="text-sky-400 font-bold text-sm">Rutas Predefinidas</p>
+              <p class="text-slate-400 text-[10px]">Carga de GeoJSON/GPX. Simulación profesional vehicular.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formula Snippet -->
+        <div class="mt-6 bg-black/40 p-4 rounded-xl font-mono text-[10px] text-emerald-300 border border-emerald-500/20">
+          <p class="text-slate-500 mb-2">// Ajuste de Rumbo (Noise)</p>
+          <p>Θ_nueva = Θ_prev + Random(-5°, +5°)</p>
+          <p class="text-slate-500 my-2">// Ajuste de Velocidad</p>
+          <p>V_nueva = V_prev + Random(-1, +1) km/h</p>
+        </div>
+      </div>
+
+      <!-- Go Implementation -->
+      <div class="feature-card rounded-3xl p-6 border border-white/5 bg-black/20">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-emerald-400 text-sm font-bold uppercase">Implementación en Go</h3>
+          <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">Route Follower</span>
+        </div>
+        <div class="code-font text-[10px] leading-relaxed overflow-x-auto">
+          <p><span class="text-purple-400">func</span> (rf *Follower) <span class="text-blue-400">NextLocation</span>() {</p>
+          <p class="pl-4">target := rf.Route[rf.CurrentIndex]</p>
+          <p class="pl-4 text-slate-500">// 1. Añadir Ruido (Noise)</p>
+          <p class="pl-4">noiseLat := (rand.Float64() - 0.5) * 0.00005</p>
+          <p class="pl-4 text-slate-500">// 2. Interpolar hacia objetivo</p>
+          <p class="pl-4">newLat := rf.LastPos.Lat + (target.Lat - rf.LastPos.Lat) * 0.1 + noiseLat</p>
+          <p class="pl-4 text-slate-500">// 3. Avanzar índice si d &lt; 10m</p>
+          <p class="pl-4"><span class="text-purple-400">if</span> dist &lt; 10.0 &lbrace; rf.CurrentIndex++ &rbrace; </p>
+          <p>}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Components Legend -->
+    <div class="mb-auto">
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-400",
+            title: "Inercia",
+            description: "Mantiene la tendencia <br>de dirección y velocidad.",
+          },
+          {
+            bgColor: "bg-sky-500",
+            shadowRgba: "rgba(14,165,233,0.5)",
+            textColor: "text-sky-400",
+            title: "Clamping",
+            description: "Limita la aceleración <br>y el giro máximo.",
+          },
+          {
+            bgColor: "bg-rose-500",
+            shadowRgba: "rgba(244,63,94,0.5)",
+            textColor: "text-rose-400",
+            title: "Ruido",
+            description: "Simula imperfecciones <br>del sensor GPS.",
+          },
+        ]}
+        gap="gap-4 md:gap-12"
+        minWidth="min-w-[200px]"
+      />
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">PREV_STATE</span> + <span class="text-rose-400 font-black italic">NOISE</span> = <span class="text-sky-400 font-black italic">REALISM</span>'
+    />
+  </div>
+
+  <style>
+    .highlight-emerald { color: #10b981; }
+    .glass-tag { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
+  </style>
+</BlogPostLayout>

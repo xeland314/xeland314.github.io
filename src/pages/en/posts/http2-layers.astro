@@ -1,0 +1,114 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "HTTP/2 Layers";
+const description = "Radiography: The abstraction layers of HTTP/2";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/es/posts/http2-layers" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Web Architecture"
+      categoryColorClass="text-sky-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="HTTP/2 Stack"
+      titleHighlightColorClass="highlight-sky"
+      subtitle="Abstraction Layers"
+    />
+
+    <!-- The Stack -->
+    <div class="flex flex-col items-center justify-center flex-1 mb-8 max-w-2xl mx-auto w-full">
+      
+      <!-- Application Layer -->
+      <div class="w-full bg-slate-800/80 rounded-t-2xl border-x border-t border-slate-700 p-4 relative mb-1">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-emerald-500 rounded-tl-2xl"></div>
+        <h3 class="text-emerald-400 font-bold text-lg ml-4">Application (HTTP 2.0)</h3>
+        <p class="text-slate-400 text-sm ml-4 mt-1">HTTP Semantics (Methods, Status Codes, URIs).</p>
+      </div>
+
+      <!-- Binary Framing Layer (The Core) -->
+      <div class="w-full bg-sky-900/20 rounded border border-sky-500/50 p-6 relative mb-1 shadow-[0_0_30px_rgba(14,165,233,0.15)] z-10">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-sky-500"></div>
+        <div class="ml-4">
+          <h3 class="text-sky-400 font-black text-xl flex items-center gap-2">
+            Binary Framing Layer
+            <span class="text-xs bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded border border-sky-500/30 uppercase tracking-widest">Core Feature</span>
+          </h3>
+          <p class="text-sky-200/80 text-sm mt-2 mb-4">Transforms semantics into binary streams and frames.</p>
+          
+          <!-- Internal Flow -->
+          <div class="flex gap-2 items-center justify-center bg-black/40 p-3 rounded-lg border border-sky-500/20">
+             <div class="bg-purple-500/20 border border-purple-500/50 px-3 py-1 rounded text-xs text-purple-300">HEADER Frame</div>
+             <span class="text-slate-500">+</span>
+             <div class="bg-blue-500/20 border border-blue-500/50 px-3 py-1 rounded text-xs text-blue-300">DATA Frame</div>
+             <span class="text-slate-500">→</span>
+             <div class="bg-sky-500/20 border border-sky-500/50 px-3 py-1 rounded text-xs text-sky-300 font-bold">Binary Stream</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session / TLS -->
+      <div class="w-full bg-slate-800/80 border-x border-slate-700 p-4 relative mb-1">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-yellow-500"></div>
+        <h3 class="text-yellow-400 font-bold text-lg ml-4">Session (TLS 1.2+)</h3>
+        <p class="text-slate-400 text-sm ml-4 mt-1">Encryption and ALPN (Application-Layer Protocol Negotiation) handshake.</p>
+      </div>
+
+      <!-- Transport -->
+      <div class="w-full bg-slate-800/80 border-x border-slate-700 p-4 relative mb-1">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-orange-500"></div>
+        <h3 class="text-orange-400 font-bold text-lg ml-4">Transport (TCP)</h3>
+        <p class="text-slate-400 text-sm ml-4 mt-1">Single persistent connection. Congestion control.</p>
+      </div>
+
+      <!-- Network -->
+      <div class="w-full bg-slate-800/80 rounded-b-2xl border-x border-b border-slate-700 p-4 relative">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-slate-500 rounded-bl-2xl"></div>
+        <h3 class="text-slate-400 font-bold text-lg ml-4">Network (IP)</h3>
+        <p class="text-slate-500 text-sm ml-4 mt-1">Packet routing (IPv4 / IPv6).</p>
+      </div>
+
+    </div>
+
+    <!-- Key Info Grid -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="feature-card p-4 rounded-xl border-l-2 border-sky-500">
+        <h4 class="text-sky-400 font-bold mb-1">Multiplexing</h4>
+        <p class="text-slate-400 text-xs">Multiple bidirectional streams over a single TCP connection.</p>
+      </div>
+      <div class="feature-card p-4 rounded-xl border-l-2 border-yellow-500">
+        <h4 class="text-yellow-400 font-bold mb-1">ALPN</h4>
+        <p class="text-slate-400 text-xs">TLS extension that allows client and server to agree on using "h2".</p>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">APP</span> creates • <span class="text-sky-400 font-black italic">FRAMING</span> splits • <span class="text-yellow-400 font-black italic">TLS</span> protects.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(14, 165, 233, 0.03);
+      border: 1px solid rgba(14, 165, 233, 0.1);
+    }
+    .glass-tag {
+      background: rgba(14, 165, 233, 0.05);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    .highlight-sky { color: #38bdf8; }
+  </style>
+</BlogPostLayout>

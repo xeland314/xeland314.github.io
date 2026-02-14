@@ -1,0 +1,109 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Yacc (.y) Anatomy";
+const description = "Radiography of a Bison/Yacc file: The structure of context-free grammar";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/es/posts/compiler-yacc-anatomy" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Compilers"
+      categoryColorClass="text-blue-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="Bison / Yacc"
+      titleHighlightColorClass="highlight-blue"
+      subtitle="Syntactic Parser (.y)"
+    />
+
+    <div class="feature-card rounded-3xl p-6 md:p-8 mb-6 relative flex flex-col md:flex-row gap-8 items-stretch">
+      <div class="code-font text-xs leading-relaxed flex-1 border-r border-white/10 pr-6 overflow-x-auto">
+        <p class="text-slate-500 italic">%token NUM ID</p>
+        <p class="text-blue-400 font-bold">%left '+' '-'</p>
+        <p class="text-blue-400 font-bold">%left '*' '/'</p>
+        <p class="text-slate-500 italic">%% // Grammar Rules Section</p>
+        <p class="bg-blue-500/10 rounded px-1">
+          exp: exp '+' exp {"{"} $$ = $1 + $3; {"}"}
+        </p>
+        <p class="bg-blue-500/10 rounded px-1 mt-1 pl-4">
+          | NUM {"{"} $$ = $1; {"}"}
+        </p>
+        <p class="bg-blue-500/10 rounded px-1 mt-1 pl-4">
+          ;
+        </p>
+        <p class="text-slate-500 italic">%% // User Code</p>
+        <p class="text-emerald-400">void yyerror(char *s) {"{"} ... {"}"}</p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-blue-500",
+            shadowRgba: "rgba(59,130,246,0.5)",
+            textColor: "text-blue-400",
+            title: "Precedence",
+            description: "Define priorities <br>(e.g. * over +).",
+          },
+          {
+            bgColor: "bg-sky-500",
+            shadowRgba: "rgba(14,165,233,0.5)",
+            textColor: "text-sky-400",
+            title: "Grammar",
+            description: "Structure rules <br>(e.g. exp + exp).",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.5)",
+            textColor: "text-emerald-400",
+            title: "Semantic Rules",
+            description: "C code that processes <br>values ($$ = $1 + $3).",
+          },
+        ]}
+        gap="gap-6"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mb-auto">
+      <div class="glass-tag p-5 rounded-xl border-l-4 border-blue-500">
+        <h4 class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1">Syntactic Flow</h4>
+        <p class="text-slate-200 leading-snug text-sm">
+          Bison receives <span class="text-white font-bold">Tokens</span> from Lex and checks if they follow the <span class="text-white font-bold">Context-Free Grammar</span> rules. It is responsible for giving "meaning" to the sentence.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-blue-400 font-bold text-sm mb-1">$$</h3>
+          <p class="text-slate-400 text-[10px]">Represents the resulting value of the current rule.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-blue-400 font-bold text-sm mb-1">$1, $2, $3</h3>
+          <p class="text-slate-400 text-[10px]">Represent the values of each component in the rule.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-blue-400 font-black italic">TOKENS</span> in • <span class="text-emerald-400 font-black italic">ACTIONS</span> execute.'
+    />
+  </div>
+
+  <style>
+    .feature-card { background: rgba(59, 130, 246, 0.03); border: 1px solid rgba(59, 130, 246, 0.1); }
+    .glass-tag { background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); }
+    .highlight-blue { color: #3b82f6; }
+  </style>
+</BlogPostLayout>

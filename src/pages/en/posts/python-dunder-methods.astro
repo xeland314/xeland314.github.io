@@ -1,0 +1,128 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Python Magic Methods";
+const description = "Quick guide to Dunder Methods for operator overloading and object management";
+
+const arithmetic = [
+  { name: "Addition", method: "__add__", sign: "+", desc: "Implements addition." },
+  { name: "Subtraction", method: "__sub__", sign: "-", desc: "Implements subtraction." },
+  { name: "Multiplication", method: "__mul__", sign: "*", desc: "Implements multiplication." },
+  { name: "Division", method: "__truediv__", sign: "/", desc: "Implements division." },
+  { name: "Floor Division", method: "__floordiv__", sign: "//", desc: "Integer division." },
+];
+
+const comparison = [
+  { name: "Less than", method: "__lt__", sign: "<", desc: "Less than comparison." },
+  { name: "Greater than", method: "__gt__", sign: ">", desc: "Greater than comparison." },
+  { name: "Equal to", method: "__eq__", sign: "==", desc: "Equality comparison." },
+  { name: "Less or equal", method: "__le__", sign: "<=", desc: "Less or equal comparison." },
+  { name: "Greater or equal", method: "__ge__", sign: ">=", desc: "Greater or equal comparison." },
+];
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-6 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/es/posts/python-dunder-methods" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Python OOP"
+      categoryColorClass="text-yellow-400"
+      titlePrefix="Guide to"
+      titleHighlightText="Dunder Methods"
+      titleHighlightColorClass="highlight-yellow"
+      subtitle="Magic Object Behavior"
+    />
+
+    <!-- Quick Snippet -->
+    <div class="feature-card rounded-2xl p-6 mb-6 border border-yellow-500/20 bg-yellow-500/5">
+      <div class="code-font text-xs md:text-sm leading-relaxed">
+        <p><span class="text-blue-400">class</span> <span class="text-emerald-400">Vector</span>:</p>
+        <p class="pl-4"><span class="text-pink-400">def</span> <span class="text-yellow-400">__init__</span>(self, x, y): self.x, self.y = x, y</p>
+        <p class="pl-4"><span class="text-pink-400">def</span> <span class="text-yellow-400">__add__</span>(self, other):</p>
+        <p class="pl-8 text-slate-400">return Vector(self.x + other.x, self.y + other.y)</p>
+        <p class="mt-2 text-slate-500 italic"># Allows: v1 + v2</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-auto">
+      <!-- Arithmetic -->
+      <div class="bg-slate-900/50 rounded-2xl border border-slate-800 overflow-hidden">
+        <div class="bg-yellow-600/20 px-4 py-2 border-b border-slate-800 font-bold text-yellow-400 text-sm uppercase tracking-widest">Arithmetic</div>
+        <table class="w-full text-[10px] md:text-xs">
+          <thead>
+            <tr class="text-slate-500 border-b border-slate-800/50">
+              <th class="p-2 text-left">Method</th>
+              <th class="p-2 text-center">Sign</th>
+              <th class="p-2 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {arithmetic.map(m => (
+              <tr class="border-b border-slate-800/30 hover:bg-white/5 transition-colors">
+                <td class="p-2 font-mono text-emerald-400">{m.method}</td>
+                <td class="p-2 text-center font-bold text-yellow-500">{m.sign}</td>
+                <td class="p-2 text-slate-300">{m.desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Comparison -->
+      <div class="bg-slate-900/50 rounded-2xl border border-slate-800 overflow-hidden">
+        <div class="bg-blue-600/20 px-4 py-2 border-b border-slate-800 font-bold text-blue-400 text-sm uppercase tracking-widest">Comparison</div>
+        <table class="w-full text-[10px] md:text-xs">
+          <thead>
+            <tr class="text-slate-500 border-b border-slate-800/50">
+              <th class="p-2 text-left">Method</th>
+              <th class="p-2 text-center">Sign</th>
+              <th class="p-2 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {comparison.map(m => (
+              <tr class="border-b border-slate-800/30 hover:bg-white/5 transition-colors">
+                <td class="p-2 font-mono text-emerald-400">{m.method}</td>
+                <td class="p-2 text-center font-bold text-blue-400">{m.sign}</td>
+                <td class="p-2 text-slate-300">{m.desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Other Commons -->
+      <div class="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-2">
+        {[
+          { m: '__str__', d: 'Readable Print' },
+          { m: '__repr__', d: 'Technical Debug' },
+          { m: '__len__', d: 'Length len()' },
+          { m: '__getitem__', d: 'Indexing []' }
+        ].map(item => (
+          <div class="bg-white/5 p-2 rounded-xl border border-white/5 text-center">
+            <code class="text-yellow-400 text-[10px] block font-bold">{item.m}</code>
+            <span class="text-slate-500 text-[9px] uppercase">{item.d}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <PostFooterBar middleHtml='<span class="text-yellow-400 font-black italic">DUNDER</span> methods • <span class="text-emerald-400 font-black italic">OOP</span> power' />
+  </div>
+
+  <style>
+    .highlight-yellow { color: #eab308; }
+    .glass-tag { background: rgba(234, 179, 8, 0.05); border: 1px solid rgba(234, 179, 8, 0.2); }
+  </style>
+</BlogPostLayout>

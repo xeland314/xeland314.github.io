@@ -118,7 +118,7 @@ export const projectData = [
     demoLink: "https://github.com/xeland314/simplex/releases",
     tags: ["Python", "Optimizacion", "Simplex", "DSLs", "PySide6", "GUI"],
     image:
-      "https://images.pling.com/img/00/00/83/74/65/2320088/screen-2025-09-13-16-43-53.jpg",
+      "/images/optimized/projects/simplex/card.avif",
     isFeatured: true,
   },
   {
@@ -130,7 +130,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/autocompleter",
     tags: ["FastAPI", "Python", "Nominatim", "Redis", "Reinforcement Learning"],
     image: "/images/optimized/projects/autocompleter/card.avif",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "URL Shortener",

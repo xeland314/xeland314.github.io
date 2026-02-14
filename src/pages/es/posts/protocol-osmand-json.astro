@@ -1,0 +1,131 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Protocolo OsmAnd JSON";
+const description = "Radiografía: Protocolo OsmAnd JSON - El estándar para rastreo GPS moderno";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/protocol-osmand-json" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Protocolos IoT / GPS"
+      categoryColorClass="text-teal-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="OsmAnd"
+      titleHighlightColorClass="highlight-teal"
+      subtitle="Estructura de datos basada en JSON"
+    />
+
+    <div class="feature-card rounded-3xl p-6 md:p-10 mb-6 relative flex flex-col md:flex-row gap-8 items-stretch">
+      <div class="code-font text-sm leading-relaxed flex-1 border-r border-white/10 pr-6 overflow-x-auto">
+        <p class="text-slate-500">// Reporte de ubicación enviado al servidor</p>
+        <p>{"{"}</p>
+        <p class="pl-4">"location": {"{"}</p>
+        <p class="pl-8 text-emerald-400">"timestamp": "2026-02-06T15:30:00Z",</p>
+        <p class="pl-8 text-sky-400">"coords": {"{"}</p>
+        <p class="pl-12 text-sky-300">"latitude": -0.1806, "longitude": -78.4678,</p>
+        <p class="pl-12 text-sky-300">"accuracy": 5, "speed": 12.5, "altitude": 2850</p>
+        <p class="pl-8 text-sky-400">{"}"},</p>
+        <p class="pl-8 text-yellow-400">"battery": {"{"} "level": 0.85, "is_charging": false {"}"},</p>
+        <p class="pl-8 text-purple-400">"activity": {"{"} "type": "in_vehicle" {"}"},</p>
+        <p class="pl-8 text-rose-400">"extras": {"{"} <span class="bg-rose-500/20 px-1 rounded">"mock": "true"</span> {"}"}</p>
+        <p class="pl-4">{"}"},</p>
+        <p class="pl-4 text-slate-300">"device_id": "48241179"</p>
+        <p>{"}"}</p>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-sky-500",
+            shadowRgba: "rgba(14,165,233,0.5)",
+            textColor: "text-sky-400",
+            title: "Coordenadas",
+            description: "Latitud, Longitud y Precisión <br>en metros.",
+          },
+          {
+            bgColor: "bg-yellow-500",
+            shadowRgba: "rgba(234,179,8,0.5)",
+            textColor: "text-yellow-400",
+            title: "Estado Energía",
+            description: "Nivel de batería (0 a 1) <br>y estado de carga.",
+          },
+          {
+            bgColor: "bg-rose-500",
+            shadowRgba: "rgba(244,63,94,0.5)",
+            textColor: "text-rose-400",
+            title: "Extras (MOCK)",
+            description: "Detecta si la ubicación <br>es falsa (falsificada).",
+          },
+        ]}
+        gap="gap-6"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-teal-500">
+          <h4 class="text-teal-400 font-bold text-lg uppercase tracking-widest mb-1">Detección de Mock</h4>
+          <p class="text-slate-200 leading-snug">
+            El parámetro <code class="text-rose-400 font-bold">mock="true"</code> dentro de <code class="text-white italic">extras</code> es vital para la seguridad. Indica que el usuario está usando aplicaciones de "Fake GPS" para engañar al sistema.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-emerald-500">
+          <h4 class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-1">Activity Recognition</h4>
+          <p class="text-slate-200 leading-snug">
+            El campo <code class="text-white font-bold">activity</code> usa la API de Google/Apple para detectar si el usuario camina, corre, está en un vehículo o quieto.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-teal-400 font-bold text-xl mb-2">Traccar</h3>
+          <p class="text-slate-400 text-sm">Soportado nativamente desde la versión 6.7.0.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-teal-400 font-bold text-xl mb-2">ISO Format</h3>
+          <p class="text-slate-400 text-sm">Timestamp en formato estándar universal (UTC).</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-teal-400 font-bold text-xl mb-2">Native SDK</h3>
+          <p class="text-slate-400 text-sm">Usado por el Background Location SDK.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-teal-400 font-bold text-xl mb-2">Flexible</h3>
+          <p class="text-slate-400 text-sm">Permite añadir campos ilimitados en 'extras'.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-teal-400 font-black italic">JSON</span> reporta • <span class="text-sky-400 font-black italic">GPS</span> localiza • <span class="text-rose-400 font-black italic">MOCK</span> protege.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(45, 212, 191, 0.03);
+      border: 1px solid rgba(45, 212, 191, 0.1);
+    }
+    .glass-tag {
+      background: rgba(45, 212, 191, 0.05);
+      border: 1px solid rgba(45, 212, 191, 0.2);
+    }
+    .highlight-teal { color: #2dd4bf; }
+  </style>
+</BlogPostLayout>

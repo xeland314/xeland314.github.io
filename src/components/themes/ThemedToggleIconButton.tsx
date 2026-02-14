@@ -38,10 +38,9 @@ export default function ThemeToggleButton() {
       aria-pressed={isDark}
       aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       data-theme={isDark ? "dark" : "light"}
-      className="p-2 rounded-lg transition-colors duration-200 
-                 hover:bg-gray-100 dark:hover:bg-gray-800 
+      className="p-2 rounded-lg transition-colors duration-200
                  focus:outline-none focus:ring-2 focus:ring-blue-500
-                 text-gray-600 dark:text-gray-300 cursor-pointer"
+                 text-gray-200 dark:text-gray-300 cursor-pointer"
     >
       {isDark ? (
         // Icono de Luna (Modo Oscuro Activo)

@@ -1,0 +1,239 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Operaciones Bitwise";
+const description =
+  "Radiografía de operadores binarios: manipulación directa de bits para optimización y algoritmos";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div
+    class="relative p-6 md:p-12 flex flex-col text-white overflow-hidden w-full h-full"
+  >
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/en/posts/bitwise-operations"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+        >EN</a
+      >
+    </div>
+
+    <RadiographyHeader
+      categoryText="Computer Science"
+      categoryColorClass="text-sky-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Bitwise Ops"
+      titleHighlightColorClass="highlight-sky"
+      subtitle="Manipulación Binaria Directa"
+    />
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <!-- Operadores Lógicos -->
+      <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- AND -->
+        <div
+          class="feature-card p-4 rounded-2xl border-l-4 border-emerald-500 bg-emerald-500/5"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-emerald-400 font-black text-xl">AND (&)</h3>
+            <span
+              class="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded text-emerald-300 font-bold uppercase"
+              >Ambos 1 → 1</span
+            >
+          </div>
+          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
+            <p class="text-slate-500">5 (101) & 3 (011)</p>
+            <p class="text-white">
+              Resultado: <span class="text-emerald-400 font-bold">1 (001)</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- OR -->
+        <div
+          class="feature-card p-4 rounded-2xl border-l-4 border-sky-500 bg-sky-500/5"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sky-400 font-black text-xl">OR (|)</h3>
+            <span
+              class="text-[10px] bg-sky-500/20 px-2 py-0.5 rounded text-sky-300 font-bold uppercase"
+              >Cualquiera 1 → 1</span
+            >
+          </div>
+          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
+            <p class="text-slate-500">5 (101) | 3 (011)</p>
+            <p class="text-white">
+              Resultado: <span class="text-sky-400 font-bold">7 (111)</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- XOR -->
+        <div
+          class="feature-card p-4 rounded-2xl border-l-4 border-purple-500 bg-purple-500/5"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-purple-400 font-black text-xl">XOR (^)</h3>
+            <span
+              class="text-[10px] bg-purple-500/20 px-2 py-0.5 rounded text-purple-300 font-bold uppercase"
+              >Diferentes → 1</span
+            >
+          </div>
+          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
+            <p class="text-slate-500">5 (101) ^ 3 (011)</p>
+            <p class="text-white">
+              Resultado: <span class="text-purple-400 font-bold">6 (110)</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- NOT -->
+        <div
+          class="feature-card p-4 rounded-2xl border-l-4 border-rose-500 bg-rose-500/5"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-rose-400 font-black text-xl">NOT (~)</h3>
+            <span
+              class="text-[10px] bg-rose-500/20 px-2 py-0.5 rounded text-rose-300 font-bold uppercase"
+              >Invertir Bits</span
+            >
+          </div>
+          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
+            <p class="text-slate-500">~5 (000...101)</p>
+            <p class="text-white">
+              Resultado: <span class="text-rose-400 font-bold"
+                >-6 (111...010)</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desplazamientos (Shifting) -->
+      <div class="flex flex-col gap-4">
+        <div
+          class="feature-card p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 h-full"
+        >
+          <h3
+            class="text-amber-400 font-black text-xl mb-4 uppercase tracking-tighter italic"
+          >
+            Desplazamientos
+          </h3>
+
+          <div class="space-y-6">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-amber-200 font-bold">Izquierda (<<)</span>
+                <span class="text-slate-500">x2ⁿ</span>
+              </div>
+              <div class="bg-black/40 p-2 rounded font-mono text-[10px]">
+                5 &lt;&lt; 1 = <span class="text-amber-400">10 (1010)</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-amber-200 font-bold">Derecha (>>)</span>
+                <span class="text-slate-500">/2ⁿ</span>
+              </div>
+              <div class="bg-black/40 p-2 rounded font-mono text-[10px]">
+                5 &gt;&gt; 1 = <span class="text-amber-400">2 (10)</span>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/5">
+              <p class="text-[10px] text-slate-400 italic">
+                * Java/JS incluye <code class="text-white">>>></code> para desplazamiento
+                lógico (sin signo) que rellena con ceros.
+              </p>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-amber-200 font-bold">Lógico (>>>)</span>
+                <span class="text-slate-500">rellena con 0</span>
+              </div>
+              <div class="bg-black/40 p-2 rounded font-mono text-[10px]">
+                -5 >>> 1 = <span class="text-amber-400">2147483645</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-lg">
+      <div class="glass-tag p-4 rounded-xl border border-white/10">
+        <h4 class="text-amber-400 font-bold uppercase mb-2">
+          Manipulación
+        </h4>
+        <div class="text-[11px] font-mono text-slate-100 text-lg space-y-1">
+          <p>Activar → n | (1 &lt;&lt; k)</p>
+          <p>Limpiar → n &amp; ~(1 &lt;&lt; k)</p>
+          <p>Toggle → n ^ (1 &lt;&lt; k)</p>
+        </div>
+      </div>
+
+      <div class="glass-tag p-4 rounded-xl border border-white/10">
+        <h4 class="text-purple-400 font-bold uppercase mb-2">
+          Propiedades
+        </h4>
+        <div class="text-[11px] font-mono text-slate-100 text-lg space-y-1">
+          <p>x ^ x = 0</p>
+          <p>x ^ 0 = x</p>
+          <p>x &amp; -x → lowest bit</p>
+          <p>x &amp; (x - 1) → clear LSB</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usos Comunes -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-auto">
+      <div class="glass-tag p-4 rounded-xl border border-white/10">
+        <h4 class="text-sky-400 font-bold text-lg uppercase mb-1">Máscaras</h4>
+        <p class="text-slate-400 text-lg">
+          Leer o modificar bits específicos sin tocar el resto del número.
+        </p>
+      </div>
+      <div class="glass-tag p-4 rounded-xl border border-white/10">
+        <h4 class="text-emerald-400 font-bold text-lg uppercase mb-1">
+          Optimización
+        </h4>
+        <p class="text-slate-400 text-lg">
+          Aritmética ultra-rápida (multiplicar/dividir) en sistemas embebidos.
+        </p>
+      </div>
+      <div class="glass-tag p-4 rounded-xl border border-white/10">
+        <h4 class="text-purple-400 font-bold text-lg uppercase mb-1">
+          Criptografía
+        </h4>
+        <p class="text-slate-400 text-lg">
+          Manipulación directa de bloques binarios para cifrado y compresión.
+        </p>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">LOW LEVEL</span> logic • <span class="text-sky-400 font-black italic">BIT</span> manipulation • <span class="text-amber-400 font-black italic">PERFORMANCE</span>'
+    />
+  </div>
+
+  <style>
+    .highlight-sky {
+      color: #38bdf8;
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</BlogPostLayout>

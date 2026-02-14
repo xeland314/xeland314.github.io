@@ -1,0 +1,130 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Standard Streams";
+const description = "Radiografía de los flujos estándar (0, 1, 2): stdin, stdout y stderr y redirección de errores";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-6 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/linux-standard-streams" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Linux / Unix Fundamentals"
+      categoryColorClass="text-orange-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Standard Streams"
+      titleHighlightColorClass="highlight-orange"
+      subtitle="Los Canales del Sistema (File Descriptors)"
+    />
+
+    <!-- Process Center Flow -->
+    <div class="feature-card rounded-3xl p-6 md:p-10 mb-8 relative flex items-center justify-center min-h-[300px]">
+      
+      <!-- Input Stream -->
+      <div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 group">
+        <div class="flex flex-col items-end">
+          <span class="text-sky-400 font-black text-2xl">0</span>
+          <span class="text-slate-500 text-[10px] uppercase font-bold">stdin</span>
+        </div>
+        <div class="w-16 md:w-32 h-2 bg-sky-500/30 rounded-full overflow-hidden border border-sky-500/50">
+          <div class="h-full bg-sky-400 w-1/2 animate-[marquee_2s_linear_infinite]"></div>
+        </div>
+      </div>
+
+      <!-- Process -->
+      <div class="z-10 bg-slate-800 border-2 border-slate-700 w-32 h-32 md:w-40 md:h-40 rounded-3xl shadow-2xl flex flex-col items-center justify-center text-center p-4">
+        <div class="bg-slate-900 px-3 py-1 rounded-full text-[10px] font-mono text-slate-500 mb-2">PID: 4824</div>
+        <span class="text-white font-black text-xl tracking-tighter">PROCESS</span>
+        <div class="mt-2 flex gap-1">
+          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-75"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-150"></div>
+        </div>
+      </div>
+
+      <!-- Output Streams -->
+      <div class="absolute right-4 top-1/3 flex items-center gap-2">
+        <div class="w-16 md:w-32 h-2 bg-emerald-500/30 rounded-full overflow-hidden border border-emerald-500/50">
+          <div class="h-full bg-emerald-400 w-1/2 animate-[marquee_2s_linear_infinite]"></div>
+        </div>
+        <div class="flex flex-col items-start">
+          <span class="text-emerald-400 font-black text-2xl">1</span>
+          <span class="text-slate-500 text-[10px] uppercase font-bold">stdout</span>
+        </div>
+      </div>
+
+      <div class="absolute right-4 bottom-1/3 flex items-center gap-2">
+        <div class="w-16 md:w-32 h-2 bg-rose-500/30 rounded-full overflow-hidden border border-rose-500/50">
+          <div class="h-full bg-rose-400 w-1/2 animate-[marquee_3s_linear_infinite]"></div>
+        </div>
+        <div class="flex flex-col items-start">
+          <span class="text-rose-400 font-black text-2xl">2</span>
+          <span class="text-slate-500 text-[10px] uppercase font-bold">stderr</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Redirection explanation (The "Why 2>&1") -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-auto">
+      <div class="glass-tag p-5 rounded-2xl border-l-4 border-orange-500">
+        <h4 class="text-orange-400 font-bold text-sm uppercase mb-3 tracking-widest">¿Por qué usar 2>&1?</h4>
+        <div class="code-font text-xs space-y-3">
+          <div class="bg-black/40 p-3 rounded-lg border border-white/5">
+            <p class="text-slate-500"># Redirigir errores a la salida normal</p>
+            <p class="text-white">command <span class="text-emerald-400">> out.log</span> <span class="text-rose-400">2>&1</span></p>
+          </div>
+          <p class="text-slate-300 leading-snug">
+            Por defecto, los errores (<span class="text-rose-400 font-bold">2</span>) van por un canal distinto a los datos (<span class="text-emerald-400 font-bold">1</span>). Con <code class="text-white font-bold">2>&1</code> "fusionas" el canal 2 dentro del 1 para guardarlo todo en un solo archivo.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-sky-400 font-bold text-xs uppercase mb-1">Entrada (0)</h3>
+          <p class="text-slate-400 text-[9px]">Fuente de datos. Teclado, archivos o tuberías (|).</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-emerald-400 font-bold text-xs uppercase mb-1">Salida (1)</h3>
+          <p class="text-slate-400 text-[9px]">Resultados normales del programa (Standard Output).</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-rose-400 font-bold text-xs uppercase mb-1">Error (2)</h3>
+          <p class="text-slate-400 text-[9px]">Mensajes de diagnóstico y fallos (Standard Error).</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
+          <h3 class="text-white font-bold text-xs uppercase mb-1">Descriptors</h3>
+          <p class="text-slate-400 text-[9px]">En Unix, "todo es un archivo", incluso estos flujos.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-sky-400 font-black italic">0 IN</span> • <span class="text-emerald-400 font-black italic">1 OUT</span> • <span class="text-rose-400 font-black italic">2 ERR</span>'
+    />
+  </div>
+
+  <style>
+    .highlight-orange { color: #f97316; }
+    .feature-card { background: rgba(255, 255, 255, 0.02); }
+    .glass-tag { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
+    
+    @keyframes marquee {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+  </style>
+</BlogPostLayout>

@@ -1,0 +1,117 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Block vs Inline Elements";
+const description = "Diferencias fundamentales entre elementos de bloque y en línea en HTML";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/html-block-vs-inline" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <!-- Header VS Circle -->
+    <div class="relative z-10 flex flex-col items-center mb-4">
+      <div class="bg-slate-800 text-white w-20 h-20 rounded-full flex items-center justify-center text-3xl font-black border-4 border-white shadow-xl mb-4">VS</div>
+    </div>
+
+    <div class="relative z-10 flex flex-col md:flex-row p-0 md:p-4 gap-8">
+      
+      <!-- BLOCK -->
+      <div class="flex-1 flex flex-col">
+        <div class="bg-blue-600 text-white rounded-2xl p-4 w-full text-center shadow-lg mb-4">
+          <h2 class="text-4xl font-black italic">Block</h2>
+          <p class="text-xs font-bold opacity-90 uppercase tracking-widest italic">Display: block</p>
+        </div>
+        
+        <div class="space-y-3 mb-6">
+          <div class="bg-white/5 p-3 rounded-lg border border-blue-500/30">
+            <p class="text-blue-300 font-bold text-sm mb-1">Comportamiento:</p>
+            <ul class="text-slate-300 text-sm space-y-1">
+              <li>• Comienza en una <span class="text-white font-bold">nueva línea</span>.</li>
+              <li>• Ocupa <span class="text-white font-bold">todo el ancho</span> disponible.</li>
+              <li>• Apilamiento <span class="text-white font-bold">Vertical</span>.</li>
+            </ul>
+          </div>
+          <div class="bg-white/5 p-3 rounded-lg border border-blue-500/30">
+            <p class="text-blue-300 font-bold text-sm mb-1">Caja (Box Model):</p>
+            <p class="text-slate-300 text-sm">Admite Margin y Padding en <span class="text-white font-bold">los 4 lados</span>.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          {['<div>', '<p>', '<h1>-<h6>', '<section>', '<article>', '<ul> / <ol>', '<blockquote>'].map(tag => (
+            <code class="bg-black/40 px-2 py-1 rounded text-xs text-blue-400 border border-white/5">{tag}</code>
+          ))}
+        </div>
+      </div>
+
+      <!-- INLINE -->
+      <div class="flex-1 flex flex-col">
+        <div class="bg-orange-500 text-white rounded-2xl p-4 w-full text-center shadow-lg mb-4">
+          <h2 class="text-4xl font-black italic">Inline</h2>
+          <p class="text-xs font-bold opacity-90 uppercase tracking-widest italic">Display: inline</p>
+        </div>
+
+        <div class="space-y-3 mb-6">
+          <div class="bg-white/5 p-3 rounded-lg border border-orange-500/30">
+            <p class="text-orange-300 font-bold text-sm mb-1">Comportamiento:</p>
+            <ul class="text-slate-300 text-sm space-y-1">
+              <li>• <span class="text-white font-bold">No</span> inicia nueva línea.</li>
+              <li>• Ancho según su <span class="text-white font-bold">contenido</span>.</li>
+              <li>• Flujo <span class="text-white font-bold">Horizontal</span>.</li>
+            </ul>
+          </div>
+          <div class="bg-white/5 p-3 rounded-lg border border-orange-500/30">
+            <p class="text-orange-300 font-bold text-sm mb-1">Caja (Box Model):</p>
+            <p class="text-slate-300 text-sm">Margin/Padding <span class="text-white font-bold">solo horizontales</span>. Top/Bottom ignorados.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          {['<span>', '<a>', '<img>', '<strong>', '<em>', '<code>', '<label>', '<input>'].map(tag => (
+            <code class="bg-black/40 px-2 py-1 rounded text-xs text-orange-400 border border-white/5">{tag}</code>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY DIV -->
+    <div class="relative z-10 mt-10 mb-auto">
+      <div class="bg-slate-800/80 backdrop-blur border border-slate-700 rounded-2xl p-6 shadow-2xl">
+        <h3 class="text-emerald-400 font-black text-xl mb-4 uppercase tracking-tighter">Resumen de Diferencias Clave</h3>
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <div class="w-2 h-12 bg-blue-500 rounded-full"></div>
+            <div>
+              <p class="text-white font-bold">BLOCK:</p>
+              <p class="text-slate-400 text-sm italic">Llena el ancho del contenedor, Diseño Vertical.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="w-2 h-12 bg-orange-500 rounded-full"></div>
+            <div>
+              <p class="text-white font-bold">INLINE:</p>
+              <p class="text-slate-400 text-sm italic">Ancho solo del contenido, Diseño Horizontal.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar middleHtml='<span class="text-blue-400 font-black italic">STRUCTURE</span> • <span class="text-orange-400 font-black italic">FLOW</span>' />
+  </div>
+
+  <style>
+    .glass-tag { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); }
+  </style>
+</BlogPostLayout>

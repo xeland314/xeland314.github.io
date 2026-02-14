@@ -60,7 +60,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
     <form
       id="contact-form"
       onSubmit={sendEmail}
-      className="space-y-4 w-full max-w-lg bg-gray-200 dark:bg-gray-700 rounded-lg shadow-lg p-6"
+      className="space-y-4 w-full bg-gray-200 dark:bg-gray-700 rounded-3xl shadow-lg p-6"
     >
       <h3 className="w-full text-2xl font-bold text-center pb-4 mx-4 text-gray-800 dark:text-white">
         {T.contact_me}

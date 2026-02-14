@@ -1,0 +1,142 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Linux Permissions";
+const description = "Radiography: chmod 755 - Understanding permission bits";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/es/posts/linux-permissions" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="System Administration"
+      categoryColorClass="text-orange-400"
+      titlePrefix="X-Ray:"
+      titleHighlightText="chmod 755"
+      titleHighlightColorClass="highlight-orange"
+      subtitle="Permission structure in octal and binary"
+    />
+
+    <div class="feature-card rounded-3xl p-6 md:p-10 mb-8 relative flex flex-col items-center">
+      <div class="grid grid-cols-3 gap-4 md:gap-12 w-full max-w-4xl">
+        <!-- User -->
+        <div class="flex flex-col items-center border-r border-white/10">
+          <span class="text-rose-500 font-bold text-5xl md:text-7xl mb-2">7</span>
+          <div class="bg-rose-500/20 px-3 py-1 rounded text-rose-400 font-mono text-xl mb-4">111</div>
+          <p class="text-rose-500 font-bold uppercase text-xs tracking-tighter">User (u)</p>
+          <p class="text-slate-400 text-[10px] md:text-sm mt-1 italic">r + w + x</p>
+        </div>
+
+        <!-- Group -->
+        <div class="flex flex-col items-center border-r border-white/10">
+          <span class="text-blue-400 font-bold text-5xl md:text-7xl mb-2">5</span>
+          <div class="bg-blue-500/20 px-3 py-1 rounded text-blue-400 font-mono text-xl mb-4">101</div>
+          <p class="text-blue-400 font-bold uppercase text-xs tracking-tighter">Group (g)</p>
+          <p class="text-slate-400 text-[10px] md:text-sm mt-1 italic">r + - + x</p>
+        </div>
+
+        <!-- Others -->
+        <div class="flex flex-col items-center">
+          <span class="text-emerald-400 font-bold text-5xl md:text-7xl mb-2">5</span>
+          <div class="bg-emerald-500/20 px-3 py-1 rounded text-emerald-400 font-mono text-xl mb-4">101</div>
+          <p class="text-emerald-400 font-bold uppercase text-xs tracking-tighter">Others (o)</p>
+          <p class="text-slate-400 text-[10px] md:text-sm mt-1 italic">r + - + x</p>
+        </div>
+      </div>
+
+      <div class="w-full border-t border-white/10 mt-10 pt-8">
+        <RadiographyLegend
+          items={[
+            {
+              bgColor: "bg-slate-700",
+              shadowRgba: "rgba(255,255,255,0.1)",
+              textColor: "text-slate-200",
+              title: "Read (4)",
+              description: "Bit 2² = 100. Allows viewing content.",
+            },
+            {
+              bgColor: "bg-slate-700",
+              shadowRgba: "rgba(255,255,255,0.1)",
+              textColor: "text-slate-200",
+              title: "Write (2)",
+              description: "Bit 2¹ = 010. Allows modifying.",
+            },
+            {
+              bgColor: "bg-slate-700",
+              shadowRgba: "rgba(255,255,255,0.1)",
+              textColor: "text-slate-200",
+              title: "Execute (1)",
+              description: "Bit 2⁰ = 001. Allows running programs.",
+            },
+          ]}
+          gap="gap-4 md:gap-12"
+          minWidth="min-w-[180px]"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-orange-400">
+          <h4 class="text-orange-400 font-bold text-lg uppercase tracking-widest mb-1">How is it calculated?</h4>
+          <p class="text-slate-200 leading-snug">
+            Each digit is the <span class="font-bold text-white">sum of its active bits</span>. Example: <span class="text-orange-400 font-bold">5</span> is Read (4) + Execute (1).
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-blue-400">
+          <h4 class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1">Symbolic Mode</h4>
+          <p class="text-slate-200 leading-snug">
+            Equivalent to <span class="code-font text-white bg-slate-800 px-2 rounded">rwxr-xr-x</span>. Where the hyphen (-) indicates a bit set to 0 (off).
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-rose-500 font-bold text-xl mb-2">000 (0)</h3>
+          <p class="text-slate-400 text-xs">No permissions. Total lockdown.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-blue-400 font-bold text-xl mb-2">444</h3>
+          <p class="text-slate-400 text-xs">Read-only for everyone.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-xl mb-2">644</h3>
+          <p class="text-slate-400 text-xs">Owner edits, rest only read.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-white font-bold text-xl mb-2">777</h3>
+          <p class="text-slate-400 text-xs">Danger! Total control for anyone.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-rose-500 font-black italic">4 (R)</span> • <span class="text-blue-400 font-black italic">2 (W)</span> • <span class="text-emerald-400 font-black italic">1 (X)</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(251, 146, 60, 0.03);
+      border: 1px solid rgba(251, 146, 60, 0.1);
+    }
+    .glass-tag {
+      background: rgba(251, 146, 60, 0.05);
+      border: 1px solid rgba(251, 146, 60, 0.2);
+    }
+    .highlight-orange { color: #fb923c; }
+  </style>
+</BlogPostLayout>

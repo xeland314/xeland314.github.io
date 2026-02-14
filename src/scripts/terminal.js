@@ -27,6 +27,11 @@ document.addEventListener("astro:page-load", async () => {
     commands["fastfetch"] = fastfetchUrl;
   }
 
+  const pythonUrl = container.dataset.pythonWasmUrl;
+  if (pythonUrl) {
+    commands["python"] = pythonUrl;
+  }
+
   // Check for SharedArrayBuffer support
   if (typeof SharedArrayBuffer === "undefined") {
     container.innerHTML = `

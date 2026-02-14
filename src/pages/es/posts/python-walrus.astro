@@ -1,0 +1,132 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "El Operador Walrus";
+const description = "Radiografía: Python := Assignment Expressions - Menos líneas, más eficiencia";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/python-walrus" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Python 3.8+"
+      categoryColorClass="text-blue-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText=":="
+      titleHighlightColorClass="highlight-blue"
+      subtitle="Assignment Expressions"
+    />
+
+    <div class="feature-card rounded-3xl p-6 md:p-8 mb-6 relative flex flex-col items-stretch">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <!-- Traditional Way -->
+        <div class="space-y-2">
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Modo Tradicional</p>
+          <div class="bg-black/40 p-4 rounded-xl border border-white/5 font-mono text-sm leading-relaxed">
+            <p class="text-slate-400">n = <span class="text-emerald-400">len</span>(data)</p>
+            <p class="text-pink-400">if <span class="text-white">n &gt; 10</span>:</p>
+            <p class="text-slate-400 pl-4">print(f"Largo: <span class="text-emerald-400">{"{n}"}</span>")</p>
+          </div>
+        </div>
+
+        <!-- Walrus Way -->
+        <div class="space-y-2">
+          <p class="text-blue-400 text-xs font-bold uppercase tracking-widest">Modo Walrus</p>
+          <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/30 font-mono text-sm leading-relaxed relative">
+            <p class="text-pink-400">if <span class="text-white">(n <span class="text-blue-400 font-black">:=</span> <span class="text-emerald-400">len</span>(data)) &gt; 10</span>:</p>
+            <p class="text-slate-400 pl-4">print(f"Largo: <span class="text-emerald-400">{"{n}"}</span>")</p>
+            <span class="absolute -right-2 -top-2 text-3xl">🦭</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-white/10">
+        <RadiographyLegend
+          items={[
+            {
+              bgColor: "bg-blue-500",
+              shadowRgba: "rgba(59,130,246,0.5)",
+              textColor: "text-blue-400",
+              title: "Nombre (n)",
+              description: "Variable donde se <br>asigna el valor.",
+            },
+            {
+              bgColor: "bg-blue-400",
+              shadowRgba: "rgba(96,165,250,0.5)",
+              textColor: "text-blue-300",
+              title: "Operador (:=)",
+              description: "Asigna y retorna el <br>valor simultáneamente.",
+            },
+            {
+              bgColor: "bg-emerald-500",
+              shadowRgba: "rgba(16,185,129,0.5)",
+              textColor: "text-emerald-400",
+              title: "Expresión",
+              description: "Cualquier código que <br>devuelva un resultado.",
+            },
+          ]}
+          gap="gap-8"
+          minWidth="min-w-[200px]"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-blue-500">
+          <h4 class="text-blue-400 font-bold text-sm uppercase mb-1">¿Por qué usarlo?</h4>
+          <p class="text-slate-300 text-xs leading-relaxed">
+            Permite <span class="text-white font-bold">reutilizar un valor</span> dentro de la misma expresión sin tener que llamar a una función dos veces o crear una variable previa innecesaria.
+          </p>
+        </div>
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-emerald-500">
+          <h4 class="text-emerald-400 font-bold text-sm uppercase mb-1">Casos de Uso</h4>
+          <p class="text-slate-300 text-xs leading-relaxed">
+            Ideal en bucles <code class="text-white italic">while</code> (leer buffers), condiciones <code class="text-white italic">if</code> complejas y <span class="text-white">List Comprehensions</span>.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-blue-400 font-bold text-sm mb-1">DRY</h3>
+          <p class="text-slate-400 text-[10px]">Don't Repeat Yourself. Evita repetir cálculos o nombres.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-blue-400 font-bold text-sm mb-1">Performance</h3>
+          <p class="text-slate-400 text-[10px]">Ahorra tiempo de CPU al no re-ejecutar funciones costosas.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-blue-400 font-bold text-sm mb-1">Scope</h3>
+          <p class="text-slate-400 text-[10px]">La variable 'n' queda disponible después de la expresión.</p>
+        </div>
+        <div class="feature-card p-4 rounded-xl">
+          <h3 class="text-blue-400 font-bold text-sm mb-1">Moderno</h3>
+          <p class="text-slate-400 text-[10px]">Estándar desde Python 3.8. Úsalo con confianza.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-blue-400 font-black italic">ASSIGN</span> • <span class="text-sky-400 font-black italic">EVALUATE</span> • <span class="text-emerald-400 font-black italic">DRY</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card { background: rgba(59, 130, 246, 0.03); border: 1px solid rgba(59, 130, 246, 0.1); }
+    .glass-tag { background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); }
+    .highlight-blue { color: #3b82f6; }
+  </style>
+</BlogPostLayout>

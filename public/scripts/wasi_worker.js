@@ -22,7 +22,6 @@ self.onmessage = async (e) => {
 
           const chunk = memory.subarray(ptr, ptr + len);
           const string = dec.decode(chunk);
-          console.log(`WASI fd_write (fd=${fd}): "${string}"`); // DEBUG
           self.postMessage({ type: 'output', data: string });
 
           written += len;
@@ -46,16 +45,12 @@ self.onmessage = async (e) => {
           // Read loop (1 char at a time for simplicity via SAB)
           // Ideally we'd read up to 'len' bytes
           for (let j = 0; j < len; j++) {
-            // console.log(`WASI: waiting for input at ptr=${ptr}, j=${j}/${len}`); // DEBUG: excessive spam
-
             // Wait for data
             // lock[0]: 0 = empty, 1 = data ready
             Atomics.wait(lock, 0, 0);
 
             // Read byte
-            // lock[1]: the byte
             const charCode = lock[1];
-            console.log("WASI: read char:", charCode); // DEBUG
 
             memory[ptr + j] = charCode;
             totalRead++;
@@ -119,9 +114,21 @@ self.onmessage = async (e) => {
         return 0;
       },
       environ_sizes_get: (environ_count, environ_buf_size) => {
+        const view = new DataView(instance.exports.memory.buffer);
+        view.setUint32(environ_count, 0, true);
+        view.setUint32(environ_buf_size, 0, true);
         return 0;
       },
       environ_get: (environ, environ_buf) => {
+        return 0;
+      },
+      args_sizes_get: (argc, argv_buf_size) => {
+        const view = new DataView(instance.exports.memory.buffer);
+        view.setUint32(argc, 0, true);
+        view.setUint32(argv_buf_size, 0, true);
+        return 0;
+      },
+      args_get: (argv, argv_buf) => {
         return 0;
       },
       proc_exit: (code) => {
@@ -130,7 +137,34 @@ self.onmessage = async (e) => {
       },
       // Minimal stubs for other common calls
       fd_fdstat_set_flags: () => 0,
-      clock_time_get: () => 0,
+      fd_prestat_get: (fd, prestat_ptr) => {
+        return 8; // EBADF (Error Bad File Descriptor) - indica que no hay directorios pre-abiertos
+      },
+      fd_prestat_dir_name: (fd, path, path_len) => {
+        return 8; // EBADF
+      },
+      path_open: (fd, dirflags, path_ptr, path_len, oflags, fs_rights_base, fs_rights_inheriting, fdflags, opened_fd_ptr) => {
+        return 44; // ENOENT (No such file or directory)
+      },
+      path_filestat_get: (fd, flags, path_ptr, path_len, buf_ptr) => {
+        return 44; // ENOENT
+      },
+      fd_filestat_get: (fd, buf_ptr) => {
+        return 0; // Success (dummy)
+      },
+      fd_readdir: (fd, buf, buf_len, cookie, res_buf_len_ptr) => {
+        return 0;
+      },
+      path_readlink: (fd, path_ptr, path_len, buf_ptr, buf_len, nread_ptr) => {
+        return 44; // ENOENT
+      },
+      clock_time_get: (id, precision, time_ptr) => {
+        const view = new DataView(instance.exports.memory.buffer);
+        // id 0 is real time, id 1 is monotonic
+        const now = BigInt(Math.floor(Date.now() * 1e6));
+        view.setBigUint64(time_ptr, now, true);
+        return 0;
+      },
       random_get: (buf, buf_len) => {
         const memory = new Uint8Array(instance.exports.memory.buffer);
         const chunk = memory.subarray(buf, buf + buf_len);

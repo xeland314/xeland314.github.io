@@ -1,0 +1,135 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Anatomía de una IP v4";
+const description = "Radiografía: IPv4 192.168.0.1 - Estructura y Clases de red";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-8 md:p-12 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/en/posts/ipv4-anatomy" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">EN</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Networking"
+      categoryColorClass="text-sky-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="IPv4"
+      titleHighlightColorClass="highlight-sky"
+      subtitle="Estructura de una dirección de 32 bits"
+    />
+
+    <div class="feature-card rounded-3xl p-6 md:p-8 mb-6 relative">
+      <div class="flex justify-around items-center w-full max-w-4xl mx-auto mb-6">
+        <!-- Octetos -->
+        <div class="flex flex-col items-center">
+          <span class="text-sky-400 font-black text-5xl md:text-6xl">192</span>
+          <code class="text-slate-500 text-xs mt-2">11000000</code>
+          <p class="text-slate-400 text-[10px] uppercase mt-1">1er Octeto</p>
+        </div>
+        <span class="text-slate-700 text-4xl font-bold">.</span>
+        <div class="flex flex-col items-center">
+          <span class="text-sky-400 font-black text-5xl md:text-6xl">168</span>
+          <code class="text-slate-500 text-xs mt-2">10101000</code>
+          <p class="text-slate-400 text-[10px] uppercase mt-1">2do Octeto</p>
+        </div>
+        <span class="text-slate-700 text-4xl font-bold">.</span>
+        <div class="flex flex-col items-center">
+          <span class="text-emerald-400 font-black text-5xl md:text-6xl">0</span>
+          <code class="text-slate-500 text-xs mt-2">00000000</code>
+          <p class="text-slate-400 text-[10px] uppercase mt-1">3er Octeto</p>
+        </div>
+        <span class="text-slate-700 text-4xl font-bold">.</span>
+        <div class="flex flex-col items-center">
+          <span class="text-emerald-400 font-black text-5xl md:text-6xl">1</span>
+          <code class="text-slate-500 text-xs mt-2">00000001</code>
+          <p class="text-slate-400 text-[10px] uppercase mt-1">4to Octeto</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
+        <div class="text-center p-3 bg-sky-500/10 rounded-xl border border-sky-500/20">
+          <h4 class="text-sky-400 font-bold text-sm uppercase">Red (Network)</h4>
+          <p class="text-slate-400 text-xs mt-1">Identifica a qué red pertenece el equipo.</p>
+        </div>
+        <div class="text-center p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+          <h4 class="text-emerald-400 font-bold text-sm uppercase">Host</h4>
+          <p class="text-slate-400 text-xs mt-1">Identifica al dispositivo específico dentro de la red.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tipos de IP (Clases) -->
+    <div class="mb-4">
+      <h3 class="text-sky-400 font-bold text-xl mb-3 uppercase tracking-widest">Clases de IP (Legacy)</h3>
+      <div class="grid grid-cols-5 gap-2 text-center">
+        <div class="bg-white/5 p-2 rounded-lg border border-white/10">
+          <span class="text-rose-400 font-black text-lg block">A</span>
+          <span class="text-slate-500 text-[10px]">1 - 126</span>
+          <p class="text-slate-400 text-[9px] mt-1 leading-none">Grandes Redes</p>
+        </div>
+        <div class="bg-white/5 p-2 rounded-lg border border-white/10">
+          <span class="text-blue-400 font-black text-lg block">B</span>
+          <span class="text-slate-500 text-[10px]">128 - 191</span>
+          <p class="text-slate-400 text-[9px] mt-1 leading-none">Medianas Redes</p>
+        </div>
+        <div class="bg-white/5 p-2 rounded-lg border border-emerald-500/30 ring-1 ring-emerald-500/20">
+          <span class="text-emerald-400 font-black text-lg block">C</span>
+          <span class="text-slate-500 text-[10px]">192 - 223</span>
+          <p class="text-slate-400 text-[9px] mt-1 leading-none">Redes Locales</p>
+        </div>
+        <div class="bg-white/5 p-2 rounded-lg border border-white/10 opacity-50">
+          <span class="text-purple-400 font-black text-lg block">D</span>
+          <span class="text-slate-500 text-[10px]">224 - 239</span>
+          <p class="text-slate-400 text-[9px] mt-1 leading-none">Multicast</p>
+        </div>
+        <div class="bg-white/5 p-2 rounded-lg border border-white/10 opacity-50">
+          <span class="text-amber-400 font-black text-lg block">E</span>
+          <span class="text-slate-500 text-[10px]">240 - 255</span>
+          <p class="text-slate-400 text-[9px] mt-1 leading-none">Experimental</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mb-auto">
+      <div class="glass-tag p-4 rounded-xl border-l-4 border-emerald-500">
+        <h4 class="text-emerald-400 font-bold text-sm uppercase mb-1">¿Por qué 192.168.x.x?</h4>
+        <p class="text-slate-300 text-xs leading-relaxed">
+          Es el rango <span class="text-white font-bold">privado de Clase C</span> definido en RFC 1918. Se reserva para redes locales y nunca se usa en Internet público para ahorrar direcciones IPv4.
+        </p>
+      </div>
+      <div class="glass-tag p-4 rounded-xl border-l-4 border-sky-400">
+        <h4 class="text-sky-400 font-bold text-sm uppercase mb-1">Dato de Bits</h4>
+        <p class="text-slate-300 text-xs leading-relaxed">
+          Cada octeto tiene 8 bits (1 byte). 8 x 4 = <span class="text-white font-bold">32 bits</span> en total. Esto limita el universo a ~4.3 mil millones de IPs únicas.
+        </p>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-sky-400 font-black italic">32 Bits</span> • <span class="text-emerald-400 font-black italic">4 Octetos</span> • <span class="text-purple-400 font-black italic">IPv4</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(14, 165, 233, 0.03);
+      border: 1px solid rgba(14, 165, 233, 0.1);
+    }
+    .glass-tag {
+      background: rgba(14, 165, 233, 0.05);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    .highlight-sky { color: #38bdf8; }
+  </style>
+</BlogPostLayout>

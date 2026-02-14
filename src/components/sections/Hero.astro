@@ -22,29 +22,29 @@ const texts: Record<
 > = {
   es: {
     name: "Christopher Villamarín",
-    role: "Desarrollador",
-    specialty: "Backend",
+    role: "Especialista en",
+    specialty: "Soluciones Digitales",
     motto:
-      "Diseño y desarrollo soluciones Backend de alto rendimiento con Python & Go para sistemas críticos.",
+      "Transformo tus problemas de negocio en aplicaciones robustas y escalables para cualquier plataforma (Web, Móvil o Escritorio).",
     linkedin_aria: "Mi perfil de LinkedIn",
     github_aria: "Mi perfil de GitHub",
     image_alt: "Gato programando en la computadora",
     image_title: "¿Por qué hay un gato aquí?",
     experience: "+2 años de experiencia",
-    contact: "Contáctame",
+    contact: "Hablemos de tu proyecto",
   },
   en: {
     name: "Christopher Villamarín",
-    role: "Developer",
-    specialty: "Backend",
+    role: "Digital Solutions",
+    specialty: "Specialist",
     motto:
-      "Designing and developing high-performance Backend solutions with Python & Go for critical systems.",
+      "Transforming your business challenges into robust and scalable applications for any platform (Web, Mobile, or Desktop).",
     linkedin_aria: "My LinkedIn profile",
     github_aria: "My GitHub profile",
     image_alt: "Cat programming on the computer",
     image_title: "Why is there a cat here?",
     experience: "+2 years of experience",
-    contact: "Contact Me",
+    contact: "Let's talk about your project",
   },
 };
 
@@ -56,7 +56,7 @@ const T = texts[lang];
   class="relative flex flex-col items-center justify-center px-4 sm:px-8 pt-8 pb-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white overflow-hidden"
 >
   <div
-    class="relative z-10 flex flex-col sm:flex-row items-center justify-start gap-y-4 sm:gap-12 max-w-6xl mx-auto pt-0"
+    class="relative z-10 flex flex-col items-center justify-start gap-y-4 sm:gap-12 max-w-6xl mx-auto pt-0"
   >
     <div
       class="flex-shrink-0 w-44 h-44 overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300"
@@ -180,7 +180,7 @@ const T = texts[lang];
     </div>
 
     <div class="flex items-center gap-2 font-thin text-gray-500">
-      <LanguageSwitcher dynamic={true} client:idle />
+      <a href="/en/" class="text-white">EN</a>
       <span class="opacity-20 mx-2">|</span>
       <ThemeToggleButton client:idle />
     </div>
