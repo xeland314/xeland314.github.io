@@ -37,7 +37,7 @@ const recentPosts = postData.filter((p) => p.isPublished).slice(0, 32);
     <div class="max-w-7xl mx-auto">
       {/* Bento Grid Layout */}
       <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr lg:auto-rows-[minmax(18rem,auto)]"
+        class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr lg:auto-rows-[minmax(18rem,auto)]"
       >
         <div class="lg:col-start-1 lg:row-start-1">
           <BentoGato lang="es" />
