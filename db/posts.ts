@@ -100,8 +100,16 @@ export const postData = [
   {
     title: "Permisos Linux: 755",
     url: "/es/posts/linux-permissions",
-    image: "/images/optimized/posts/127.0.0.1_8000_es_posts_url-anatomy-cover.avif",
+    image: "/images/optimized/posts/localhost_4321_es_posts_linux-permissions-cover.avif",
     lang: "es",
+    isPublished: true,
+  },
+  {
+    title: "Permisos Linux: Extended",
+    url: "/es/posts/linux-permissions-extended",
+    image: "/images/optimized/posts/localhost_4321_es_posts_linux-permissions-extended-cover.avif",
+    lang: "es",
+    isPublished: true,
   },
   {
     title: "IPv4: 192.168.0.1",

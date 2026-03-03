@@ -1,0 +1,150 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Linux Permissions (Special)";
+const description = "Radiography: chmod 4755 - Understanding special bits (SUID, SGID, Sticky)";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-16 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a href="/es/posts/linux-permissions-extended" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Systems Administration"
+      categoryColorClass="text-orange-400"
+      titlePrefix="Radiography:"
+      titleHighlightText="chmod 4755"
+      titleHighlightColorClass="text-orange-400"
+      subtitle="Special bits: SUID, SGID, and Sticky Bit"
+    />
+
+    <div class="feature-card rounded-3xl p-10 mb-8 relative flex flex-col items-center">
+      <div class="grid grid-cols-4 gap-4 md:gap-8 w-full max-w-5xl">
+        <!-- Special -->
+        <div class="flex flex-col items-center border-r border-white/10">
+          <span class="text-amber-400 font-bold text-5xl md:text-7xl mb-2">4</span>
+          <div class="bg-amber-500/20 px-3 py-1 rounded text-amber-400 font-mono text-xl mb-4">100</div>
+          <p class="text-amber-400 font-bold uppercase text-[10px] md:text-xs tracking-tighter text-center">Special (s/t)</p>
+          <p class="text-slate-400 text-[10px] md:text-sm mt-1 italic">SUID + - + -</p>
+        </div>
+
+        <!-- User -->
+        <div class="flex flex-col items-center border-r border-white/10">
+          <span class="text-rose-500 font-bold text-5xl md:text-7xl mb-2">7</span>
+          <div class="bg-rose-500/20 px-3 py-1 rounded text-rose-400 font-mono text-xl mb-4">111</div>
+          <p class="text-rose-500 font-bold uppercase text-[10px] md:text-xs tracking-tighter">User (u)</p>
+          <p class="text-slate-400 text-[10px] md:text-sm mt-1 italic">r + w + x</p>
+        </div>
+
+        <!-- Group -->
+        <div class="flex flex-col items-center border-r border-white/10">
+          <span class="text-blue-400 font-bold text-5xl md:text-7xl mb-2">5</span>
+          <div class="bg-blue-500/20 px-3 py-1 rounded text-blue-400 font-mono text-xl mb-4">101</div>
+          <p class="text-blue-400 font-bold uppercase text-[10px] md:text-xs tracking-tighter">Group (g)</p>
+          <p class="text-slate-400 text-[10px] md:text-sm mt-1 italic">r + - + x</p>
+        </div>
+
+        <!-- Others -->
+        <div class="flex flex-col items-center">
+          <span class="text-emerald-400 font-bold text-5xl md:text-7xl mb-2">5</span>
+          <div class="bg-emerald-500/20 px-3 py-1 rounded text-emerald-400 font-mono text-xl mb-4">101</div>
+          <p class="text-emerald-400 font-bold uppercase text-[10px] md:text-xs tracking-tighter">Others (o)</p>
+          <p class="text-slate-400 text-[10px] md:text-sm mt-1 italic">r + - + x</p>
+        </div>
+      </div>
+
+      <div class="w-full border-t border-white/10 mt-10 pt-8">
+        <RadiographyLegend
+          items={[
+            {
+              bgColor: "bg-amber-600",
+              shadowRgba: "rgba(255,255,255,0.1)",
+              textColor: "text-slate-200",
+              title: "SUID (4)",
+              description: "Executes as file owner.",
+            },
+            {
+              bgColor: "bg-amber-700",
+              shadowRgba: "rgba(255,255,255,0.1)",
+              textColor: "text-slate-200",
+              title: "SGID (2)",
+              description: "Inherits group or executes as group.",
+            },
+            {
+              bgColor: "bg-amber-900",
+              shadowRgba: "rgba(255,255,255,0.1)",
+              textColor: "text-slate-200",
+              title: "Sticky (1)",
+              description: "Only owner can delete.",
+            },
+          ]}
+          gap="flex-row gap-4 md:gap-12"
+          minWidth="min-w-[180px]"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 items-start mb-auto">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-amber-400">
+          <h4 class="text-amber-400 font-bold text-lg uppercase tracking-widest mb-1">When to use?</h4>
+          <p class="text-slate-200 leading-snug">
+            Essential for files requiring elevated privileges (<span class="text-amber-400 italic">sudo</span>, <span class="text-amber-400 italic">passwd</span>) or shared directories.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-blue-400">
+          <h4 class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1">Visual Impact</h4>
+          <p class="text-slate-200 leading-snug">
+            Displayed as <span class="code-font text-white bg-slate-800 px-2 rounded">s</span> (SUID/SGID) or <span class="code-font text-white bg-slate-800 px-2 rounded">t</span> (Sticky) instead of <span class="code-font italic text-slate-400">x</span>.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-amber-400 font-bold text-md mb-2">4755</h3>
+          <p class="text-slate-400 text-sm">rwsr-xr-x. Common in system binaries.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-blue-400 font-bold text-md mb-2">2775</h3>
+          <p class="text-slate-400 text-sm">rwxrwsr-x. Useful for group collaboration.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-emerald-400 font-bold text-md mb-2">1777</h3>
+          <p class="text-slate-400 text-sm">rwxrwxrwt. Standard for /tmp for security.</p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl border-rose-500/30">
+          <h3 class="text-rose-500 font-bold text-md mb-2">Warning!</h3>
+          <p class="text-slate-400 text-sm">Misuse can lead to critical security risks.</p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-amber-400 font-black italic">S (4)</span> • <span class="text-amber-500 font-black italic">G (2)</span> • <span class="text-amber-600 font-black italic">T (1)</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(251, 146, 60, 0.03);
+      border: 1px solid rgba(251, 146, 60, 0.1);
+    }
+    .glass-tag {
+      background: rgba(251, 146, 60, 0.05);
+      border: 1px solid rgba(251, 146, 60, 0.2);
+    }
+    .code-font { font-family: 'Fira Code', monospace; }
+  </style>
+</BlogPostLayout>

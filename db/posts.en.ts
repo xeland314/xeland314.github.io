@@ -79,7 +79,15 @@ export const postDataEN = [
   {
     title: "Linux Permissions: 755",
     url: "/en/posts/linux-permissions",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_url-anatomy-cover.avif",
+    image: "/images/optimized/posts/localhost_4321_en_posts_linux-permissions-cover.avif",
     lang: "en",
+    isPublished: true,
+  },
+  {
+    title: "Linux Permissions: Extended",
+    url: "/en/posts/linux-permissions-extended",
+    image: "/images/optimized/posts/localhost_4321_en_posts_linux-permissions-extended-cover.avif",
+    lang: "en",
+    isPublished: true,
   },
 ];
