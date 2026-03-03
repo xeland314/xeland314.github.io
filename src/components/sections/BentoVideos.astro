@@ -1,0 +1,110 @@
+---
+const { lang = "es" } = Astro.props;
+
+const videos = [
+  { src: "/videos/dragon_curve.mp4", title: "Dragon Curve" },
+  { src: "/videos/sierpinski.mp4", title: "Sierpinski" },
+  { src: "/videos/hilbert_curve.mp4", title: "Hilbert Curve" },
+  { src: "/videos/mandelbulb_3d.mp4", title: "Mandelbulb 3D" },
+];
+
+const texts: Record<
+  string,
+  { title: string; subtitle: string; viewMore: string }
+> = {
+  es: {
+    title: "Animaciones Matemáticas",
+    subtitle: "Fractales y algoritmos con Python + Raylib",
+    viewMore: "Ver todas y código",
+  },
+  en: {
+    title: "Math Animations",
+    subtitle: "Fractals and algorithms with Python + Raylib",
+    viewMore: "View all and code",
+  },
+};
+
+const T = texts[lang];
+---
+
+<div
+  class="h-full bg-purple-600 dark:bg-purple-900 rounded-3xl p-6 text-white flex flex-col justify-between overflow-hidden relative group border border-purple-500/50 shadow-xl"
+>
+  {/* Decorative background circle */}
+  <div
+    class="absolute -top-10 -right-10 w-40 h-40 bg-purple-500 rounded-full opacity-30 group-hover:scale-110 transition-transform duration-700"
+  >
+  </div>
+
+  <div class="relative z-10">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="p-2 bg-white/10 rounded-lg">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5 text-purple-100"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+          ></path>
+        </svg>
+      </div>
+      <h3 class="text-xs font-bold uppercase tracking-widest text-purple-200">
+        {T.title}
+      </h3>
+    </div>
+
+    <p class="text-[11px] text-purple-100 mb-4 font-medium opacity-90">
+      {T.subtitle}
+    </p>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {
+        videos.map((video) => (
+          <div class="relative aspect-square rounded-xl overflow-hidden border border-white/10 group/video shadow-lg bg-black/20">
+            <video
+              src={video.src}
+              autoplay
+              loop
+              muted
+              playsinline
+              class="w-full h-full object-cover opacity-80 group-hover/video:opacity-100 transition-opacity"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/video:opacity-100 transition-opacity flex items-end p-2">
+              <span class="text-[8px] font-bold uppercase tracking-tighter text-white">
+                {video.title}
+              </span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="relative z-10 mt-4">
+    <a
+      href="/videos"
+      class="inline-flex items-center justify-center gap-2 w-full py-2 px-4 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition-all border border-white/10 backdrop-blur-sm"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-3.5 h-3.5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 11H5m14 0l-7-7m7 7l-7 7"></path>
+      </svg>
+      {T.viewMore}
+    </a>
+  </div>
+</div>

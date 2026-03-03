@@ -4,6 +4,7 @@ import BentoGato from "../../components/sections/BentoGato.astro";
 import BentoProjects from "../../components/sections/BentoProjects";
 import BentoPosts from "../../components/sections/BentoPosts";
 import BentoEducation from "../../components/sections/BentoEducation.astro";
+import BentoVideos from "../../components/sections/BentoVideos.astro";
 import ContactForm from "../../components/contact/ContactForm";
 import TechMarquee from "../../components/sections/TechMarquee.astro";
 
@@ -56,6 +57,10 @@ const recentPosts = postDataEN.filter((p) => p.isPublished).slice(0, 10);
 
         <div class="lg:col-start-3 lg:row-start-1 row-span-2">
           <ContactForm client:load lang={"en"} />
+        </div>
+
+        <div class="md:col-span-2 lg:col-span-3 lg:row-start-3">
+            <BentoVideos lang="en" />
         </div>
       </div>
 
