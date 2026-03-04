@@ -202,6 +202,13 @@ export const postData = [
     lang: "es",
   },
   {
+    title: "PPM Anatomy",
+    url: "/es/posts/formats-ppm-anatomy",
+    image: "/images/optimized/posts/localhost_4321_es_posts_formats-ppm-anatomy-cover.avif",
+    lang: "es",
+    isPublished: true,
+  },
+  {
     title: "Hashing vs. Cifrado",
     url: "/es/posts/software-hashing-vs-encryption",
     image: "/images/optimized/posts/127.0.0.1_8000_es_posts_jwt-anatomy-cover.avif",

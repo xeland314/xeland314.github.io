@@ -1,0 +1,208 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Formatos de Imagen";
+const description =
+  "Radiografía: Formato PPM - El lenguaje base de los píxeles";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-900"
+  extraFonts="&family=Fira+Code:wght@400"
+  lang="es"
+>
+  <div
+    class="relative p-8 md:p-16 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/en/posts/formats-ppm-anatomy"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        EN
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Formatos de Imagen"
+      categoryColorClass="text-orange-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Formato PPM"
+      titleHighlightColorClass="text-orange-500"
+      subtitle="Portable Pixmap: Píxeles en texto plano"
+    />
+
+    <div
+      class="feature-card rounded-3xl p-5 mb-4 relative flex flex-col md:flex-row gap-8 items-stretch"
+    >
+      <div
+        class="code-font flex flex-col sm:flex-row gap-6 text-xl leading-relaxed flex-1 border-r border-white/10 pr-8"
+      >
+        <div
+          class="shrink-0 overflow-hidden border border-white/20 shadow-lg aspect-[3/2] w-32 h-fit mt-2"
+        >
+          <img
+            src="/ppm/example.png"
+            alt="PPM Example 3x2 scaled"
+            class="w-full h-full object-cover"
+            width="128"
+            height="85"
+          />
+        </div>
+        <div>
+          <p>
+            <span
+              class="text-pink-500 font-bold underline decoration-pink-500/30"
+              >P3</span
+            >
+          </p>
+          <p>
+            <span
+              class="text-blue-400 font-bold underline decoration-blue-400/30"
+              >3 2</span
+            >
+          </p>
+          <p>
+            <span
+              class="text-emerald-400 font-bold underline decoration-emerald-400/30"
+              >255</span
+            >
+          </p>
+          <p class="mt-2 text-sm text-slate-500 italic"># Fila 1</p>
+          <p>
+            <span class="text-orange-500">255 0 0</span>
+            <span class="text-orange-500">0 255 0</span>
+            <span class="text-orange-500">0 0 255</span>
+          </p>
+          <p class="mt-2 text-sm text-slate-500 italic"># Fila 2</p>
+          <p>
+            <span class="text-orange-500">255 255 0</span>
+            <span class="text-orange-500">255 255 255</span>
+            <span class="text-orange-500">0 0 0</span>
+          </p>
+        </div>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-pink-500",
+            shadowRgba: "rgba(236,72,153,0.4)",
+            textColor: "text-pink-500",
+            title: "Número Mágico",
+            description: "P3 (ASCII) o P6 (Binario).",
+          },
+          {
+            bgColor: "bg-blue-400",
+            shadowRgba: "rgba(96,165,250,0.4)",
+            textColor: "text-blue-400",
+            title: "Dimensiones",
+            description: "Ancho y Alto en píxeles.",
+          },
+          {
+            bgColor: "bg-emerald-500",
+            shadowRgba: "rgba(16,185,129,0.4)",
+            textColor: "text-emerald-500",
+            title: "Valor Máximo",
+            description: "Valor máximo para cada canal.",
+          },
+          {
+            bgColor: "bg-orange-500",
+            shadowRgba: "rgba(249,115,22,0.4)",
+            textColor: "text-orange-500",
+            title: "Datos RGB",
+            description: "Secuencia de triples R G B.",
+          },
+        ]}
+        gap="gap-5"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <div class="space-y-4">
+        <div class="glass-tag p-4 rounded-xl">
+          <h4
+            class="text-orange-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            ¿Qué es PPM?
+          </h4>
+          <p class="text-slate-200 leading-snug text-lg">
+            El <span class="font-bold text-white">Portable Pixmap</span> es un formato
+            de imagen extremadamente simple, diseñado para ser fácil de leer y escribir
+            por programas sin librerías externas.
+          </p>
+        </div>
+        <div class="glass-tag p-4 rounded-xl">
+          <h4
+            class="text-orange-400 font-bold text-lg uppercase tracking-widest mb-1"
+          >
+            Variantes Netpbm
+          </h4>
+          <p class="text-slate-200 leading-snug text-lg">
+            <span class="text-pink-400 font-bold">PBM</span> (B/N),
+            <span class="text-blue-400 font-bold">PGM</span> (Escala de grises),
+            <span class="text-orange-400 font-bold">PPM</span> (Color RGB).
+          </p>
+          <p class="text-slate-400 text-lg mt-2">
+            Ideales para aprendizaje y debug de algoritmos gráficos.
+          </p>
+          <a
+            href="/ppm/gallery_gen.py"
+            class="inline-block mt-4 text-orange-400 hover:text-orange-300 font-bold border-b border-orange-400/30 transition-all"
+          >
+            Ver código generador de galería →
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-auto">
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-orange-400 font-bold text-xl mb-2">Simplicidad</h3>
+          <p class="text-slate-400 text-lg">
+            Puedes crear una imagen con un simple editor de texto.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-orange-400 font-bold text-xl mb-2">Sin Compresión</h3>
+          <p class="text-slate-400 text-lg">
+            Los archivos son grandes, pero preservan cada bit original.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-orange-400 font-bold text-xl mb-2">Interoperable</h3>
+          <p class="text-slate-400 text-lg">
+            Puente común entre diferentes formatos de imagen.
+          </p>
+        </div>
+        <div class="feature-card p-6 rounded-2xl">
+          <h3 class="text-orange-400 font-bold text-xl mb-2">Debuggable</h3>
+          <p class="text-slate-400 text-lg">
+            Fácil de inspeccionar si algo falla en el renderizado.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-pink-400 font-black italic">Píxeles</span> puros • <span class="text-orange-400 font-black italic">Software</span> artesanal.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</BlogPostLayout>

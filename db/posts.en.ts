@@ -90,4 +90,11 @@ export const postDataEN = [
     lang: "en",
     isPublished: true,
   },
+  {
+    title: "PPM Anatomy",
+    url: "/en/posts/formats-ppm-anatomy",
+    image: "/images/optimized/posts/localhost_4321_en_posts_formats-ppm-anatomy-cover.avif",
+    lang: "en",
+    isPublished: true,
+  },
 ];
