@@ -1,0 +1,221 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = "Can I Use GPU? | Detector de GPU para Aplicaciones Flutter";
+const description = "Verifica si tu navegador y hardware son compatibles con aceleración por GPU para aplicaciones Flutter y WebGPU.";
+const keywords = "GPU, Flutter, WebGL, WebGPU, Hardware Acceleration, Skia, Skwasm, Detector, Performance";
+const author = "Christopher Alexander Villamarín Pila";
+const url = "https://xeland314.github.io/can-i-use-gpu";
+const image = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout 
+  title={title} 
+  description={description}
+  keywords={keywords}
+  author={author}
+  url={url}
+  image={image}
+  canonical={url}
+>
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-2xl border border-gray-200 dark:border-gray-800 transition-all">
+      <div id="detector-ui" class="text-center">
+        <div class="mb-6 inline-flex p-4 bg-purple-100 dark:bg-purple-900/30 rounded-2xl text-purple-600 dark:text-purple-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+        </div>
+        
+        <h1 class="text-2xl font-black tracking-tight mb-2 dark:text-white" id="status-title">Detectando GPU para Flutter...</h1>
+        <p class="text-gray-500 dark:text-gray-400 mb-8" id="status-desc">Verificando compatibilidad de hardware para ejecutar aplicaciones Flutter con motor Skia/Skwasm.</p>
+
+        <div id="redirect-section" class="hidden">
+            <div class="relative pt-1">
+                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200 dark:bg-purple-900/50">
+                    <div id="progress-bar" style="width:100%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-600 transition-all duration-1000"></div>
+                </div>
+                <p class="text-sm font-bold text-purple-600 dark:text-purple-400">Redirigiendo en <span id="countdown">5</span> segundos...</p>
+            </div>
+            <a id="manual-link" href="#" class="mt-6 inline-block text-xs text-gray-400 hover:text-purple-500 transition-colors underline">Saltar espera</a>
+        </div>
+
+        <div id="error-section" class="hidden">
+            <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-2xl text-red-600 dark:text-red-400 mb-6">
+                <p class="text-sm font-medium">No se detectó una GPU compatible o WebGPU no está habilitado en tu navegador.</p>
+            </div>
+            <p class="text-xs text-gray-500 mb-6">Esta aplicación requiere una GPU para funcionar correctamente (análisis local con Transformers/WASM).</p>
+            <button onclick="location.reload()" class="w-full py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">Reintentar</button>
+        </div>
+
+        <div id="generator-section" class="hidden text-left border-t border-gray-100 dark:border-gray-800 pt-8 mt-8">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4 text-center">Generador de Enlaces</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">URL de Destino</label>
+                    <input type="url" id="input-url" placeholder="https://mi-app-gpu.com" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none dark:text-white" />
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Segundos (1-10)</label>
+                    <input type="number" id="input-time" min="1" max="10" value="5" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none dark:text-white" />
+                </div>
+                <button id="btn-generate" class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-500/20">Generar Enlace Seguro</button>
+                
+                <div id="result-area" class="hidden">
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Tu enlace:</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="output-url" readonly class="flex-1 px-3 py-2 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-lg text-xs text-purple-700 dark:text-purple-300" />
+                        <button id="btn-copy" class="px-3 py-2 bg-purple-100 dark:bg-purple-900/40 text-purple-600 rounded-lg text-xs font-bold">Copiar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUrl = urlParams.get('url');
+    const waitTime = parseInt(urlParams.get('t')) || 5;
+
+    const statusTitle = document.getElementById('status-title');
+    const statusDesc = document.getElementById('status-desc');
+    const redirectSection = document.getElementById('redirect-section');
+    const errorSection = document.getElementById('error-section');
+    const generatorSection = document.getElementById('generator-section');
+    const countdownEl = document.getElementById('countdown');
+    const progressBar = document.getElementById('progress-bar');
+    const manualLink = document.getElementById('manual-link');
+
+    async function checkGPU() {
+        // 1. Critical Environment Checks
+        if (typeof SharedArrayBuffer === 'undefined' || typeof OffscreenCanvas === 'undefined') {
+            console.warn("GPU Check: Missing SharedArrayBuffer or OffscreenCanvas.");
+            return false;
+        }
+
+        try {
+            const canvas = new OffscreenCanvas(1, 1);
+            
+            // 2. Strict WebGL 2.0 Requirement
+            // Skia/Skwasm (Flutter WASM) fundamentally needs WebGL 2.0 (ES 3.0) 
+            // for modern shader features and buffer management.
+            const gl = canvas.getContext('webgl2', {
+                alpha: true,
+                depth: true,
+                stencil: true,
+                antialias: false,
+                // Removed failIfMajorPerformanceCaveat to allow modern llvmpipe
+            });
+            
+            if (!gl) {
+                console.warn("GPU Check: WebGL 2.0 not available. Fallback to WebGL 1.0 is not sufficient for Skwasm.");
+                return false;
+            }
+
+            // 3. Version Check
+            // Even if WebGL 2 exists, we check the underlying version if possible.
+            const versionStr = gl.getParameter(gl.VERSION);
+            console.log(`GL Version: ${versionStr}`);
+            
+            // 4. Renderer Info (Informational, no longer a hard blocklist)
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (debugInfo) {
+                const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                console.log(`Detected Renderer: ${renderer}`);
+            }
+
+            // 5. "Zombie GPU" & Pipeline Integrity Test
+            // We clear with a specific color and read it back.
+            // This detects drivers that report WebGL 2 but have a broken implementation.
+            gl.clearColor(0.5, 0.25, 0.75, 1.0); // Distinctive color
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            
+            const pixels = new Uint8Array(4);
+            gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+            
+            // Validation (allowing for slight precision errors in software renderers)
+            const r = pixels[0];
+            const g = pixels[1];
+            const b = pixels[2];
+            
+            // Expected: 128, 64, 191
+            if (Math.abs(r - 128) > 2 || Math.abs(g - 64) > 2 || Math.abs(b - 191) > 2) {
+                console.warn(`GPU Check: Readback test failed. Expected ~128,64,191 but got ${r},${g},${b}.`);
+                return false;
+            }
+
+            // 6. Feature check: Float buffers (Often used by Skia for high-precision masks)
+            const floatBuffer = gl.getExtension('EXT_color_buffer_float');
+            if (!floatBuffer) {
+                console.warn("GPU Check: EXT_color_buffer_float missing. Complex UI might glich, but we might allow it.");
+            }
+
+            return true;
+        } catch (e) {
+            console.error("GPU Check: Exception during detection.", e);
+            return false;
+        }
+    }
+
+    async function init() {
+        if (!targetUrl) {
+            statusTitle.textContent = "Detector de GPU";
+            statusDesc.textContent = "Herramienta para validar hardware antes de redireccionar.";
+            generatorSection.classList.remove('hidden');
+            return;
+        }
+
+        const hasGPU = await checkGPU();
+
+        if (hasGPU) {
+            statusTitle.textContent = "Hardware Compatible";
+            statusDesc.textContent = "Se ha detectado una GPU activa. Redirigiendo a la aplicación...";
+            redirectSection.classList.remove('hidden');
+            manualLink.href = targetUrl;
+            
+            let timeLeft = waitTime;
+            countdownEl.textContent = timeLeft;
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                countdownEl.textContent = timeLeft;
+                progressBar.style.width = `${(timeLeft / waitTime) * 100}%`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    window.location.href = targetUrl;
+                }
+            }, 1000);
+        } else {
+            statusTitle.textContent = "Hardware Incompatible";
+            statusDesc.textContent = "Lo sentimos, tu dispositivo no cumple los requisitos.";
+            errorSection.classList.remove('hidden');
+        }
+    }
+
+    // Generator logic
+    const inputUrl = document.getElementById('input-url');
+    const inputTime = document.getElementById('input-time');
+    const btnGenerate = document.getElementById('btn-generate');
+    const resultArea = document.getElementById('result-area');
+    const outputUrl = document.getElementById('output-url');
+    const btnCopy = document.getElementById('btn-copy');
+
+    btnGenerate?.addEventListener('click', () => {
+        if (!inputUrl.value) return;
+        const base = window.location.origin + window.location.pathname;
+        const final = `${base}?url=${encodeURIComponent(inputUrl.value)}&t=${inputTime.value}`;
+        outputUrl.value = final;
+        resultArea.classList.remove('hidden');
+    });
+
+    btnCopy?.addEventListener('click', () => {
+        outputUrl.select();
+        document.execCommand('copy');
+        btnCopy.textContent = "¡Copiado!";
+        setTimeout(() => btnCopy.textContent = "Copiar", 2000);
+    });
+
+    init();
+  </script>
+</BaseLayout>

@@ -2,11 +2,23 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CodeToVideo from "../components/tools/CodeToVideo";
 
-const siteTitle = "Code to Video Utility | Christopher Villamarín";
-const siteDescription = "Herramienta para generar videos animados de escritura de código.";
+const title = "Code to Video | Crea Animaciones de Escritura de Código";
+const description = "Genera videos animados de código siendo escrito directamente en tu navegador. Ideal para tutoriales y redes sociales.";
+const keywords = "Code to Video, Animación de Código, Programación, Tutoriales, Herramienta Desarrollador, Christopher Villamarín";
+const author = "Christopher Alexander Villamarín Pila";
+const url = "https://xeland314.github.io/code-to-video";
+const image = "https://xeland314.github.io/assets/images/logo_v3.png";
 ---
 
-<BaseLayout title={siteTitle} description={siteDescription}>
+<BaseLayout 
+  title={title} 
+  description={description}
+  keywords={keywords}
+  author={author}
+  url={url}
+  image={image}
+  canonical={url}
+>
   <main class="min-h-screen bg-gray-50 dark:bg-gray-950">
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-8">
       <header class="mb-8">

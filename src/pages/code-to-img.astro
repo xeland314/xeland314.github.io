@@ -2,11 +2,23 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import CodeToImage from "../components/tools/CodeToImage";
 
-const siteTitle = "Code to Image Utility | Christopher Villamarín";
-const siteDescription = "Herramienta personalizada para exportar fragmentos de código con fondos personalizados.";
+const title = "Code to Image | Herramienta para Exportar Código como Imagen";
+const description = "Convierte tus fragmentos de código en imágenes elegantes con fondos personalizados para compartir en redes sociales.";
+const keywords = "Code to Image, Programación, Snippets, Exportar Código, Herramienta Desarrollador, Christopher Villamarín";
+const author = "Christopher Alexander Villamarín Pila";
+const url = "https://xeland314.github.io/code-to-img";
+const image = "https://xeland314.github.io/assets/images/logo_v3.png";
 ---
 
-<BaseLayout title={siteTitle} description={siteDescription}>
+<BaseLayout 
+  title={title} 
+  description={description}
+  keywords={keywords}
+  author={author}
+  url={url}
+  image={image}
+  canonical={url}
+>
   <main class="min-h-screen bg-gray-50 dark:bg-gray-950">
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-8">
       <header class="mb-8">

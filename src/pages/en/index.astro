@@ -7,6 +7,9 @@ import BentoEducation from "../../components/sections/BentoEducation.astro";
 import BentoVideos from "../../components/sections/BentoVideos.astro";
 import BentoCodeToImg from "../../components/sections/BentoCodeToImg.astro";
 import BentoCodeToVideo from "../../components/sections/BentoCodeToVideo.astro";
+import BentoChatAnalyzer from "../../components/sections/BentoChatAnalyzer.astro";
+import BentoCodeCraft from "../../components/sections/BentoCodeCraft.astro";
+import BentoAdventCalendar from "../../components/sections/BentoAdventCalendar.astro";
 import ContactForm from "../../components/contact/ContactForm";
 import TechMarquee from "../../components/sections/TechMarquee.astro";
 
@@ -69,6 +72,16 @@ const recentPosts = postDataEN.filter((p) => p.isPublished).slice(0, 10);
         </div>
         <div class="lg:col-start-3 lg:row-start-3">
             <BentoVideos lang="en" />
+        </div>
+
+        <div class="lg:col-start-1 lg:row-start-4">
+            <BentoChatAnalyzer lang="en" />
+        </div>
+        <div class="lg:col-start-2 lg:row-start-4">
+            <BentoCodeCraft lang="en" />
+        </div>
+        <div class="lg:col-start-3 lg:row-start-4">
+            <BentoAdventCalendar lang="en" />
         </div>
       </div>
 
