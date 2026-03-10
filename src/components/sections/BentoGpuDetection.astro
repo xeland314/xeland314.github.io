@@ -1,0 +1,56 @@
+---
+const { lang = "es" } = Astro.props;
+
+const texts: Record<
+  string,
+  { title: string; subtitle: string; checkGpu: string }
+> = {
+  es: {
+    title: "Detección de GPU",
+    subtitle: "Verifica si puedes usar GPU en aplicaciones Flutter.",
+    checkGpu: "Verificar GPU",
+  },
+  en: {
+    title: "GPU Detection",
+    subtitle: "Check if you can use GPU in Flutter applications.",
+    checkGpu: "Check GPU",
+  },
+};
+
+const T = texts[lang];
+---
+
+<div
+  class="h-full bg-gray-600 dark:bg-gray-800 rounded-3xl p-6 text-white flex flex-col justify-between overflow-hidden relative group border border-gray-500/50 shadow-xl"
+>
+  {/* Decorative background circle */}
+  <div
+    class="absolute -top-10 -right-10 w-40 h-40 bg-gray-500 rounded-full opacity-30 group-hover:scale-110 transition-transform duration-700"
+  >
+  </div>
+
+  <div class="relative z-10">
+    <div class="flex items-center justify-between mb-4">
+        <div class="p-2 bg-white/10 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+        </div>
+    </div>
+
+    <h3 class="text-lg font-black tracking-tighter mb-2 italic">
+      {T.title}
+    </h3>
+    <p class="text-xs text-gray-100 font-medium opacity-90 leading-relaxed">
+      {T.subtitle}
+    </p>
+  </div>
+
+  <div class="relative z-10 mt-6">
+    <a
+      href="/can-i-use-gpu"
+      class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white text-gray-600 hover:bg-gray-50 text-xs font-bold rounded-xl transition-all shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+    >
+      {T.checkGpu}
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+    </a>
+  </div>
+</div>

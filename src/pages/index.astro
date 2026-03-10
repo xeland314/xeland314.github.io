@@ -12,6 +12,7 @@ import BentoCodeCraft from "../components/sections/BentoCodeCraft.astro";
 import BentoAdventCalendar from "../components/sections/BentoAdventCalendar.astro";
 import ContactForm from "../components/contact/ContactForm";
 import TechMarquee from "../components/sections/TechMarquee.astro";
+import BentoGpuDetection from "../components/sections/BentoGpuDetection.astro";
 
 import { projectData } from "../../db/projects";
 import { postData } from "../../db/posts";
@@ -27,7 +28,7 @@ const siteUrl = "https://xeland314.github.io/";
 const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
 
 const featuredProjects = projectData.filter((p) => p.isFeatured).slice(0, 10);
-const recentPosts = postData.filter((p) => p.isPublished).slice(0, 32);
+const recentPosts = postData.filter((p) => p.isPublished).slice(0, 10);
 ---
 
 <BaseLayout
@@ -62,25 +63,32 @@ const recentPosts = postData.filter((p) => p.isPublished).slice(0, 32);
         <div class="lg:col-start-3 lg:row-start-1 row-span-2">
           <ContactForm client:load lang={"es"} />
         </div>
+      </div>
 
-        <div class="lg:col-start-1 lg:row-start-3">
-            <BentoCodeToImg lang="es" />
-        </div>
-        <div class="lg:col-start-2 lg:row-start-3">
-            <BentoCodeToVideo lang="es" />
-        </div>
-        <div class="lg:col-start-3 lg:row-start-3">
-            <BentoVideos lang="es" />
-        </div>
+      {/* Videos Section */}
+      <div class="mt-6">
+        <BentoVideos lang="es" />
+      </div>
 
-        <div class="lg:col-start-1 lg:row-start-4">
-            <BentoChatAnalyzer lang="es" />
+      {/* Additional Tools Grid */}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        <div>
+          <BentoCodeToImg lang="es" />
         </div>
-        <div class="lg:col-start-2 lg:row-start-4">
-            <BentoCodeCraft lang="es" />
+        <div>
+          <BentoCodeToVideo lang="es" />
         </div>
-        <div class="lg:col-start-3 lg:row-start-4">
-            <BentoAdventCalendar lang="es" />
+        <div>
+          <BentoChatAnalyzer lang="es" />
+        </div>
+        <div>
+          <BentoCodeCraft lang="es" />
+        </div>
+        <div>
+          <BentoAdventCalendar lang="es" />
+        </div>
+        <div>
+          <BentoGpuDetection lang="es" />
         </div>
       </div>
 
