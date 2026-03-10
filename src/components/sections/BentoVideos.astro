@@ -40,34 +40,57 @@ const T = texts[lang];
   >
   </div>
 
-  <div class="relative z-10 flex flex-col items-center text-center">
-    <div class="relative aspect-square w-24 h-24 rounded-xl overflow-hidden border border-white/10 group/video shadow-lg bg-black/20 mb-3">
-      <video
-        id="random-animation-video"
-        src={randomVideo.src}
-        autoplay
-        loop
-        muted
-        playsinline
-        class="w-full h-full object-cover opacity-80 group-hover/video:opacity-100 transition-opacity"
-      ></video>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/video:opacity-100 transition-opacity flex items-end p-1">
-        <span id="random-animation-title" class="text-[6px] font-bold uppercase tracking-tighter text-white">
-          {randomVideo.title}
-        </span>
+  <div class="relative z-10 flex items-center gap-6">
+    <div class="flex-shrink-0">
+      <div class="relative aspect-square w-32 h-32 rounded-xl overflow-hidden border border-white/10 group/video shadow-lg bg-black/20">
+        <video
+          id="random-animation-video"
+          src={randomVideo.src}
+          autoplay
+          loop
+          muted
+          playsinline
+          class="w-full h-full object-cover opacity-80 group-hover/video:opacity-100 transition-opacity"
+        ></video>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/video:opacity-100 transition-opacity flex items-end p-1">
+          <span id="random-animation-title" class="text-[6px] font-bold uppercase tracking-tighter text-white">
+            {randomVideo.title}
+          </span>
+        </div>
       </div>
     </div>
-
-    <h3 class="text-sm font-bold text-gray-100 mb-2">
-      {T.title}
-    </h3>
-
-    <p class="text-[10px] text-gray-200 mb-4 font-medium opacity-90 leading-tight">
-      {T.subtitle}
-    </p>
+    <div class="flex flex-col justify-center space-y-2">
+      <h3 class="text-lg font-black tracking-tighter mb-0 italic text-gray-100">
+        {T.title}
+      </h3>
+      <p class="text-xs text-gray-200 font-medium opacity-90 leading-relaxed">
+        {T.subtitle}
+      </p>
+      <div>
+        <a
+          href="/videos"
+          class="inline-flex items-center justify-center gap-2 py-2 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition-all border border-white/10 backdrop-blur-sm"
+        >
+          {T.viewMore}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-3.5 h-3.5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 11H5m14 0l-7-7m7 7l-7 7"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
   </div>
 
-  <script define:vars={{ videos }}>
+  <script define:vars={{ videos }} is:inline>
     const videoElement = document.getElementById('random-animation-video');
     const titleElement = document.getElementById('random-animation-title');
     
@@ -78,26 +101,3 @@ const T = texts[lang];
       titleElement.textContent = selected.title;
     }
   </script>
-
-  <div class="relative z-10">
-    <a
-      href="/videos"
-      class="inline-flex items-center justify-center gap-2 w-full py-2 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition-all border border-white/10 backdrop-blur-sm"
-    >
-      {T.viewMore}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="w-3.5 h-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M19 11H5m14 0l-7-7m7 7l-7 7"></path>
-        </svg>
-      </a>
-</div>
-
