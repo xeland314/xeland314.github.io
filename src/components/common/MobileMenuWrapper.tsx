@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import ThemeToggleButton from "../themes/ThemeToggleButton.tsx";
+import ThemedToggleIconButton from "../themes/ThemedToggleIconButton.tsx";
 
 interface MobileMenuWrapperProps {
-  lang?: "es" | "en";
+  readonly lang?: "es" | "en";
 }
 
 export default function MobileMenuWrapper({
@@ -15,16 +15,14 @@ export default function MobileMenuWrapper({
 
   const texts = {
     es: {
-      about_me: "Acerca de mí",
       projects: "Proyectos",
-      certificates: "Certificados",
-      contact_me: "Contáctame",
+      posts: "Artículos",
+      contact: "Contacto",
     },
     en: {
-      about_me: "About Me",
       projects: "Projects",
-      certificates: "Certificates",
-      contact_me: "Contact Me",
+      posts: "Blog",
+      contact: "Contact",
     },
   };
 
@@ -72,44 +70,41 @@ export default function MobileMenuWrapper({
           isMenuOpen ? "max-h-96" : "max-h-0"
         } md:max-h-full`}
       >
-        <li>
+        <li className="md:hidden">
           <a
-            href={`/${lang === "en" ? "en/": ""}#about-me`}
-            className="block p-2 hover:bg-gray-700"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {T.about_me}
-          </a>
-        </li>
-        <li>
-          <a
-            href={`/${lang === "en" ? "en/": ""}#projects`}
+            href={
+              lang === "en" ? "/en/projects" : "/es/projects"
+            }
             className="block p-2 hover:bg-gray-700"
             onClick={() => setIsMenuOpen(false)}
           >
             {T.projects}
           </a>
         </li>
-        <li>
+        <li className="md:hidden">
           <a
-            href={`/${lang === "en" ? "en/": ""}#certificates`}
+            href={
+              lang === "en" ? "/en/posts" : "/es/posts"
+            }
             className="block p-2 hover:bg-gray-700"
             onClick={() => setIsMenuOpen(false)}
           >
-            {T.certificates}
+            {T.posts}
           </a>
         </li>
-        <li>
+        <li className="md:hidden">
           <a
-            href={`/${lang === "en" ? "en/": ""}#contact`}
+            href={
+              lang === "en" ? "/en/#contact" : "/#contact"
+            }
             className="block p-2 hover:bg-gray-700"
             onClick={() => setIsMenuOpen(false)}
           >
-            {T.contact_me}
+            {T.contact}
           </a>
         </li>
         <li className="flex items-center justify-center py-2">
-          <ThemeToggleButton />
+          <ThemedToggleIconButton />
         </li>
       </ul>
     </div>

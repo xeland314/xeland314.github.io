@@ -1,5 +1,7 @@
 ---
 // src/pages/projects/index.astro
+import Footer from "../../../components/common/Footer.astro";
+import Header from "../../../components/common/Header.astro";
 import ProjectCard from "../../../components/projects/ProjectCard.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { db, Projects, eq, desc } from "astro:db";
@@ -50,6 +52,7 @@ const allProjects = await db
     canonical={pageCanonical}
     lang="en"
 >
+    <Header />
     <main
         class="py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen"
     >
@@ -72,4 +75,5 @@ const allProjects = await db
             }
         </section>
     </main>
+    <Footer/>
 </BaseLayout>

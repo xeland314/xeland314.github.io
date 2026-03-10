@@ -13,10 +13,51 @@ const homeLink = lang === "en" ? "/en" : "/";
 >
   <nav class="flex justify-between items-center relative p-3">
     <div class="flex items-center justify-between">
-      <a href={homeLink} class="text-lg font-bold hover:text-blue-500"> xeland314 </a>
+      <a href={homeLink} class="flex items-center text-lg font-bold hover:text-blue-500">
+        <img src="/assets/images/logo_v3.png" alt="Logo xeland314" class="h-8 w-8 mr-2" width="20" height="20" title="¿Por qué hay un gato aquí?"/>
+        xeland314
+      </a>
     </div>
+
+    <!-- desktop navigation links -->
+    <ul class="hidden md:flex flex-row gap-x-6 items-center">
+      <li>
+        <a
+          href={
+            lang === "en" ? "/en/projects" : "/es/projects"
+          }
+          class="hover:text-blue-500"
+        >
+          {lang === "en" ? "Projects" : "Proyectos"}
+        </a>
+      </li>
+      <li>
+        <a
+          href={
+            lang === "en" ? "/en/posts" : "/es/posts"
+          }
+          class="hover:text-blue-500"
+        >
+          {lang === "en" ? "Posts" : "Posts"}
+        </a>
+      </li>
+      <li>
+        <a
+          href={
+            lang === "en" ? "/en/#contact" : "/#contact"
+          }
+          class="hover:text-blue-500"
+        >
+          {lang === "en" ? "Contact" : "Contacto"}
+        </a>
+      </li>
+      <li>
+        <LanguageSwitcher client:idle />
+      </li>
+    </ul>
+
+    <!-- menu wrapper always rendered; desktop version will hide redundant links via CSS -->
     <div class="flex flex-row gap-x-4">
-      <LanguageSwitcher client:idle />
       <MobileMenuWrapper client:idle lang={lang} />
     </div>
   </nav>
