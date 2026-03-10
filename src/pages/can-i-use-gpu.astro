@@ -64,6 +64,16 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
           Flutter con motor Skia/Skwasm.
         </p>
 
+        <div id="success-section" class="hidden">
+           <div
+            class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 rounded-2xl text-green-600 dark:text-green-400 mb-6"
+          >
+             <p class="text-sm font-medium">
+               Hardware compatible detectado. Las aplicaciones locales funcionarán correctamente.
+             </p>
+           </div>
+        </div>
+
         <div id="redirect-section" class="hidden">
           <div class="relative pt-1">
             <div
@@ -108,9 +118,16 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
           >
         </div>
 
+        <button
+          id="btn-toggle-generator"
+          class="mt-8 text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 hover:underline font-bold transition-colors"
+        >
+          Mostrar/Ocultar Generador de Enlaces
+        </button>
+
         <div
           id="generator-section"
-          class="hidden text-left border-t border-gray-100 dark:border-gray-800 pt-8 mt-8"
+          class="hidden text-left border-t border-gray-100 dark:border-gray-800 pt-8 mt-4"
         >
           <h2
             class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4 text-center"
@@ -164,7 +181,7 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
                 />
                 <button
                   id="btn-copy"
-                  class="px-3 py-2 bg-purple-100 dark:bg-purple-900/40 text-purple-600 rounded-lg text-xs font-bold"
+                  class="px-3 py-2 bg-purple-100 dark:bg-purple-900/40 text-purple-600 rounded-lg text-xs font-bold transition-colors hover:bg-purple-200"
                   >Copiar</button
                 >
               </div>
@@ -176,7 +193,8 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
   </main>
 
   <script>
-    import type { AnchorHTMLAttributes } from "react";
+    import { checkGPU } from "../components/tools/gpuDetector";
+    import { generateUrl } from "../components/tools/urlGenerator";
 
     const urlParams = new URLSearchParams(window.location.search);
     const targetUrl = urlParams.get("url");
@@ -184,178 +202,75 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
 
     const statusTitle = document.getElementById("status-title");
     const statusDesc = document.getElementById("status-desc");
+    const successSection = document.getElementById("success-section");
     const redirectSection = document.getElementById("redirect-section");
     const errorSection = document.getElementById("error-section");
     const generatorSection = document.getElementById("generator-section");
     const countdownEl = document.getElementById("countdown");
     const progressBar = document.getElementById("progress-bar");
     const manualLink = document.getElementById("manual-link");
-
-    async function checkGPU() {
-      // 1. Critical Environment Checks
-      if (
-        typeof SharedArrayBuffer === "undefined" ||
-        typeof OffscreenCanvas === "undefined"
-      ) {
-        console.warn(
-          "GPU Check: Missing SharedArrayBuffer or OffscreenCanvas.",
-        );
-        return false;
-      }
-
-      try {
-        const canvas = new OffscreenCanvas(1, 1);
-
-        // 2. Strict WebGL 2.0 Requirement
-        // Skia/Skwasm (Flutter WASM) fundamentally needs WebGL 2.0 (ES 3.0)
-        // for modern shader features and buffer management.
-        const gl = canvas.getContext("webgl2", {
-          alpha: true,
-          depth: true,
-          stencil: true,
-          antialias: false,
-          // Removed failIfMajorPerformanceCaveat to allow modern llvmpipe
-        });
-
-        if (!gl) {
-          console.warn(
-            "GPU Check: WebGL 2.0 not available. Fallback to WebGL 1.0 is not sufficient for Skwasm.",
-          );
-          return false;
-        }
-
-        // 3. Version Check
-        // Even if WebGL 2 exists, we check the underlying version if possible.
-        const versionStr = gl.getParameter(gl.VERSION);
-        console.log(`GL Version: ${versionStr}`);
-
-        // 4. Renderer Info (Informational, no longer a hard blocklist)
-        const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-        if (debugInfo) {
-          const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-          console.log(`Detected Renderer: ${renderer}`);
-        }
-
-        // 5. "Zombie GPU" & Pipeline Integrity Test
-        // We clear with a specific color and read it back.
-        // This detects drivers that report WebGL 2 but have a broken implementation.
-        gl.clearColor(0.5, 0.25, 0.75, 1.0); // Distinctive color
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        const pixels = new Uint8Array(4);
-        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-        // Validation (allowing for slight precision errors in software renderers)
-        const r = pixels[0];
-        const g = pixels[1];
-        const b = pixels[2];
-
-        // Expected: 128, 64, 191
-        if (
-          Math.abs(r - 128) > 2 ||
-          Math.abs(g - 64) > 2 ||
-          Math.abs(b - 191) > 2
-        ) {
-          console.warn(
-            `GPU Check: Readback test failed. Expected ~128,64,191 but got ${r},${g},${b}.`,
-          );
-          return false;
-        }
-
-        // 6. Feature check: Float buffers (Often used by Skia for high-precision masks)
-        const floatBuffer = gl.getExtension("EXT_color_buffer_float");
-        if (!floatBuffer) {
-          console.warn(
-            "GPU Check: EXT_color_buffer_float missing. Complex UI might glich, but we might allow it.",
-          );
-        }
-
-        return true;
-      } catch (e) {
-        console.error("GPU Check: Exception during detection.", e);
-        return false;
-      }
-    }
+    const btnToggleGenerator = document.getElementById("btn-toggle-generator");
 
     async function init() {
-      if (
-        !targetUrl &&
-        statusTitle !== null &&
-        statusDesc !== null &&
-        generatorSection !== null
-      ) {
-        statusTitle.textContent = "Detector de GPU";
-        statusDesc.textContent =
-          "Herramienta para validar hardware antes de redireccionar.";
-        generatorSection.classList.remove("hidden");
-        return;
-      }
-
+      // 1. Analyze hardware immediately
       const hasGPU = await checkGPU();
 
-      if (
-        hasGPU &&
-        statusTitle !== null &&
-        statusDesc !== null &&
-        redirectSection !== null &&
-        manualLink !== null
-      ) {
+      if (!statusTitle || !statusDesc) return;
+
+      if (hasGPU) {
         statusTitle.textContent = "Hardware Compatible";
-        statusDesc.textContent =
-          "Se ha detectado una GPU activa. Redirigiendo a la aplicación...";
-        redirectSection.classList.remove("hidden");
-        (manualLink as HTMLAnchorElement).href = targetUrl as string;
+        statusDesc.textContent = "Se ha detectado una GPU activa.";
+        
+        if (targetUrl) {
+          // Hardware compatible AND URL provided -> handle redirect
+          statusDesc.textContent += " Redirigiendo a la aplicación...";
+          redirectSection?.classList.remove("hidden");
+          if (manualLink) (manualLink as HTMLAnchorElement).href = targetUrl as string;
 
-        let timeLeft = waitTime;
-        (countdownEl as HTMLSpanElement).textContent = timeLeft.toString();
+          let timeLeft = waitTime;
+          if (countdownEl) (countdownEl as HTMLSpanElement).textContent = timeLeft.toString();
 
-        const interval = setInterval(() => {
-          timeLeft--;
-          (countdownEl as HTMLSpanElement).textContent = timeLeft.toString();
-          (progressBar as HTMLDivElement).style.width =
-            `${(timeLeft / waitTime) * 100}%`;
+          const interval = setInterval(() => {
+            timeLeft--;
+            if (countdownEl) (countdownEl as HTMLSpanElement).textContent = timeLeft.toString();
+            if (progressBar) (progressBar as HTMLDivElement).style.width = `${(timeLeft / waitTime) * 100}%`;
 
-          if (timeLeft <= 0) {
-            clearInterval(interval);
-            window.location.href = targetUrl as string;
-          }
-        }, 1000);
-      } else {
-        if (
-          statusTitle === null ||
-          statusDesc === null ||
-          errorSection === null
-        ) {
-          return;
+            if (timeLeft <= 0) {
+              clearInterval(interval);
+              window.location.href = targetUrl as string;
+            }
+          }, 1000);
+        } else {
+           // Hardware compatible BUT NO URL provided -> show success UI
+           successSection?.classList.remove("hidden");
         }
+      } else {
+        // 2. Hardware incompatible -> show error
         statusTitle.textContent = "Hardware Incompatible";
-        statusDesc.textContent =
-          "Lo sentimos, tu dispositivo no cumple los requisitos.";
-        errorSection.classList.remove("hidden");
+        statusDesc.textContent = "Lo sentimos, tu dispositivo no cumple los requisitos.";
+        errorSection?.classList.remove("hidden");
       }
     }
 
     // Generator logic
     const inputUrl = document.getElementById("input-url") as HTMLInputElement;
     const inputTime = document.getElementById("input-time") as HTMLInputElement;
-    const btnGenerate = document.getElementById(
-      "btn-generate",
-    ) as HTMLButtonElement;
+    const btnGenerate = document.getElementById("btn-generate") as HTMLButtonElement;
     const resultArea = document.getElementById("result-area") as HTMLDivElement;
     const outputUrl = document.getElementById("output-url") as HTMLInputElement;
     const btnCopy = document.getElementById("btn-copy") as HTMLButtonElement;
 
+    btnToggleGenerator?.addEventListener("click", () => {
+      generatorSection?.classList.toggle("hidden");
+    });
+
     btnGenerate?.addEventListener("click", () => {
-      if (
-        inputTime === null ||
-        inputUrl === null ||
-        outputUrl === null ||
-        resultArea === null
-      )
-        return;
+      if (!inputTime || !inputUrl || !outputUrl || !resultArea) return;
       if (!inputUrl.value) return;
+      
       const base = window.location.origin + window.location.pathname;
-      const final = `${base}?url=${encodeURIComponent(inputUrl.value)}&t=${inputTime.value}`;
+      const final = generateUrl(inputUrl.value, parseInt(inputTime.value) || 5, base);
+      
       outputUrl.value = final;
       resultArea.classList.remove("hidden");
     });
