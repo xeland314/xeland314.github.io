@@ -72,7 +72,13 @@ self.onmessage = async (e) => {
         return 0;
       },
       fd_seek: () => 70, // ESPIPE
+      fd_pread: () => 0, // Not supported, but return success
+      fd_pwrite: () => 0, // Not supported, but return success
       fd_close: () => 0,
+      fd_advise: () => 0,
+      fd_allocate: () => 70, // ESPIPE
+      fd_datasync: () => 0,
+      fd_sync: () => 0,
       fd_fdstat_get: (fd, stat_ptr) => {
         const view = new DataView(instance.exports.memory.buffer);
         view.setUint8(stat_ptr, 16); // filetype: character device

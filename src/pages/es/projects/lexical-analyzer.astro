@@ -6,7 +6,7 @@ import ProjectLayout from "../../../layouts/ProjectLayout.astro";
 const title =
   "🧮 Reconocedor de Expresiones Matemáticas - Christopher Villamarín Projects";
 const description =
-  "Descubre el Reconocedor de Expresiones Matemáticas, un analizador léxico diseñado para procesar y manejar operaciones matemáticas complejas. Integra C y Go para extender funcionalidades avanzadas.";
+  "Descubre el Reconocedor de Expresiones Matemáticas, un analizador léxico diseñado para procesar y manejar operaciones matemáticas complejas. Integra C y Zig para extender funcionalidades avanzadas.";
 const keywords = [
   "Reconocedor de Expresiones Matemáticas",
   "análisis léxico",
@@ -14,7 +14,7 @@ const keywords = [
   "matemáticas",
   "procesamiento numérico",
   "C",
-  "Go",
+  "Zig",
   "Christopher Villamarín",
   "xeland314",
   "proyectos",
@@ -24,7 +24,7 @@ const ogImage =
   "https://raw.githubusercontent.com/xeland314/Analizador-lexico/refs/heads/main/imgs/Captura1.png";
 
 const ogUrl =
-  "https://xeland314.github.io/es/projects/analizador-lexico/";
+  "https://xeland314.github.io/es/projects/lexical-analyzer/";
 const author = "xeland314";
 ---
 
@@ -34,15 +34,13 @@ const author = "xeland314";
   description={description}
   keywords={keywords}
   author={author}
-  title={title}
-  description={description}
   url={ogUrl}
   image={ogImage}
   imageAlt="Reconocedor de Expresiones Matemáticas"
   robots="index, follow"
   canonical={ogUrl}
+  lang="es"
 >
-  <header class="text-center mb-8">
     <h1 class="text-4xl font-bold mb-4">
       🧮 Reconocedor de Expresiones Matemáticas
     </h1>
@@ -258,41 +256,42 @@ const author = "xeland314";
   </section>
 
   <section class="mb-8">
-    <h2 class="text-3xl font-semibold mb-4">📚 C & Go</h2>
+    <h2 class="text-3xl font-semibold mb-4">📚 Zig & C</h2>
     <p class="mb-4">
-      Para extender funciones matemáticas, el programa utiliza Go para exportar
-      definiciones inexistentes en C, como la raíz cúbica. Esto se logra
-      compilando el archivo <code>math_2.go</code> en una librería estática.
-    </p>
-    <CodeBlock
-      language="sh"
-      code={`go build -buildmode=c-archive math_2.go`}
-      client:visible
-    />
-    <p class="mt-4">
-      Esto genera archivos <code>math_2.h</code> y <code>math_2.a</code> que se integran
-      en el proyecto C durante la compilación.
+      El proyecto utiliza Zig como orquestador principal, integrándose con código C generado por Flex y Bison. Zig proporciona seguridad de memoria y compilación fácil a WASM, permitiendo que la calculadora se ejecute en el navegador.
     </p>
   </section>
 
   <section class="mb-8">
     <h2 class="text-3xl font-semibold mb-4">🔧 Ejecución del programa</h2>
     <p class="mb-4">
-      Compila y ejecuta el programa utilizando los siguientes comandos en la
-      terminal de Ubuntu:
+      El proyecto utiliza Zig como sistema de construcción. Primero, genera los analizadores léxico y sintáctico con Flex y Bison, luego compila con Zig:
     </p>
     <CodeBlock
       language="sh"
-      code={`yacc -d -v proyecto.y\nlex reconocedor.l\ngcc y.tab.c funciones.c lex.yy.c gofuncs/math_2.a -pthread -lfl -lm -o math_app\n./math_app`}
+      code={`lex reconocedor.l\nyacc -d gramatica.y\nzig build`}
       client:visible
     />
-    <p class="mt-4">
-      O simplemente usa <code>make</code> para automatizar el proceso.
-    </p>
+    <p class="mt-4">O usa <code>make</code> para automatizar el proceso.</p>
+    <p class="mt-4">Para compilación WASM: <code>make wasm</code></p>
+    <p class="mt-4"><strong>Requisitos:</strong> Flex, Bison, Zig 0.15.2 o superior.</p>
   </section>
 
   <section class="mb-8">
-    <h2 class="text-3xl font-semibold mb-4">📊 Ejemplos de ejecución</h2>
+    <h2 class="text-3xl font-semibold mb-4">�️ Prueba la Calculadora</h2>
+    <p class="mb-4">
+      Puedes probar la calculadora directamente en tu navegador usando nuestra terminal interactiva impulsada por WebAssembly.
+    </p>
+    <a
+      href="/terminal"
+      class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      Abrir Terminal Calculadora
+    </a>
+  </section>
+
+  <section class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">�📊 Ejemplos de ejecución</h2>
     <p class="mb-4">
       Para preparar operaciones, utiliza la entrada y salida en archivos:
     </p>
