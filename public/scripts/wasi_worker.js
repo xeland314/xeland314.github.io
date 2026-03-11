@@ -1,38 +1,63 @@
 
+/**
+ * WASI Worker with SharedArrayBuffer correlation for stdin.
+ * Based on standard WASI snapshot_preview1 specifications.
+ */
+
 self.onmessage = async (e) => {
   const { wasmUrl, sab } = e.data;
-  const lock = new Int32Array(sab);
-  const buffer = new Uint8Array(sab);
+  if (!sab) {
+    console.error("wasi_worker.js: No SharedArrayBuffer provided");
+    return;
+  }
 
+  const lock = new Int32Array(sab);
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
   let instance;
 
+  // WASI Error Codes
+  const WASI_ESUCCESS = 0;
+  const WASI_EBADF = 8;
+  const WASI_EINVAL = 28;
+  const WASI_ENOSYS = 52;
+  const WASI_ENOTTY = 59;
+  const WASI_ENOTCAPABLE = 76;
+  const WASI_ESPIPE = 70;
+
   const imports = {
     wasi_snapshot_preview1: {
+      // Write to a file descriptor
       fd_write: (fd, iovs_ptr, iovs_len, nwritten_ptr) => {
-        let written = 0;
         const memory = new Uint8Array(instance.exports.memory.buffer);
         const view = new DataView(instance.exports.memory.buffer);
+        let written = 0;
 
         for (let i = 0; i < iovs_len; i++) {
           const ptr = view.getUint32(iovs_ptr + i * 8, true);
           const len = view.getUint32(iovs_ptr + i * 8 + 4, true);
 
-          const chunk = memory.subarray(ptr, ptr + len);
-          const string = dec.decode(chunk);
-          self.postMessage({ type: 'output', data: string });
+          if (len === 0) continue;
 
+          const chunk = memory.subarray(ptr, ptr + len);
+          // Use {stream: true} for potential multi-byte splits
+          const string = dec.decode(chunk, { stream: true });
+          
+          if (string.length > 0) {
+            // console.log(`wasi_worker.js: fd_write(fd=${fd}, len=${len}): ${JSON.stringify(string)}`);
+            self.postMessage({ type: 'output', data: string });
+          }
           written += len;
         }
 
         view.setUint32(nwritten_ptr, written, true);
-        return 0; // Success
+        return WASI_ESUCCESS;
       },
+
+      // Read from a file descriptor
       fd_read: (fd, iovs_ptr, iovs_len, nread_ptr) => {
-        // Only handle stdin (0)
-        if (fd !== 0) return 0;
+        if (fd !== 0) return WASI_EBADF;
 
         const view = new DataView(instance.exports.memory.buffer);
         const memory = new Uint8Array(instance.exports.memory.buffer);
@@ -42,162 +67,184 @@ self.onmessage = async (e) => {
           const ptr = view.getUint32(iovs_ptr + i * 8, true);
           const len = view.getUint32(iovs_ptr + i * 8 + 4, true);
 
-          // Read loop (1 char at a time for simplicity via SAB)
-          // Ideally we'd read up to 'len' bytes
           for (let j = 0; j < len; j++) {
-            // Wait for data
-            // lock[0]: 0 = empty, 1 = data ready
-            Atomics.wait(lock, 0, 0);
+            if (Atomics.load(lock, 0) === 0) {
+              Atomics.wait(lock, 0, 0);
+            }
 
-            // Read byte
             const charCode = lock[1];
-
+            // console.log(`wasi_worker.js: fd_read(fd=${fd}) received byte: ${charCode}`);
+            
             memory[ptr + j] = charCode;
             totalRead++;
 
-            // Reset lock
-            lock[0] = 0;
-            Atomics.notify(lock, 0); // Notify main thread that we read it
+            Atomics.store(lock, 0, 0);
+            Atomics.notify(lock, 0, 1);
 
-            // If newline, maybe return? 
-            // Standard canonical mode usually returns on newline.
-            if (charCode === 10 || charCode === 13) {
-              view.setUint32(nread_ptr, totalRead, true);
-              return 0;
-            }
+            view.setUint32(nread_ptr, totalRead, true);
+            return WASI_ESUCCESS;
           }
         }
 
         view.setUint32(nread_ptr, totalRead, true);
-        return 0;
+        return WASI_ESUCCESS;
       },
-      fd_seek: () => 70, // ESPIPE
-      fd_pread: () => 0, // Not supported, but return success
-      fd_pwrite: () => 0, // Not supported, but return success
-      fd_close: () => 0,
-      fd_advise: () => 0,
-      fd_allocate: () => 70, // ESPIPE
-      fd_datasync: () => 0,
-      fd_sync: () => 0,
+
+      // Basic metadata about a file descriptor
       fd_fdstat_get: (fd, stat_ptr) => {
         const view = new DataView(instance.exports.memory.buffer);
-        view.setUint8(stat_ptr, 16); // filetype: character device
-        view.setUint16(stat_ptr + 2, 0, true); // flags
-        // rights base and inheriting (all rights - set to -1 biguint64)
-        // 0xFFFFFFFFFFFFFFFF
-        view.setBigUint64(stat_ptr + 8, BigInt("-1"), true);
-        view.setBigUint64(stat_ptr + 16, BigInt("-1"), true);
-        return 0;
+        if (fd >= 0 && fd <= 2) {
+            view.setUint8(stat_ptr, 2); 
+            view.setUint16(stat_ptr + 2, 0, true); 
+            const ttyRights = 2n | 64n | 8n | 67108864n | 1048576n;
+            view.setBigUint64(stat_ptr + 8, ttyRights, true); 
+            view.setBigUint64(stat_ptr + 16, 0n, true); 
+            return WASI_ESUCCESS;
+        }
+        return WASI_EBADF;
       },
+
       poll_oneoff: (in_ptr, out_ptr, nsubscriptions, nevents_ptr) => {
         const view = new DataView(instance.exports.memory.buffer);
         let eventsWritten = 0;
 
         for (let i = 0; i < nsubscriptions; i++) {
-          const sub_ptr = in_ptr + i * 48; // subscription struct size is 48
+          const sub_ptr = in_ptr + i * 48;
           const userdata = view.getBigUint64(sub_ptr, true);
           const type = view.getUint8(sub_ptr + 8);
-
-          // Event struct size is 32
           const event_ptr = out_ptr + i * 32;
 
-          view.setBigUint64(event_ptr, userdata, true); // userdata
-          view.setUint16(event_ptr + 8, 0, true); // error: success
-          view.setUint8(event_ptr + 10, type); // type
+          view.setBigUint64(event_ptr, userdata, true);
+          view.setUint16(event_ptr + 8, 0, true); 
+          view.setUint8(event_ptr + 10, type);
 
-          // fd_read (1) or fd_write (2)
-          if (type === 1 || type === 2) {
-            view.setBigUint64(event_ptr + 16, BigInt(1), true); // nbytes (dummy > 0)
-            view.setUint16(event_ptr + 24, 0, true); // flags
+          if (type === 1) { // fd_read
+            const sub_fd = view.getUint32(sub_ptr + 16, true);
+            if (sub_fd === 0) {
+              const available = Atomics.load(lock, 0) === 1;
+              view.setBigUint64(event_ptr + 16, available ? 1n : 0n, true);
+              view.setUint16(event_ptr + 24, 0, true);
+              eventsWritten++;
+            } else {
+              view.setBigUint64(event_ptr + 16, 0n, true);
+              view.setUint16(event_ptr + 24, 0, true);
+              eventsWritten++;
+            }
+          } else if (type === 2) { // fd_write
+            view.setBigUint64(event_ptr + 16, 1n, true);
+            view.setUint16(event_ptr + 24, 0, true);
             eventsWritten++;
           } else if (type === 0) { // clock
-            // Just say it expired immediately
+            view.setBigUint64(event_ptr + 16, 0n, true);
             eventsWritten++;
           }
         }
 
         view.setUint32(nevents_ptr, eventsWritten, true);
-        return 0;
+        return WASI_ESUCCESS;
       },
-      environ_sizes_get: (environ_count, environ_buf_size) => {
-        const view = new DataView(instance.exports.memory.buffer);
-        view.setUint32(environ_count, 0, true);
-        view.setUint32(environ_buf_size, 0, true);
-        return 0;
-      },
-      environ_get: (environ, environ_buf) => {
-        return 0;
-      },
-      args_sizes_get: (argc, argv_buf_size) => {
-        const view = new DataView(instance.exports.memory.buffer);
-        view.setUint32(argc, 0, true);
-        view.setUint32(argv_buf_size, 0, true);
-        return 0;
-      },
-      args_get: (argv, argv_buf) => {
-        return 0;
-      },
-      proc_exit: (code) => {
-        self.postMessage({ type: 'exit', code });
-        throw new Error(`Process exited with code ${code}`);
-      },
-      // Minimal stubs for other common calls
-      fd_fdstat_set_flags: () => 0,
-      fd_prestat_get: (fd, prestat_ptr) => {
-        return 8; // EBADF (Error Bad File Descriptor) - indica que no hay directorios pre-abiertos
-      },
-      fd_prestat_dir_name: (fd, path, path_len) => {
-        return 8; // EBADF
-      },
-      path_open: (fd, dirflags, path_ptr, path_len, oflags, fs_rights_base, fs_rights_inheriting, fdflags, opened_fd_ptr) => {
-        return 44; // ENOENT (No such file or directory)
-      },
-      path_filestat_get: (fd, flags, path_ptr, path_len, buf_ptr) => {
-        return 44; // ENOENT
-      },
+
       fd_filestat_get: (fd, buf_ptr) => {
-        return 0; // Success (dummy)
+        if (fd < 0 || fd > 2) return WASI_EBADF;
+        const view = new DataView(instance.exports.memory.buffer);
+        view.setBigUint64(buf_ptr, 0n, true);
+        view.setBigUint64(buf_ptr + 8, 0n, true);
+        view.setUint8(buf_ptr + 16, 2); 
+        view.setBigUint64(buf_ptr + 24, 1n, true); 
+        view.setBigUint64(buf_ptr + 32, 0n, true); 
+        return WASI_ESUCCESS;
       },
-      fd_readdir: (fd, buf, buf_len, cookie, res_buf_len_ptr) => {
-        return 0;
+
+      environ_sizes_get: (count_ptr, size_ptr) => {
+        const view = new DataView(instance.exports.memory.buffer);
+        view.setUint32(count_ptr, 0, true);
+        view.setUint32(size_ptr, 0, true);
+        return WASI_ESUCCESS;
       },
-      path_readlink: (fd, path_ptr, path_len, buf_ptr, buf_len, nread_ptr) => {
-        return 44; // ENOENT
+      environ_get: (environ_ptr, environ_buf_ptr) => WASI_ESUCCESS,
+      args_sizes_get: (argc_ptr, argv_buf_size_ptr) => {
+        const view = new DataView(instance.exports.memory.buffer);
+        view.setUint32(argc_ptr, 0, true);
+        view.setUint32(argv_buf_size_ptr, 0, true);
+        return WASI_ESUCCESS;
       },
+      args_get: (argv_ptr, argv_buf_ptr) => WASI_ESUCCESS,
+
+      proc_exit: (code) => {
+        console.log(`wasi_worker.js: proc_exit called with code ${code}`);
+        self.postMessage({ type: 'exit', code });
+        // Instead of throwing, we let it trap naturally if unreachable is hit, 
+        // or we throw a special string that we ignore in our catch.
+        throw "WASI_EXIT"; 
+      },
+
       clock_time_get: (id, precision, time_ptr) => {
         const view = new DataView(instance.exports.memory.buffer);
-        // id 0 is real time, id 1 is monotonic
         const now = BigInt(Math.floor(Date.now() * 1e6));
         view.setBigUint64(time_ptr, now, true);
-        return 0;
+        return WASI_ESUCCESS;
       },
-      random_get: (buf, buf_len) => {
+
+      random_get: (buf_ptr, buf_len) => {
         const memory = new Uint8Array(instance.exports.memory.buffer);
-        const chunk = memory.subarray(buf, buf + buf_len);
-        crypto.getRandomValues(chunk);
-        return 0;
+        crypto.getRandomValues(memory.subarray(buf_ptr, buf_ptr + buf_len));
+        return WASI_ESUCCESS;
       },
-      sched_yield: () => 0,
+
+      fd_seek: (fd, offset, whence, newoffset_ptr) => WASI_ESPIPE,
+      fd_close: (fd) => WASI_ESUCCESS,
+      fd_advise: (fd, offset, len, advice) => WASI_ESUCCESS,
+      fd_allocate: (fd, offset, len) => WASI_ENOSYS,
+      fd_datasync: (fd) => WASI_ESUCCESS,
+      fd_sync: (fd) => WASI_ESUCCESS,
+      fd_fdstat_set_flags: (fd, flags) => WASI_ESUCCESS,
+      fd_prestat_get: (fd, buf_ptr) => WASI_EBADF,
+      fd_prestat_dir_name: (fd, path_ptr, path_len) => WASI_EBADF,
+      path_open: (fd, dirflags, path_ptr, path_len, oflags, fs_rights_base, fs_rights_inheriting, fdflags, opened_fd_ptr) => WASI_ENOTCAPABLE,
+      path_filestat_get: (fd, flags, path_ptr, path_len, buf_ptr) => WASI_ENOTCAPABLE,
+      fd_readdir: (fd, buf_ptr, buf_len, cookie, nwritten_ptr) => WASI_ENOTCAPABLE,
+      path_readlink: (fd, path_ptr, path_len, buf_ptr, buf_len, nwritten_ptr) => WASI_ENOTCAPABLE,
+      sched_yield: () => WASI_ESUCCESS,
+      fd_pread: (fd, iovs_ptr, iovs_len, offset, nread_ptr) => WASI_ENOSYS,
+      fd_pwrite: (fd, iovs_ptr, iovs_len, offset, nwritten_ptr) => WASI_ENOSYS,
+      fd_renumber: (fd, to) => WASI_EBADF,
+      fd_tell: (fd, offset_ptr) => WASI_ENOSYS,
+      path_create_directory: (fd, path_ptr, path_len) => WASI_ENOTCAPABLE,
+      path_link: (old_fd, old_flags, old_path_ptr, old_path_len, new_fd, new_path_ptr, new_path_len) => WASI_ENOTCAPABLE,
+      path_remove_directory: (fd, path_ptr, path_len) => WASI_ENOTCAPABLE,
+      path_rename: (fd, old_path_ptr, old_path_len, new_fd, new_path_ptr, new_path_len) => WASI_ENOTCAPABLE,
+      path_symlink: (old_path_ptr, old_path_len, fd, new_path_ptr, new_path_len) => WASI_ENOTCAPABLE,
+      path_unlink_file: (fd, path_ptr, path_len) => WASI_ENOTCAPABLE,
+      path_filestat_set_size: (fd, flags, path_ptr, path_len, size) => WASI_ENOTCAPABLE,
+      path_filestat_set_times: (fd, flags, path_ptr, path_len, atim, mtim, fst_flags) => WASI_ENOTCAPABLE,
+      fd_filestat_set_size: (fd, size) => WASI_ENOTCAPABLE,
+      fd_filestat_set_times: (fd, atim, mtim, fst_flags) => WASI_ENOTCAPABLE,
+      sock_recv: (fd, ri_data_ptr, ri_data_len, ri_flags, ro_datalen_ptr, ro_flags_ptr) => WASI_ENOSYS,
+      sock_send: (fd, si_data_ptr, si_data_len, si_flags, so_datalen_ptr) => WASI_ENOSYS,
+      sock_shutdown: (fd, how) => WASI_ENOSYS,
     }
   };
 
   try {
+    console.log(`wasi_worker.js: Fetching WASM from ${wasmUrl}...`);
     const response = await fetch(wasmUrl);
     const bytes = await response.arrayBuffer();
-    const result = await WebAssembly.instantiate(bytes, imports);
-    instance = result.instance;
+    
+    console.log(`wasi_worker.js: Instantiating WASM...`);
+    const { instance: wasmInstance } = await WebAssembly.instantiate(bytes, imports);
+    instance = wasmInstance;
 
-    // Start the WASI module
+    console.log(`wasi_worker.js: Invoking _start...`);
     if (instance.exports._start) {
-      instance.exports._start();
+        instance.exports._start();
+    } else if (instance.exports.main) {
+        instance.exports.main();
     } else {
-      self.postMessage({ type: 'output', data: 'Error: No _start function found in WASM.' });
+        throw new Error("No _start or main function found in WASM module.");
     }
   } catch (err) {
-    console.error(err);
-    self.postMessage({
-      type: 'output', data: `
-Error: ${err.message}
-` });
+    if (err === "WASI_EXIT") return;
+    console.error(`wasi_worker.js error:`, err);
+    self.postMessage({ type: 'output', data: `\nError: ${err.message || err}\n` });
   }
 };

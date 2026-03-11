@@ -145,34 +145,12 @@ document.addEventListener("astro:page-load", async () => {
         term.write(data);
       }
     } else {
-      // WASM Mode
-      // Local echo logic is handled by 'terminal.astro' (user preference or app?)
-      // Usually canonical mode echoes locally.
-
-      if (ord === 13) {
-        // Enter
-        term.write("\r\n");
-        // Append \n for WASI input
-        sendToWorker(data); // Sending \r (13) might be issue?
-        // The logic below sends raw char but we want to emulate terminal
-        // Previous working logic accumulated line.
-
-        // Let's reuse the line buffer logic for WASM too?
-        // If we do char-by-char, we can just send.
-        // But for line editing (backspace), we need buffer.
-      } else if (ord === 127) {
-        // Handle backspace visually?
-        // If we are in WASM mode, do we handle line editing?
-        // Yes, we implemented canonical mode previously.
-      }
-
-      // Actually, let's reuse the previous logic which had a 'currentLine' buffer
+      // WASM Mode - use line buffer for canonical input
       handleWasmInput(ord, data);
     }
   });
 
   let wasmLineBuffer = "";
-
   function handleWasmInput(ord, char) {
     if (ord === 13) {
       term.write("\r\n");
@@ -184,8 +162,6 @@ document.addEventListener("astro:page-load", async () => {
         wasmLineBuffer = wasmLineBuffer.slice(0, -1);
         term.write("\b \b");
       }
-    } else if (ord < 32) {
-      // ignore
     } else {
       wasmLineBuffer += char;
       term.write(char);
@@ -225,31 +201,36 @@ document.addEventListener("astro:page-load", async () => {
 
   async function sendToWorker(str) {
     for (let i = 0; i < str.length; i++) {
-      inputBuffer.push(str.charCodeAt(i));
+        inputBuffer.push(str.charCodeAt(i));
     }
+    console.log(`terminal.js: sendToWorker: added ${str.length} chars to buffer. Total: ${inputBuffer.length}`);
     processBuffer();
   }
 
   function processBuffer() {
     if (isProcessing) return;
-    if (inputBuffer.length === 0) return;
-    if (!worker) return; // safety
+    if (inputBuffer.length === 0 || !worker) return;
 
+    // Check if worker is ready (lock[0] === 0)
     if (Atomics.load(lock, 0) === 0) {
       isProcessing = true;
       const charCode = inputBuffer.shift();
 
+      // Send the byte
+      console.log(`terminal.js: processBuffer: sending charCode ${charCode} ('${String.fromCharCode(charCode)}')`);
       lock[1] = charCode;
       Atomics.store(lock, 0, 1);
       Atomics.notify(lock, 0);
 
       isProcessing = false;
 
+      // Continue if there's more data
       if (inputBuffer.length > 0) {
         setTimeout(processBuffer, 0);
       }
     } else {
-      setTimeout(processBuffer, 10);
+      // Worker still processing, retry with minimal delay
+      setTimeout(processBuffer, 1);
     }
   }
 });
