@@ -3,13 +3,36 @@
  * WASI Worker with SharedArrayBuffer correlation for stdin.
  * Based on standard WASI snapshot_preview1 specifications.
  */
+function detectBrowser() {
+  const ua = self.navigator.userAgent;
+  if (ua.includes("Brave") || self.navigator.brave) return "Brave";
+  if (ua.includes("Edg/")) return "Edge";
+  if (ua.includes("OPR/") || ua.includes("Opera")) return "Opera";
+  if (ua.includes("Chrome/")) return "Chrome";
+  if (ua.includes("Firefox/")) return "Firefox";
+  if (ua.includes("Safari/")) return "Safari";
+  return "Web Browser";
+}
+
+const browserName = detectBrowser();
+
+function detectLanguage() {
+  return self.navigator.language || "unknown";
+}
+
+const systemLanguage = detectLanguage();
 
 self.onmessage = async (e) => {
-  const { wasmUrl, sab } = e.data;
+  const { wasmUrl, sab, resolution, cpuCores, gpuRenderer } = e.data;
   if (!sab) {
     console.error("wasi_worker.js: No SharedArrayBuffer provided");
     return;
   }
+
+  const screenResolution = resolution || "unknown";
+  const cores = cpuCores || 0;
+  const domain = self.location.hostname || "unknown";
+  const gpu = gpuRenderer || "unknown";
 
   const lock = new Int32Array(sab);
   const enc = new TextEncoder();
@@ -27,6 +50,47 @@ self.onmessage = async (e) => {
   const WASI_ESPIPE = 70;
 
   const imports = {
+    env: {
+      getTabMemoryMB: () => {
+        const mem = self.performance?.memory;
+        console.log("getTabMemoryMB called!", mem);
+        if (mem) {
+          return Math.round(mem.usedJSHeapSize / 1024 / 1024);
+        }
+        return 0;
+      },
+      getBrowserNameLen: () => browserName.length,
+      getBrowserName: (ptr) => {
+        const memory = new Uint8Array(instance.exports.memory.buffer);
+        const encoded = new TextEncoder().encode(browserName);
+        memory.set(encoded, ptr);
+      },
+      getLanguageLen: () => systemLanguage.length,
+      getLanguage: (ptr) => {
+        const memory = new Uint8Array(instance.exports.memory.buffer);
+        const encoded = new TextEncoder().encode(systemLanguage);
+        memory.set(encoded, ptr);
+      },
+      getResolutionLen: () => screenResolution.length,
+      getResolution: (ptr) => {
+        const memory = new Uint8Array(instance.exports.memory.buffer);
+        const encoded = new TextEncoder().encode(screenResolution);
+        memory.set(encoded, ptr);
+      },
+      getCpuCores: () => cores,
+      getDomainLen: () => domain.length,
+      getDomain: (ptr) => {
+        const memory = new Uint8Array(instance.exports.memory.buffer);
+        const encoded = new TextEncoder().encode(domain);
+        memory.set(encoded, ptr);
+      },
+      getGpuLen: () => gpu.length,
+      getGpu: (ptr) => {
+        const memory = new Uint8Array(instance.exports.memory.buffer);
+        const encoded = new TextEncoder().encode(gpu);
+        memory.set(encoded, ptr);
+      },
+    },
     wasi_snapshot_preview1: {
       // Write to a file descriptor
       fd_write: (fd, iovs_ptr, iovs_len, nwritten_ptr) => {
@@ -43,7 +107,7 @@ self.onmessage = async (e) => {
           const chunk = memory.subarray(ptr, ptr + len);
           // Use {stream: true} for potential multi-byte splits
           const string = dec.decode(chunk, { stream: true });
-          
+
           if (string.length > 0) {
             // console.log(`wasi_worker.js: fd_write(fd=${fd}, len=${len}): ${JSON.stringify(string)}`);
             self.postMessage({ type: 'output', data: string });
@@ -74,7 +138,7 @@ self.onmessage = async (e) => {
 
             const charCode = lock[1];
             // console.log(`wasi_worker.js: fd_read(fd=${fd}) received byte: ${charCode}`);
-            
+
             memory[ptr + j] = charCode;
             totalRead++;
 
@@ -94,12 +158,12 @@ self.onmessage = async (e) => {
       fd_fdstat_get: (fd, stat_ptr) => {
         const view = new DataView(instance.exports.memory.buffer);
         if (fd >= 0 && fd <= 2) {
-            view.setUint8(stat_ptr, 2); 
-            view.setUint16(stat_ptr + 2, 0, true); 
-            const ttyRights = 2n | 64n | 8n | 67108864n | 1048576n;
-            view.setBigUint64(stat_ptr + 8, ttyRights, true); 
-            view.setBigUint64(stat_ptr + 16, 0n, true); 
-            return WASI_ESUCCESS;
+          view.setUint8(stat_ptr, 2);
+          view.setUint16(stat_ptr + 2, 0, true);
+          const ttyRights = 2n | 64n | 8n | 67108864n | 1048576n;
+          view.setBigUint64(stat_ptr + 8, ttyRights, true);
+          view.setBigUint64(stat_ptr + 16, 0n, true);
+          return WASI_ESUCCESS;
         }
         return WASI_EBADF;
       },
@@ -115,7 +179,7 @@ self.onmessage = async (e) => {
           const event_ptr = out_ptr + i * 32;
 
           view.setBigUint64(event_ptr, userdata, true);
-          view.setUint16(event_ptr + 8, 0, true); 
+          view.setUint16(event_ptr + 8, 0, true);
           view.setUint8(event_ptr + 10, type);
 
           if (type === 1) { // fd_read
@@ -149,9 +213,9 @@ self.onmessage = async (e) => {
         const view = new DataView(instance.exports.memory.buffer);
         view.setBigUint64(buf_ptr, 0n, true);
         view.setBigUint64(buf_ptr + 8, 0n, true);
-        view.setUint8(buf_ptr + 16, 2); 
-        view.setBigUint64(buf_ptr + 24, 1n, true); 
-        view.setBigUint64(buf_ptr + 32, 0n, true); 
+        view.setUint8(buf_ptr + 16, 2);
+        view.setBigUint64(buf_ptr + 24, 1n, true);
+        view.setBigUint64(buf_ptr + 32, 0n, true);
         return WASI_ESUCCESS;
       },
 
@@ -175,7 +239,7 @@ self.onmessage = async (e) => {
         self.postMessage({ type: 'exit', code });
         // Instead of throwing, we let it trap naturally if unreachable is hit, 
         // or we throw a special string that we ignore in our catch.
-        throw "WASI_EXIT"; 
+        throw "WASI_EXIT";
       },
 
       clock_time_get: (id, precision, time_ptr) => {
@@ -229,18 +293,18 @@ self.onmessage = async (e) => {
     console.log(`wasi_worker.js: Fetching WASM from ${wasmUrl}...`);
     const response = await fetch(wasmUrl);
     const bytes = await response.arrayBuffer();
-    
+
     console.log(`wasi_worker.js: Instantiating WASM...`);
     const { instance: wasmInstance } = await WebAssembly.instantiate(bytes, imports);
     instance = wasmInstance;
 
     console.log(`wasi_worker.js: Invoking _start...`);
     if (instance.exports._start) {
-        instance.exports._start();
+      instance.exports._start();
     } else if (instance.exports.main) {
-        instance.exports.main();
+      instance.exports.main();
     } else {
-        throw new Error("No _start or main function found in WASM module.");
+      throw new Error("No _start or main function found in WASM module.");
     }
   } catch (err) {
     if (err === "WASI_EXIT") return;

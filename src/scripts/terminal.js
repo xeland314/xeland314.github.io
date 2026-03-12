@@ -24,7 +24,7 @@ document.addEventListener("astro:page-load", async () => {
 
   const fastfetchUrl = container.dataset.fastfetchWasmUrl;
   if (fastfetchUrl) {
-    commands["fastfetch"] = fastfetchUrl;
+    commands["zigfetch"] = fastfetchUrl;
   }
 
   // Check for SharedArrayBuffer support
@@ -78,15 +78,31 @@ document.addEventListener("astro:page-load", async () => {
     term.write("\r\n\x1b[1;34mvisitor@portfolio\x1b[0m:\x1b[1;32m~\x1b[0m$ ");
   }
 
+  function detectGPU() {
+    try {
+      const canvas = document.createElement("canvas");
+      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      if (!gl) return "unknown";
+      const ext = gl.getExtension("WEBGL_debug_renderer_info");
+      if (!ext) return "WebGL (info blocked)";
+      return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+    } catch (e) {
+      return "unknown";
+    }
+  }
+
   function runWasm(url) {
     currentMode = "wasm";
 
     // Setup SharedArrayBuffer for this run
     sab = new SharedArrayBuffer(1024);
     lock = new Int32Array(sab);
+    const resolution = `${screen.width}x${screen.height}`;
+    const cpuCores = navigator.hardwareConcurrency || 0;
+    const gpuRenderer = detectGPU();
 
     worker = new Worker("/scripts/wasi_worker.js");
-    worker.postMessage({ wasmUrl: url, sab });
+    worker.postMessage({ wasmUrl: url, sab, resolution, cpuCores, gpuRenderer });
 
     worker.onmessage = (e) => {
       const { type, data, code } = e.data;
@@ -201,7 +217,7 @@ document.addEventListener("astro:page-load", async () => {
 
   async function sendToWorker(str) {
     for (let i = 0; i < str.length; i++) {
-        inputBuffer.push(str.charCodeAt(i));
+      inputBuffer.push(str.charCodeAt(i));
     }
     console.log(`terminal.js: sendToWorker: added ${str.length} chars to buffer. Total: ${inputBuffer.length}`);
     processBuffer();
