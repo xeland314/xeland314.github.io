@@ -3,80 +3,48 @@
 import { useState, useEffect } from "react";
 
 export default function ThemeToggleButton() {
-  const [isDark, setIsDark] = useState<boolean>(false);
+  // Inicializamos como nulo o un estado por defecto para evitar mismatch de hidratación
+  const [theme, setTheme] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    const initialThemeIsDark = storedTheme === "dark" || (!storedTheme && systemPrefersDark);
-    setIsDark(initialThemeIsDark);
-
-    if (initialThemeIsDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    // Al montar, leemos la clase que ya puso el script del Layout
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
   }, []);
 
   const toggleTheme = () => {
-    const newIsDark = !isDark;
-    setIsDark(newIsDark);
-    localStorage.setItem("theme", newIsDark ? "dark" : "light");
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
 
-    if (newIsDark) {
+    if (newTheme === "dark") {
       document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
   };
+
+  // Si no ha cargado (hidratado), mostramos un placeholder o un div vacío 
+  // para evitar que el icono parpadee erróneamente
+  if (!theme) return <div className="p-2 w-10 h-10" />;
+
+  const isDark = theme === "dark";
 
   return (
     <button
       onClick={toggleTheme}
       type="button"
-      aria-pressed={isDark}
       aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-      data-theme={isDark ? "dark" : "light"}
-      className="p-2 rounded-lg transition-colors duration-200
-                 focus:outline-none focus:ring-2 focus:ring-blue-500
-                 text-gray-200 dark:text-gray-300 cursor-pointer"
+      className="p-2 rounded-lg text-gray-200 dark:text-gray-300 cursor-pointer"
     >
       {isDark ? (
-        // Icono de Luna (Modo Oscuro Activo)
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          />
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
         </svg>
       ) : (
-        // Icono de Sol (Modo Claro Activo)
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="w-6 h-6 lucide lucide-sun-icon lucide-sun"
-        >
-          <circle
-            cx="12"
-            cy="12"
-            r="4"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 lucide lucide-sun-icon lucide-sun" >
+          <circle cx="12" cy="12" r="4" />
           <path d="M12 2v2" />
           <path d="M12 20v2" />
           <path d="m4.93 4.93 1.41 1.41" />

@@ -1,6 +1,9 @@
 "use client";
 
-import ReCAPTCHA from "react-google-recaptcha";
+import React, { lazy, Suspense } from 'react';
+
+const ReCAPTCHA = lazy(() => import("react-google-recaptcha"));
+
 import useEmailForm from "./useEmailForm";
 import { useAstroTheme } from "../../hooks/useAstroThemes";
 
@@ -140,14 +143,16 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
 
       {mounted && resolvedTheme && (
         <div className="w-full flex justify-center items-center my-4 mobile:scale-100 scale-65 transition-transform duration-300">
-          <ReCAPTCHA
-            key={resolvedTheme}
-            sitekey={import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY}
-            onChange={handleRecaptchaChange}
-            onExpired={handleRecaptchaExpired}
-            theme={resolvedTheme as Theme}
-            aria-label={T.recaptcha_aria}
-          />
+          <Suspense fallback={<div className="h-[78px] bg-gray-100 animate-pulse rounded-md" />}>
+            <ReCAPTCHA
+              key={resolvedTheme}
+              sitekey={import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY}
+              onChange={handleRecaptchaChange}
+              onExpired={handleRecaptchaExpired}
+              theme={resolvedTheme as Theme}
+              aria-label={T.recaptcha_aria}
+            />
+          </Suspense>
         </div>
       )}
 
