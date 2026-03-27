@@ -1,0 +1,97 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "PostMetrics Pro - Dashboard de Métricas Sociales con IA";
+const description =
+  "Plataforma integral de análisis para marcas personales, diseñada para rastrear, visualizar y optimizar el rendimiento en múltiples redes sociales con ayuda de IA.";
+const keywords =
+  "post metrics, redes sociales, analítica, go, react, gemini, ai, dashboard";
+const author = "Christopher Villamarín";
+const applicationName = "PostMetrics Pro";
+const url = "https://xeland314.github.io/es/projects/post-metrics/";
+const image = "/images/post_metrics_showcase.png";
+const imageAlt = "Vista Previa de PostMetrics Pro";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/post-metrics/";
+
+const features = [
+  {
+    title: "Dashboard Unificado",
+    desc: "Visualiza métricas de TikTok, Instagram, YouTube y más en un solo lugar.",
+  },
+  {
+    title: "IA Estratégica",
+    desc: "Generación de reportes automáticos con Gemini para obtener insights técnicos.",
+  },
+  {
+    title: "Arquitectura Robusta",
+    desc: "Backend en Go de alto rendimiento y frontend en React con Tailwind v4.",
+  },
+  {
+    title: "Modo Dual",
+    desc: "Interfaz Cyberpunk y Minimalista Profesional intercambiables.",
+  },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      PostMetrics <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Pro</span>
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Optimiza tu presencia digital con análisis potenciado por IA. Rastrear tu crecimiento nunca fue tan visual y eficiente.
+    </p>
+  </header>
+
+  <div class="relative group mb-12">
+    <img
+      src={image}
+      alt={imageAlt}
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full transform transition group-hover:scale-[1.01]"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Características Principales</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-indigo-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              {feature.title}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {feature.desc}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-indigo-600/5 to-purple-500/5 border border-indigo-500/10">
+    <h2 class="text-3xl font-bold mb-6">Explora el Código</h2>
+    <p class="mb-8 text-lg text-gray-600 dark:text-gray-400">Revisa la arquitectura completa en el repositorio oficial.</p>
+    <a 
+      href="https://github.com/xeland314/post_metrics" 
+      target="_blank"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-all transform hover:-translate-y-1 shadow-lg shadow-indigo-600/20"
+    >
+      Ver en GitHub
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+    </a>
+  </section>
+</ProjectLayout>

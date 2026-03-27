@@ -1,0 +1,121 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "zigfetch - Neofetch en WebAssembly y Zig";
+const description =
+  "Visualizador de información del sistema compilado a WASI. El mismo binario corre nativamente en Linux y en el navegador.";
+const keywords =
+  "zig, neofetch, wasm, wasi, webassembly, system info, low-level";
+const author = "Christopher Villamarín";
+const applicationName = "zigfetch";
+const url = "https://xeland314.github.io/es/projects/zigfetch/";
+const image = "/images/zigfetch_screen1.jpg";
+const imageAlt = "Vista previa de zigfetch en el navegador";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/zigfetch/";
+
+const features = [
+  {
+    title: "Binario Universal",
+    desc: "Un único código fuente en Zig que compila tanto para Linux como para el navegador.",
+  },
+  {
+    title: "Runtime WASI",
+    desc: "Ejecución eficiente en el navegador mediante un entorno WebAssembly personalizado.",
+  },
+  {
+    title: "Extracción Profunda",
+    desc: "Lee CPU, GPU, RAM y resolución directamente de las APIs del navegador y el SO.",
+  },
+  {
+    title: "Rendimiento Zig",
+    desc: "Aprovecha la seguridad de memoria y la velocidad nativa que ofrece Zig.",
+  },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      zig<span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-500">fetch</span>
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Llevando las herramientas de sistema al navegador con Zig y WebAssembly. Eficiencia sin fronteras.
+    </p>
+  </header>
+
+  <div class="relative group mb-12">
+    <img
+      src={image}
+      alt={imageAlt}
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full transform transition group-hover:scale-[1.01]"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Tecnología de Bajo Nivel</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-orange-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              {feature.title}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {feature.desc}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">¿Cómo funciona?</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      El proyecto compila un único código base en Zig a dos objetivos distintos: un binario nativo de Linux y un módulo WebAssembly (WASI). En el navegador, el módulo WASM corre dentro de un Web Worker, comunicándose con el hilo principal para capturar detalles del hardware.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-200 dark:border-orange-800">
+        <h4 class="font-bold text-orange-600 dark:text-orange-400 mb-2">Build Nativo</h4>
+        <code>zig build -Doptimize=ReleaseSmall</code>
+      </div>
+      <div class="p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-200 dark:border-orange-800">
+        <h4 class="font-bold text-orange-600 dark:text-orange-400 mb-2">Build WASM</h4>
+        <code>zig build -Dtarget=wasm32-wasi</code>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-orange-600/5 to-amber-500/5 border border-orange-500/10">
+    <h2 class="text-3xl font-bold mb-6">Prueba el Demo</h2>
+    <p class="mb-8 text-lg text-gray-600 dark:text-gray-400">Ejecuta zigfetch directamente en tu terminal del navegador.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a 
+        href="/terminal" 
+        class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold transition-all transform hover:-translate-y-1 shadow-lg shadow-orange-600/20"
+      >
+        Abrir Terminal
+      </a>
+      <a 
+        href="https://github.com/xeland314/zigfetch" 
+        target="_blank"
+        class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 font-bold transition-all hover:bg-gray-50 shadow-sm"
+      >
+        Ver en GitHub
+      </a>
+    </div>
+  </section>
+</ProjectLayout>

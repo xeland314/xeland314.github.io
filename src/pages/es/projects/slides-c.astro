@@ -1,0 +1,161 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "C-Slides - Presentador de Diapositivas Markdown en C";
+const description =
+  "Un presentador de diapositivas minimalista y de alto rendimiento escrito en C utilizando X11, Cairo y Pango.";
+const keywords =
+  "slides, markdown, c, x11, cairo, pango, presentaciones, performance";
+const author = "Christopher Villamarín";
+const applicationName = "C-Slides";
+const url = "https://xeland314.github.io/es/projects/slides-c/";
+const image = "/images/slides_c_logo.png";
+const imageAlt = "Logo de C-Slides";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/slides-c/";
+
+const features = [
+  {
+    title: "Alto Rendimiento",
+    desc: "Escrito en C nativo para un renderizado instantáneo y fluido sin sobrecarga.",
+  },
+  {
+    title: "Markdown Nativo",
+    desc: "Renderiza archivos Markdown directamente en pantalla con soporte de Pango Markup.",
+  },
+  {
+    title: "Multi-lenguaje",
+    desc: "Arquitectura extensible con ports en Ada, Dart, Python, Zig, Lua y Go.",
+  },
+  {
+    title: "Estética Personalizable",
+    desc: "Soporte para múltiples paletas de colores como Nord, Dracula y Gruvbox.",
+  },
+];
+
+const themes = [
+  { name: "Dark (Default)", img: "/images/preview_dark.png" },
+  { name: "Monokai", img: "/images/preview_monokai.png" },
+  { name: "Nord", img: "/images/preview_nord.png" },
+  { name: "Rose", img: "/images/preview_rose.png" },
+  { name: "Light", img: "/images/preview_light.png" },
+  { name: "Ambercat", img: "/images/preview_ambercat.png" },
+  { name: "Blue", img: "/images/preview_blue.png" },
+  { name: "Catppuccin", img: "/images/preview_catppuccin.png" },
+  { name: "Dracula", img: "/images/preview_dracula.png" },
+  { name: "Gruvbox", img: "/images/preview_gruvbox.png" },
+  { name: "Tokyo Night", img: "/images/preview_tokyo-night.png" },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <div class="flex justify-center mb-6">
+      <img
+        src={image}
+        alt={imageAlt}
+        class="w-32 h-32 transform transition hover:scale-110"
+      />
+    </div>
+    <h1 class="text-4xl md:text-5 font-black mb-6 tracking-tighter">
+      C-<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Slides</span>
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Presentaciones Markdown ultra-rápidas con la potencia de C y la elegancia de Cairo/Pango.
+    </p>
+  </header>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">¿Por qué C-Slides?</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              {feature.title}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {feature.desc}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8 text-center">Galería de Temas</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        themes.map((theme) => (
+          <div class="group relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all">
+            <img 
+              src={theme.img} 
+              alt={`Vista previa del tema ${theme.name}`} 
+              class="w-full h-auto transform transition group-hover:scale-105"
+            />
+            <div class="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-3 translate-y-full group-hover:translate-y-0 transition-transform">
+              <p class="text-white text-sm font-bold text-center">{theme.name}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6 text-center text-gray-500 text-sm italic">
+      Todas las capturas han sido renderizadas a 1080p usando el motor nativo de C-Slides.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Uso y Controles</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+      C-Slides está diseñado para ser simple y efectivo. Solo necesitas un archivo Markdown para empezar tu presentación.
+    </p>
+    <div class="bg-gray-900 rounded-2xl p-6 font-mono text-sm text-emerald-400 mb-8 overflow-x-auto">
+      <p># Ejecutar presentación con un tema específico</p>
+      <p>./slides --palette tokyo-night mi_presentacion.md</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex items-center gap-3 p-4 bg-gray-100 dark:bg-gray-800 rounded-xl">
+        <span class="px-3 py-1 bg-white dark:bg-gray-700 rounded-lg font-bold shadow-sm">→</span>
+        <span>Siguiente Slide</span>
+      </div>
+      <div class="flex items-center gap-3 p-4 bg-gray-100 dark:bg-gray-800 rounded-xl">
+        <span class="px-3 py-1 bg-white dark:bg-gray-700 rounded-lg font-bold shadow-sm">←</span>
+        <span>Slide Anterior</span>
+      </div>
+      <div class="flex items-center gap-3 p-4 bg-gray-100 dark:bg-gray-800 rounded-xl">
+        <span class="px-3 py-1 bg-white dark:bg-gray-700 rounded-lg font-bold shadow-sm">F</span>
+        <span>Pantalla Completa</span>
+      </div>
+      <div class="flex items-center gap-3 p-4 bg-gray-100 dark:bg-gray-800 rounded-xl">
+        <span class="px-3 py-1 bg-white dark:bg-gray-700 rounded-lg font-bold shadow-sm">Q</span>
+        <span>Salir</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-blue-600/5 to-cyan-500/5 border border-blue-500/10">
+    <h2 class="text-3xl font-bold mb-6">Código Fuente</h2>
+    <p class="mb-8 text-lg text-gray-600 dark:text-gray-400">Explora la implementación en C y los ports disponibles.</p>
+    <a 
+      href="https://github.com/xeland314/slides.c" 
+      target="_blank"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all transform hover:-translate-y-1 shadow-lg shadow-blue-600/20"
+    >
+      Ver en GitHub
+    </a>
+  </section>
+</ProjectLayout>
