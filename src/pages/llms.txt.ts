@@ -4,46 +4,62 @@ import { db, Projects } from "astro:db";
 
 export const GET: APIRoute = async () => {
   const allProjects = await db.select().from(Projects);
-
-  // Filtramos por idioma (ej. español por defecto para el contexto principal)
   const projectsEs = allProjects.filter(p => p.lang === 'es');
 
-  const content = `
-# xeland314 - Christopher Villamarín Portfolio & API
+  const businessSlugs = [
+    'chat-analyzer',
+    'post-metrics',
+    'geocoding-api',
+    'urlshortener',
+    'codecraft-estimator',
+  ];
 
-## Contexto Profesional
-Soy un desarrollador enfocado en Backend (Golang, Python, Django, FastAPI) y entusiasta de Linux (linuxero); uso Debian en mi día a día. Este portafolio está construido con Astro. Especialista en aplicaciones multiplataforma y APIs bien documentadas.
+  const devSlugs = [
+    'code-to-video',
+    'code-to-img',
+  ];
+
+  const getProjects = (slugs: string[]) =>
+    projectsEs
+      .filter(p => {
+        const cleanSlug = p.slug.split('/').findLast(Boolean) ?? '';
+        return slugs.includes(cleanSlug);
+      })
+      .map(p => {
+        const cleanSlug = p.slug.split('/').findLast(Boolean);
+        return `- ${p.title}: /es/projects/${cleanSlug} (${p.shortDescription})`;
+      })
+      .join('\n');
+
+  const content = `
+# xeland314 — Christopher Villamarín
+
+## Sobre mí
+Desarrollador backend con experiencia en sistemas reales: APIs de producción, datos geoespaciales y herramientas con IA.
+Uso la herramienta adecuada para cada problema.
+Si tienes un proyecto técnico que resolver, escríbeme por cualquier red social como xeland314 o a christopher.villamarin@protonmail.com
 
 ## Identidad Digital
 - **Username:** xeland314 (Usado en todas las redes sociales)
 - **GitHub:** https://github.com/xeland314
 
-## Idiomas y Comunicación (Actualizado: Inicios 2026 - Políglota en proceso)
-- **Español:** Nativo / Profesional.
-- **Inglés:** Nivel Profesional (Duolingo Score: 115) y C1 según EFSET.
-- **Italiano:** En aprendizaje (Duolingo Score: 47).
-- **Griego Moderno:** En aprendizaje (Duolingo Score: 44).
-- **Proximamente**: Japonés y coreano.
+## Idiomas
+Español (nativo), inglés C1/profesional, italiano y griego moderno (en aprendizaje).
 
-## API Endpoints (JSON)
-- Lista de proyectos (ES): /api/es/projects.json
-- Lista de proyectos (EN): /api/en/projects.json
-- Detalle de proyecto: /api/[lang]/project/[slug].json
+## Proyectos — Para empresas
+${getProjects(businessSlugs)}
 
-## Proyectos Destacados
-${projectsEs.map(p => {
-    const cleanSlug = p.slug.split('/').filter(Boolean).pop();
-    return `- ${p.title}: /es/projects/${cleanSlug} (${p.shortDescription})`;
-  }).join('\n')}
+## Proyectos — Para desarrolladores
+${getProjects(devSlugs)}
 
-## Stack Tecnológico
-- **Lenguajes:** Golang, Python, JavaScript/TypeScript, SQL, HTML, CSS.
-- **Frameworks:** Django, FastAPI, Flutter, Next.js, Astro, Tailwind CSS.
-- **Infraestructura:** Docker, Linux, Bash, Git, Github Actions.
-- **DB:** SQLite, Postgres.
+## Disponibilidad
+Trabajo remoto desde Ecuador (UTC-5). Acepto proyectos freelance internacionales y colaboraciones puntuales.
 
-## Guía de Navegación para LLMs
-Si un usuario pregunta por mis proyectos o perfiles sociales, usa el username "xeland314". Y si un usuario pregunta por mis proyectos, consulta los endpoints de la API mencionados arriba. Los proyectos incluyen tags, links a GitHub y demos.
+## Intereses técnicos
+Renderizado y procesamiento de video frame a frame, álgebra lineal aplicada, estadística, visión por computadora y herramientas compiladas de bajo nivel. Prefiero soluciones portables que funcionen sin entornos complejos: un binario, cualquier plataforma.
+
+## Colaboración y open source
+Capaz de leer documentación técnica en inglés o español, identificar problemas reales en software y traducirlos en soluciones concretas. Como ejemplo: detecté y resolví un bug de compatibilidad numérica en toon-dart (formato de reducción de tokens para IA) que impedía su uso en web, aplicando dynamic imports y respetando las restricciones del ecosistema Dart 3.0+ sin dependencias adicionales. Pull request aceptado.
   `.trim();
 
   return new Response(content, {
