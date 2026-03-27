@@ -25,32 +25,38 @@ const description = "Radiography of Cron syntax for scheduling tasks in Unix/Lin
       categoryColorClass="text-purple-400"
       titlePrefix="X-Ray:"
       titleHighlightText="Cron Job"
-      titleHighlightColorClass="highlight-purple"
+      titleHighlightColorClass="text-purple-400"
       subtitle="Task Scheduling (Crontab)"
     />
 
     <!-- Main Visual breakdown -->
-    <div class="feature-card rounded-3xl p-8 mb-8 relative flex flex-col items-center justify-center">
+    <div class="feature-card rounded-3xl p-8 mb-6 relative flex flex-col items-center justify-center">
       <div class="flex gap-4 md:gap-8 items-center mb-10">
         <div class="flex flex-col items-center">
-          <span class="text-rose-500 font-black text-5xl md:text-7xl">*</span>
-          <span class="text-slate-500 text-[10px] font-bold mt-2">MIN</span>
+          <span class="text-rose-500 font-black text-5xl md:text-7xl">30</span>
+          <span class="text-slate-500 text-md font-bold mt-2">MIN</span>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-blue-400 font-black text-5xl md:text-7xl">*</span>
-          <span class="text-slate-500 text-[10px] font-bold mt-2">HOUR</span>
+          <span class="text-blue-400 font-black text-5xl md:text-7xl">02</span>
+          <span class="text-slate-500 text-md font-bold mt-2">HOUR</span>
         </div>
         <div class="flex flex-col items-center">
           <span class="text-emerald-400 font-black text-5xl md:text-7xl">*</span>
-          <span class="text-slate-500 text-[10px] font-bold mt-2">DOM</span>
+          <span class="text-slate-500 text-md font-bold mt-2">DOM</span>
         </div>
         <div class="flex flex-col items-center">
           <span class="text-amber-400 font-black text-5xl md:text-7xl">*</span>
-          <span class="text-slate-500 text-[10px] font-bold mt-2">MON</span>
+          <span class="text-slate-500 text-md font-bold mt-2">MON</span>
         </div>
         <div class="flex flex-col items-center">
-          <span class="text-purple-400 font-black text-5xl md:text-7xl">*</span>
-          <span class="text-slate-500 text-[10px] font-bold mt-2">DOW</span>
+          <span class="text-purple-400 font-black text-5xl md:text-7xl">1</span>
+          <span class="text-slate-500 text-md font-bold mt-2">DOW</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <p class="text-slate-400 font-bold text-2xl code-font">
+            /usr/bin/backup.sh
+          </p>
+          <span class="text-slate-500 text-md font-bold mt-2">Command</span>
         </div>
       </div>
 
@@ -93,44 +99,87 @@ const description = "Radiography of Cron syntax for scheduling tasks in Unix/Lin
               description: "Day of Week (Sun=0).",
             },
           ]}
-          gap="gap-2 md:gap-6"
+          gap="flex-row gap-2 md:gap-6"
           minWidth="min-w-[140px]"
         />
       </div>
+      <p class="text-slate-300 text-md leading-relaxed mt-4 italic">
+        "Runs the script at <span class="text-white font-bold">02:30 AM</span> every <span class="text-white font-bold">Monday</span> (1), regardless of the day of the month or month."
+      </p>
     </div>
 
-    <!-- Real Example -->
+    <!-- Special Operators Row -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5 text-center">
+        <h3 class="text-purple-400 font-bold text-2xl mb-1">*</h3>
+        <p class="text-slate-400 text-sm">Wildcard: "Every possible value"</p>
+      </div>
+      <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5 text-center">
+        <h3 class="text-purple-400 font-bold text-2xl mb-1">/</h3>
+        <p class="text-slate-400 text-sm">Intervals: <code class="text-white italic">*/15</code> (every 15)</p>
+      </div>
+      <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5 text-center">
+        <h3 class="text-purple-400 font-bold text-2xl mb-1">,</h3>
+        <p class="text-slate-400 text-sm">List: <code class="text-white italic">1,3,5</code> (only those)</p>
+      </div>
+      <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5 text-center">
+        <h3 class="text-purple-400 font-bold text-2xl mb-1">-</h3>
+        <p class="text-slate-400 text-sm">Range: <code class="text-white italic">1-5</code> (from 1 to 5)</p>
+      </div>
+    </div>
+
+    <!-- Advanced Logic & Shortcuts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-auto">
-      <div class="glass-tag p-5 rounded-2xl border-l-4 border-emerald-500 bg-emerald-500/5">
-        <h4 class="text-emerald-400 font-bold text-sm uppercase mb-3 tracking-widest italic">Real Example: Daily Backup</h4>
-        <div class="code-font text-sm">
-          <div class="bg-black/40 p-4 rounded-xl border border-white/5 mb-3">
-            <p class="text-white font-bold"><span class="text-rose-400">30</span> <span class="text-blue-400">02</span> <span class="text-emerald-400">*</span> <span class="text-amber-400">*</span> <span class="text-purple-400">1</span> <span class="text-slate-500">/usr/bin/backup.sh</span></p>
-          </div>
-          <p class="text-slate-300 text-xs leading-relaxed">
-            "Runs the script at <span class="text-white font-bold">02:30 AM</span> every <span class="text-white font-bold">Monday</span> (1), regardless of the day of the month or month."
+      <div class="glass-tag p-5 rounded-2xl border-l-4 border-purple-500 bg-purple-500/5">
+        <h4 class="text-purple-400 font-bold text-lg uppercase mb-3 tracking-widest italic">DOM + DOW Logic (OR)</h4>
+        <div class="text-md leading-relaxed text-slate-300">
+          <p class="mb-3">
+            If both Day of Month and Day of Week fields are restricted (aren't <code class="text-white">*</code>), the task runs when <strong>either</strong> field matches.
           </p>
+          <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+            <code class="text-white font-bold text-sm">30 4 1,15 * 5</code>
+            <p class="text-slate-400 text-xs mt-1">4:30 AM on the 1st and 15th, <strong>plus</strong> every Friday.</p>
+          </div>
         </div>
       </div>
 
-      <!-- Special Operators -->
-      <div class="grid grid-cols-2 gap-3">
-        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
-          <h3 class="text-purple-400 font-bold text-lg mb-1">*</h3>
-          <p class="text-slate-400 text-[10px]">Wildcard: "Every possible value".</p>
+      <div class="glass-tag p-5 rounded-2xl border-l-4 border-amber-500 bg-amber-500/5">
+        <h4 class="text-amber-400 font-bold text-lg uppercase mb-2 tracking-widest italic">Special Shortcuts</h4>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@reboot</span>
+            <span class="text-slate-500 text-[11px]">Run once at startup</span>
+          </div>
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@hourly</span>
+            <span class="text-slate-500 text-[11px]">Once an hour (0 * * * *)</span>
+          </div>
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@daily</span>
+            <span class="text-slate-500 text-[11px]">Once a day (0 0 * * *)</span>
+          </div>
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@midnight</span>
+            <span class="text-slate-500 text-[11px]">Same as @daily</span>
+          </div>
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@weekly</span>
+            <span class="text-slate-500 text-[11px]">Once a week (0 0 * * 0)</span>
+          </div>
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@monthly</span>
+            <span class="text-slate-500 text-[11px]">Once a month (0 0 1 * *)</span>
+          </div>
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@yearly</span>
+            <span class="text-slate-500 text-[11px]">Once a year (0 0 1 1 *)</span>
+          </div>
+          <div class="flex flex-col border-b border-white/5 pb-1">
+            <span class="text-white font-bold">@annually</span>
+            <span class="text-slate-500 text-[11px]">Same as @yearly</span>
+          </div>
         </div>
-        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
-          <h3 class="text-purple-400 font-bold text-lg mb-1">/</h3>
-          <p class="text-slate-400 text-[10px]">Intervals: <code class="text-white italic">*/15</code> means "every 15 minutes".</p>
-        </div>
-        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
-          <h3 class="text-purple-400 font-bold text-lg mb-1">,</h3>
-          <p class="text-slate-400 text-[10px]">List: <code class="text-white italic">1,3,5</code> means only those values.</p>
-        </div>
-        <div class="feature-card p-4 rounded-xl border border-white/5 bg-white/5">
-          <h3 class="text-purple-400 font-bold text-lg mb-1">-</h3>
-          <p class="text-slate-400 text-[10px]">Range: <code class="text-white italic">1-5</code> means from 1 to 5 inclusive.</p>
-        </div>
+        <p class="text-slate-500 text-[10px] mt-2 italic">* @reboot runs when the cron daemon starts, possibly before other system daemons.</p>
       </div>
     </div>
 

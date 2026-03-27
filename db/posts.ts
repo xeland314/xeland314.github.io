@@ -198,8 +198,9 @@ export const postData = [
   {
     title: "Cron Syntax: Automatización",
     url: "/es/posts/linux-cron-syntax",
-    image: "/images/optimized/posts/127.0.0.1_8000_es_posts_config-env-files-cover.avif",
+    image: "/images/optimized/posts/localhost_4321_es_posts_linux-cron-syntax-cover.avif",
     lang: "es",
+    isPublished: true,
   },
   {
     title: "PPM Anatomy",
