@@ -1,0 +1,116 @@
+---
+const { lang = "es" } = Astro.props;
+
+const texts: Record<string, { heading: string; label: string }> = {
+  es: { heading: "Dev Tools", label: "Herramientas para desarrolladores" },
+  en: { heading: "Dev Tools", label: "Tools for developers" },
+};
+
+const tools = [
+  {
+    title: { es: "Code to Image", en: "Code to Image" },
+    description: {
+      es: "Fragmentos en imágenes elegantes",
+      en: "Snippets as elegant images",
+    },
+    badge: { es: "Tool", en: "Tool" },
+    href: "/code-to-img",
+    external: false,
+    gradient: "from-indigo-500 to-blue-600",
+    icon: `<path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>`,
+  },
+  {
+    title: { es: "Code to Video", en: "Code to Video" },
+    description: {
+      es: "Animaciones de código para compartir",
+      en: "Code animations to share",
+    },
+    badge: { es: "Beta", en: "Beta" },
+    href: "/code-to-video",
+    external: false,
+    gradient: "from-purple-500 to-indigo-600",
+    icon: `<path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/>`,
+  },
+  {
+    title: { es: "Chat Analyzer", en: "Chat Analyzer" },
+    description: {
+      es: "Analiza tus chats de WhatsApp localmente con IA. Requiere GPU.",
+      en: "Analyze your WhatsApp chats locally with AI. GPU required.",
+    },
+    badge: { es: "GPU Req", en: "GPU Req" },
+    href: "https://xeland314.github.io/chat_analyzer_ui/",
+    external: true,
+    gradient: "from-green-500 to-emerald-600",
+    icon: `<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,
+  },
+];
+
+const T = texts[lang];
+---
+
+<section
+  aria-labelledby="devtools-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
+>
+  <header class="flex justify-between items-center">
+    <h3
+      id="devtools-heading"
+      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
+    >
+      {T.heading}
+    </h3>
+    <span class="text-[10px] font-mono text-gray-400 dark:text-gray-500">
+      {tools.length} tools
+    </span>
+  </header>
+
+  <ul
+    role="list"
+    aria-label={T.label}
+    class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-5"
+  >
+    {
+      tools.map((tool) => (
+        <li>
+          <a
+            href={tool.href}
+            aria-label={`${tool.title[lang as "es" | "en"]} — ${tool.description[lang as "es" | "en"]}`}
+            class="group flex flex-col items-center gap-2 p-4 rounded-xl bg-transparent hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
+          >
+            {/* Ícono estilo app */}
+            <div
+              aria-hidden="true"
+              class={`w-12 h-12 rounded-2xl bg-gradient-to-br ${tool.gradient} flex items-center justify-center shadow-sm`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <Fragment set:html={tool.icon} />
+              </svg>
+            </div>
+
+            {/* Nombre + badge */}
+            <div class="text-center">
+              <p class="text-[11px] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                {tool.title[lang as "es" | "en"]}
+              </p>
+              <span class="text-[9px] font-mono text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                {tool.badge[lang as "es" | "en"]}
+              </span>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

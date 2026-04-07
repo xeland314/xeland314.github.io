@@ -1,0 +1,155 @@
+---
+const { lang = "es" } = Astro.props;
+
+const texts: Record<
+  string,
+  {
+    section_label: string;
+    epn_title: string;
+    epn_school: string;
+    cert_title: string;
+    cert_school: string;
+    view_cert: string;
+    view_cert_label: string;
+    view_more: string;
+    external_notice: string;
+  }
+> = {
+  es: {
+    section_label: "Educación",
+    epn_title: "Ingeniería de Software",
+    epn_school: "Escuela Politécnica Nacional",
+    cert_title: "Especialización Backend",
+    cert_school: "Oracle + Alura",
+    view_cert: "Ver Certificado",
+    view_cert_label:
+      "Ver certificado de Especialización Backend en Oracle + Alura (abre en nueva pestaña)",
+    view_more: "Ver más certificados",
+    external_notice: "(abre en nueva pestaña)",
+  },
+  en: {
+    section_label: "Education",
+    epn_title: "Software Engineering",
+    epn_school: "Escuela Politécnica Nacional",
+    cert_title: "Backend Specialization",
+    cert_school: "Oracle + Alura",
+    view_cert: "View Certificate",
+    view_cert_label:
+      "View Backend Specialization certificate on Oracle + Alura (opens in new tab)",
+    view_more: "View more certificates",
+    external_notice: "(opens in new tab)",
+  },
+};
+
+const T = texts[lang];
+const certUrl =
+  "https://app.aluracursos.com/program/certificate/ef287555-cb92-4c6b-8ab7-1d455047cb23";
+const allCertsUrl = `/${lang}/certificates`;
+---
+
+<section
+  aria-labelledby="education-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col justify-between"
+>
+  <div>
+    <header class="flex items-center gap-3 mb-4">
+      <div
+        aria-hidden="true"
+        class="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5 text-blue-600 dark:text-blue-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
+          <path
+            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+          ></path>
+        </svg>
+      </div>
+      <h3
+        id="education-heading"
+        class="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-white"
+      >
+        {T.section_label}
+      </h3>
+    </header>
+
+    <ul role="list" aria-label={T.section_label} class="space-y-0">
+      <li class="mb-4">
+        <p class="text-sm font-bold text-gray-900 dark:text-white">
+          {T.epn_title}
+        </p>
+        <p class="text-[11px] text-gray-500 dark:text-gray-400">
+          {T.epn_school}
+        </p>
+      </li>
+
+      <li class="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-bold text-gray-900 dark:text-white">
+              {T.cert_title}
+            </p>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3">
+              {T.cert_school}
+            </p>
+          </div>
+          <a
+            href={certUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={T.view_cert_label}
+            class="text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform
+          p-1 bg-blue-50 dark:bg-blue-900/30 rounded-lg"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              ></path>
+            </svg>
+            <span class="sr-only">{T.external_notice}</span>
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <a
+    href={allCertsUrl}
+    class="mt-2 inline-flex items-center justify-center gap-2 w-full py-2 px-4 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-xl transition-colors border border-gray-200 dark:border-gray-700"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-3.5 h-3.5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 11H5m14 0l-7-7m7 7l-7 7"></path>
+    </svg>
+    {T.view_more}
+  </a>
+</section>

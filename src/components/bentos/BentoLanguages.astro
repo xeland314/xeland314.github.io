@@ -1,0 +1,270 @@
+---
+const { lang = "es" } = Astro.props;
+
+const texts: Record<string, {
+  heading: string;
+  tagline: string;
+  tagline_translation: string;
+  sections: {
+    languages: string;
+    reading: string;
+    time: string;
+    human: string;
+  };
+}> = {
+  es: {
+    heading: "Más allá del código",
+    tagline: "Για μένα, αυτό δεν είναι ελληνικά.",
+    tagline_translation: "Para mí, esto no es griego.",
+    sections: {
+      languages: "Idiomas",
+      reading: "Lo que leo",
+      time: "Fuera del teclado",
+      human: "Cómo soy",
+    },
+  },
+  en: {
+    heading: "Beyond the code",
+    tagline: "Για μένα, αυτό δεν είναι ελληνικά.",
+    tagline_translation: "For me, this is not Greek.",
+    sections: {
+      languages: "Languages",
+      reading: "What I read",
+      time: "Away from the keyboard",
+      human: "How I am",
+    },
+  },
+};
+
+const languages = [
+  {
+    code: "ES",
+    script: "Español",
+    descriptor: { es: "Lengua materna — nivel literario", en: "Mother tongue — literary level" },
+    color: "from-yellow-400 to-red-500",
+    textColor: "text-yellow-600 dark:text-yellow-400",
+    bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
+    borderColor: "border-yellow-200 dark:border-yellow-800/50",
+    since: null,
+    langAttr: "es",
+  },
+  {
+    code: "EN",
+    script: "English",
+    descriptor: { es: "C1 · EFSet · trabajo remoto", en: "C1 · EFSet · remote work" },
+    color: "from-blue-400 to-cyan-500",
+    textColor: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-900/20",
+    borderColor: "border-blue-200 dark:border-blue-800/50",
+    since: null,
+    langAttr: "en",
+  },
+  {
+    code: "IT",
+    script: "Italiano",
+    descriptor: { es: "A2 · capisce le notizie", en: "A2 · understands the news" },
+    color: "from-green-400 to-emerald-500",
+    textColor: "text-emerald-600 dark:text-emerald-400",
+    bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
+    borderColor: "border-emerald-200 dark:border-emerald-800/50",
+    since: 2025,
+    langAttr: "it",
+  },
+  {
+    code: "ΕΛ",
+    script: "Ελληνικά",
+    descriptor: { es: "Autodidacta · desde 2016", en: "Self-taught · since 2016" },
+    color: "from-blue-500 to-indigo-600",
+    textColor: "text-indigo-600 dark:text-indigo-400",
+    bgColor: "bg-indigo-50 dark:bg-indigo-900/20",
+    borderColor: "border-indigo-200 dark:border-indigo-800/50",
+    since: 2016,
+    langAttr: "el",
+  },
+];
+
+const hobbies = [
+  {
+    icon: `<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M8 9h8"/><path d="M8 12h5"/><path d="M8 15h3"/>`,
+    label: { es: "Poesía", en: "Poetry" },
+    detail: { es: "Sor Juana Inés de la Cruz — el poemario de Cátedra", en: "Sor Juana Inés de la Cruz — the Cátedra collection" },
+  },
+  {
+    icon: `<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>`,
+    label: { es: "Música griega", en: "Greek music" },
+    detail: { es: "Nikiforos, Panos Mazourakis — de memoria", en: "Nikiforos, Panos Mazourakis — by heart" },
+  },
+  {
+    icon: `<path d="M9 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-6-6z"/><path d="M9 2v6h6"/>`,
+    label: { es: "Ajedrez", en: "Chess" },
+    detail: { es: "Blitz y Bullet · online", en: "Blitz and Bullet · online" },
+  },
+  {
+    icon: `<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 8v4l3 3"/>`,
+    label: { es: "Gatos", en: "Cats" },
+    detail: { es: "Cuidado y compañía diaria", en: "Daily care and company" },
+  },
+];
+
+const traits = [
+  {
+    label: { es: "Paciente", en: "Patient" },
+    detail: { es: "En exceso. Los bugs de producción no me hacen explotar.", en: "To a fault. Production bugs don't make me lose it." },
+    icon: `<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>`,
+  },
+  {
+    label: { es: "Buena memoria", en: "Good memory" },
+    detail: { es: "Con el matiz honesto de que el rencor a veces es efecto secundario.", en: "With the honest caveat that grudges can be a side effect." },
+    icon: `<path d="M12 2a8 8 0 0 1 8 8v1a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V10a8 8 0 0 1 8-8z"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/>`,
+  },
+  {
+    label: { es: "Cálculo mental", en: "Mental math" },
+    detail: { es: "Sin calculadora desde niño — por necesidad, no por talento.", en: "No calculator since childhood — by necessity, not talent." },
+    icon: `<rect width="16" height="16" x="4" y="4" rx="2"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>`,
+  },
+];
+
+const T = texts[lang];
+---
+
+<section
+  aria-labelledby="beyond-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex flex-col gap-6"
+>
+  <header>
+    <h3
+      id="beyond-heading"
+      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-3"
+    >
+      {T.heading}
+    </h3>
+    <blockquote
+      class="border-l-2 border-indigo-400 dark:border-indigo-500 pl-3"
+    >
+      <p class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-tight" lang="el">
+        {T.tagline}
+      </p>
+      <p class="text-[10px] text-gray-400 dark:text-gray-500 font-mono mt-0.5 italic">
+        {T.tagline_translation}
+      </p>
+    </blockquote>
+  </header>
+
+  {/* Idiomas */}
+  <div>
+    <h4 class="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">
+      {T.sections.languages}
+    </h4>
+    <ul role="list" class="grid grid-cols-2 gap-2">
+      {languages.map((language) => (
+        <li
+          class={`flex items-center gap-2 p-2.5 rounded-xl border ${language.bgColor} ${language.borderColor}`}
+        >
+          <div
+            aria-hidden="true"
+            class={`w-8 h-8 rounded-lg bg-gradient-to-br ${language.color} flex items-center justify-center shrink-0 shadow-sm`}
+          >
+            <span class="text-[10px] font-black text-white tracking-tight">
+              {language.code}
+            </span>
+          </div>
+          <div class="min-w-0">
+            <p
+              class={`text-[11px] font-bold ${language.textColor} leading-tight`}
+              lang={language.langAttr}
+            >
+              {language.script}
+            </p>
+            <p class="text-[9px] text-gray-400 dark:text-gray-500 font-mono leading-tight truncate">
+              {language.descriptor[lang as "es" | "en"]}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Fuera del teclado */}
+  <div>
+    <h4 class="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">
+      {T.sections.time}
+    </h4>
+    <ul role="list" class="grid grid-cols-2 gap-2">
+      {hobbies.map((hobby) => (
+        <li class="flex items-start gap-2 p-2.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+          <div aria-hidden="true" class="shrink-0 mt-0.5 text-gray-400 dark:text-gray-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <Fragment set:html={hobby.icon} />
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold text-gray-700 dark:text-gray-200 leading-tight">
+              {hobby.label[lang as "es" | "en"]}
+            </p>
+            <p class="text-[9px] text-gray-400 dark:text-gray-500 font-mono leading-tight">
+              {hobby.detail[lang as "es" | "en"]}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Cómo soy */}
+  <div>
+    <h4 class="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">
+      {T.sections.human}
+    </h4>
+    <ul role="list" class="flex flex-col gap-2">
+      {traits.map((trait) => (
+        <li class="flex items-start gap-2 p-2.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+          <div aria-hidden="true" class="shrink-0 mt-0.5 text-blue-500 dark:text-blue-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <Fragment set:html={trait.icon} />
+            </svg>
+          </div>
+          <div>
+            <p class="text-[11px] font-bold text-gray-700 dark:text-gray-200 leading-tight">
+              {trait.label[lang as "es" | "en"]}
+            </p>
+            <p class="text-[9px] text-gray-400 dark:text-gray-500 font-mono leading-tight mt-0.5">
+              {trait.detail[lang as "es" | "en"]}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <footer class="pt-4 border-t border-gray-200 dark:border-gray-800">
+    <p class="text-[9px] font-mono text-gray-400 uppercase tracking-widest text-center">
+      {lang === "es"
+        ? "No soy un genio — solo soy terco."
+        : "Not a genius — just stubborn."}
+    </p>
+  </footer>
+</section>

@@ -1,21 +1,31 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import BentoGato from "../components/sections/BentoGato.astro";
-import BentoProjects from "../components/sections/BentoProjects";
-import BentoPosts from "../components/sections/BentoPosts";
-import BentoEducation from "../components/sections/BentoEducation.astro";
-import BentoVideos from "../components/sections/BentoVideos.astro";
-import BentoCodeToImg from "../components/sections/BentoCodeToImg.astro";
-import BentoCodeToVideo from "../components/sections/BentoCodeToVideo.astro";
-import BentoChatAnalyzer from "../components/sections/BentoChatAnalyzer.astro";
-import BentoCodeCraft from "../components/sections/BentoCodeCraft.astro";
-import BentoAdventCalendar from "../components/sections/BentoAdventCalendar.astro";
+import BentoGato from "../components/bentos/BentoGato.astro";
+import BentoVideos from "../components/bentos/BentoVideos.astro";
+import BentoEducation from "../components/bentos/BentoEducation.astro";
+import BentoProjects from "../components/bentos/BentoProjects.astro";
+import BentoTechStack from "../components/bentos/BentoTechStack.astro";
+import BentoPostGallery from "../components/bentos/BentoPostGallery.astro";
+import BentoServices from "../components/bentos/BentoServices.astro";
+import BentoDevTools from "../components/bentos/BentoDevTools.astro";
 import ContactForm from "../components/contact/ContactForm";
-import TechMarquee from "../components/sections/TechMarquee.astro";
-import BentoGpuDetection from "../components/sections/BentoGpuDetection.astro";
+import Footer from "../components/common/Footer.astro";
+import { db, Posts, Projects, eq, and, desc } from "astro:db";
 
-import { projectData } from "../../db/projects";
-import { postData } from "../../db/posts";
+const lang = "es";
+
+const featuredProjects = await db
+  .select()
+  .from(Projects)
+  .where(and(eq(Projects.lang, lang), eq(Projects.isFeatured, true)))
+  .limit(6);
+
+const recentPosts = await db
+  .select()
+  .from(Posts)
+  .where(and(eq(Posts.lang, lang), eq(Posts.isPublished, true)))
+  .orderBy(desc(Posts.id))
+  .limit(6);
 
 const siteTitle =
   "Christopher Villamarín - Desarrollador de Software | Backend | Programador";
@@ -26,9 +36,6 @@ const siteKeywords =
 const siteAuthor = "Christopher Alexander Villamarín Pila";
 const siteUrl = "https://xeland314.github.io/";
 const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
-
-const featuredProjects = projectData.filter((p) => p.isFeatured).slice(0, 10);
-const recentPosts = postData.filter((p) => p.isPublished).slice(0, 10);
 ---
 
 <BaseLayout
@@ -40,62 +47,88 @@ const recentPosts = postData.filter((p) => p.isPublished).slice(0, 10);
   image={siteImage}
   canonical={siteUrl}
 >
-  <main class="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4 sm:px-8">
-    <div class="max-w-7xl mx-auto">
-      {/* Bento Grid Layout */}
-      <div
-        class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr lg:auto-rows-[minmax(18rem,auto)]"
+  <main
+    id="main-content"
+    class="min-h-screen [background-image:radial-gradient(circle,_#94a3b8_1px,_transparent_1px)] [background-size:24px_24px] dark:[background-image:radial-gradient(circle,_#334155_1px,_transparent_1px)] text-gray-900 dark:text-gray-200 py-6 px-4 sm:px-8 transition-colors duration-300 selection:bg-blue-500/30"
+  >
+    {/* Skip to content para navegación por teclado */}
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:font-bold focus:shadow-lg"
+    >
+      Saltar al contenido principal
+    </a>
+
+    <div class="max-w-5xl mx-auto space-y-6">
+      {/* 1. Perfil y Proyectos Destacados */}
+      <section aria-label="Perfil y proyectos destacados">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div class="md:col-span-5 lg:col-span-4">
+            <div
+              class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden"
+            >
+              <BentoGato lang={lang} />
+            </div>
+          </div>
+          <div class="md:col-span-7 lg:col-span-8">
+            <BentoProjects projects={featuredProjects} lang={lang} />
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Expertise Técnica y Educación */}
+      <section aria-label="Expertise técnica y educación">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div class="md:col-span-7 lg:col-span-8">
+            <BentoTechStack lang={lang} />
+          </div>
+          <div class="md:col-span-5 lg:col-span-4">
+            <BentoEducation lang={lang} />
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Publicaciones Recientes */}
+      <section aria-label="Publicaciones recientes">
+        <BentoPostGallery posts={recentPosts} lang={lang} />
+      </section>
+
+      {/* 4. Animaciones y Dev Tools (antes del footer) */}
+      <section
+        aria-label="Animaciones, demostraciones y herramientas para desarrolladores"
       >
-        <div class="lg:col-start-1 lg:row-start-1">
-          <BentoGato lang="es" />
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-4">
+            <div
+              class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden"
+            >
+              <BentoVideos lang={lang} />
+            </div>
+          </div>
+          <div class="lg:col-span-8">
+            <BentoDevTools lang={lang} />
+          </div>
         </div>
-        <div class="max-h-80 lg:col-start-1 lg:row-start-2">
-          <BentoPosts client:load posts={recentPosts} lang="es" />
-        </div>
+      </section>
 
-        <div class="max-h-90 lg:col-start-2 lg:row-start-1">
-          <BentoProjects client:load projects={featuredProjects} lang="es" />
+      {/* 5. Contacto y Servicios */}
+      <section aria-label="Contacto y servicios">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-7">
+            <div
+              class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden"
+            >
+              <ContactForm client:visible lang={lang} />
+            </div>
+          </div>
+          <div class="lg:col-span-5">
+            <BentoServices lang={lang} />
+          </div>
         </div>
-        <div class="max-h-90 lg:col-start-2 lg:row-start-2">
-          <BentoEducation lang="es" />
-        </div>
+      </section>
 
-        <div class="lg:col-start-3 lg:row-start-1 row-span-2">
-          <ContactForm client:visible lang={"es"} />
-        </div>
-      </div>
-
-      {/* Videos Section */}
-      <div class="mt-6">
-        <BentoVideos lang="es" />
-      </div>
-
-      {/* Additional Tools Grid */}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        <div>
-          <BentoCodeToImg lang="es" />
-        </div>
-        <div>
-          <BentoCodeToVideo lang="es" />
-        </div>
-        <div>
-          <BentoChatAnalyzer lang="es" />
-        </div>
-        <div>
-          <BentoCodeCraft lang="es" />
-        </div>
-        <div>
-          <BentoAdventCalendar lang="es" />
-        </div>
-        <div>
-          <BentoGpuDetection lang="es" />
-        </div>
-      </div>
-
-      {/* Footer: Marquee (Large Screens) */}
-      <div class="mt-12">
-        <TechMarquee />
-      </div>
+      {/* 6. Footer */}
+      <Footer />
     </div>
   </main>
 </BaseLayout>

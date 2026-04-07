@@ -1,0 +1,74 @@
+---
+const { lang = "es" } = Astro.props;
+
+const texts: Record<string, { header: string; ariaLabel: string }> = {
+  es: {
+    header: "Expertise Técnica",
+    ariaLabel: "Tecnologías que manejo",
+  },
+  en: {
+    header: "Technical Expertise",
+    ariaLabel: "Technologies I handle",
+  },
+};
+
+const T = texts[lang];
+
+const technologies = [
+  { name: "Go", icon: "/icons/go.svg" },
+  { name: "Python", icon: "/icons/python.svg" },
+  { name: "JS", icon: "/icons/js.svg" },
+  { name: "TS", icon: "/icons/ts.svg" },
+  { name: "Dart", icon: "/icons/dart.svg" },
+  { name: "Linux", icon: "/icons/debian.svg" },
+  { name: "Cloudflare", icon: "/icons/cloudflare.svg" },
+  { name: "SQLite", icon: "/icons/sqlite.svg" },
+  { name: "Postgres", icon: "/icons/postgres.svg" },
+  { name: "HTML", icon: "/icons/html.svg" },
+  { name: "CSS", icon: "/icons/css.svg" },
+  { name: "Tailwind", icon: "/icons/tailwind.svg" },
+];
+---
+
+<section
+  aria-labelledby="tech-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
+>
+  <header class="flex justify-between items-center mb-6">
+    <h3
+      id="tech-heading"
+      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
+    >
+      {T.header}
+    </h3>
+  </header>
+
+  <ul
+    role="list"
+    aria-label={T.ariaLabel}
+    class="flex flex-wrap justify-evenly items-center gap-y-8 gap-x-4 py-2"
+  >
+    {
+      technologies.map((tech) => (
+        <li class="flex flex-col items-center gap-2 group/icon min-w-[70px]">
+          <div
+            aria-hidden="true"
+            class="w-12 h-12 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm transition-all duration-300 group-hover/icon:-translate-y-1 group-hover/icon:border-blue-500/50 group-hover/icon:shadow-md"
+          >
+            <img
+              src={tech.icon}
+              alt={tech.name}
+              class="w-full h-full object-contain grayscale group-hover/icon:grayscale-0 transition-all duration-500"
+              loading="eager"
+              width="32"
+              height="32"
+            />
+          </div>
+          <span class="text-[9px] font-bold text-gray-500 group-hover/icon:text-gray-700 dark:group-hover/icon:text-gray-300 uppercase tracking-tighter transition-colors text-center">
+            {tech.name}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</section>

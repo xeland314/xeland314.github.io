@@ -1,0 +1,165 @@
+---
+const { lang = "es" } = Astro.props;
+
+const texts: Record<
+  string,
+  {
+    header: string;
+    subheader: string;
+    footer: string;
+    ariaLabel: string;
+    services: Array<{
+      title: string;
+      description: string;
+      icon: string;
+    }>;
+  }
+> = {
+  es: {
+    header: "Servicios",
+    subheader: "Soluciones Digitales de Alto Impacto",
+    footer: "Transformo ideas en código",
+    ariaLabel: "Lista de servicios ofrecidos",
+    services: [
+      {
+        title: "APIs REST",
+        description:
+          "Backends de alto rendimiento compilados a binario único o en Docker, desplegables en la nube.",
+        icon: `<path d="M5 12h14"/><path d="M12 5v14"/><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2"/>`,
+      },
+      {
+        title: "Herramientas CLI compiladas",
+        description:
+          "Utilidades de terminal distribuidas como ejecutable estático para Linux y Windows.",
+        icon: `<rect width="18" height="12" x="3" y="6" rx="2"/><path d="m7 10 2 2-2 2"/><path d="M11 14h4"/>`,
+      },
+      {
+        title: "Apps móviles con Flutter",
+        description:
+          "Aplicaciones Android desde una sola base de código en Dart con interfaces nativas, rendimiento fluido y lógica de negocio compartida.",
+        icon: `<path d="m6 6 12 6-12 6V6z"/><path d="m18 6-6 6"/><path d="m6 18 6-6"/>`,
+      },
+      {
+        title: "Sitios web con Astro",
+        description:
+          "Páginas estáticas o con SSR optimizadas para Core Web Vitals, responsivas, SEO, optimización de assets y contenido bilingüe español/inglés.",
+        icon: `<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>`,
+      },
+      {
+        title: "Integración de bases de datos",
+        description:
+          "Diseño de esquemas y consultas optimizadas en Postgres o SQLite embebido para aplicaciones con bajo overhead operacional.",
+        icon: `<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/>`,
+      },
+    ],
+  },
+  en: {
+    header: "Services",
+    subheader: "High-Impact Digital Solutions",
+    footer: "Transforming ideas into code",
+    ariaLabel: "List of services offered",
+    services: [
+      {
+        title: "REST APIs",
+        description:
+          "High-performance backends compiled to a single binary or in Docker, deployable in the cloud.",
+        icon: `<path d="M5 12h14"/><path d="M12 5v14"/><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2"/>`,
+      },
+      {
+        title: "Compiled CLI Tools",
+        description:
+          "Terminal utilities distributed as static executables for Linux and Windows.",
+        icon: `<rect width="18" height="12" x="3" y="6" rx="2"/><path d="m7 10 2 2-2 2"/><path d="M11 14h4"/>`,
+      },
+      {
+        title: "Mobile Apps with Flutter",
+        description:
+          "Android applications from a single codebase in Dart with native interfaces, smooth performance, and shared business logic.",
+        icon: `<path d="m6 6 12 6-12 6V6z"/><path d="m18 6-6 6"/><path d="m6 18 6-6"/>`,
+      },
+      {
+        title: "Websites with Astro",
+        description:
+          "Static or SSR pages optimized for Core Web Vitals, responsive, SEO, asset optimization, and bilingual Spanish/English content.",
+        icon: `<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>`,
+      },
+      {
+        title: "Database Integration",
+        description:
+          "Design of schemas and optimized queries in Postgres or embedded SQLite for applications with low operational overhead.",
+        icon: `<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/>`,
+      },
+    ],
+  },
+};
+
+const T = texts[lang];
+---
+
+<section
+  aria-labelledby="services-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 flex flex-col"
+>
+  <header class="mb-8">
+    <h3
+      id="services-heading"
+      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-2"
+    >
+      {T.header}
+    </h3>
+    <p
+      class="text-xl font-bold text-gray-800 dark:text-gray-100 italic tracking-tighter"
+    >
+      {T.subheader}
+    </p>
+  </header>
+
+  <ul
+    role="list"
+    aria-label={T.ariaLabel}
+    class="space-y-6 flex-grow"
+  >
+    {
+      T.services.map((service) => (
+        <li class="flex gap-4">
+          <div
+            aria-hidden="true"
+            class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <Fragment set:html={service.icon} />
+            </svg>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+              {service.title}
+            </h4>
+            <p class="text-[10px] text-gray-500 mt-1 leading-relaxed">
+              {service.description}
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <footer
+    class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 text-center"
+  >
+    <p class="text-[9px] font-mono text-gray-400 uppercase tracking-widest">
+      {T.footer}
+    </p>
+  </footer>
+</section>

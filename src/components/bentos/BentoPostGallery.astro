@@ -1,0 +1,69 @@
+---
+import { Image } from "astro:assets";
+
+const { posts, lang } = Astro.props as {
+  posts: any[];
+  lang: string;
+};
+---
+
+<section
+  aria-labelledby="posts-heading"
+  class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
+>
+  <header class="flex justify-between items-center mb-6">
+    <h3
+      id="posts-heading"
+      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
+    >
+      Publicaciones Recientes
+    </h3>
+    <a
+      href={`/${lang}/posts`}
+      aria-label="Ver galería completa de publicaciones"
+      class="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 transition-colors uppercase tracking-widest"
+    >
+      Ver galería →
+    </a>
+  </header>
+
+  <ul
+    role="list"
+    aria-label="Lista de publicaciones recientes"
+    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"
+  >
+    {
+      posts.map((post: any) => (
+        <li>
+          <a
+            href={post.url}
+            aria-label={post.title}
+            class="group flex flex-col bg-white dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700/50 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300"
+          >
+            <div
+              aria-hidden="true"
+              class="aspect-square overflow-hidden bg-gray-200 dark:bg-gray-800"
+            >
+              {post.image ? (
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  title={post.title}
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                  decoding="async"
+                  width="400"
+                  height="400"
+                />
+              ) : (
+                <div class="w-full h-full flex items-center justify-center text-[8px] uppercase text-gray-500 font-mono tracking-tighter">
+                  Sin imagen
+                </div>
+              )}
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

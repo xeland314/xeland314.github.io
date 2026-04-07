@@ -1,0 +1,41 @@
+---
+import ProjectCardMinimalista from "../projects/ProjectCardMinimalista.astro";
+const { projects, lang } = Astro.props as {
+  projects: any[];
+  lang: "es" | "en";
+};
+---
+
+<section
+  aria-labelledby="projects-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
+>
+  <header class="flex justify-between items-center mb-6">
+    <h3
+      id="projects-heading"
+      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
+    >
+      Proyectos Destacados
+    </h3>
+    <a
+      href={`/${lang}/projects`}
+      aria-label="Ver todos los proyectos"
+      class="text-[10px] font-bold text-blue-600
+    dark:text-blue-400 hover:text-blue-500 transition-colors uppercase tracking-widest"
+    >
+      Ver todos →
+    </a>
+  </header>
+
+  <ul
+    role="list"
+    aria-label="Lista de proyectos destacados"
+    class="flex flex-col gap-y-0 gap-x-1"
+  >
+    {
+      projects.map((project: any) => (
+        <ProjectCardMinimalista project={project} lang={lang as "es" | "en"} />
+      ))
+    }
+  </ul>
+</section>
