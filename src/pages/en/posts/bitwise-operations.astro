@@ -29,111 +29,130 @@ const description = "Radiography of binary operators: direct bit manipulation fo
       subtitle="Direct Binary Manipulation"
     />
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 flex-1">
-      
-      <!-- Logical Operators -->
-      <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <!-- AND -->
-        <div class="feature-card p-4 rounded-2xl border-l-4 border-emerald-500 bg-emerald-500/5">
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-emerald-400 font-black text-xl">AND (&)</h3>
-            <span class="text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded text-emerald-300 font-bold uppercase">Both 1 → 1</span>
-          </div>
-          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
-            <p class="text-slate-500">5 (101) & 3 (011)</p>
-            <p class="text-white">Result: <span class="text-emerald-400 font-bold">1 (001)</span></p>
-          </div>
-        </div>
-
-        <!-- OR -->
-        <div class="feature-card p-4 rounded-2xl border-l-4 border-sky-500 bg-sky-500/5">
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-sky-400 font-black text-xl">OR (|)</h3>
-            <span class="text-[10px] bg-sky-500/20 px-2 py-0.5 rounded text-sky-300 font-bold uppercase">Either 1 → 1</span>
-          </div>
-          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
-            <p class="text-slate-500">5 (101) | 3 (011)</p>
-            <p class="text-white">Result: <span class="text-sky-400 font-bold">7 (111)</span></p>
-          </div>
-        </div>
-
-        <!-- XOR -->
-        <div class="feature-card p-4 rounded-2xl border-l-4 border-purple-500 bg-purple-500/5">
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-purple-400 font-black text-xl">XOR (^)</h3>
-            <span class="text-[10px] bg-purple-500/20 px-2 py-0.5 rounded text-purple-300 font-bold uppercase">Different → 1</span>
-          </div>
-          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
-            <p class="text-slate-500">5 (101) ^ 3 (011)</p>
-            <p class="text-white">Result: <span class="text-purple-400 font-bold">6 (110)</span></p>
-          </div>
-        </div>
-
-        <!-- NOT -->
-        <div class="feature-card p-4 rounded-2xl border-l-4 border-rose-500 bg-rose-500/5">
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-rose-400 font-black text-xl">NOT (~)</h3>
-            <span class="text-[10px] bg-rose-500/20 px-2 py-0.5 rounded text-rose-300 font-bold uppercase">Flip Bits</span>
-          </div>
-          <div class="code-font text-xs bg-black/40 p-3 rounded-lg mb-2">
-            <p class="text-slate-500">~5 (000...101)</p>
-            <p class="text-white">Result: <span class="text-rose-400 font-bold">-6 (111...010)</span></p>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Shifting -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 flex-1">
+      <!-- Column 1: Basic Operators -->
       <div class="flex flex-col gap-4">
-        <div class="feature-card p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 h-full">
-          <h3 class="text-amber-400 font-black text-xl mb-4 uppercase tracking-tighter italic">Bit Shifting</h3>
-          
-          <div class="space-y-6">
-            <div>
-              <div class="flex justify-between text-xs mb-1">
-                <span class="text-amber-200 font-bold">Left (<<)</span>
-                <span class="text-slate-500">x2ⁿ</span>
-              </div>
-              <div class="bg-black/40 p-2 rounded font-mono text-[10px]">
-                5 &lt;&lt; 1 = <span class="text-amber-400">10 (1010)</span>
-              </div>
-            </div>
+        <div class="feature-card p-6 rounded-2xl border-l-4 border-emerald-500 bg-emerald-500/5 flex-1 flex flex-col justify-center">
+          <h3 class="text-emerald-400 font-black text-3xl mb-1 italic">AND (&)</h3>
+          <p class="text-sm text-slate-400 mb-2 uppercase font-bold tracking-wider">Both 1 → 1</p>
+          <div class="code-font text-2xl bg-black/40 p-4 rounded-xl border border-white/5">
+            <span class="text-slate-500 text-lg">101 & 011 = </span><span class="text-emerald-400 font-bold">001</span>
+          </div>
+        </div>
 
-            <div>
-              <div class="flex justify-between text-xs mb-1">
-                <span class="text-amber-200 font-bold">Right (>>)</span>
-                <span class="text-slate-500">/2ⁿ</span>
-              </div>
-              <div class="bg-black/40 p-2 rounded font-mono text-[10px]">
-                5 &gt;&gt; 1 = <span class="text-amber-400">2 (10)</span>
-              </div>
-            </div>
+        <div class="feature-card p-6 rounded-2xl border-l-4 border-sky-500 bg-sky-500/5 flex-1 flex flex-col justify-center">
+          <h3 class="text-sky-400 font-black text-3xl mb-2 italic">OR (|)</h3>
+          <p class="text-sm text-slate-400 mb-2 uppercase font-bold tracking-wider">Either 1 → 1</p>
+          <div class="code-font text-2xl bg-black/40 p-4 rounded-xl border border-white/5">
+            <span class="text-slate-500 text-lg">101 | 011 = </span><span class="text-sky-400 font-bold">111</span>
+          </div>
+        </div>
 
-            <div class="pt-4 border-t border-white/5">
-              <p class="text-[10px] text-slate-400 italic">
-                * Java/JS includes <code class="text-white">>>></code> for logical (unsigned) shift that fills with zeros.
-              </p>
-            </div>
+        <div class="feature-card p-6 rounded-2xl border-l-4 border-purple-500 bg-purple-500/5 flex-1 flex flex-col justify-center">
+          <h3 class="text-purple-400 font-black text-3xl mb-2 italic">XOR (^)</h3>
+          <p class="text-sm text-slate-400 mb-2 uppercase font-bold tracking-wider">Different → 1</p>
+          <div class="code-font text-2xl bg-black/40 p-4 rounded-xl border border-white/5">
+            <span class="text-slate-500 text-lg">101 ^ 011 = </span><span class="text-purple-400 font-bold">110</span>
+          </div>
+        </div>
+
+        <div class="feature-card p-6 rounded-2xl border-l-4 border-rose-500 bg-rose-500/5 flex-1 flex flex-col justify-center">
+          <h3 class="text-rose-400 font-black text-3xl mb-2 italic">NOT (~)</h3>
+          <p class="text-sm text-slate-400 mb-2 uppercase font-bold tracking-wider">Flip Bits</p>
+          <div class="code-font text-2xl bg-black/40 p-4 rounded-xl border border-white/5">
+            <span class="text-slate-500 text-lg">~0101 = </span><span class="text-rose-400 font-bold">1010</span>
           </div>
         </div>
       </div>
 
+      <!-- Rest of space: Shifting with Table -->
+      <div class="md:col-span-3 flex flex-col justify-center px-4">
+        <h3 class="text-amber-400 font-black text-4xl uppercase tracking-tighter italic mb-8">Bit Shifting</h3>
+        
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="text-left border-b-2 border-white/10">
+              <th class="py-4 text-amber-200 text-2xl uppercase tracking-widest">Operator</th>
+              <th class="py-4 text-amber-200 text-2xl uppercase tracking-widest px-6">Example</th>
+              <th class="py-4 text-slate-400 text-2xl font-medium">Technical Description</th>
+            </tr>
+          </thead>
+          <tbody class="text-lg">
+            <tr class="border-b border-white/5 group">
+              <td class="py-8 font-black text-4xl text-white italic group-hover:text-amber-400 transition-colors tracking-tighter">&lt;&lt;</td>
+              <td class="py-8 px-6">
+                <div class="code-font bg-black/40 p-4 rounded-xl border border-white/5 inline-block">
+                  <span class="text-slate-500">5 &lt;&lt; 1 = </span><span class="text-amber-400 font-bold">10</span>
+                </div>
+              </td>
+              <td class="py-8 text-slate-300 leading-relaxed">
+                Shifts left; adds <strong class="text-white">0s</strong> at the end. Equivalent to <strong class="text-amber-200 italic font-bold tracking-widest">x 2ⁿ</strong>.
+              </td>
+            </tr>
+            <tr class="border-b border-white/5 group">
+              <td class="py-8 font-black text-4xl text-white italic group-hover:text-amber-400 transition-colors tracking-tighter">&gt;&gt;</td>
+              <td class="py-8 px-6">
+                <div class="code-font bg-black/40 p-4 rounded-xl border border-white/5 inline-block">
+                  <span class="text-slate-500">5 &gt;&gt; 1 = </span><span class="text-amber-400 font-bold">2</span>
+                </div>
+              </td>
+              <td class="py-8 text-slate-300 leading-relaxed">
+                Shifts right; <strong class="text-white">preserves the sign</strong>. Equivalent to <strong class="text-amber-200 italic font-bold tracking-widest">/ 2ⁿ</strong>.
+              </td>
+            </tr>
+            <tr class="group">
+              <td class="py-8 font-black text-4xl text-white italic group-hover:text-amber-400 transition-colors tracking-tighter">&gt;&gt;&gt;</td>
+              <td class="py-8 px-6">
+                <div class="code-font bg-black/40 p-4 rounded-xl border border-white/5 inline-block">
+                  <span class="text-slate-500 text-sm">-5 &gt;&gt;&gt; 1 = </span><span class="text-amber-400 font-bold text-xl">2147483645</span>
+                </div>
+              </td>
+              <td class="py-8 text-slate-300 leading-relaxed">
+                Logical shift; fills with <strong class="text-white">0s</strong> on the left regardless of the original sign.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- Common Uses -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-auto">
-      <div class="glass-tag p-4 rounded-xl border border-white/10">
-        <h4 class="text-sky-400 font-bold text-xs uppercase mb-1">Bit Masks</h4>
-        <p class="text-slate-400 text-[10px]">Read or modify specific bits without touching the rest of the number.</p>
+    <!-- Properties in 2x2 Grid (Post final) -->
+    <div class="grid grid-cols-2 gap-6 mb-auto pt-4">
+      <div class="glass-tag p-8 rounded-2xl border-l-8 border-purple-500 bg-purple-500/5">
+        <div class="flex items-center gap-6">
+          <code class="text-purple-300 text-4xl font-bold bg-black/40 p-5 rounded-2xl border border-white/5">x ^ x = 0</code>
+          <div>
+            <h4 class="text-white font-bold text-2xl uppercase mb-1">Self-annihilation</h4>
+            <p class="text-slate-400 text-lg leading-tight">Any number XORed with itself results in zero.</p>
+          </div>
+        </div>
       </div>
-      <div class="glass-tag p-4 rounded-xl border border-white/10">
-        <h4 class="text-emerald-400 font-bold text-xs uppercase mb-1">Optimization</h4>
-        <p class="text-slate-400 text-[10px]">Ultra-fast arithmetic (multiply/divide) in embedded systems.</p>
+      <div class="glass-tag p-8 rounded-2xl border-l-8 border-purple-500 bg-purple-500/5">
+        <div class="flex items-center gap-6">
+          <code class="text-purple-300 text-4xl font-bold bg-black/40 p-5 rounded-2xl border border-white/5">x & (x-1)</code>
+          <div>
+            <h4 class="text-white font-bold text-2xl uppercase mb-1">Clear LSB</h4>
+            <p class="text-slate-400 text-lg leading-tight">Removes the lowest set bit (rightmost 1).</p>
+          </div>
+        </div>
       </div>
-      <div class="glass-tag p-4 rounded-xl border border-white/10">
-        <h4 class="text-purple-400 font-bold text-xs uppercase mb-1">Cryptography</h4>
-        <p class="text-slate-400 text-[10px]">Direct manipulation of binary blocks for encryption and compression.</p>
+      <div class="glass-tag p-8 rounded-2xl border-l-8 border-purple-500 bg-purple-500/5">
+        <div class="flex items-center gap-6">
+          <code class="text-purple-300 text-4xl font-bold bg-black/40 p-5 rounded-2xl border border-white/5">x & -x</code>
+          <div>
+            <h4 class="text-white font-bold text-2xl uppercase mb-1">Isolate LSB</h4>
+            <p class="text-slate-400 text-lg leading-tight">Isolates the rightmost set bit (Least Significant Bit).</p>
+          </div>
+        </div>
+      </div>
+      <div class="glass-tag p-8 rounded-2xl border-l-8 border-purple-500 bg-purple-500/5">
+        <div class="flex items-center gap-6">
+          <code class="text-purple-300 text-4xl font-bold bg-black/40 p-5 rounded-2xl border border-white/5">x ^ 0 = x</code>
+          <div>
+            <h4 class="text-white font-bold text-2xl uppercase mb-1">Identity</h4>
+            <p class="text-slate-400 text-lg leading-tight">Any bit XORed with 0 maintains its original value.</p>
+          </div>
+        </div>
       </div>
     </div>
 
