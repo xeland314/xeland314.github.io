@@ -4,6 +4,19 @@ const { projects, lang } = Astro.props as {
   projects: any[];
   lang: "es" | "en";
 };
+
+const texts: Record<string, { header: string; seeAll: string }> = {
+  es: {
+    header: "Proyectos Destacados",
+    seeAll: "Ver todos",
+  },
+  en: {
+    header: "Featured Projects",
+    seeAll: "See all",
+  },
+};
+
+const T = texts[lang];
 ---
 
 <section
@@ -15,7 +28,7 @@ const { projects, lang } = Astro.props as {
       id="projects-heading"
       class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
     >
-      Proyectos Destacados
+      {T.header}
     </h3>
     <a
       href={`/${lang}/projects`}
@@ -23,7 +36,7 @@ const { projects, lang } = Astro.props as {
       class="text-[10px] font-bold text-blue-600
     dark:text-blue-400 hover:text-blue-500 transition-colors uppercase tracking-widest"
     >
-      Ver todos →
+      {T.seeAll} →
     </a>
   </header>
 

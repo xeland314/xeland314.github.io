@@ -5,6 +5,19 @@ const { posts, lang } = Astro.props as {
   posts: any[];
   lang: string;
 };
+
+const texts: Record<string, { header: string; seeAll: string }> = {
+  es: {
+    header: "Publicaciones Recientes",
+    seeAll: "Ver galería completa",
+  },
+  en: {
+    header: "Recent Posts",
+    seeAll: "See full gallery",
+  },
+};
+
+const T = texts[lang];
 ---
 
 <section
@@ -16,14 +29,14 @@ const { posts, lang } = Astro.props as {
       id="posts-heading"
       class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
     >
-      Publicaciones Recientes
+      {T.header}
     </h3>
     <a
       href={`/${lang}/posts`}
       aria-label="Ver galería completa de publicaciones"
       class="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 transition-colors uppercase tracking-widest"
     >
-      Ver galería →
+      {T.seeAll} →
     </a>
   </header>
 
