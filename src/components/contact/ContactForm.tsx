@@ -19,6 +19,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
   const texts = {
     es: {
       contact_me: "Contáctame",
+      contact_me_subtitle: "Hablemos de tu próximo proyecto",
       email_label: "Correo electrónico:",
       name_label: "Nombre:",
       message_label: "Mensaje:",
@@ -29,6 +30,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
     },
     en: {
       contact_me: "Contact Me",
+      contact_me_subtitle: "Let's talk about your next project",
       email_label: "Email:",
       name_label: "Name:",
       message_label: "Message:",
@@ -69,7 +71,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
         <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-1">
           {T.contact_me}
         </h3>
-        <p className="text-xl font-bold text-gray-800 dark:text-gray-100 italic tracking-tighter">Hablemos de tu próximo proyecto</p>
+        <h4 className="text-xl font-bold text-gray-800 dark:text-gray-100 italic tracking-tighter">{T.contact_me_subtitle}</h4>
       </div>
 
       <div className="space-y-4">
