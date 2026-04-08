@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface Props {
   showFooter: boolean;
@@ -12,25 +12,59 @@ interface Props {
 }
 
 export const WatermarkSettings: React.FC<Props> = ({
-  showFooter, setShowFooter, showLogo, setShowLogo, showUsername, setShowUsername, username, setUsername
+  showFooter,
+  setShowFooter,
+  showLogo,
+  setShowLogo,
+  showUsername,
+  setShowUsername,
+  username,
+  setUsername,
 }) => (
   <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-    <label className="block font-bold text-xs uppercase text-gray-400">Marca de Agua</label>
+    <label
+      htmlFor="watermark-footer"
+      className="block font-bold text-xs uppercase text-gray-400"
+    >
+      Marca de Agua
+    </label>
     <div className="flex items-center gap-2">
-      <input type="checkbox" checked={showFooter} onChange={(e) => setShowFooter(e.target.checked)} />
-      <label className="">Mostrar Footer</label>
+      <input
+        id="watermark-footer"
+        type="checkbox"
+        checked={showFooter}
+        onChange={(e) => setShowFooter(e.target.checked)}
+      />
+      <label htmlFor="watermark-footer" className="text-sm">
+        Mostrar Footer
+      </label>
     </div>
     {showFooter && (
       <div className="pl-4 space-y-2 border-l-2 border-blue-500/30">
         <div className="flex items-center gap-2">
-          <input type="checkbox" checked={showLogo} onChange={(e) => setShowLogo(e.target.checked)} />
-          <label className="text-xs">Mostrar Logo</label>
+          <input
+            id="watermark-logo"
+            type="checkbox"
+            checked={showLogo}
+            onChange={(e) => setShowLogo(e.target.checked)}
+          />
+          <label htmlFor="watermark-logo" className="text-xs">
+            Mostrar Logo
+          </label>
         </div>
         <div className="flex items-center gap-2">
-          <input type="checkbox" checked={showUsername} onChange={(e) => setShowUsername(e.target.checked)} />
-          <label className="text-xs">Mostrar Usuario</label>
+          <input
+            id="watermark-username"
+            type="checkbox"
+            checked={showUsername}
+            onChange={(e) => setShowUsername(e.target.checked)}
+          />
+          <label htmlFor="watermark-username" className="text-xs">
+            Mostrar Usuario
+          </label>
         </div>
         <input
+          id="watermark-username-input"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}

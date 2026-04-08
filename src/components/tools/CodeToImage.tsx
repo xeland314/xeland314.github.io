@@ -1,20 +1,22 @@
-import React, { useState, useRef } from 'react';
-import { type Language } from 'prism-react-renderer';
-import { toPng } from 'html-to-image';
-import { THEMES } from './code-to-img/constants';
-import { Sidebar } from './code-to-img/Sidebar';
-import { ImagePreview } from './code-to-img/ImagePreview';
+import React, { useState, useRef } from "react";
+import { type Language } from "prism-react-renderer";
+import { toPng } from "html-to-image";
+import { THEMES } from "./code-to-img/constants";
+import { Sidebar } from "./code-to-img/Sidebar";
+import { ImagePreview } from "./code-to-img/ImagePreview";
 
 const CodeToImage = () => {
-  const [code, setCode] = useState('// Pega tu código aquí\nconsole.log("Hola Mundo");');
-  const [language, setLanguage] = useState<Language>('javascript');
-  const [themeName, setThemeName] = useState<keyof typeof THEMES>('vsDark');
+  const [code, setCode] = useState(
+    '// Pega tu código aquí\nconsole.log("Hola Mundo");',
+  );
+  const [language, setLanguage] = useState<Language>("javascript");
+  const [themeName, setThemeName] = useState<keyof typeof THEMES>("vsDark");
   const [padding, setPadding] = useState(60);
   const [width, setWidth] = useState(1080);
   const [height, setHeight] = useState(1080);
-  const [bgImage, setBgImage] = useState('/assets/images/logo_v3.png');
-  const [bgType, setBgType] = useState<'color' | 'image'>('image');
-  const [bgColor, setBgColor] = useState('#3b82f6');
+  const [bgImage, setBgImage] = useState("/assets/images/logo_v3.png");
+  const [bgType, setBgType] = useState<"color" | "image">("image");
+  const [bgColor, setBgColor] = useState("#3b82f6");
   const [bgBlur, setBgBlur] = useState(0);
   const [bgOpacity, setBgOpacity] = useState(100);
   const [showLineNumbers, setShowLineNumbers] = useState(true);
@@ -22,7 +24,7 @@ const CodeToImage = () => {
   const [showFooter, setShowFooter] = useState(true);
   const [showLogo, setShowLogo] = useState(true);
   const [showUsername, setShowUsername] = useState(true);
-  const [username, setUsername] = useState('xeland314');
+  const [username, setUsername] = useState("xeland314");
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -35,21 +37,21 @@ const CodeToImage = () => {
         height: height,
         pixelRatio: 1,
         cacheBust: true,
-        backgroundColor: '#111827',
+        backgroundColor: "#111827",
         style: {
-          transform: 'scale(1)',
-          transformOrigin: 'top left',
-          margin: '0',
-          padding: '0',
-        }
+          transform: "scale(1)",
+          transformOrigin: "top left",
+          margin: "0",
+          padding: "0",
+        },
       });
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.download = `code-${width}x${height}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
-      console.error('Error al exportar imagen:', err);
-      alert('Error al exportar la imagen.');
+      console.error("Error al exportar imagen:", err);
+      alert("Error al exportar la imagen.");
     }
   };
 
@@ -66,23 +68,38 @@ const CodeToImage = () => {
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 p-4 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-200">
-      <Sidebar 
-        language={language} setLanguage={setLanguage}
-        themeName={themeName} setThemeName={setThemeName}
-        width={width} setWidth={setWidth}
-        height={height} setHeight={setHeight}
-        padding={padding} setPadding={setPadding}
-        bgType={bgType} setBgType={setBgType}
-        bgBlur={bgBlur} setBgBlur={setBgBlur}
-        bgOpacity={bgOpacity} setBgOpacity={setBgOpacity}
-        bgColor={bgColor} setBgColor={setBgColor}
+      <Sidebar
+        language={language}
+        setLanguage={setLanguage}
+        themeName={themeName}
+        setThemeName={setThemeName}
+        width={width}
+        setWidth={setWidth}
+        height={height}
+        setHeight={setHeight}
+        padding={padding}
+        setPadding={setPadding}
+        bgType={bgType}
+        setBgType={setBgType}
+        bgBlur={bgBlur}
+        setBgBlur={setBgBlur}
+        bgOpacity={bgOpacity}
+        setBgOpacity={setBgOpacity}
+        bgColor={bgColor}
+        setBgColor={setBgColor}
         handleBgUpload={handleBgUpload}
-        fontSize={fontSize} setFontSize={setFontSize}
-        showLineNumbers={showLineNumbers} setShowLineNumbers={setShowLineNumbers}
-        showFooter={showFooter} setShowFooter={setShowFooter}
-        showLogo={showLogo} setShowLogo={setShowLogo}
-        showUsername={showUsername} setShowUsername={setShowUsername}
-        username={username} setUsername={setUsername}
+        fontSize={fontSize}
+        setFontSize={setFontSize}
+        showLineNumbers={showLineNumbers}
+        setShowLineNumbers={setShowLineNumbers}
+        showFooter={showFooter}
+        setShowFooter={setShowFooter}
+        showLogo={showLogo}
+        setShowLogo={setShowLogo}
+        showUsername={showUsername}
+        setShowUsername={setShowUsername}
+        username={username}
+        setUsername={setUsername}
         handleExport={handleExport}
       />
 
@@ -94,14 +111,25 @@ const CodeToImage = () => {
           placeholder="Escribe o pega tu código aquí..."
         />
 
-        <ImagePreview 
+        <ImagePreview
           exportRef={exportRef}
-          width={width} height={height}
-          bgType={bgType} bgColor={bgColor} bgImage={bgImage}
-          bgBlur={bgBlur} bgOpacity={bgOpacity} padding={padding}
-          code={code} language={language} themeName={themeName}
-          fontSize={fontSize} showLineNumbers={showLineNumbers}
-          showFooter={showFooter} showLogo={showLogo} showUsername={showUsername} username={username}
+          width={width}
+          height={height}
+          bgType={bgType}
+          bgColor={bgColor}
+          bgImage={bgImage}
+          bgBlur={bgBlur}
+          bgOpacity={bgOpacity}
+          padding={padding}
+          code={code}
+          language={language}
+          themeName={themeName}
+          fontSize={fontSize}
+          showLineNumbers={showLineNumbers}
+          showFooter={showFooter}
+          showLogo={showLogo}
+          showUsername={showUsername}
+          username={username}
         />
       </div>
     </div>
