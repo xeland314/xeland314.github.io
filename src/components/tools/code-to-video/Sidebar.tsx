@@ -1,9 +1,9 @@
-import React from 'react';
-import { type Language } from 'prism-react-renderer';
-import { THEMES } from './constants';
-import { LanguageThemeSettings } from './LanguageThemeSettings';
-import { VideoSettings } from './VideoSettings';
-import { ControlButtons } from './ControlButtons';
+import React from "react";
+import { type Language } from "prism-react-renderer";
+import { THEMES } from "./constants";
+import { LanguageThemeSettings } from "./LanguageThemeSettings";
+import { VideoSettings } from "./VideoSettings";
+import { ControlButtons } from "./ControlButtons";
 
 interface SidebarProps {
   usePlainText: boolean;
@@ -16,7 +16,6 @@ interface SidebarProps {
   setPlainTextColor: (color: string) => void;
   plainBgColor: string;
   setPlainBgColor: (color: string) => void;
-
   width: number;
   setWidth: (w: number) => void;
   height: number;
@@ -29,7 +28,6 @@ interface SidebarProps {
   setFps: (f: number) => void;
   fontSize: number;
   setFontSize: (fs: number) => void;
-
   isRendering: boolean;
   progress: number;
   onPreview: () => void;
@@ -39,27 +37,40 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = (props) => {
   return (
     <div className="w-full lg:w-80 space-y-6 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl h-fit sticky top-4">
-      <h2 className="text-xl font-bold border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">Configuración</h2>
-      
+      <h2 className="text-xl font-bold border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">
+        Configuración
+      </h2>
+
       <div className="space-y-4 text-sm">
-        <LanguageThemeSettings 
-          usePlainText={props.usePlainText} setUsePlainText={props.setUsePlainText}
-          language={props.language} setLanguage={props.setLanguage}
-          themeName={props.themeName} setThemeName={props.setThemeName}
-          plainTextColor={props.plainTextColor} setPlainTextColor={props.setPlainTextColor}
-          plainBgColor={props.plainBgColor} setPlainBgColor={props.setPlainBgColor}
+        <LanguageThemeSettings
+          usePlainText={props.usePlainText}
+          setUsePlainText={props.setUsePlainText}
+          language={props.language}
+          setLanguage={props.setLanguage}
+          themeName={props.themeName}
+          setThemeName={props.setThemeName}
+          plainTextColor={props.plainTextColor}
+          setPlainTextColor={props.setPlainTextColor}
+          plainBgColor={props.plainBgColor}
+          setPlainBgColor={props.setPlainBgColor}
         />
 
-        <VideoSettings 
-          width={props.width} setWidth={props.setWidth}
-          height={props.height} setHeight={props.setHeight}
-          topPadding={props.topPadding} setTopPadding={props.setTopPadding}
-          typingSpeed={props.typingSpeed} setTypingSpeed={props.setTypingSpeed}
-          fps={props.fps} setFps={props.setFps}
-          fontSize={props.fontSize} setFontSize={props.setFontSize}
+        <VideoSettings
+          width={props.width}
+          setWidth={props.setWidth}
+          height={props.height}
+          setHeight={props.setHeight}
+          topPadding={props.topPadding}
+          setTopPadding={props.setTopPadding}
+          typingSpeed={props.typingSpeed}
+          setTypingSpeed={props.setTypingSpeed}
+          fps={props.fps}
+          setFps={props.setFps}
+          fontSize={props.fontSize}
+          setFontSize={props.setFontSize}
         />
 
-        <ControlButtons 
+        <ControlButtons
           isRendering={props.isRendering}
           progress={props.progress}
           onPreview={props.onPreview}
