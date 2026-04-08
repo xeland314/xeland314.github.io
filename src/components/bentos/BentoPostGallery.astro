@@ -63,8 +63,8 @@ const T = texts[lang];
                   alt={post.title}
                   title={post.title}
                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  loading="lazy"
-                  decoding="async"
+                  loading="eager"
+                  fetchpriority="high"
                   width="400"
                   height="400"
                 />
