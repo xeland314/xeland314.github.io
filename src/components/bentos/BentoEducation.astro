@@ -1,50 +1,72 @@
 ---
+import { db, MyCertificates, asc, and, eq } from "astro:db";
+
 const { lang = "es" } = Astro.props;
 
 const texts: Record<
   string,
   {
     section_label: string;
-    epn_title: string;
-    epn_school: string;
-    cert_title: string;
-    cert_school: string;
-    view_cert: string;
-    view_cert_label: string;
     view_more: string;
     external_notice: string;
+    cert_aria_prefix: string;
+    issued_on: string;
+    credential_id: string;
+    skills_label: string;
   }
 > = {
   es: {
     section_label: "Educación",
-    epn_title: "Ingeniería de Software",
-    epn_school: "Escuela Politécnica Nacional",
-    cert_title: "Especialización Backend",
-    cert_school: "Oracle + Alura",
-    view_cert: "Ver Certificado",
-    view_cert_label:
-      "Ver certificado de Especialización Backend en Oracle + Alura (abre en nueva pestaña)",
     view_more: "Ver más certificados",
     external_notice: "(abre en nueva pestaña)",
+    cert_aria_prefix: "Certificado:",
+    issued_on: "Emitido el",
+    credential_id: "ID de credencial",
+    skills_label: "Habilidades",
   },
   en: {
     section_label: "Education",
-    epn_title: "Software Engineering",
-    epn_school: "Escuela Politécnica Nacional",
-    cert_title: "Backend Specialization",
-    cert_school: "Oracle + Alura",
-    view_cert: "View Certificate",
-    view_cert_label:
-      "View Backend Specialization certificate on Oracle + Alura (opens in new tab)",
     view_more: "View more certificates",
     external_notice: "(opens in new tab)",
+    cert_aria_prefix: "Certificate:",
+    issued_on: "Issued on",
+    credential_id: "Credential ID",
+    skills_label: "Skills",
   },
 };
 
 const T = texts[lang];
-const certUrl =
-  "https://app.aluracursos.com/program/certificate/ef287555-cb92-4c6b-8ab7-1d455047cb23";
 const allCertsUrl = `/${lang}/certificates`;
+
+const certificates = await db
+  .select()
+  .from(MyCertificates)
+  .where(
+    and(eq(MyCertificates.lang, lang), eq(MyCertificates.isFeatured, true)),
+  )
+  .orderBy(asc(MyCertificates.date))
+  .limit(4);
+
+const getCertAriaDescription = (cert: (typeof certificates)[0]) => {
+  const parts = [`${T.cert_aria_prefix} ${cert.title}`, `${cert.issuer}`];
+
+  if (cert.issueDate) {
+    parts.push(`${T.issued_on}: ${cert.issueDate}`);
+  }
+
+  if (cert.credentialId) {
+    parts.push(`${T.credential_id}: ${cert.credentialId}`);
+  }
+
+  if (cert.skills) {
+    const skillsStr = Array.isArray(cert.skills)
+      ? cert.skills.join(", ")
+      : Object.values(cert.skills).join(", ");
+    parts.push(`${T.skills_label}: ${skillsStr}`);
+  }
+
+  return parts.join(". ");
+};
 ---
 
 <section
@@ -80,60 +102,102 @@ const allCertsUrl = `/${lang}/certificates`;
       </h3>
     </header>
 
-    <ul role="list" aria-label={T.section_label} class="space-y-0">
-      <li class="mb-4">
-        <p class="text-sm font-bold text-gray-900 dark:text-white">
-          {T.epn_title}
-        </p>
-        <p class="text-[11px] text-gray-500 dark:text-gray-400">
-          {T.epn_school}
-        </p>
-      </li>
+    {
+      certificates.length > 0 ? (
+        <ul role="list" aria-label={T.section_label} class="space-y-0">
+          {certificates.map((cert, index) => {
+            const ariaDesc = getCertAriaDescription(cert);
+            const descId = `cert-desc-${cert.id}`;
 
-      <li class="pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-sm font-bold text-gray-900 dark:text-white">
-              {T.cert_title}
-            </p>
-            <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3">
-              {T.cert_school}
-            </p>
-          </div>
-          <a
-            href={certUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={T.view_cert_label}
-            class="text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform
-          p-1 bg-blue-50 dark:bg-blue-900/30 rounded-lg"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-6 h-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              ></path>
-            </svg>
-            <span class="sr-only">{T.external_notice}</span>
-          </a>
-        </div>
-      </li>
-    </ul>
+            return (
+              <li
+                role="listitem"
+                aria-labelledby={`cert-title-${cert.id}`}
+                aria-describedby={descId}
+                class={`${index > 0 ? "pt-2 border-t border-gray-200 dark:border-gray-700" : ""} ${index < certificates.length - 1 ? "mb-0" : ""}`}
+              >
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p
+                      id={`cert-title-${cert.id}`}
+                      class="text-sm font-bold text-gray-900 dark:text-white"
+                    >
+                      {cert.title}
+                    </p>
+
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3">
+                      {cert.issuer}
+                    </p>
+
+                    <span id={descId} class="sr-only">
+                      {ariaDesc}
+                    </span>
+
+                    {cert.date && (
+                      <time datetime={cert.date} class="sr-only">
+                        {cert.issueDate || cert.date}
+                      </time>
+                    )}
+                  </div>
+
+                  {cert.credentialUrl && (
+                    <a
+                      href={cert.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${T.cert_aria_prefix} ${cert.title}, ${cert.issuer}. ${T.external_notice}`}
+                      aria-describedby={
+                        cert.credentialId ? `cred-id-${cert.id}` : undefined
+                      }
+                      class="text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform
+                        p-1 bg-blue-50 dark:bg-blue-900/30 rounded-lg"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                      <span class="sr-only">{T.external_notice}</span>
+                    </a>
+                  )}
+                </div>
+
+                {cert.credentialId && (
+                  <span id={`cred-id-${cert.id}`} class="sr-only">
+                    {T.credential_id}: {cert.credentialId}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p
+          role="status"
+          aria-live="polite"
+          class="text-[11px] text-gray-400 dark:text-gray-500 italic"
+        >
+          {lang === "es" ? "Sin certificados aún" : "No certificates yet"}
+        </p>
+      )
+    }
   </div>
 
   <a
     href={allCertsUrl}
     class="mt-2 inline-flex items-center justify-center gap-2 w-full py-2 px-4 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-xl transition-colors border border-gray-200 dark:border-gray-700"
+    aria-label={`${T.view_more} ${T.external_notice}`}
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -150,6 +214,7 @@ const allCertsUrl = `/${lang}/certificates`;
         stroke-width="2"
         d="M19 11H5m14 0l-7-7m7 7l-7 7"></path>
     </svg>
+    <span class="sr-only">{T.external_notice}</span>
     {T.view_more}
   </a>
 </section>

@@ -13,7 +13,7 @@ export const certificatesEN = [
   },
   {
     logo: "/images/alura_latam_logo.jpeg",
-    title: "Oracle Next Education F2 T4 Back-end Program", // Programa Oracle Next Education F2 T4 Back-end
+    title: "Oracle Next Education F2 T4 BackEnd Program", // Programa Oracle Next Education F2 T4 Back-end
     issuer: "Alura Latam",
     issueDate: "June 12, 2023",
     date: "2023-06-12",
@@ -140,7 +140,7 @@ export const certificatesEN = [
     credentialUrl:
       "https://learn.microsoft.com/es-es/training/achievements/learn.student-evangelism.intro-to-vc-git.trophy?username=christopher-villamarin&sharingId=A342BA23E2F906B1",
     skills: ["Git", "GitHub"],
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
   {
@@ -154,7 +154,7 @@ export const certificatesEN = [
       "https://learn.microsoft.com/es-es/training/achievements/learn.wwl.get-started-querying-with-transact-sql.trophy?username=christopher-villamarin&sharingId=A342BA23E2F906B1",
     skills: ["SQL"],
     lang: "en",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     logo: "/images/netacad_logo_black.svg",

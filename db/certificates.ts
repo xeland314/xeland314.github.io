@@ -1,7 +1,7 @@
 export const certificates = [
   {
     logo: "/images/efset.svg",
-    title: "EF SET English Certificate C1 Advanced",
+    title: "EF SET Certificado de Inglés C1 Avanzado",
     issuer: "EF SET",
     issueDate: "2 de noviembre de 2022",
     date: "2022-11-02",
@@ -12,7 +12,7 @@ export const certificates = [
   },
   {
     logo: "/images/alura_latam_logo.jpeg",
-    title: "Programa Oracle Next Education F2 T4 Back-end",
+    title: "Programa Oracle Next Education Backend",
     issuer: "Alura Latam",
     issueDate: "12 de junio de 2023",
     date: "2023-06-12",
@@ -131,7 +131,7 @@ export const certificates = [
     credentialUrl:
       "https://learn.microsoft.com/es-es/training/achievements/learn.student-evangelism.intro-to-vc-git.trophy?username=christopher-villamarin&sharingId=A342BA23E2F906B1",
     skills: ["Git", "GitHub"],
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     logo: "/images/microsoft_logo.jpeg",
@@ -143,7 +143,7 @@ export const certificates = [
     credentialUrl:
       "https://learn.microsoft.com/es-es/training/achievements/learn.wwl.get-started-querying-with-transact-sql.trophy?username=christopher-villamarin&sharingId=A342BA23E2F906B1",
     skills: ["SQL"],
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     logo:"/images/netacad_logo_black.svg",
