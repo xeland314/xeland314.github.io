@@ -288,4 +288,18 @@ export const projectDataEN = [
     image: undefined,
     lang: "en",
   },
+  {
+    title: "GymApp 1.0 - Gym Management System [LEGACY]",
+    slug: "en/projects/gymapp-v1",
+    description:
+      "Monolithic desktop application in Python and PyQt5 for gym management. 2021 university project that digitized membership management and user registration.",
+    shortDescription:
+      "Legacy system for gym management with membership control and basic billing.",
+    githubLink: null,
+    demoLink: null,
+    tags: ["Python", "PyQt5", "SQLite", "Legacy", "Desktop App"],
+    image: "/images/optimized/projects/gymapp1/imagen1.avif",
+    isFeatured: false,
+    lang: "en",
+  },
 ];

@@ -266,4 +266,17 @@ export const projectData = [
     tags: ["WebGPU", "Hardware", "Flutter", "Developer Tools"],
     image: undefined,
   },
+  {
+    title: "GymApp 1.0 - Sistema de Gestión para Gimnasios [LEGACY]",
+    slug: "gymapp-v1",
+    description:
+      "Aplicación de escritorio monolítica en Python y PyQt5 para gestión de gimnasios. Proyecto universitario del 2021 que digitalizó la gestión de membresías y registro de usuarios.",
+    shortDescription:
+      "Sistema legacy para gestión de gimnasios con control de membresías y facturación básica.",
+    githubLink: null,
+    demoLink: null,
+    tags: ["Python", "PyQt5", "SQLite", "Legacy", "Desktop App"],
+    image: "/images/optimized/projects/gymapp1/imagen1.avif",
+    isFeatured: false,
+  },
 ];

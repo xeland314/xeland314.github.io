@@ -1,0 +1,178 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "GymApp 1.0 - Gym Management System [LEGACY / ARCHIVED]";
+const description =
+  "Monolithic desktop application built with Python and PyQt5 for gym management. A 2021 project that digitized membership management and user check-ins.";
+const keywords =
+  "python, pyqt5, sqlite, gym management, legacy, desktop app, invoicing";
+const author = "Christopher Villamarín";
+const applicationName = "GymApp 1.0";
+const url = "https://xeland314.github.io/en/projects/gymapp-v1/";
+const image = "/images/optimized/projects/gymapp1/imagen1.avif";
+const imageAlt = "GymApp 1.0 Preview - User validation";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/en/projects/gymapp-v1/";
+
+const features = [
+  {
+    title: "Member Management",
+    desc: "Registration and validation for active memberships. Check-in control via National ID verification.",
+  },
+  {
+    title: "Billing System",
+    desc: "Modules for membership creation, payment tracking, and invoice generation with configurable tax rates.",
+  },
+  {
+    title: "Data Visualization",
+    desc: "Physical progress tracking using Matplotlib charts integrated directly into the PyQt5 UI.",
+  },
+  {
+    title: "Local Architecture",
+    desc: "Built as a standalone desktop app using SQLite for in-place data persistence.",
+  },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="en"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      Gym<span
+        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500"
+        >App</span
+      > 1.0
+      <span
+        class="text-sm font-normal text-gray-500 dark:text-gray-400 block mt-2"
+        >[LEGACY / ARCHIVED]</span
+      >
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Local gym management system developed in 2021. A fundamental step in
+      transitioning from manual paperwork to digital operations.
+    </p>
+  </header>
+
+  <div class="relative group mb-12">
+    <img
+      src={image}
+      alt={imageAlt}
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full transform transition group-hover:scale-[1.01]"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Key Features</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              {feature.title}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {feature.desc}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Business Narrative</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      This system successfully digitized the operations of local gyms handling
+      approximately 50 daily visits (200 total members). The primary goal was to
+      reduce membership validation time to <strong>under 10 seconds</strong> using
+      a simple ID-based lookup.
+    </p>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Special features included customer loyalty tools, such as birthday alerts
+      for targeted discounts, and a flexible inventory system for membership
+      types categorized by duration and pricing.
+    </p>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+      While functional, the technical and legal landscape has evolved. Looking
+      back, the SQLite implementation lacked modern data retention policies and
+      the advanced encryption layers that are now standard in my current work.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Technical Architecture</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div
+        class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800"
+      >
+        <h4 class="font-bold text-blue-600 dark:text-blue-400 mb-2">
+          Tech Stack
+        </h4>
+        <ul class="text-sm text-gray-600 dark:text-gray-400">
+          <li>• Python 3.x</li>
+          <li>• PyQt5 for UI</li>
+          <li>• SQLite for Database</li>
+          <li>• Matplotlib for plotting</li>
+        </ul>
+      </div>
+      <div
+        class="p-6 bg-green-50 dark:bg-green-900/10 rounded-2xl border border-green-200 dark:border-green-800"
+      >
+        <h4 class="font-bold text-green-600 dark:text-green-400 mb-2">
+          Architectural Style
+        </h4>
+        <ul class="text-sm text-gray-600 dark:text-gray-400">
+          <li>• Monolithic Application</li>
+          <li>• Tight coupling (UI + Logic)</li>
+          <li>• Manual State Management</li>
+          <li>• Legacy updates (No CI/CD)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Post-Mortem Analysis</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      A creative technical workaround was implemented: <strong
+        >Dual Input Support</strong
+      >. The system managed two keyboards on a single PC—one for administrative
+      tasks and an external numeric keypad for members to check in without
+      disrupting the manager's workflow.
+    </p>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+      Despite its success, the project lacks a clear separation of concerns,
+      with SQL queries often embedded directly within UI views. This project
+      remains a milestone in my journey, teaching me the realities of shipping a
+      product and handling basic concurrency.
+    </p>
+  </section>
+
+  <section
+    class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-gray-600/5 to-gray-500/5 border border-gray-500/10"
+  >
+    <h2 class="text-3xl font-bold mb-6">Project Status</h2>
+    <p class="mb-8 text-lg text-gray-600 dark:text-gray-400">
+      This project has been archived and replaced by modern versions compliant
+      with current Data Protection Regulations.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <span
+        class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gray-600 text-white font-bold"
+      >
+        LEGACY / ARCHIVED
+      </span>
+    </div>
+  </section>
+</ProjectLayout>
