@@ -1,9 +1,9 @@
 ---
 import CodeBlock from "../../../components/common/CodeBlock";
-import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
 
 // Metadatos
-const title = "Execution Time Analysis - Christopher Villamarín Projects";
+const title = "Execution Time Analysis - Christopher Villamarín Blog";
 const description =
   "Explora Execution Time Analysis, un proyecto diseñado para analizar tiempos de ejecución en sistemas Unix utilizando Bash y AWK. Calcula promedios y desviaciones estándar de tiempo real, usuario y sistema.";
 const keywords = [
@@ -20,45 +20,42 @@ const keywords = [
   "Ecuador",
 ].join(", ");
 const authors = "Christopher Alexander Villamarín Pila";
-const ogTitle = "Execution Time Analysis - Proyecto de Christopher Villamarín";
+const ogTitle = "Execution Time Analysis - Blog de Christopher Villamarín";
 const ogDescription =
   "Un proyecto para analizar tiempos de ejecución en sistemas Unix utilizando Bash y AWK. Ideal para comprender el rendimiento de comandos y programas.";
-const ogUrl = "https://xeland314.github.io/es/projects/speedtest/";
+const ogUrl = "https://xeland314.github.io/es/blog/speedtest/";
 const ogImage =
   "https://xeland314.github.io/images/execution_time_analysis_preview.png";
 const imageAlt = "Vista previa del proyecto Execution Time Analysis";
-const canonicalUrl = "https://xeland314.github.io/es/projects/speedtest/";
+const canonicalUrl = "https://xeland314.github.io/es/blogs/speedtest/";
 const robots = "index, follow";
 ---
 
-<ProjectLayout
+<BlogLayout
   title={title}
   description={description}
   keywords={keywords}
   author={authors}
-  title={ogTitle}
-  description={ogDescription}
+  applicationName="Execution Time Analysis"
   url={ogUrl}
   image={ogImage}
   robots={robots}
   imageAlt={imageAlt}
   canonical={canonicalUrl}
-  applicationName="Execution Time Analysis"
-  '
+  lang="es"
+  pubDate={new Date("2022-12-07")}
+  githubLink="https://github.com/xeland314/speedtest"
 >
-  <div class="p-0 sm:p-6">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4">⏱️ Execution Time Analysis</h1>
-      <p class="text-lg">
+  <div class="p-0 sm:p-0">
+    <section class="mb-8">
+      <p class="text-lg mb-8">
         Este proyecto está diseñado para analizar los tiempos de ejecución de
         comandos o programas en sistemas Unix, calculando estadísticas clave
         como el promedio y la desviación estándar del tiempo real, usuario y del
         sistema.
       </p>
-    </header>
 
-    <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔍 Descripción del proyecto</h2>
+      <h2 class="text-3xl font-semibold mb-4">Descripción del proyecto</h2>
       <p class="mb-4">
         El programa utiliza una combinación de Bash y AWK para recopilar datos
         sobre el tiempo de ejecución de un comando durante múltiples
@@ -70,8 +67,8 @@ const robots = "index, follow";
           <strong>Tiempo real:</strong> El tiempo total que tomó la ejecución.
         </li>
         <li>
-          <strong>Tiempo de usuario:</strong> El tiempo que el procesador dedicó
-          a ejecutar instrucciones de usuario.
+          <strong>Tiempo de usuario:</strong> El tiempo que el procesador dedicó a
+          ejecutar instrucciones de usuario.
         </li>
         <li>
           <strong>Tiempo del sistema:</strong> El tiempo dedicado por el kernel del
@@ -81,7 +78,7 @@ const robots = "index, follow";
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🛠️ Cómo funciona</h2>
+      <h2 class="text-3xl font-semibold mb-4">Cómo funciona</h2>
       <ol class="list-decimal pl-6 space-y-4">
         <li>
           <strong>Recolectar datos:</strong>
@@ -102,14 +99,14 @@ const robots = "index, follow";
         </li>
         <li>
           <strong>Imprimir estadísticas:</strong>
-          Los resultados se imprimen en un formato legible con información sobre
-          los tiempos y sus estadísticas.
+          Los resultados se imprimen en un formato legible con información sobre los
+          tiempos y sus estadísticas.
         </li>
       </ol>
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">📋 Resultados esperados</h2>
+      <h2 class="text-3xl font-semibold mb-4">Resultados esperados</h2>
       <p class="mb-4">
         Al ejecutar el programa, se obtiene un desglose detallado de cada
         iteración del comando, junto con el promedio y la desviación estándar de
@@ -135,7 +132,7 @@ Standard deviation:
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">⚙️ Requisitos</h2>
+      <h2 class="text-3xl font-semibold mb-4">Requisitos</h2>
       <ul class="list-disc pl-6 space-y-4">
         <li>
           Instalar el comando <code>time</code>:
@@ -148,7 +145,7 @@ Standard deviation:
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🚀 Cómo ejecutar</h2>
+      <h2 class="text-3xl font-semibold mb-4">Cómo ejecutar</h2>
       <ol class="list-decimal pl-6 space-y-4">
         <li>
           Guarda el archivo de AWK (<code>calc.awk</code>) en tu sistema.
@@ -164,4 +161,4 @@ Standard deviation:
       </ol>
     </section>
   </div>
-</ProjectLayout>
+</BlogLayout>

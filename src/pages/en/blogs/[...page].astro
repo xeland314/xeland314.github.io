@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Header from "../../../components/common/Header.astro";
+import Footer from "../../../components/common/Footer.astro";
+import { db, Blogs, eq, and, desc } from "astro:db";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const allBlogs = await db
+    .select()
+    .from(Blogs)
+    .where(and(eq(Blogs.lang, "en"), eq(Blogs.isPublished, true)))
+    .orderBy(desc(Blogs.pubDate));
+
+  return paginate(allBlogs, { pageSize: 10 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const blogs = page.data;
+
+const siteTitle = "Blog - Christopher Villamarín";
+const siteDescription =
+  "Technical articles, thoughts, and personal projects about software development.";
+const siteKeywords =
+  "technical blog, software development, programming, Christopher Villamarín";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/en/blog/";
+const siteImage = "https://xeland314.github.io/images/preview.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  lang="en"
+>
+  <Header />
+  <main
+    class="min-h-screen bg-white dark:bg-gray-900 text-slate-900 dark:text-slate-100"
+  >
+    <div class="max-w-2xl mx-auto px-6 py-20">
+      <header class="mb-20">
+        <h1
+          class="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 uppercase"
+        >
+          BLOG<span class="text-blue-600 dark:text-blue-400">_</span>
+        </h1>
+        <p class="text-slate-500 font-medium mb-6">
+          Personal thoughts, notes, and projects.
+        </p>
+
+        <div
+          class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-xs text-slate-500 italic"
+        >
+          <p>
+            Note: All articles in this section are automatic translations from
+            the original Spanish versions.
+          </p>
+        </div>
+      </header>
+
+      <div class="space-y-12">
+        {
+          blogs.map((blog) => (
+            <article class="group">
+              <div class="flex flex-col gap-2">
+                <time class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  {new Date(blog.pubDate!).toLocaleDateString("en", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </time>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <a href={blog.url}>{blog.title}</a>
+                </h2>
+                {blog.description && (
+                  <p class="text-slate-500 text-sm leading-relaxed max-w-xl">
+                    {blog.description}
+                  </p>
+                )}
+                <a
+                  href={blog.url}
+                  class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mt-2 flex items-center gap-1 group-hover:gap-2 transition-all"
+                >
+                  Read more{" "}
+                  <span class="text-blue-600 dark:text-blue-400">→</span>
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      {
+        blogs.length === 0 && (
+          <div class="py-20 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+            <p class="text-slate-400 font-medium italic">
+              More articles coming soon...
+            </p>
+          </div>
+        )
+      }
+
+      {/* Pagination */}
+      {
+        (page.url.prev || page.url.next) && (
+          <nav class="flex justify-between items-center mt-20 pt-10 border-t border-slate-100 dark:border-slate-800">
+            {page.url.prev ? (
+              <a
+                href={page.url.prev}
+                class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                ← Previous
+              </a>
+            ) : (
+              <span class="text-xs font-bold text-slate-300 dark:text-slate-700 uppercase tracking-widest cursor-default">
+                ← Previous
+              </span>
+            )}
+
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              Page {page.currentPage} of {page.lastPage}
+            </span>
+
+            {page.url.next ? (
+              <a
+                href={page.url.next}
+                class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                Next →
+              </a>
+            ) : (
+              <span class="text-xs font-bold text-slate-300 dark:text-slate-700 uppercase tracking-widest cursor-default">
+                Next →
+              </span>
+            )}
+          </nav>
+        )
+      }
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

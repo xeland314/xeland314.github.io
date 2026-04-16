@@ -1,11 +1,11 @@
 ---
-import CodeBlock from "../../../components/common/CodeBlock.tsx";
-import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+import CodeBlock from "../../../components/common/CodeBlock";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
 
 // Metadata
-const title = "📊 freqtables - Christopher Villamarín Projects";
+const title = "freqtables - Christopher Villamarín Projects";
 const description =
-  "Learn how to create simple frequency tables and tables with intervals using the freqtables package. Compatible with lists, tuples, and dictionaries for efficient data handling.";
+  "Learn how to create simple frequency tables and tables with intervals using the freqtables package. Compatible with lists, tuples, and dictionaries for efficient data management.";
 const keywords = [
   "freqtables",
   "frequency tables",
@@ -19,18 +19,18 @@ const keywords = [
   "Ecuador",
 ].join(", ");
 const authors = "Christopher Alexander Villamarín Pila";
-const ogTitle = "📊 freqtables - Christopher Villamarín Project";
+const ogTitle = "freqtables - Project by Christopher Villamarín";
 const ogDescription =
-  "Discover how to create simple frequency tables and tables with intervals using the freqtables package. Ideal for data analysis in Python.";
-const ogUrl = "https://xeland314.github.io/en/projects/freqtables/";
+  "Discover how to create simple and interval frequency tables using the freqtables package. Ideal for data analysis in Python.";
+const ogUrl = "https://xeland314.github.io/en/blog/freqtables/";
 const ogImage =
   "https://raw.githubusercontent.com/xeland314/freqtables/refs/heads/main/examples/example0.png";
 const imageAlt = "Preview of the freqtables project";
-const canonicalUrl = "https://xeland314.github.io/en/projects/freqtables/";
+const canonicalUrl = "https://xeland314.github.io/en/blogs/freqtables/";
 const robots = "index, follow";
 ---
 
-<ProjectLayout
+<BlogLayout
   title={title}
   description={description}
   keywords={keywords}
@@ -42,38 +42,40 @@ const robots = "index, follow";
   canonical={canonicalUrl}
   robots={robots}
   lang="en"
+  isAutomaticTranslation={true}
+  pubDate={new Date("2022-11-09")}
+  githubLink="https://github.com/xeland314/freqtables"
 >
-  <div class="p-0 sm:p-6">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4">📊 freqtables</h1>
+  <div class="p-0 sm:p-0">
+    <header class="mb-8">
       <p class="text-lg">
         This package allows you to create simple frequency tables given a set of
-        variables with their respective frequencies. This dataset can be a list,
-        tuple, or a dictionary.
+        variables with their respective frequencies. This data set can be a
+        list, tuple, or a dictionary.
       </p>
     </header>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔹 freqtablesimple</h2>
+      <h2 class="text-3xl font-semibold mb-4">freqtablesimple</h2>
       <p class="mb-4">
-        Here are different ways to initialize <code>FreqTableSimple</code> using
-        lists, dictionaries, or individual arguments:
+        Here are different ways to initialize <code>FreqTableSimple</code>
+        using lists, dictionaries, or individual arguments:
       </p>
       <CodeBlock
         code={`import freqtable as ft
 
-table1 = ft.FreqTableSimple([
+tabla1 = ft.FreqTableSimple([
     'A', 'A', 'A', 'B', 'B',
     'B', 'B', 'B', 'B', 'C'
 ])
-table2 = ft.FreqTableSimple({
+tabla2 = ft.FreqTableSimple({
     'A':3, 'B':6, 'C':1
 })
-table3 = ft.FreqTableSimple(
+tabla3 = ft.FreqTableSimple(
     'A', 'A', 'A', 'B', 'B',
     'B', 'B', 'B', 'B', 'C'
 )
-table4 = ft.FreqTableSimple(
+tabla4 = ft.FreqTableSimple(
     A = 3, B = 6, C = 1
 )`}
         language="python"
@@ -85,14 +87,14 @@ table4 = ft.FreqTableSimple(
       <div class="text-center mt-4">
         <img
           src="https://raw.githubusercontent.com/xeland314/freqtables/refs/heads/main/examples/example0.png"
-          alt="Simple Table"
+          alt="Simple table"
           class="rounded-lg shadow-md mx-auto"
         />
       </div>
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔹 freqtable</h2>
+      <h2 class="text-3xl font-semibold mb-4">freqtable</h2>
       <p class="mb-4">
         It is also possible to create a frequency table with intervals using
         <code>freqtable.py</code>. For example:
@@ -101,18 +103,18 @@ table4 = ft.FreqTableSimple(
         code={`# example1.py
 import freqtable as ft
 
-# 8 intervals are created from 0 with a width of 4:
-intervals = ft.create_intervals(8, 0, 4)
-frequencies = [47, 32, 25, 20, 12, 5, 4, 5]
+# 8 intervals are created starting from 0 with a width of 4:
+intervalos = ft.crear_intervalos(8, 0, 4)
+frecuencias = [47, 32, 25, 20, 12, 5, 4, 5]
 # The table is initialized with the intervals and frequencies:
-table_with_intervals = ft.FreqTable(intervals, frequencies)`}
+tabla_con_intervalos = ft.FreqTable(intervalos, frecuencias)`}
         language="python"
         client:visible
       />
       <p class="mt-4">This will result in:</p>
       <CodeBlock
         code={`print("Table #01".center(62, "~"))
-print(table_with_intervals)`}
+print(tabla_con_intervalos)`}
         language="python"
         client:visible
       />
@@ -126,7 +128,7 @@ print(table_with_intervals)`}
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">📦 Installation</h2>
+      <h2 class="text-3xl font-semibold mb-4">Installation</h2>
       <p class="mb-4">
         You can clone the repository and then install the necessary
         dependencies:
@@ -146,4 +148,4 @@ print(table_with_intervals)`}
       </details>
     </section>
   </div>
-</ProjectLayout>
+</BlogLayout>

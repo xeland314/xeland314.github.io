@@ -8,6 +8,7 @@ import BentoTechStack from "../../components/bentos/BentoTechStack.astro";
 import BentoPostGallery from "../../components/bentos/BentoPostGallery.astro";
 import BentoServices from "../../components/bentos/BentoServices.astro";
 import BentoDevTools from "../../components/bentos/BentoDevTools.astro";
+import BentoBlog from "../../components/bentos/BentoBlog.astro";
 import ContactForm from "../../components/contact/ContactForm";
 import Footer from "../../components/common/Footer.astro";
 import { db, Posts, Projects, eq, and, desc } from "astro:db";
@@ -76,14 +77,17 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
         </div>
       </section>
 
-      {/* 2. Technical Expertise and Education */}
-      <section aria-label="Technical expertise and education">
+      {/* 2. Technical Expertise, Education and Blog */}
+      <section aria-label="Technical expertise, education and blog">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div class="md:col-span-7 lg:col-span-8">
+          <div class="md:col-span-12 lg:col-span-8">
             <BentoTechStack lang={lang} />
           </div>
-          <div class="md:col-span-5 lg:col-span-4">
+          <div class="md:col-span-6 lg:col-span-4">
             <BentoEducation lang={lang} />
+          </div>
+          <div class="md:col-span-6 lg:col-span-12">
+            <BentoBlog lang={lang} />
           </div>
         </div>
       </section>
@@ -94,9 +98,7 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
       </section>
 
       {/* 4. Animations and Dev Tools (before footer) */}
-      <section
-        aria-label="Animations, demonstrations and developer tools"
-      >
+      <section aria-label="Animations, demonstrations and developer tools">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div class="lg:col-span-4">
             <div
@@ -128,9 +130,7 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
       </section>
 
       {/* 6. Footer */}
-      <Footer />
+      <Footer rounded />
     </div>
-  </main>
-</BaseLayout>
   </main>
 </BaseLayout>

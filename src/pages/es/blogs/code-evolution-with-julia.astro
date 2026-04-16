@@ -1,0 +1,202 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
+import { Image } from "astro:assets";
+
+// --- METADATA ---
+const pageTitle = "Analiza la evolución de tu código usando Julia";
+const pageDescription =
+  "Con un script de Julia podrás observar la evolución de tu código commit a commit gráficamente.";
+const pageKeywords = [
+  "commits",
+  "julia",
+  "análisis",
+  "git",
+  "Christopher Villamarín",
+  "xeland314",
+].join(", ");
+
+const pageSlug = "code-evolution-with-julia";
+const pageAuthor = "Christopher Villamarín";
+const applicationName = "Blog de Christopher Villamarín";
+const pageUrl = `https://xeland314.github.io/es/blogs/${pageSlug}`;
+const pageImageAlt = "Vista previa del blog";
+const pageRobots = "index, follow";
+const pageCanonical = pageUrl;
+const pubDate = new Date("2026-04-14T00:00:00");
+---
+
+<BlogLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  applicationName={applicationName}
+  url={pageUrl}
+  imageAlt={pageImageAlt}
+  robots={pageRobots}
+  canonical={pageCanonical}
+  pubDate={pubDate}
+>
+  <section id="introduction">
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Cada vez que haces <code>git commit</code>, guardas algo más que código:
+      guardas una decisión. A lo largo del tiempo, esas decisiones acumuladas
+      cuentan la historia de un proyecto desde qué lenguajes programación usas
+      hasta cuáles abandonaste; qué partes crecieron y cuáles murieron.
+    </p>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      El script que presento aquí lee esa historia directamente desde tu
+      historial de <i>Git</i> y la convierte en un gráfico de área apilada e interactivo.
+      Para cada extensión de archivo que te interese rastrear, calcula las líneas
+      netas commit a commit y las acumula en una línea de tiempo. El resultado es
+      un HTML listo para el navegador.
+    </p>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Está escrito en Julia y no usa regex: la detección de fechas es puramente
+      posicional y la extracción de extensiones trabaja con índices de texto. El
+      resultado es un archivo <code>evolucion_codigo.html</code> generado con PlotlyBase,
+      con hover unificado y tema oscuro.
+    </p>
+  </section>
+
+  <CodeBlock
+    client:only="react"
+    language="python"
+    code={`using PlotlyBase
+
+    function generar_plotly_evolucion()
+        println("Procesando historial de Git...")
+
+        datos_por_ext = Dict{String,Dict{String,Int}}()
+
+        extensiones_interes = Set(["jl", "py", "c", "cpp", "h", "php", "js", "html", "css", "astro", "ts", "tsx", "dart", "rust", "go", "rb", "swift", "kt", "scala", "lua", "r", "sql", "zig", "nim", "elixir", "clj", "cljs", "lisp", "fsharp", "ocaml", "haskell", "groovy", "perl", "vb", "powershell", "bash", "zsh", "fish", "makefile", "dockerfile", "yaml", "json", "xml", "toml"])
+
+        fechas_set = Set{String}()
+        fecha_curr = ""
+
+        for linea in eachline(pipeline(\`git log --pretty=format:%as --numstat\`))
+            linea = strip(linea)
+            isempty(linea) && continue
+
+            # Detección estricta y sin Regex (más rápido para el CPU)
+            if length(linea) == 10 && linea[5] == '-' && linea[8] == '-'
+                fecha_curr = linea
+                push!(fechas_set, fecha_curr)
+                continue
+            end
+
+            # Dividir solo en 3 partes máximas
+            partes = split(linea, limit=3)
+            if length(partes) == 3
+                add_str, del_str, archivo = partes
+                (add_str == "-" || del_str == "-") && continue
+
+                # Extraer la extensión con índices en lugar de Regex
+                idx = findlast('.', archivo)
+                if idx !== nothing && idx < length(archivo)
+                    ext = lowercase(archivo[idx+1:end])
+
+                    if ext in extensiones_interes
+                        add = parse(Int, add_str)
+                        del = parse(Int, del_str)
+
+                        # Obtener o crear el diccionario interno
+                        d_ext = get!(datos_por_ext, ext, Dict{String,Int}())
+                        d_ext[fecha_curr] = get(d_ext, fecha_curr, 0) + (add - del)
+                    end
+                end
+            end
+        end
+
+        fechas_todas = sort(collect(fechas_set))
+
+        traces = GenericTrace[]
+
+        for ext in sort(collect(keys(datos_por_ext)))
+            d_ext = datos_por_ext[ext]
+            serie_acumulada = Int[]
+            suma = 0
+
+            # Rellenar los días usando el arreglo de strings ordenado
+            for d in fechas_todas
+                suma += get(d_ext, d, 0)
+                push!(serie_acumulada, max(0, suma))
+            end
+
+            t = scatter(
+                x=fechas_todas,
+                y=serie_acumulada,
+                mode="lines",
+                stackgroup="one",
+                name=".$ext",
+                fill="tonexty"
+            )
+            push!(traces, t)
+        end
+
+        layout = Layout(
+            title="Evolución de Código por Lenguaje",
+            xaxis_title="Fecha",
+            yaxis_title="Líneas de Código",
+            hovermode="x unified",
+            template="plotly_dark"
+        )
+
+        p = Plot(traces, layout)
+
+        open("evolucion_codigo.html", "w") do io
+            PlotlyBase.to_html(io, p)
+        end
+
+        println("¡Listo! Se ha creado 'evolucion_codigo.html'.")
+    end
+
+    generar_plotly_evolucion()
+`}
+  />
+
+  <section id="installation">
+    <h2
+      class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100"
+    >
+      Instalación
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Para ejecutar este script necesitas instalar <code>PlotlyBase</code> en Julia.
+    </p>
+    <CodeBlock
+      client:only="react"
+      language="sh"
+      code={`julia -e 'import Pkg; Pkg.add("PlotlyBase")'`}
+    />
+    <p class="mt-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Con esto deberías poder ejecutar el script y generar <code
+        >evolucion_codigo.html</code
+      >.
+    </p>
+  </section>
+
+  <section id="Resultado">
+    <h2
+      class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100"
+    >
+      Ejemplo de resultado:
+    </h2>
+    <Image
+      width="1309"
+      height="679"
+      src="/images/blog/resultado-julia.png"
+      alt="Resultado del script en el portafolio"
+      loading="lazy"
+    />
+  </section>
+
+  <section id="conclusion">
+    <p class="mt-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Ten en cuenta que el análisis puede fallar o tardar mucho en repositorios
+      muy grandes, con un historial de años o con muchísimos commits, ya que
+      recorre todo el historial de Git.
+    </p>
+  </section>
+</BlogLayout>

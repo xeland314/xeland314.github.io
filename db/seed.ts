@@ -1,10 +1,12 @@
-import { db, Projects, MyCertificates, Posts } from "astro:db";
+import { db, Projects, MyCertificates, Posts, Blogs } from "astro:db";
 import { projectData } from "./projects";
 import { certificates } from "./certificates";
 import { certificatesEN } from "./certificates.en";
 import { projectDataEN } from "./projects.en";
 import { postData } from "./posts";
 import { postDataEN } from "./posts.en";
+import { blogData } from "./blogs";
+import { blogDataEN } from "./blogs.en";
 
 export default async function seed() {
   await db.insert(Projects).values(projectData);
@@ -13,4 +15,6 @@ export default async function seed() {
   await db.insert(Projects).values(projectDataEN);
   await db.insert(Posts).values(postData);
   await db.insert(Posts).values(postDataEN);
+  await db.insert(Blogs).values(blogData);
+  await db.insert(Blogs).values(blogDataEN);
 }

@@ -1,39 +1,46 @@
 import { useState, useEffect } from "react";
 import { Highlight, themes } from "prism-react-renderer";
-import { useAstroTheme } from "../../hooks/useAstroThemes";
 
-interface CodeBlockProps {
+interface CodeBlockReactProps {
   code: string;
   language?: string;
+  showLanguage?: boolean;
 }
 
-export default function CodeBlock({ code, language = "bash" }: CodeBlockProps) {
+export default function CodeBlockReact({
+  code,
+  language = "bash",
+  showLanguage = false,
+}: CodeBlockReactProps) {
   const [isCopied, setIsCopied] = useState(false);
-  const { resolvedTheme } = useAstroTheme();
-  const [theme, setTheme] = useState(themes.github);
+  const [isDark, setIsDark] = useState(false);
   const [lang, setLang] = useState<"es" | "en">("es");
 
+  // Detecta el tema leyendo directamente el DOM (class="dark" en <html>)
   useEffect(() => {
-    const currentLang = window.location.pathname.startsWith("/en") ? "en" : "es";
+    const root = document.documentElement;
+    const check = () => setIsDark(root.classList.contains("dark"));
+    check();
+
+    const observer = new MutationObserver(check);
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  // Detecta idioma por ruta
+  useEffect(() => {
+    const currentLang = window.location.pathname.startsWith("/en")
+      ? "en"
+      : "es";
     setLang(currentLang);
   }, []);
 
-  const texts = {
-    es: {
-      copy: "Copiar",
-      copied: "¡Copiado!",
-    },
-    en: {
-      copy: "Copy",
-      copied: "Copied!",
-    },
-  };
+  const T = {
+    es: { copy: "Copiar", copied: "¡Copiado!" },
+    en: { copy: "Copy", copied: "Copied!" },
+  }[lang];
 
-  const T = texts[lang];
-
-  useEffect(() => {
-    setTheme(resolvedTheme === "dark" ? themes.vsDark : themes.github);
-  }, [resolvedTheme]);
+  const theme = isDark ? themes.jettwaveDark : themes.github;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -48,10 +55,7 @@ export default function CodeBlock({ code, language = "bash" }: CodeBlockProps) {
           {({ className, style, tokens, getLineProps, getTokenProps }) => (
             <pre
               className={`${className} p-2 text-xs mobile:text-[14px] mobile:p-3 sm:p-4 sm:text-[16px] rounded-md w-max min-w-full`}
-              style={{
-                ...style,
-                backgroundColor: theme.plain.backgroundColor,
-              }}
+              style={{ ...style, backgroundColor: theme.plain.backgroundColor }}
             >
               {tokens.map((line, i) => (
                 <div key={i} {...getLineProps({ line })}>
@@ -64,10 +68,13 @@ export default function CodeBlock({ code, language = "bash" }: CodeBlockProps) {
           )}
         </Highlight>
       </div>
-      <div className="absolute top-2 right-2 z-10">
-        <span className="mr-1 text-white bg-blue-600 px-2 py-1 text-xs rounded-sm">
-          {language}
-        </span>
+
+      <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+        {showLanguage && (
+          <span className="text-white bg-blue-600 px-2 py-1 text-xs rounded-sm">
+            {language}
+          </span>
+        )}
         <button
           type="button"
           onClick={handleCopy}

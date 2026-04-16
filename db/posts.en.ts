@@ -2,98 +2,112 @@ export const postDataEN = [
   {
     title: "Standard /llms.txt",
     url: "/en/posts/ai-llms-txt",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_ai-llms-txt-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_ai-llms-txt-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "Environment Variables",
     url: "/en/posts/config-env-files",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_config-env-files-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_config-env-files-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: ".ARB Files",
     url: "/en/posts/flutter-arb-files",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_flutter-arb-files-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_flutter-arb-files-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "TOON Format",
     url: "/en/posts/formats-toon",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_formats-toon-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_formats-toon-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "URL Anatomy",
     url: "/en/posts/url-anatomy",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_url-anatomy-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_url-anatomy-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "HTTP Request",
     url: "/en/posts/formats-http-request",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_formats-http-request-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_formats-http-request-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "IEEE 754 Anatomy",
     url: "/en/posts/ieee754-anatomy",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_ieee754-anatomy-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_ieee754-anatomy-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "Git Commit Anatomy",
     url: "/en/posts/git-commit-anatomy",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_git-commit-anatomy-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_git-commit-anatomy-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "5 Antipatterns",
     url: "/en/posts/software-anti-patterns",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_software-anti-patterns-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_software-anti-patterns-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "JWT Anatomy",
     url: "/en/posts/jwt-anatomy",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_jwt-anatomy-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_jwt-anatomy-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "SemVer: x.y.z",
     url: "/en/posts/software-semver",
-    image: "/images/optimized/posts/127.0.0.1_8000_en_posts_software-semver-cover.avif",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_en_posts_software-semver-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "Linux Permissions: 755",
     url: "/en/posts/linux-permissions",
-    image: "/images/optimized/posts/localhost_4321_en_posts_linux-permissions-cover.avif",
+    image:
+      "/images/optimized/posts/localhost_4321_en_posts_linux-permissions-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "Linux Permissions: Extended",
     url: "/en/posts/linux-permissions-extended",
-    image: "/images/optimized/posts/localhost_4321_en_posts_linux-permissions-extended-cover.avif",
+    image:
+      "/images/optimized/posts/localhost_4321_en_posts_linux-permissions-extended-cover.avif",
     lang: "en",
     isPublished: true,
   },
   {
     title: "PPM Anatomy",
     url: "/en/posts/formats-ppm-anatomy",
-    image: "/images/optimized/posts/localhost_4321_en_posts_formats-ppm-anatomy-cover.avif",
+    image:
+      "/images/optimized/posts/localhost_4321_en_posts_formats-ppm-anatomy-cover.avif",
     lang: "en",
     isPublished: true,
   },

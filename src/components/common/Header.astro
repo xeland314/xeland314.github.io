@@ -13,8 +13,19 @@ const homeLink = lang === "en" ? "/en" : "/";
 >
   <nav class="flex justify-between items-center relative p-3">
     <div class="flex items-center justify-between">
-      <a href={homeLink} class="flex items-center text-lg font-bold hover:text-blue-500">
-        <img src="/assets/images/logo_v3.png" alt="Logo xeland314" class="h-8 w-8 mr-2" width="20" height="20" title="¿Por qué hay un gato aquí?"/>
+      <a
+        href={homeLink}
+        class="flex items-center text-lg font-bold hover:text-blue-500"
+      >
+        <img
+          src="/assets/images/logo_v3.png"
+          alt="Logo xeland314"
+          class="h-8 w-8 mr-2"
+          width="20"
+          height="20"
+          title="¿Por qué hay un gato aquí?"
+          loading="eager"
+        />
         xeland314
       </a>
     </div>
@@ -23,9 +34,7 @@ const homeLink = lang === "en" ? "/en" : "/";
     <ul class="hidden md:flex flex-row gap-x-6 items-center">
       <li>
         <a
-          href={
-            lang === "en" ? "/en/projects" : "/es/projects"
-          }
+          href={lang === "en" ? "/en/projects" : "/es/projects"}
           class="hover:text-blue-500"
         >
           {lang === "en" ? "Projects" : "Proyectos"}
@@ -33,19 +42,23 @@ const homeLink = lang === "en" ? "/en" : "/";
       </li>
       <li>
         <a
-          href={
-            lang === "en" ? "/en/posts" : "/es/posts"
-          }
+          href={lang === "en" ? "/en/blogs" : "/es/blogs"}
           class="hover:text-blue-500"
         >
-          {lang === "en" ? "Posts" : "Posts"}
+          Blog
         </a>
       </li>
       <li>
         <a
-          href={
-            lang === "en" ? "/en/#contact" : "/#contact"
-          }
+          href={lang === "en" ? "/en/posts" : "/es/posts"}
+          class="hover:text-blue-500"
+        >
+          Posts
+        </a>
+      </li>
+      <li>
+        <a
+          href={lang === "en" ? "/en/#contact" : "/#contact"}
           class="hover:text-blue-500"
         >
           {lang === "en" ? "Contact" : "Contacto"}

@@ -46,13 +46,17 @@ const {
   lang={lang}
 >
   <Header />
-  <main class="py-16 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+  <main class="py-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
     <article class="max-w-4xl mx-auto px-6">
       <a
         href={lang === "es" ? "/es/projects" : "/en/projects"}
-        class="text-blue-600 dark:text-blue-400 hover:underline mb-8 block"
+        class="text-blue-600 dark:text-blue-400 hover:underline block"
       >
-        {lang === "es" ? "← Volver a todos los proyectos" : "← Back to all projects"}
+        {
+          lang === "es"
+            ? "← Volver a todos los proyectos"
+            : "← Back to all projects"
+        }
       </a>
       <slot />
     </article>

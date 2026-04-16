@@ -1,0 +1,138 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Header from "../../../components/common/Header.astro";
+import Footer from "../../../components/common/Footer.astro";
+import { db, Blogs, eq, and, desc } from "astro:db";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const allBlogs = await db
+    .select()
+    .from(Blogs)
+    .where(and(eq(Blogs.lang, "es"), eq(Blogs.isPublished, true)))
+    .orderBy(desc(Blogs.pubDate));
+
+  return paginate(allBlogs, { pageSize: 10 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const blogs = page.data;
+
+const siteTitle = "Blog - Christopher Villamarín";
+const siteDescription =
+  "Artículos técnicos, pensamientos y proyectos sobre desarrollo de software.";
+const siteKeywords =
+  "blog técnico, desarrollo software, programación, Christopher Villamarín";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/es/blog/";
+const siteImage = "https://xeland314.github.io/images/preview.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  lang="es"
+>
+  <Header />
+  <main
+    class="min-h-screen bg-white dark:bg-gray-900 text-slate-900 dark:text-slate-100"
+  >
+    <div class="max-w-2xl mx-auto px-6 py-20">
+      <header class="mb-20">
+        <h1
+          class="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 uppercase"
+        >
+          BLOG<span class="text-blue-600 dark:text-blue-400">_</span>
+        </h1>
+        <p class="text-slate-500 font-medium">
+          Pensamientos, notas y proyectos personales.
+        </p>
+      </header>
+
+      <div class="space-y-12">
+        {
+          blogs.map((blog) => (
+            <article class="group">
+              <div class="flex flex-col gap-2">
+                <time class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  {new Date(blog.pubDate!).toLocaleDateString("es", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </time>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <a href={blog.url}>{blog.title}</a>
+                </h2>
+                {blog.description && (
+                  <p class="text-slate-500 text-sm leading-relaxed max-w-xl">
+                    {blog.description}
+                  </p>
+                )}
+                <a
+                  href={blog.url}
+                  class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mt-2 flex items-center gap-1 group-hover:gap-2 transition-all"
+                >
+                  Leer más{" "}
+                  <span class="text-blue-600 dark:text-blue-400">→</span>
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      {
+        blogs.length === 0 && (
+          <div class="py-20 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
+            <p class="text-slate-400 font-medium italic">
+              Próximamente más artículos...
+            </p>
+          </div>
+        )
+      }
+
+      {/* Pagination */}
+      {
+        (page.url.prev || page.url.next) && (
+          <nav class="flex justify-between items-center mt-20 pt-10 border-t border-slate-100 dark:border-slate-800">
+            {page.url.prev ? (
+              <a
+                href={page.url.prev}
+                class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                ← Anterior
+              </a>
+            ) : (
+              <span class="text-xs font-bold text-slate-300 dark:text-slate-700 uppercase tracking-widest cursor-default">
+                ← Anterior
+              </span>
+            )}
+
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              Página {page.currentPage} de {page.lastPage}
+            </span>
+
+            {page.url.next ? (
+              <a
+                href={page.url.next}
+                class="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                Siguiente →
+              </a>
+            ) : (
+              <span class="text-xs font-bold text-slate-300 dark:text-slate-700 uppercase tracking-widest cursor-default">
+                Siguiente →
+              </span>
+            )}
+          </nav>
+        )
+      }
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

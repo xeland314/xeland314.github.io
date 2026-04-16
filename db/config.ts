@@ -44,6 +44,19 @@ export const Posts = defineTable({
   },
 });
 
+export const Blogs = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true, autoIncrement: true }),
+    title: column.text(),
+    description: column.text({ optional: true }),
+    url: column.text(),
+    lang: column.text({ default: "es" }),
+    isPublished: column.boolean({ default: false }),
+    pubDate: column.date({ optional: true }),
+    githubLink: column.text({ optional: true }),
+  },
+});
+
 export default defineDb({
-  tables: { Projects, MyCertificates, Posts },
+  tables: { Projects, MyCertificates, Posts, Blogs },
 });

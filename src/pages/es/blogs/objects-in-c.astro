@@ -1,9 +1,9 @@
 ---
 import CodeBlock from "../../../components/common/CodeBlock";
-import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
 
 // Metadatos
-const title = "📘 Objetos en C - Christopher Villamarín Projects";
+const title = "Objetos en C - Christopher Villamarín Projects";
 const description =
   "Explora cómo implementar programación orientada a objetos en C basada en el libro 'Object-oriented Programming with ANSI-C' de Axel-Tobias Schreiner. Aprende sobre encapsulamiento, clases y manejo eficiente de memoria.";
 const keywords = [
@@ -19,33 +19,33 @@ const keywords = [
   "Ecuador",
 ].join(", ");
 const authors = "Christopher Alexander Villamarín Pila";
-const ogTitle = "📘 Objetos en C - Proyecto de Christopher Villamarín";
+const ogTitle = "Objetos en C - Proyecto de Christopher Villamarín";
 const ogDescription =
   "Descubre cómo implementar programación orientada a objetos en C con ejemplos prácticos. Basado en el libro 'Object-oriented Programming with ANSI-C'.";
-const ogUrl = "https://xeland314.io/es/projects/objects-in-c/";
+const ogUrl = "https://xeland314.io/es/blog/objects-in-c/";
 const ogImage = "https://xeland314.github.io/images/objects_in_c_preview.png";
 const imageAlt = "Vista previa del proyecto Objetos en C";
-const canonicalUrl = "https://xeland314.github.io/es/projects/objects-in-c/";
+const canonicalUrl = "https://xeland314.github.io/es/blogs/objects-in-c/";
 const robots = "index, follow";
 ---
 
-<ProjectLayout
+<BlogLayout
   title={title}
   description={description}
   keywords={keywords}
   author={authors}
-  title={ogTitle}
-  description={ogDescription}
+  applicationName="Objetos en C"
   url={ogUrl}
   image={ogImage}
   imageAlt={imageAlt}
   canonical={canonicalUrl}
-  applicationName="Objetos en C"
   robots={robots}
+  lang="es"
+  pubDate={new Date("2023-03-18")}
+  githubLink="https://github.com/xeland314/objects-in-C"
 >
-  <div class="p-0 sm:p-6">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4">📘 Objetos en C</h1>
+  <div class="p-0 sm:p-0">
+    <header class="mb-8">
       <p class="text-lg">
         Basado en el libro{" "}
         <a
@@ -61,7 +61,7 @@ const robots = "index, follow";
     </header>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔹 Encapsulamiento</h2>
+      <h2 class="text-3xl font-semibold mb-4">Encapsulamiento</h2>
       <p class="mb-4">
         Se define un <code>struct</code> base llamado <code>Class</code>. A
         partir de este se pueden crear más objetos que hereden los mismos
@@ -91,7 +91,7 @@ char * toString(const void * self);`}
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔹 Uso del repositorio</h2>
+      <h2 class="text-3xl font-semibold mb-4">Uso del repositorio</h2>
       <p class="mb-4">
         El manejo de objetos permite simplificar la gestión de memoria en C.
         Considera el ejemplo de inicializar una cadena usando la clase{" "}
@@ -116,7 +116,7 @@ int main() {
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔹 Funciones principales</h2>
+      <h2 class="text-3xl font-semibold mb-4">Funciones principales</h2>
       <ul class="list-disc pl-6 space-y-4">
         <li>
           <strong>Constructor:</strong> Inicializa cualquier objeto de forma estandarizada
@@ -152,7 +152,7 @@ int main() {
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">📋 Ejemplos de uso</h2>
+      <h2 class="text-3xl font-semibold mb-4">Ejemplos de uso</h2>
       <p class="mb-4">
         Para compilar los ejemplos y ver los resultados en consola, utiliza los
         comandos:
@@ -168,7 +168,7 @@ int main() {
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🧪 Tests</h2>
+      <h2 class="text-3xl font-semibold mb-4">Tests</h2>
       <p class="mb-4">
         Para verificar la integridad de las funciones implementadas, puedes
         ejecutar los tests con:
@@ -189,11 +189,11 @@ int main() {
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🧹 Limpieza</h2>
+      <h2 class="text-3xl font-semibold mb-4">Limpieza</h2>
       <p class="mb-4">
         Para eliminar todos los archivos compilados, utiliza el comando:
       </p>
       <CodeBlock code="make clean" client:visible />
     </section>
   </div>
-</ProjectLayout>
+</BlogLayout>

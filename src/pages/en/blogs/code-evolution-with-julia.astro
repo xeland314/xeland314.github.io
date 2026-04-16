@@ -1,0 +1,204 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
+import { Image } from "astro:assets";
+
+// --- METADATA ---
+const pageTitle = "Analyze your code evolution using Julia";
+const pageDescription =
+  "With a Julia script, you can graphically observe the evolution of your code commit by commit.";
+const pageKeywords = [
+  "commits",
+  "julia",
+  "analysis",
+  "git",
+  "Christopher Villamarín",
+  "xeland314",
+].join(", ");
+
+const pageSlug = "code-evolution-with-julia";
+const pageAuthor = "Christopher Villamarín";
+const applicationName = "Christopher Villamarín's Blog";
+const pageUrl = `https://xeland314.github.io/en/blogs/${pageSlug}`;
+const pageImageAlt = "Blog preview";
+const pageRobots = "index, follow";
+const pageCanonical = pageUrl;
+const pubDate = new Date("2026-04-14T00:00:00");
+---
+
+<BlogLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  applicationName={applicationName}
+  url={pageUrl}
+  imageAlt={pageImageAlt}
+  robots={pageRobots}
+  canonical={pageCanonical}
+  pubDate={pubDate}
+  lang="en"
+  isAutomaticTranslation={true}
+>
+  <section id="introduction">
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Every time you <code>git commit</code>, you save more than just code: you
+      save a decision. Over time, those accumulated decisions tell the story of
+      a project—from which programming languages you use to which ones you
+      abandoned; which parts grew and which ones died.
+    </p>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      The script I present here reads that history directly from your
+      <i>Git</i> history and turns it into an interactive stacked area chart. For
+      each file extension you're interested in tracking, it calculates net lines commit
+      by commit and accumulates them into a timeline. The result is a browser-ready
+      HTML.
+    </p>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      It is written in Julia and doesn't use regex: date detection is purely
+      positional and extension extraction works with text indices. The result is
+      a <code>code_evolution.html</code> file generated with PlotlyBase, with unified
+      hover and dark theme.
+    </p>
+  </section>
+
+  <CodeBlock
+    client:only="react"
+    language="python"
+    code={`using PlotlyBase
+
+    function generate_plotly_evolution()
+        println("Processing Git history...")
+
+        data_per_ext = Dict{String,Dict{String,Int}}()
+
+        interest_extensions = Set(["jl", "py", "c", "cpp", "h", "php", "js", "html", "css", "astro", "ts", "tsx", "dart", "rust", "go", "rb", "swift", "kt", "scala", "lua", "r", "sql", "zig", "nim", "elixir", "clj", "cljs", "lisp", "fsharp", "ocaml", "haskell", "groovy", "perl", "vb", "powershell", "bash", "zsh", "fish", "makefile", "dockerfile", "yaml", "json", "xml", "toml"])
+
+        dates_set = Set{String}()
+        curr_date = ""
+
+        for line in eachline(pipeline(\`git log --pretty=format:%as --numstat\`))
+            line = strip(line)
+            isempty(line) && continue
+
+            # Strict detection without Regex (faster for the CPU)
+            if length(line) == 10 && line[5] == '-' && line[8] == '-'
+                curr_date = line
+                push!(dates_set, curr_date)
+                continue
+            end
+
+            # Split only into 3 maximum parts
+            parts = split(line, limit=3)
+            if length(parts) == 3
+                add_str, del_str, file = parts
+                (add_str == "-" || del_str == "-") && continue
+
+                # Extract the extension using indices instead of Regex
+                idx = findlast('.', file)
+                if idx !== nothing && idx < length(file)
+                    ext = lowercase(file[idx+1:end])
+
+                    if ext in interest_extensions
+                        add = parse(Int, add_str)
+                        del = parse(Int, del_str)
+
+                        # Get or create the internal dictionary
+                        d_ext = get!(data_per_ext, ext, Dict{String,Int}())
+                        d_ext[curr_date] = get(d_ext, curr_date, 0) + (add - del)
+                    end
+                end
+            end
+        end
+
+        all_dates = sort(collect(dates_set))
+
+        traces = GenericTrace[]
+
+        for ext in sort(collect(keys(data_per_ext)))
+            d_ext = data_per_ext[ext]
+            accumulated_series = Int[]
+            sum_val = 0
+
+            # Fill days using the sorted string array
+            for d in all_dates
+                sum_val += get(d_ext, d, 0)
+                push!(accumulated_series, max(0, sum_val))
+            end
+
+            t = scatter(
+                x=all_dates,
+                y=accumulated_series,
+                mode="lines",
+                stackgroup="one",
+                name=".$ext",
+                fill="tonexty"
+            )
+            push!(traces, t)
+        end
+
+        layout = Layout(
+            title="Code Evolution by Language",
+            xaxis_title="Date",
+            yaxis_title="Lines of Code",
+            hovermode="x unified",
+            template="plotly_dark"
+        )
+
+        p = Plot(traces, layout)
+
+        open("code_evolution.html", "w") do io
+            PlotlyBase.to_html(io, p)
+        end
+
+        println("Ready! 'code_evolution.html' has been created.")
+    end
+
+    generate_plotly_evolution()
+`}
+  />
+
+  <section id="installation">
+    <h2
+      class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100"
+    >
+      Installation
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      To run this script, you need to install <code>PlotlyBase</code> in Julia.
+    </p>
+    <CodeBlock
+      client:only="react"
+      language="sh"
+      code={`julia -e 'import Pkg; Pkg.add("PlotlyBase")'`}
+    />
+    <p class="mt-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      With this, you should be able to run the script and generate <code
+        >code_evolution.html</code
+      >.
+    </p>
+  </section>
+
+  <section id="Result">
+    <h2
+      class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100"
+    >
+      Result Example:
+    </h2>
+    <Image
+      width="1309"
+      height="679"
+      src="/images/blog/resultado-julia.png"
+      alt="Script result in the portfolio"
+      loading="lazy"
+    />
+  </section>
+
+  <section id="conclusion">
+    <p class="mt-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Note that the analysis may fail or take a long time on very large
+      repositories with a history of years or many commits, as it traverses the
+      entire Git history.
+    </p>
+  </section>
+</BlogLayout>

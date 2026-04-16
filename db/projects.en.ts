@@ -79,42 +79,6 @@ export const projectDataEN = [
     lang: "en",
   },
   {
-    title: "Linux Performance Profiler",
-    slug: "en/projects/speedtest",
-    description:
-      "A Bash script to measure the execution time of any program in Linux. It uses 'time' and 'awk' to calculate real, user, and system time, in addition to the standard deviation.",
-    shortDescription:
-      "Measure real execution time of any program with statistical precision and detailed reports.",
-    githubLink: "https://github.com/xeland314/speedtest",
-    tags: ["Bash", "Performance", "Awk"],
-    image: undefined,
-    lang: "en",
-  },
-  {
-    title: "Python Frequency Tables Generator",
-    slug: "en/projects/freqtables",
-    description:
-      "A Python package for creating simple and interval frequency tables. It allows initializing tables with lists, tuples, or dictionaries and calculating descriptive statistics.",
-    shortDescription:
-      "Create statistical tables and calculate descriptive metrics with a single line of code.",
-    githubLink: "https://github.com/xeland314/freqtables",
-    tags: ["Python", "Statistics", "FrequencyTables"],
-    image: "/images/optimized/projects/freqtables/card.avif",
-    lang: "en",
-  },
-  {
-    title: "Object-Oriented Programming in C",
-    slug: "en/projects/objects-in-c",
-    description:
-      "A project based on the book 'Object-oriented Programming with Ansi-C' by Axel-Tobias Schreiner. It implements object-oriented programming concepts in C, such as encapsulation and inheritance.",
-    shortDescription:
-      "Implement encapsulation, inheritance, and polymorphism in C following professional design patterns.",
-    githubLink: "https://github.com/xeland314/objects-in-C",
-    tags: ["C", "Oop", "Encapsulation", "Strings"],
-    image: undefined,
-    lang: "en",
-  },
-  {
     title: "Multi-Platform Unit Converter",
     slug: "en/projects/unit-converter",
     description:

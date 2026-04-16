@@ -16,12 +16,14 @@ export default function MobileMenuWrapper({
   const texts = {
     es: {
       projects: "Proyectos",
-      posts: "Artículos",
+      posts: "Posts",
+      blogs: "Blogs",
       contact: "Contacto",
     },
     en: {
       projects: "Projects",
-      posts: "Blog",
+      posts: "Posts",
+      blogs: "Blogs",
       contact: "Contact",
     },
   };
@@ -90,6 +92,17 @@ export default function MobileMenuWrapper({
             onClick={() => setIsMenuOpen(false)}
           >
             {T.posts}
+          </a>
+        </li>
+        <li className="md:hidden">
+          <a
+            href={
+              lang === "en" ? "/en/blogs" : "/es/blogs"
+            }
+            className="block p-2 hover:bg-gray-700"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {T.blogs}
           </a>
         </li>
         <li className="md:hidden">

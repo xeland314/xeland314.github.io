@@ -73,39 +73,6 @@ export const projectData = [
     image: "/images/optimized/projects/analizador-lexico/card.avif",
   },
   {
-    title: "Medidor de Rendimiento para Linux",
-    slug: "speedtest",
-    description:
-      "Un script en Bash para medir el tiempo de ejecución de cualquier programa en Linux. Utiliza 'time' y 'awk' para calcular el tiempo real, de usuario y de sistema, además de la desviación estándar.",
-    shortDescription:
-      "Mide el tiempo real de ejecución de cualquier programa con precisión estadística y reportes detallados.",
-    githubLink: "https://github.com/xeland314/speedtest",
-    tags: ["Bash", "Performance", "Awk"],
-    image: undefined,
-  },
-  {
-    title: "Generador de Tablas de Frecuencias en Python",
-    slug: "freqtables",
-    description:
-      "Un paquete en Python para crear tablas de frecuencias simples e intervalos. Permite inicializar tablas con listas, tuplas o diccionarios y calcular estadísticas descriptivas.",
-    shortDescription:
-      "Crea tablas estadísticas y calcula métricas descriptivas con una sola línea de código.",
-    githubLink: "https://github.com/xeland314/freqtables",
-    tags: ["Python", "Estadisticas", "TablasDeFrecuencias"],
-    image: "/images/optimized/projects/freqtables/card.avif",
-  },
-  {
-    title: "Programación Orientada a Objetos en C",
-    slug: "objects-in-c",
-    description:
-      "Un proyecto basado en el libro 'Object-oriented Programming with Ansi-C' de Axel-Tobias Schreiner. Implementa conceptos de programación orientada a objetos en C, como encapsulamiento y herencia.",
-    shortDescription:
-      "Implementa encapsulamiento, herencia y polimorfismo en C siguiendo patrones de diseño profesionales.",
-    githubLink: "https://github.com/xeland314/objects-in-C",
-    tags: ["C", "Oop", "Encapsulamiento", "Strings"],
-    image: undefined,
-  },
-  {
     title: "Conversor de Unidades",
     slug: "unit-converter",
     description:

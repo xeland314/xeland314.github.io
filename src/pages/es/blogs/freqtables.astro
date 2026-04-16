@@ -1,9 +1,9 @@
 ---
 import CodeBlock from "../../../components/common/CodeBlock";
-import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
 
 // Metadatos
-const title = "📊 freqtables - Christopher Villamarín Projects";
+const title = "freqtables - Christopher Villamarín Projects";
 const description =
   "Aprende a crear tablas de frecuencias simples y tablas con intervalos usando el paquete freqtables. Compatible con listas, tuplas y diccionarios para un manejo eficiente de datos.";
 const keywords = [
@@ -19,34 +19,34 @@ const keywords = [
   "Ecuador",
 ].join(", ");
 const authors = "Christopher Alexander Villamarín Pila";
-const ogTitle = "📊 freqtables - Proyecto de Christopher Villamarín";
+const ogTitle = "freqtables - Proyecto de Christopher Villamarín";
 const ogDescription =
   "Descubre cómo crear tablas de frecuencias simples y con intervalos utilizando el paquete freqtables. Ideal para análisis de datos en Python.";
-const ogUrl = "https://xeland314.github.io/es/projects/freqtables/";
+const ogUrl = "https://xeland314.github.io/es/blog/freqtables/";
 const ogImage =
   "https://raw.githubusercontent.com/xeland314/freqtables/refs/heads/main/examples/example0.png";
 const imageAlt = "Vista previa del proyecto freqtables";
-const canonicalUrl = "https://xeland314.github.io/es/projects/freqtables/";
+const canonicalUrl = "https://xeland314.github.io/es/blogs/freqtables/";
 const robots = "index, follow";
 ---
 
-<ProjectLayout
+<BlogLayout
   title={title}
   description={description}
   keywords={keywords}
   author={authors}
-  title={ogTitle}
-  description={ogDescription}
+  applicationName="freqtables"
   url={ogUrl}
   image={ogImage}
   imageAlt={imageAlt}
   canonical={canonicalUrl}
-  applicationName="freqtables"
   robots={robots}
+  lang="es"
+  pubDate={new Date("2022-11-09")}
+  githubLink="https://github.com/xeland314/freqtables"
 >
-  <div class="p-0 sm:p-6">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4">📊 freqtables</h1>
+  <div class="p-0 sm:p-0">
+    <header class="mb-8">
       <p class="text-lg">
         Este paquete permite crear tablas de frecuencias simples dado un
         conjunto de variables con sus respectivas frecuencias. Este conjunto de
@@ -55,7 +55,7 @@ const robots = "index, follow";
     </header>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔹 freqtablesimple</h2>
+      <h2 class="text-3xl font-semibold mb-4">freqtablesimple</h2>
       <p class="mb-4">
         Aquí hay diferentes maneras de inicializar{" "}
         <code>FreqTableSimple</code> utilizando listas, diccionarios o argumentos
@@ -95,7 +95,7 @@ tabla4 = ft.FreqTableSimple(
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔹 freqtable</h2>
+      <h2 class="text-3xl font-semibold mb-4">freqtable</h2>
       <p class="mb-4">
         También es posible crear una tabla de frecuencias con intervalos
         utilizando <code>freqtable.py</code>. Por ejemplo:
@@ -129,7 +129,7 @@ print(tabla_con_intervalos)`}
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">📦 Instalación</h2>
+      <h2 class="text-3xl font-semibold mb-4">Instalación</h2>
       <p class="mb-4">
         Puedes clonar el repositorio y luego instalar las dependencias
         necesarias:
@@ -149,4 +149,4 @@ print(tabla_con_intervalos)`}
       </details>
     </section>
   </div>
-</ProjectLayout>
+</BlogLayout>

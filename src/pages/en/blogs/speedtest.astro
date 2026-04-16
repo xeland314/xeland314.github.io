@@ -1,11 +1,11 @@
 ---
-import CodeBlock from "../../../components/common/CodeBlock.tsx";
-import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+import CodeBlock from "../../../components/common/CodeBlock";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
 
 // Metadata
-const title = "Execution Time Analysis - Christopher Villamarín Projects";
+const title = "Execution Time Analysis - Christopher Villamarín Blog";
 const description =
-  "Explore Execution Time Analysis, a project designed to analyze execution times on Unix systems using Bash and AWK. It calculates averages and standard deviations for real, user, and system time.";
+  "Explore Execution Time Analysis, a project designed to analyze execution times in Unix systems using Bash and AWK. It calculates averages and standard deviations for real, user, and system time.";
 const keywords = [
   "Execution Time Analysis",
   "Unix",
@@ -20,18 +20,18 @@ const keywords = [
   "Ecuador",
 ].join(", ");
 const authors = "Christopher Alexander Villamarín Pila";
-const ogTitle = "Execution Time Analysis - Christopher Villamarín Project";
+const ogTitle = "Execution Time Analysis - Project by Christopher Villamarín";
 const ogDescription =
-  "A project to analyze execution times on Unix systems using Bash and AWK. Ideal for understanding the performance of commands and programs.";
-const ogUrl = "https://xeland314.github.io/en/projects/speedtest/";
+  "A project to analyze execution times in Unix systems using Bash and AWK. Ideal for understanding the performance of commands and programs.";
+const ogUrl = "https://xeland314.github.io/en/blog/speedtest/";
 const ogImage =
   "https://xeland314.github.io/images/execution_time_analysis_preview.png";
 const imageAlt = "Preview of the Execution Time Analysis project";
-const canonicalUrl = "https://xeland314.github.io/en/projects/speedtest/";
+const canonicalUrl = "https://xeland314.github.io/en/blogs/speedtest/";
 const robots = "index, follow";
 ---
 
-<ProjectLayout
+<BlogLayout
   title={title}
   description={description}
   keywords={keywords}
@@ -39,27 +39,27 @@ const robots = "index, follow";
   applicationName="Execution Time Analysis"
   url={ogUrl}
   image={ogImage}
+  robots={robots}
   imageAlt={imageAlt}
   canonical={canonicalUrl}
-  robots={robots}
   lang="en"
+  isAutomaticTranslation={true}
+  pubDate={new Date("2022-12-07")}
+  githubLink="https://github.com/xeland314/speedtest"
 >
-  <div class="p-0 sm:p-6">
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4">⏱️ Execution Time Analysis</h1>
-      <p class="text-lg">
-        This project is designed to analyze the execution times of commands or
-        programs on Unix systems, calculating key statistics such as the
-        average and standard deviation of real, user, and system time.
-      </p>
-    </header>
-
+  <div class="p-0 sm:p-0">
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🔍 Project Description</h2>
+      <p class="text-lg mb-8">
+        This project is designed to analyze the execution times of commands or
+        programs in Unix systems, calculating key statistics such as the average
+        and standard deviation of real, user, and system time.
+      </p>
+
+      <h2 class="text-3xl font-semibold mb-4">Project Description</h2>
       <p class="mb-4">
-        The program uses a combination of Bash and AWK to collect data on the
-        execution time of a command over multiple iterations. These times are
-        analyzed to provide detailed information about:
+        The program uses a combination of Bash and AWK to collect execution time
+        data of a command over multiple iterations. These times are analyzed to
+        provide detailed information about:
       </p>
       <ul class="list-disc pl-6 space-y-4">
         <li>
@@ -76,13 +76,15 @@ const robots = "index, follow";
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🛠️ How it works</h2>
+      <h2 class="text-3xl font-semibold mb-4">How it works</h2>
       <ol class="list-decimal pl-6 space-y-4">
         <li>
           <strong>Collect data:</strong>
-          A Bash script runs the provided command 10 times using
-          <code>/usr/bin/time</code>, and saves the results to a temporary file
-          called <code>/tmp/exetime</code>.
+          A Bash script executes the provided command 10 times using <code
+            >/usr/bin/time</code
+          >, and saves the results to a temporary file named <code
+            >/tmp/exetime</code
+          >.
         </li>
         <li>
           <strong>Data processing:</strong>
@@ -95,14 +97,14 @@ const robots = "index, follow";
         </li>
         <li>
           <strong>Print statistics:</strong>
-          The results are printed in a readable format with information about
-          the times and their statistics.
+          The results are printed in a readable format with information about the
+          times and their statistics.
         </li>
       </ol>
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">📋 Expected Results</h2>
+      <h2 class="text-3xl font-semibold mb-4">Expected Results</h2>
       <p class="mb-4">
         When running the program, you get a detailed breakdown of each command
         iteration, along with the average and standard deviation of the
@@ -128,29 +130,33 @@ Standard deviation:
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">⚙️ Requirements</h2>
+      <h2 class="text-3xl font-semibold mb-4">Requirements</h2>
       <ul class="list-disc pl-6 space-y-4">
         <li>
           Install the <code>time</code> command:
-          <br /> For Debian/Ubuntu systems: <code>sudo apt-get install time</code>
+          <br /> For Debian/Ubuntu systems: <code
+            >sudo apt-get install time</code
+          >
         </li>
         <li>A Unix environment compatible with Bash and AWK.</li>
       </ul>
     </section>
 
     <section class="mb-8">
-      <h2 class="text-3xl font-semibold mb-4">🚀 How to run</h2>
+      <h2 class="text-3xl font-semibold mb-4">How to run</h2>
       <ol class="list-decimal pl-6 space-y-4">
-        <li>Save the AWK file (<code>calc.awk</code>) on your system.</li>
+        <li>
+          Save the AWK file (<code>calc.awk</code>) on your system.
+        </li>
         <li>
           Run the Bash script with the command you want to analyze:
           <CodeBlock code="bash speedtest.sh [command]" client:visible />
         </li>
         <li>
-          Review the statistics calculated by AWK:
+          Check the statistics calculated by AWK:
           <CodeBlock code="awk -f calc.awk /tmp/exetime" client:visible />
         </li>
       </ol>
     </section>
   </div>
-</ProjectLayout>
+</BlogLayout>
