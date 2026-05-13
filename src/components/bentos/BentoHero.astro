@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import ThemeToggleButton from "../themes/ThemedToggleIconButton.tsx";
+import ThemeToggleButton from "../themes/ThemedToggleIconButton";
 
 const { lang = "es" } = Astro.props;
 const heroImage = "/images/gato-sin-fondo.svg";
@@ -120,6 +120,7 @@ const T = texts[lang];
             class="relative w-full h-full rounded-3xl overflow-hidden bg-blue-50 dark:bg-slate-900 flex items-center justify-center dark:brightness-90 dark:contrast-110 transition-colors duration-500"
           >
             <Image
+              transition:name="hero-image"
               src={heroImage}
               alt={lang === "es" ? "Gato" : "Cat"}
               class="w-full h-full object-contain drop-shadow-3xl hero-cat"
@@ -135,6 +136,7 @@ const T = texts[lang];
 
       {/* Text Block (Badge, Name, Role) */}
       <div
+        transition:name="hero-header"
         class="hero-fade-in flex flex-col items-center md:items-start text-center md:text-left"
         style="animation-delay: 80ms"
       >

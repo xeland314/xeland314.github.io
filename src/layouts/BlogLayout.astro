@@ -87,6 +87,7 @@ const machineDate = pubDate?.toISOString().split("T")[0];
         }
 
         <h1
+          transition:name="blog-title"
           class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight"
         >
           {title}
@@ -108,7 +109,9 @@ const machineDate = pubDate?.toISOString().split("T")[0];
                 >
                   |
                 </span>
-                <time datetime={machineDate}>{displayDate}</time>
+                <time transition:name="blog-date" datetime={machineDate}>
+                  {displayDate}
+                </time>
               </>
             )
           }
