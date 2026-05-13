@@ -1,0 +1,52 @@
+---
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+
+const labels = {
+  es: {
+    heading: "Sobre mí",
+    description: [
+      "Soy un desarrollador backend de Ecuador enfocado en la creación de APIs robustas con Python. Cuento con experiencia usando Django para paneles de administración complejos, pero la versatilidad del lenguaje me permite adaptarme a otros frameworks como FastAPI.",
+      "Para la persistencia de datos utilizo SQL; eligiendo Postgres para servidores de alta concurrencia y SQLite cuando se trata de aplicaciones locales o de escritorio. Aparte de esto, también he explorado el uso de Golang para microservicios o side projects, y soy capaz de crear interfaces web o móviles para los usuarios.",
+      "Mi entorno de programación habitual es Linux, Debian; así que estoy familiarizado con la terminal. Esto me ha permitido conocer el sistema a profundidad y facilitar el despliegue de aplicaciones en la nube.",
+      "Finalmente, con mi nivel de inglés C1 no tengo problema para leer documentación e integrarme en un equipo, mientras sigo capacitándome de forma autodidacta.",
+    ],
+    languages: "Idiomas",
+    native: "Español Nativo",
+    english: "Inglés C1",
+  },
+  en: {
+    heading: "About me",
+    description: [
+      "I am a backend developer from Ecuador focused on building robust APIs with Python. I have experience using Django for complex admin panels, but the language's versatility allows me to adapt easily to other frameworks like FastAPI.",
+      "For data persistence I use SQL; choosing Postgres for high-concurrency servers and SQLite when it comes to local or desktop applications. Apart from this, I have also explored the use of Golang for microservices or side projects, and I am capable of building web or mobile interfaces for users.",
+      "My usual programming environment is Linux, Debian; so I am familiar with the terminal. This has allowed me to gain a deep understanding of the OS and facilitate cloud deployments.",
+      "Finally, with my C1 English level I have no problem reading documentation and integrating into a team, all while continuing my self-taught learning.",
+    ],
+    languages: "Languages",
+    native: "Spanish Native",
+    english: "English C1",
+  },
+};
+
+const T = labels[lang as keyof typeof labels];
+---
+
+<section
+  aria-labelledby="profile-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex flex-col gap-6"
+>
+  <div class="space-y-3">
+    {
+      T.description.map((paragraph) => (
+        <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+          {paragraph}
+        </p>
+      ))
+    }
+  </div>
+
+</section>

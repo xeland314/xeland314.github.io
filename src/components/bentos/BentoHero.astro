@@ -1,0 +1,453 @@
+---
+import { Image } from "astro:assets";
+import ThemeToggleButton from "../themes/ThemedToggleIconButton.tsx";
+
+const { lang = "es" } = Astro.props;
+const heroImage = "/images/gato-sin-fondo.svg";
+
+const texts: Record<
+  string,
+  {
+    name: string;
+    role: string;
+    specialty: string;
+    exp: string;
+    hook: string;
+    bullets: { label: string; detail: string }[];
+    cta_primary: string;
+    cta_secondary: string;
+    copy_label: string;
+    copied: string;
+  }
+> = {
+  es: {
+    name: "Christopher Villamarín",
+    role: "Desarrollador",
+    specialty: "Backend",
+    exp: "+3 años de experiencia",
+    hook: "Transformo ideas en productos de software",
+    bullets: [
+      {
+        label: "Apps Multiplataforma",
+        detail: "Web · Android · Linux · Windows",
+      },
+      { label: "CI/CD", detail: "Despliegue continuo a producción" },
+      { label: "Código limpio", detail: "Testeado y documentado" },
+    ],
+    cta_primary: "Ver proyectos",
+    cta_secondary: "Contacto",
+    copy_label: "Copiar correo",
+    copied: "¡Copiado!",
+  },
+  en: {
+    name: "Christopher Villamarín",
+    role: "Backend",
+    specialty: "Developer",
+    exp: "+3 years of experience",
+    hook: "Transforming challenges into high-impact software",
+    bullets: [
+      {
+        label: "Multiplatform Apps",
+        detail: "Web · Android · Linux · Windows",
+      },
+      { label: "CI/CD", detail: "Continuous production deployment" },
+      { label: "Clean Code", detail: "Tested & documented" },
+    ],
+    cta_primary: "View projects",
+    cta_secondary: "Contact",
+    copy_label: "Copy email",
+    copied: "Copied!",
+  },
+};
+
+const T = texts[lang];
+---
+
+<section
+  id="hero"
+  class="hero-section relative min-h-[75lvh] flex items-center justify-center overflow-hidden dark:bg-gray-950 bg-gray-50"
+>
+  {/* ── Grid texture ── */}
+  <div
+    class="hero-grid absolute inset-0 pointer-events-none"
+    aria-hidden="true"
+  >
+  </div>
+
+  {/* ── Blue glow blob ── */}
+  <div
+    class="absolute top-[-10%] right-[-5%] w-[480px] h-[480px] rounded-full bg-blue-600/20 blur-3xl pointer-events-none"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="absolute bottom-[-15%] left-[-8%] w-[360px] h-[360px] rounded-full bg-blue-800/15 blur-3xl pointer-events-none"
+    aria-hidden="true"
+  >
+  </div>
+
+  {/* ── Main content ── */}
+  <div
+    class="hero-content relative z-10 w-full max-w-5xl mx-auto p-6 sm:py-8 sm:px-10 md:px-20 flex flex-col items-center"
+  >
+    {/* ── Top Section: Avatar + Name/Role/Badge ── */}
+    <div
+      class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 w-full"
+    >
+      {
+        /* Avatar Card (Aparece primero en DOM = Arriba en móvil, Derecha en Desktop) */
+      }
+      <div
+        class="hero-fade-in flex justify-center shrink-0"
+        style="animation-delay: 0ms"
+      >
+        <div
+          class="hero-avatar-card relative w-44 h-44 sm:w-52 sm:h-52 lg:w-64 lg:h-64"
+        >
+          <div
+            class="absolute inset-0 rounded-3xl border border-blue-500/20 bg-gradient-to-br from-blue-600/10 to-transparent"
+          >
+          </div>
+          <div
+            class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-blue-500 opacity-60"
+          >
+          </div>
+          <div
+            class="absolute -bottom-2 -left-2 w-4 h-4 rounded-full border-2 border-blue-400/40"
+          >
+          </div>
+          <div
+            class="relative w-full h-full rounded-3xl overflow-hidden bg-blue-50 dark:bg-slate-900 flex items-center justify-center dark:brightness-90 dark:contrast-110 transition-colors duration-500"
+          >
+            <Image
+              src={heroImage}
+              alt={lang === "es" ? "Gato" : "Cat"}
+              class="w-full h-full object-contain drop-shadow-3xl hero-cat"
+              loading="eager"
+              fetchpriority="high"
+              width="256"
+              height="256"
+              title={lang === "es" ? "Gato" : "Cat"}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Text Block (Badge, Name, Role) */}
+      <div
+        class="hero-fade-in flex flex-col items-center md:items-start text-center md:text-left"
+        style="animation-delay: 80ms"
+      >
+        {/* Name + role (Tamaños reducidos para móvil) */}
+        <h1
+          class="hero-name text-4xl sm:text-5xl lg:text-7xl font-black leading-none tracking-tight dark:text-white text-gray-900"
+        >
+          {
+            T.name
+              .split(" ")
+              .map((word, i) => (
+                <span class={i === 1 ? "text-blue-500" : ""}>{word} </span>
+              ))
+          }
+        </h1>
+        <p
+          class="mt-3 text-lg sm:text-xl lg:text-2xl font-light dark:text-gray-400 text-gray-500"
+        >
+          <span class="dark:text-white text-gray-900 font-semibold"
+            >{T.role}</span
+          >
+          {T.specialty}
+        </p>
+        {/* Handle / badge */}
+        <p
+          class="flex flex-col md:flex-row justify-start gap-1 md:gap-3 items-center mt-2"
+        >
+          <span
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono tracking-widest uppercase mb-2"
+          >
+            {T.exp}
+          </span>
+          <span
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono tracking-widest mb-2"
+          >
+            @xeland314
+          </span>
+        </p>
+      </div>
+    </div>
+
+    {/* ── Bottom Section: Centered content ── */}
+    <div
+      class="flex flex-col items-center text-center mt-4 md:mt-12 gap-6 md:gap-8 w-full max-w-3xl"
+    >
+      {/* Hook */}
+      <div class="hero-fade-in" style="animation-delay: 160ms">
+        <p
+          class="text-sm sm:text-base md:text-lg dark:text-gray-400 text-gray-600 leading-relaxed"
+        >
+          {T.hook}
+        </p>
+      </div>
+
+      {/* Bullets */}
+      <div
+        class="hero-fade-in flex flex-wrap justify-center gap-2 sm:gap-3"
+        style="animation-delay: 240ms"
+      >
+        {
+          T.bullets.map((b) => (
+            <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl border dark:border-white/10 border-gray-200 dark:bg-white/5 bg-gray-50 backdrop-blur-sm">
+              <div class="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+              <span class="text-xs font-semibold dark:text-white text-gray-800">
+                {b.label}
+              </span>
+              <span class="text-xs dark:text-gray-500 text-gray-400 hidden sm:inline">
+                {b.detail}
+              </span>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* CTAs */}
+      <div
+        class="hero-fade-in flex flex-wrap justify-center gap-3"
+        style="animation-delay: 320ms"
+      >
+        <a
+          href="#projects"
+          class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5"
+        >
+          {T.cta_primary}
+        </a>
+        <a
+          href="#contact"
+          class="px-5 py-2.5 rounded-xl border dark:border-white/20 border-gray-300 text-sm font-semibold dark:text-gray-300 text-gray-700 hover:border-blue-500 hover:text-white dark:hover:text-white hover:bg-blue-500 transition-all duration-200"
+        >
+          {T.cta_secondary}
+        </a>
+      </div>
+
+      {/* Social row */}
+      <div
+        class="hero-fade-in flex flex-wrap items-center justify-center gap-4"
+        style="animation-delay: 400ms"
+      >
+        <a
+          href="https://linkedin.com/in/christopher-villamarin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 dark:text-gray-500 hover:text-blue-400 transition-colors"
+          aria-label="LinkedIn"
+          title="LinkedIn"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+            ></path></svg
+          >
+        </a>
+        <a
+          href="https://github.com/xeland314"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 dark:text-gray-500 hover:text-gray-950 dark:hover:text-white transition-colors"
+          aria-label="GitHub"
+          title="GitHub"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+            ></path></svg
+          >
+        </a>
+        <a
+          href="https://instagram.com/xeland314"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 dark:text-gray-500 hover:text-pink-400 transition-colors"
+          aria-label="Instagram"
+          title="Instagram"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path
+              d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line
+              x1="17.5"
+              y1="6.5"
+              x2="17.51"
+              y2="6.5"></line></svg
+          >
+        </a>
+        <a
+          href="https://threads.com/@xeland314"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 dark:text-gray-500 hover:text-blue-500 transition-colors"
+          aria-label="Threads"
+          title="Threads"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><circle cx="12" cy="12" r="4"></circle><path
+              d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"></path></svg
+          >
+        </a>
+
+        <div class="w-px h-4 dark:bg-white/10 bg-gray-200 mx-1"></div>
+
+        {/* Copy email */}
+        <div class="relative">
+          <button
+            id="hero-copy-email"
+            type="button"
+            class="text-gray-500 dark:text-gray-500 hover:text-blue-400 transition-colors"
+            aria-label={T.copy_label}
+            title={T.copy_label}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><rect width="20" height="16" x="2" y="4" rx="2"></rect><path
+                d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg
+            >
+          </button>
+          <span
+            id="hero-copy-success"
+            class="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-lg opacity-0 transition-opacity pointer-events-none whitespace-nowrap"
+          >
+            {T.copied}
+          </span>
+        </div>
+
+        <div class="w-px h-4 dark:bg-white/10 bg-gray-200 mx-1"></div>
+
+        {/* Lang switcher + theme */}
+        <a
+          href={lang === "es" ? "/en/" : "/"}
+          class="text-sm font-mono font-bold text-gray-500 dark:text-gray-500 hover:text-blue-600 dark:hover:text-white transition-colors uppercase"
+        >
+          {lang === "es" ? "EN" : "ES"}
+        </a>
+        <div class="bg-blue-600 dark:bg-gray-950 p-0 rounded-lg">
+          <ThemeToggleButton client:idle />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Definición de Variables CSS en la raíz (Asegura que el color siempre se aplique) ── */
+  :global(:root) {
+    --grid-line: rgba(
+      15,
+      23,
+      42,
+      0.08
+    ); /* Gris azulado visible para modo claro */
+  }
+
+  :global(.dark),
+  :global([data-theme="dark"]) {
+    --grid-line: rgba(
+      255,
+      255,
+      255,
+      0.05
+    ); /* Blanco muy tenue para modo oscuro */
+  }
+
+  /* ── Grid texture ── */
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    /* Difuminado hacia los bordes para un look premium en ambos modos */
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(
+      ellipse at center,
+      black 30%,
+      transparent 80%
+    );
+  }
+
+  /* ── Fade-in animation ── */
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-fade-in {
+    opacity: 0;
+    animation: hero-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .hero-cat {
+    filter: drop-shadow(
+      0 0 15px rgba(249, 115, 22, 0.2)
+    ); /* Un naranja tenue */
+  }
+
+  .hero-avatar-card:hover .hero-cat {
+    animation-play-state: paused;
+  }
+
+  /* ── Light mode bg override ── */
+  :global(.light) #hero,
+  :global([data-theme="light"]) #hero {
+    background-color: #ffffff;
+  }
+
+  :global(.dark) #hero,
+  :global([data-theme="dark"]) #hero {
+    background-color: #030712;
+  }
+</style>
+
+<script>
+  const setupHeroCopy = () => {
+    const btn = document.getElementById("hero-copy-email");
+    const msg = document.getElementById("hero-copy-success");
+    if (!btn) return;
+
+    const u = "christopher.villamarin";
+    const d = "protonmail.com";
+
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(`${u}@${d}`);
+      msg?.classList.remove("opacity-0");
+      setTimeout(() => msg?.classList.add("opacity-0"), 2000);
+    });
+  };
+
+  setupHeroCopy();
+  document.addEventListener("astro:after-swap", setupHeroCopy);
+</script>

@@ -1,0 +1,102 @@
+---
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+
+const { lang = "es" } = Astro.props;
+
+const texts = {
+  es: {
+    section_label: "Experiencia Profesional",
+    current_badge: "Actual",
+    items: [
+      {
+        role: "Desarrollador Freelance",
+        company: "Independiente",
+        date: "Nov 2025 - Presente",
+        description:
+          "Ofrezco servicios de desarrollo de software a medida, creación de APIs robustas y soluciones web/móviles para diversos clientes.",
+        isCurrent: true,
+      },
+      {
+        role: "Desarrollador Full-Stack",
+        company: "Indrod Group",
+        date: "Jun 2023 - Nov 2025",
+        description:
+          "Integración de sistemas de monitoreo y análisis de activos (Machinery/Fleet): Agregación de datos mediante APIs de múltiples plataformas de rastreo para la generación de informes operativos de maquinaria y vehículos. Implementación de lógica de procesamiento para +100,000 eventos mensuales, identificando alertas críticas (SOS, desconexión, voltaje) en tiempo real (<30s).",
+        isCurrent: false,
+      },
+    ],
+  },
+  en: {
+    section_label: "Professional Experience",
+    current_badge: "Present",
+    items: [
+      {
+        role: "Freelance Developer",
+        company: "Independent",
+        date: "Nov 2025 - Present",
+        description:
+          "Providing custom software development services, building robust APIs, and web/mobile solutions for various clients.",
+        isCurrent: true,
+      },
+      {
+        role: "Full-Stack Developer",
+        company: "Indrod Group",
+        date: "Jun 2023 - Nov 2025",
+        description:
+          "Integration of asset monitoring and analytics systems (Machinery/Fleet): Aggregating data via APIs from multiple tracking platforms to generate operational reports for machinery and vehicles. Implementing processing logic for +100,000 monthly events, identifying critical alerts (SOS, disconnection, voltage) in real-time (<30s).",
+        isCurrent: false,
+      },
+    ],
+  },
+};
+
+const T = texts[lang as keyof typeof texts];
+---
+
+<section
+  aria-labelledby="experience-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col"
+>
+  <div>
+    <BentoInternalHeader
+      title={T.section_label}
+      lang={lang}
+      id="experience-heading"
+    />
+
+    <ul role="list" aria-label={T.section_label} class="space-y-4 mt-4">
+      {
+        T.items.map((job, index) => (
+          <li
+            role="listitem"
+            class={`${index > 0 ? "pt-4 border-t border-gray-200 dark:border-gray-700" : ""}`}
+          >
+            <div class="flex justify-between items-start mb-1">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="text-sm font-bold text-gray-900 dark:text-white">
+                    {job.role}
+                  </h4>
+                  {job.isCurrent && (
+                    <span class="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full">
+                      {T.current_badge}
+                    </span>
+                  )}
+                </div>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                  {job.company}
+                </p>
+              </div>
+              <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap ml-4">
+                {job.date}
+              </span>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300 mt-2">
+              {job.description}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

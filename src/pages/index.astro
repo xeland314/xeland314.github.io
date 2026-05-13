@@ -1,8 +1,14 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import BentoGato from "../components/bentos/BentoGato.astro";
-import BentoVideos from "../components/bentos/BentoVideos.astro";
+import BentoHero from "../components/bentos/BentoHero.astro";
+import BentoProjectsHeader from "../components/bentos/BentoProjectsHeader.astro";
+import BentoMeHeader from "../components/bentos/BentoMeHeader.astro";
+import BentoProfile from "../components/bentos/BentoProfile.astro";
+import BentoLanguages from "../components/bentos/BentoLanguages.astro";
 import BentoEducation from "../components/bentos/BentoEducation.astro";
+import BentoExperience from "../components/bentos/BentoExperience.astro";
+import BentoVideos from "../components/bentos/BentoVideos.astro";
+import BentoCertificates from "../components/bentos/BentoCertificates.astro";
 import BentoProjects from "../components/bentos/BentoProjects.astro";
 import BentoTechStack from "../components/bentos/BentoTechStack.astro";
 import BentoPostGallery from "../components/bentos/BentoPostGallery.astro";
@@ -61,40 +67,68 @@ const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
     </a>
 
     <div class="max-w-5xl mx-auto space-y-6">
-      {/* 1. Perfil y Proyectos Destacados */}
-      <section aria-label="Perfil y proyectos destacados">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div class="md:col-span-5 lg:col-span-4">
-            <div
-              class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden"
-            >
-              <BentoGato lang={lang} />
-            </div>
+      <div
+        class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden"
+      >
+        <BentoHero lang={lang} />
+      </div>
+
+      {/* 1. Expertise Técnica, Educación y Experiencia */}
+      <section
+        aria-label="Expertise técnica, educación y experiencia"
+        id="about"
+        class="grid grid-cols-1 xl:grid-cols-12 gap-4"
+      >
+        <div class="xl:col-span-4 grid gap-4">
+          <div class="flex flex-col gap-4">
+            <BentoMeHeader lang={lang} />
+            <BentoLanguages lang={lang} />
           </div>
-          <div class="md:col-span-7 lg:col-span-8">
+        </div>
+
+        <div class="xl:col-span-8">
+          <BentoProfile lang={lang} />
+        </div>
+
+        <!-- Tech Stack: Una franja horizontal que destaca -->
+        <div class="xl:col-span-12 grid gap-4 lg:grid-cols-12">
+          <div class="lg:col-span-8">
+            <BentoTechStack lang={lang} />
+          </div>
+          <div class="lg:col-span-4">
+            <BentoCertificates lang={lang} />
+          </div>
+        </div>
+
+        {/* Experience Row */}
+        <div class="xl:col-span-12 grid gap-4 xl:grid-cols-2">
+          <BentoEducation lang={lang} />
+          <BentoExperience lang={lang} />
+        </div>
+      </section>
+
+      {/* 2. Profile and Featured Projects */}
+      <section aria-label="Profile and featured projects" id="projects">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+          <div class="col-span-1 xl:col-span-4">
+            <BentoProjectsHeader lang={lang} />
+          </div>
+          <div class="col-span-1 xl:col-span-8">
             <BentoProjects projects={featuredProjects} lang={lang} />
           </div>
         </div>
       </section>
 
-      {/* 2. Expertise Técnica, Educación y Blog */}
-      <section aria-label="Expertise técnica, educación y blog">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div class="md:col-span-12 lg:col-span-8">
-            <BentoTechStack lang={lang} />
-          </div>
-          <div class="md:col-span-6 lg:col-span-4">
-            <BentoEducation lang={lang} />
-          </div>
-          <div class="md:col-span-6 lg:col-span-12">
+      {/* 3. Publicaciones Recientes */}
+      <section aria-label="Publicaciones recientes" id="blog">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+          <div class="xl:col-span-4">
             <BentoBlog lang={lang} />
           </div>
+          <div class="xl:col-span-8">
+            <BentoPostGallery posts={recentPosts} lang={lang} />
+          </div>
         </div>
-      </section>
-
-      {/* 3. Publicaciones Recientes */}
-      <section aria-label="Publicaciones recientes">
-        <BentoPostGallery posts={recentPosts} lang={lang} />
       </section>
 
       {/* 4. Animaciones y Dev Tools (antes del footer) */}
@@ -116,7 +150,7 @@ const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
       </section>
 
       {/* 5. Contacto y Servicios */}
-      <section aria-label="Contacto y servicios">
+      <section aria-label="Contacto y servicios" id="contact">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div class="lg:col-span-7">
             <div

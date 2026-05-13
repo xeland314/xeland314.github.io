@@ -1,0 +1,15 @@
+---
+import BentoHeader from "./BentoHeader.astro";
+
+interface Props {
+  lang: string;
+}
+
+const { lang } = Astro.props;
+---
+
+<BentoHeader
+  badge="Portfolio"
+  title={lang === "es" ? "Proyectos" : "Projects"}
+  subtitle={lang === "es" ? "Selección de trabajo" : "Featured work"}
+/>

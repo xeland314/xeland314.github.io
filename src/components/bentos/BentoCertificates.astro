@@ -1,0 +1,171 @@
+---
+import { db, MyCertificates, asc, and, eq } from "astro:db";
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+
+const { lang = "es" } = Astro.props;
+
+const texts: Record<
+  string,
+  {
+    section_label: string;
+    view_more: string;
+    external_notice: string;
+    cert_aria_prefix: string;
+    issued_on: string;
+    credential_id: string;
+    skills_label: string;
+  }
+> = {
+  es: {
+    section_label: "Certificados",
+    view_more: "Ver más certificados",
+    external_notice: "(abre en nueva pestaña)",
+    cert_aria_prefix: "Certificado:",
+    issued_on: "Emitido el",
+    credential_id: "ID de credencial",
+    skills_label: "Habilidades",
+  },
+  en: {
+    section_label: "Certificates",
+    view_more: "View more certificates",
+    external_notice: "(opens in new tab)",
+    cert_aria_prefix: "Certificate:",
+    issued_on: "Issued on",
+    credential_id: "Credential ID",
+    skills_label: "Skills",
+  },
+};
+
+const T = texts[lang];
+const allCertsUrl = `/${lang}/certificates`;
+
+const certificates = await db
+  .select()
+  .from(MyCertificates)
+  .where(
+    and(eq(MyCertificates.lang, lang), eq(MyCertificates.isFeatured, true)),
+  )
+  .orderBy(asc(MyCertificates.date))
+  .limit(4);
+
+const getCertAriaDescription = (cert: (typeof certificates)[0]) => {
+  const parts = [`${T.cert_aria_prefix} ${cert.title}`, `${cert.issuer}`];
+
+  if (cert.issueDate) {
+    parts.push(`${T.issued_on}: ${cert.issueDate}`);
+  }
+
+  if (cert.credentialId) {
+    parts.push(`${T.credential_id}: ${cert.credentialId}`);
+  }
+
+  if (cert.skills) {
+    const skillsStr = Array.isArray(cert.skills)
+      ? cert.skills.join(", ")
+      : Object.values(cert.skills).join(", ");
+    parts.push(`${T.skills_label}: ${skillsStr}`);
+  }
+
+  return parts.join(". ");
+};
+---
+
+<section
+  aria-labelledby="certificates-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 flex flex-col"
+>
+  <div>
+    <BentoInternalHeader title={T.section_label} href={allCertsUrl} lang={lang} id="certificates-heading" />
+
+    {
+      certificates.length > 0 ? (
+        <ul role="list" aria-label={T.section_label} class="space-y-0">
+          {certificates.map((cert, index) => {
+            const ariaDesc = getCertAriaDescription(cert);
+            const descId = `cert-desc-${cert.id}`;
+
+            return (
+              <li
+                role="listitem"
+                aria-labelledby={`cert-title-${cert.id}`}
+                aria-describedby={descId}
+                class={`${index > 0 ? "pt-2 border-t border-gray-200 dark:border-gray-700" : ""} ${index < certificates.length - 1 ? "mb-0" : ""}`}
+              >
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p
+                      id={`cert-title-${cert.id}`}
+                      class="text-sm font-bold text-gray-900 dark:text-white"
+                    >
+                      {cert.title}
+                    </p>
+
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3">
+                      {cert.issuer}
+                    </p>
+
+                    <span id={descId} class="sr-only">
+                      {ariaDesc}
+                    </span>
+
+                    {cert.date && (
+                      <time datetime={cert.date} class="sr-only">
+                        {cert.issueDate || cert.date}
+                      </time>
+                    )}
+                  </div>
+
+                  {cert.credentialUrl && (
+                    <a
+                      href={cert.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${T.cert_aria_prefix} ${cert.title}, ${cert.issuer}. ${T.external_notice}`}
+                      aria-describedby={
+                        cert.credentialId ? `cred-id-${cert.id}` : undefined
+                      }
+                      class="text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform
+                        p-1 bg-blue-50 dark:bg-blue-900/30 rounded-lg"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                      <span class="sr-only">{T.external_notice}</span>
+                    </a>
+                  )}
+                </div>
+
+                {cert.credentialId && (
+                  <span id={`cred-id-${cert.id}`} class="sr-only">
+                    {T.credential_id}: {cert.credentialId}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p
+          role="status"
+          aria-live="polite"
+          class="text-[11px] text-gray-400 dark:text-gray-500 italic"
+        >
+          {lang === "es" ? "Sin certificados aún" : "No certificates yet"}
+        </p>
+      )
+    }
+  </div>
+</section>

@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import BentoInternalHeader from "./BentoInternalHeader.astro";
 
 const { posts, lang } = Astro.props as {
   posts: any[];
@@ -24,26 +25,12 @@ const T = texts[lang];
   aria-labelledby="posts-heading"
   class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
 >
-  <header class="flex justify-between items-center mb-6">
-    <h3
-      id="posts-heading"
-      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
-    >
-      {T.header}
-    </h3>
-    <a
-      href={`/${lang}/posts`}
-      aria-label="Ver galería completa de publicaciones"
-      class="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 transition-colors uppercase tracking-widest"
-    >
-      {T.seeAll} →
-    </a>
-  </header>
+  <BentoInternalHeader title={T.header} href={`/${lang}/posts`} lang={lang} id="posts-heading" />
 
   <ul
     role="list"
     aria-label="Lista de publicaciones recientes"
-    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"
+    class="grid grid-cols-2 sm:grid-cols-3 gap-4"
   >
     {
       posts.map((post: any) => (

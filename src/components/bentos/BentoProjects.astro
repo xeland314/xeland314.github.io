@@ -1,5 +1,7 @@
 ---
 import ProjectCardMinimalista from "../projects/ProjectCardMinimalista.astro";
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+
 const { projects, lang } = Astro.props as {
   projects: any[];
   lang: "es" | "en";
@@ -23,22 +25,7 @@ const T = texts[lang];
   aria-labelledby="projects-heading"
   class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
 >
-  <header class="flex justify-between items-center mb-6">
-    <h3
-      id="projects-heading"
-      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
-    >
-      {T.header}
-    </h3>
-    <a
-      href={`/${lang}/projects`}
-      aria-label="Ver todos los proyectos"
-      class="text-[10px] font-bold text-blue-600
-    dark:text-blue-400 hover:text-blue-500 transition-colors uppercase tracking-widest"
-    >
-      {T.seeAll} →
-    </a>
-  </header>
+  <BentoInternalHeader title={T.header} href={`/${lang}/projects`} lang={lang} id="projects-heading" />
 
   <ul
     role="list"

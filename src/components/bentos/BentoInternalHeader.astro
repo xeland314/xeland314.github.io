@@ -1,0 +1,51 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string; // La etiqueta pequeña superior
+  count?: number; // Para casos como "8 tools" o "8 cats"
+  href?: string; // Si el bento es un link
+  lang?: string;
+  id: string; // Necesario para accesibilidad (aria-labelledby)
+}
+
+const { title, subtitle, count, href, lang, id } = Astro.props;
+
+const viewAllText = lang === "es" ? "Ver todo" : "View all";
+---
+
+<header class="w-full flex justify-between items-start mb-4 group">
+  <div class="space-y-1">
+    {
+      subtitle && (
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+          {subtitle}
+          {count !== undefined && (
+            <span class="ml-2 opacity-50 font-mono">[{count}]</span>
+          )}
+        </p>
+      )
+    }
+
+    <h3
+      id={id}
+      class="text-xl font-bold text-slate-900 dark:text-white tracking-tighter"
+    >
+      {title}<span class="text-blue-600 dark:text-blue-400 animate-pulse"
+        >_</span
+      >
+    </h3>
+  </div>
+
+  {
+    href && (
+      <a
+        href={href}
+        aria-label={`${viewAllText} ${title}`}
+        class="text-[10px] font-black text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors uppercase tracking-widest flex items-center gap-1"
+      >
+        {viewAllText}{" "}
+        <span class="group-hover:translate-x-1 transition-transform">→</span>
+      </a>
+    )
+  }
+</header>

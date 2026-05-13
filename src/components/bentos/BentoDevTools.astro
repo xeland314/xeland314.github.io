@@ -1,9 +1,11 @@
 ---
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+
 const { lang = "es" } = Astro.props;
 
 const texts: Record<string, { heading: string; label: string }> = {
-  es: { heading: "Dev Tools", label: "Herramientas para desarrolladores" },
-  en: { heading: "Dev Tools", label: "Tools for developers" },
+  es: { heading: "Tools", label: "Herramientas" },
+  en: { heading: "Tools", label: "Tools" },
 };
 
 const tools = [
@@ -34,10 +36,10 @@ const tools = [
   {
     title: { es: "Chat Analyzer", en: "Chat Analyzer" },
     description: {
-      es: "Analiza tus chats de WhatsApp localmente con IA. Requiere GPU.",
-      en: "Analyze your WhatsApp chats locally with AI. GPU required.",
+      es: "Analiza tus chats de WhatsApp localmente con IA.",
+      en: "Analyze your WhatsApp chats locally with AI.",
     },
-    badge: { es: "GPU Req", en: "GPU Req" },
+    badge: { es: "WhatsApp", en: "WhatsApp" },
     href: "https://xeland314.github.io/chat_analyzer_ui/",
     external: true,
     gradient: "from-green-500 to-emerald-600",
@@ -52,17 +54,7 @@ const T = texts[lang];
   aria-labelledby="devtools-heading"
   class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
 >
-  <header class="flex justify-between items-center">
-    <h3
-      id="devtools-heading"
-      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
-    >
-      {T.heading}
-    </h3>
-    <span class="text-[10px] font-mono text-gray-400 dark:text-gray-500">
-      {tools.length} tools
-    </span>
-  </header>
+  <BentoInternalHeader title={T.heading} subtitle={T.label} count={tools.length} lang={lang} id="devtools-heading" />
 
   <ul
     role="list"
@@ -75,7 +67,7 @@ const T = texts[lang];
           <a
             href={tool.href}
             aria-label={`${tool.title[lang as "es" | "en"]} — ${tool.description[lang as "es" | "en"]}`}
-            class="group flex flex-col items-center gap-2 p-4 rounded-xl bg-transparent hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
+            class="group flex flex-col items-center gap-2 p-4 rounded-xl bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
           >
             {/* Ícono estilo app */}
             <div

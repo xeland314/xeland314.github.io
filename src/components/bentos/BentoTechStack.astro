@@ -1,74 +1,119 @@
 ---
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+
 const { lang = "es" } = Astro.props;
 
 const texts: Record<string, { header: string; ariaLabel: string }> = {
   es: {
-    header: "Expertise Técnica",
-    ariaLabel: "Tecnologías que manejo",
+    header: "Sistemas & Tecnologías",
+    ariaLabel: "Stack técnico",
   },
   en: {
-    header: "Technical Expertise",
-    ariaLabel: "Technologies I handle",
+    header: "Systems & Technologies",
+    ariaLabel: "Technical stack",
   },
 };
 
 const T = texts[lang];
 
-const technologies = [
-  { name: "Go", icon: "/icons/go.svg" },
-  { name: "Python", icon: "/icons/python.svg" },
-  { name: "JS", icon: "/icons/js.svg" },
-  { name: "TS", icon: "/icons/ts.svg" },
-  { name: "Dart", icon: "/icons/dart.svg" },
-  { name: "Linux", icon: "/icons/debian.svg" },
-  { name: "Cloudflare", icon: "/icons/cloudflare.svg" },
-  { name: "SQLite", icon: "/icons/sqlite.svg" },
-  { name: "Postgres", icon: "/icons/postgres.svg" },
-  { name: "HTML", icon: "/icons/html.svg" },
-  { name: "CSS", icon: "/icons/css.svg" },
-  { name: "Tailwind", icon: "/icons/tailwind.svg" },
+// Crecimiento por ID de sección para control total del layout
+const sectionGrow: Record<string, string> = {
+  frontend: "md:flex-[2.5]",
+  backend: "md:flex-[1.8]",
+  mobile: "md:flex-[1]",
+  cloud: "md:flex-[1.2]",
+};
+
+const categories = [
+  {
+    id: "backend",
+    label: "Backend",
+    techs: [
+      { name: "Python", icon: "/icons/python.svg" },
+      { name: "FastApi", icon: "/icons/fastapi.svg" },
+      { name: "Django", icon: "/icons/django.svg" },
+      { name: "Go", icon: "/icons/go.svg" },
+      { name: "SQLite", icon: "/icons/sqlite.svg" },
+      { name: "PostgreSQL", icon: "/icons/postgres.svg" },
+    ],
+  },
+  {
+    id: "frontend",
+    label: "Frontend",
+    techs: [
+      { name: "HTML", icon: "/icons/html.svg" },
+      { name: "CSS", icon: "/icons/css.svg" },
+      { name: "JS", icon: "/icons/js.svg" },
+      { name: "TS", icon: "/icons/ts.svg" },
+      { name: "Tailwind", icon: "/icons/tailwind.svg" },
+      { name: "React", icon: "/icons/react.svg" },
+      { name: "Astro", icon: "/icons/astro.svg" },
+    ],
+  },
+  {
+    id: "mobile",
+    label: "Mobile",
+    techs: [
+      { name: "Flutter", icon: "/icons/flutter.svg" },
+      { name: "Dart", icon: "/icons/dart.svg" },
+    ],
+  },
+  {
+    id: "cloud",
+    label: "Infra / Ops",
+    techs: [
+      { name: "Linux", icon: "/icons/debian.svg" },
+      { name: "Git", icon: "/icons/git.svg" },
+      { name: "Docker", icon: "/icons/docker.svg" },
+    ],
+  },
 ];
 ---
 
 <section
   aria-labelledby="tech-heading"
-  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
+  class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex flex-col"
 >
-  <header class="flex justify-between items-center mb-6">
-    <h3
-      id="tech-heading"
-      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400"
-    >
-      {T.header}
-    </h3>
-  </header>
+  <BentoInternalHeader title={T.header} lang={lang} id="tech-heading" />
 
-  <ul
-    role="list"
-    aria-label={T.ariaLabel}
-    class="flex flex-wrap justify-evenly items-center gap-y-8 gap-x-4 py-2"
-  >
+  <div class="flex flex-col md:flex-row flex-1">
     {
-      technologies.map((tech) => (
-        <li class="flex flex-col items-center gap-2 group/icon min-w-[70px]">
-          <div
-            aria-hidden="true"
-            class="w-12 h-12 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm transition-all duration-300 group-hover/icon:-translate-y-1 group-hover/icon:border-blue-500/50 group-hover/icon:shadow-md"
-          >
-            <img
-              src={tech.icon}
-              alt={tech.name}
-              class="w-full h-full object-contain grayscale group-hover/icon:grayscale-0 transition-all duration-500"
-              loading="eager"
-              width="32"
-              height="32"
-            />
-          </div>
-          <span class="text-[9px] font-bold text-gray-500 group-hover/icon:text-gray-700 dark:group-hover/icon:text-gray-300 uppercase tracking-tighter transition-colors text-center">
-            {tech.name}
+      categories.map((cat, index) => (
+        <div
+          class={`flex flex-col gap-4 py-4 md:py-0 md:px-6
+            border-gray-100 dark:border-gray-800/60
+            ${index !== categories.length - 1 ? "border-b md:border-b-0 md:border-r" : ""}
+            ${sectionGrow[cat.id] || "flex-1"}`}
+        >
+          {/* Etiqueta Minimalista */}
+          <span class="text-[9px] font-bold uppercase tracking-widest text-gray-950 dark:text-gray-300">
+            {cat.label}
           </span>
-        </li>
+
+          {/* Grid de Iconos con espaciado uniforme */}
+          <div class="flex-1 flex items-center">
+            <ul class="flex flex-wrap justify-evenly items-center gap-6 w-full">
+              {cat.techs.map((tech) => (
+                <li class="flex flex-col items-center gap-2 group">
+                  <div class="w-7 h-7 flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-0.5">
+                    <img
+                      src={tech.icon}
+                      alt={tech.name}
+                      class="w-full h-full object-contain opacity-70 dark:opacity-50 group-hover:opacity-100 transition-opacity"
+                      loading="lazy"
+                      width="14"
+                      height="14"
+                    />
+                  </div>
+                  <span class="text-[7px] font-bold text-gray-600 dark:text-gray-300 uppercase">
+                    {tech.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       ))
     }
-  </ul>
+  </div>
 </section>

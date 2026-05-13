@@ -1,0 +1,55 @@
+---
+interface Props {
+  badge: string;
+  title: string;
+  subtitle: string;
+  watermark?: string;
+}
+
+const { badge, title, subtitle, watermark = title } = Astro.props;
+---
+
+<div
+  class="bg-[#1e3a5f] text-white rounded-2xl p-6 h-full flex flex-col gap-3 relative overflow-hidden group"
+>
+  <!-- 1. Fondo de Puntos (Dots) -->
+  <div
+    class="absolute inset-0 opacity-20 [background-image:radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"
+  >
+  </div>
+
+  <!-- 2. Grid Fino (Opcional: puedes comentar este o el anterior) -->
+  <div
+    class="absolute inset-0 opacity-10 [background-image:linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] [background-size:40px_40px]"
+  >
+  </div>
+
+  <!-- 3. Texto Delineado (Watermark) -->
+  <div
+    class="absolute -right-4 -top-4 select-none pointer-events-none font-serif italic text-8xl opacity-10 transition-transform duration-500 group-hover:scale-110"
+    style="-webkit-text-stroke: 1px white; color: transparent;"
+  >
+    {watermark}
+  </div>
+
+  <!-- Contenido Superior -->
+  <span
+    class="relative z-10 text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded bg-white/15 text-white/70 w-fit"
+  >
+    {badge}
+  </span>
+
+  <div class="flex-1"></div>
+
+  <!-- Texto Principal -->
+  <div class="relative z-10 mt-auto">
+    <h2
+      class="text-5xl font-bold font-sans leading-none text-white tracking-tight"
+    >
+      {title}
+    </h2>
+    <p class="text-sm text-white/50 mt-2">
+      {subtitle}
+    </p>
+  </div>
+</div>

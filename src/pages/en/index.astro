@@ -1,8 +1,14 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import BentoGato from "../../components/bentos/BentoGato.astro";
-import BentoVideos from "../../components/bentos/BentoVideos.astro";
+import BentoHero from "../../components/bentos/BentoHero.astro";
+import BentoProjectsHeader from "../../components/bentos/BentoProjectsHeader.astro";
+import BentoMeHeader from "../../components/bentos/BentoMeHeader.astro";
+import BentoProfile from "../../components/bentos/BentoProfile.astro";
+import BentoLanguages from "../../components/bentos/BentoLanguages.astro";
 import BentoEducation from "../../components/bentos/BentoEducation.astro";
+import BentoExperience from "../../components/bentos/BentoExperience.astro";
+import BentoVideos from "../../components/bentos/BentoVideos.astro";
+import BentoCertificates from "../../components/bentos/BentoCertificates.astro";
 import BentoProjects from "../../components/bentos/BentoProjects.astro";
 import BentoTechStack from "../../components/bentos/BentoTechStack.astro";
 import BentoPostGallery from "../../components/bentos/BentoPostGallery.astro";
@@ -31,7 +37,7 @@ const recentPosts = await db
 const siteTitle =
   "Christopher Villamarín - Software Developer | Backend | Programmer";
 const siteDescription =
-  "Christopher Villamarín - Transforming business problems into robust applications for Web, Mobile, and Desktop.";
+  "Christopher Villamarín - I transform business problems into robust applications for Web, Mobile and Desktop.";
 const siteKeywords =
   "digital solutions, software development, web applications, mobile applications, desktop applications, Quito, Ecuador, xeland314";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
@@ -52,7 +58,7 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
     id="main-content"
     class="min-h-screen [background-image:radial-gradient(circle,_#94a3b8_1px,_transparent_1px)] [background-size:24px_24px] dark:[background-image:radial-gradient(circle,_#334155_1px,_transparent_1px)] text-gray-900 dark:text-gray-200 py-6 px-4 sm:px-8 transition-colors duration-300 selection:bg-blue-500/30"
   >
-    {/* Skip to content for keyboard navigation */}
+    {/* Skip to content para navegación por teclado */}
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:font-bold focus:shadow-lg"
@@ -61,44 +67,74 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
     </a>
 
     <div class="max-w-5xl mx-auto space-y-6">
-      {/* 1. Profile and Featured Projects */}
-      <section aria-label="Profile and featured projects">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div class="md:col-span-5 lg:col-span-4">
-            <div
-              class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden"
-            >
-              <BentoGato lang={lang} />
-            </div>
+      <div
+        class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden"
+      >
+        <BentoHero lang={lang} />
+      </div>
+
+      {/* 1. Expertise Técnica, Educación y Experiencia */}
+      <section
+        aria-label="Technical expertise, education and experience"
+        id="about"
+        class="grid grid-cols-1 xl:grid-cols-12 gap-4"
+      >
+        <div class="xl:col-span-4 grid gap-4">
+          <div class="flex flex-col gap-4">
+            <BentoMeHeader lang={lang} />
+            <BentoLanguages lang={lang} />
           </div>
-          <div class="md:col-span-7 lg:col-span-8">
+        </div>
+
+        <div class="xl:col-span-8">
+          <BentoProfile lang={lang} />
+        </div>
+
+        <!-- Tech Stack: Una franja horizontal que destaca -->
+        <div class="xl:col-span-12 grid gap-4 lg:grid-cols-12">
+          <div class="lg:col-span-8">
+            <BentoTechStack lang={lang} />
+          </div>
+          <div class="lg:col-span-4">
+            <BentoCertificates lang={lang} />
+          </div>
+        </div>
+
+        {/* Experience Row */}
+        <div class="xl:col-span-12 grid gap-4 xl:grid-cols-2">
+          <BentoEducation lang={lang} />
+          <BentoExperience lang={lang} />
+        </div>
+      </section>
+
+      {/* 2. Profile and Featured Projects */}
+      <section aria-label="Profile and featured projects" id="projects">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+          <div class="col-span-1 xl:col-span-4">
+            <BentoProjectsHeader lang={lang} />
+          </div>
+          <div class="col-span-1 xl:col-span-8">
             <BentoProjects projects={featuredProjects} lang={lang} />
           </div>
         </div>
       </section>
 
-      {/* 2. Technical Expertise, Education and Blog */}
-      <section aria-label="Technical expertise, education and blog">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div class="md:col-span-12 lg:col-span-8">
-            <BentoTechStack lang={lang} />
-          </div>
-          <div class="md:col-span-6 lg:col-span-4">
-            <BentoEducation lang={lang} />
-          </div>
-          <div class="md:col-span-6 lg:col-span-12">
+      {/* 3. Publicaciones Recientes */}
+      <section aria-label="Recent publications" id="blog">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+          <div class="xl:col-span-4">
             <BentoBlog lang={lang} />
+          </div>
+          <div class="xl:col-span-8">
+            <BentoPostGallery posts={recentPosts} lang={lang} />
           </div>
         </div>
       </section>
 
-      {/* 3. Recent Publications */}
-      <section aria-label="Recent publications">
-        <BentoPostGallery posts={recentPosts} lang={lang} />
-      </section>
-
-      {/* 4. Animations and Dev Tools (before footer) */}
-      <section aria-label="Animations, demonstrations and developer tools">
+      {/* 4. Animaciones y Dev Tools (antes del footer) */}
+      <section
+        aria-label="Animations, demonstrations and developer tools"
+      >
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div class="lg:col-span-4">
             <div
@@ -113,8 +149,8 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
         </div>
       </section>
 
-      {/* 5. Contact and Services */}
-      <section aria-label="Contact and services">
+      {/* 5. Contacto y Servicios */}
+      <section aria-label="Contact and services" id="contact">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div class="lg:col-span-7">
             <div

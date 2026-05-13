@@ -1,4 +1,6 @@
 ---
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+
 const { lang = "es" } = Astro.props;
 
 const texts: Record<
@@ -100,19 +102,7 @@ const T = texts[lang];
   aria-labelledby="services-heading"
   class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 flex flex-col"
 >
-  <header class="mb-8">
-    <h3
-      id="services-heading"
-      class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-2"
-    >
-      {T.header}
-    </h3>
-    <p
-      class="text-xl font-bold text-gray-800 dark:text-gray-100 italic tracking-tighter"
-    >
-      {T.subheader}
-    </p>
-  </header>
+  <BentoInternalHeader title={T.header} subtitle={T.subheader} lang={lang} id="services-heading" />
 
   <ul
     role="list"
