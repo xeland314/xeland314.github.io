@@ -1,3 +1,5 @@
+import { determinesIfNeedsDirectiveScript } from "astro/runtime/server/scripts.js";
+
 export const projectData = [
   {
     title: "Calendario de Adviento Digital Interactivo",
@@ -23,6 +25,7 @@ export const projectData = [
     demoLink: "https://github.com/xeland314/PoliTetris/releases",
     tags: ["Java", "Swing"],
     image: "/images/optimized/projects/tetris/card.avif",
+    isVisible: false,
   },
   {
     title: "Analizador de Chats de WhatsApp",
@@ -48,6 +51,7 @@ export const projectData = [
     demoLink: "https://xeland314.github.io/memory-game/",
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/optimized/projects/memorygame/card.avif",
+    isVisible: false,
   },
   {
     title: "Encriptador de Texto Seguro",
@@ -60,6 +64,7 @@ export const projectData = [
     demoLink: "https://xeland314.github.io/encriptador-de-texto/",
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/optimized/projects/encriptador/card.avif",
+    isVisible: false,
   },
   {
     title: "Calculadora en C",
@@ -71,6 +76,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/Analizador-lexico",
     tags: ["C", "Compiladores", "Expresiones Regulares", "Golang"],
     image: "/images/optimized/projects/analizador-lexico/card.avif",
+    isVisible: false,
   },
   {
     title: "Conversor de Unidades",
@@ -83,6 +89,7 @@ export const projectData = [
     tags: ["Java", "Swing", "Conversion De Unidades"],
     image: "/images/optimized/projects/conversor-de-unidades/card.avif",
     isFeatured: false,
+    isVisible: false,
   },
   {
     title: "Solver de Programación Lineal con Interfaz Gráfica",
@@ -108,6 +115,7 @@ export const projectData = [
     tags: ["FastAPI", "Python", "Nominatim", "Redis", "Reinforcement Learning"],
     image: "/images/optimized/projects/autocompleter/card.avif",
     isFeatured: false,
+    isVisible: false,
   },
   {
     title: "Acortador de URLs con Gestión de Acceso",
@@ -176,7 +184,7 @@ export const projectData = [
       "Muestra presentaciones Markdown con rendimiento máximo y estética profesional, sin dependencias pesadas.",
     githubLink: "https://github.com/xeland314/slides.c",
     tags: ["C", "X11", "Cairo", "Pango", "Markdown", "High-Performance"],
-    image: "/images/slides_c_logo.png",
+    image: "/images/preview_rose.png",
   },
   {
     title: "Explorador Visual de Distribuciones Estadísticas",
@@ -187,7 +195,7 @@ export const projectData = [
       "Visualiza 13 modelos de probabilidad con gráficas dinámicas y fórmulas LaTeX, ideal para estudiantes e investigadores.",
     githubLink: "https://github.com/xeland314/statlens",
     tags: ["Python", "PySide6", "Matplotlib", "LaTeX", "Estadística"],
-    image: "/images/statlens_pixel_cat.png",
+    image: "/images/statlens.jpg",
   },
   {
     title: "Visualizador de Información del Sistema en WebAssembly",
@@ -199,6 +207,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/zigfetch",
     tags: ["Zig", "WASM", "WASI", "WebAssembly", "Low-Level"],
     image: "/images/zigfetch_screen1.jpg",
+    isVisible: false,
   },
   {
     title: "Generador de Videos de Código Animado",
@@ -232,6 +241,7 @@ export const projectData = [
     demoLink: "https://xeland314.github.io/can-i-use-gpu",
     tags: ["WebGPU", "Hardware", "Flutter", "Developer Tools"],
     image: undefined,
+    isVisible: false,
   },
   {
     title: "GymApp 1.0 - Sistema de Gestión para Gimnasios [LEGACY]",

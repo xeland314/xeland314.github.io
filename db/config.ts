@@ -13,6 +13,7 @@ export const Projects = defineTable({
     image: column.text({ optional: true }),
     slug: column.text({ unique: true }),
     isFeatured: column.boolean({ default: false }),
+    isVisible: column.boolean({ default: true }),
     lang: column.text({ default: "es" }),
   },
 });

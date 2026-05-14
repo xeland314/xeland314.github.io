@@ -25,6 +25,7 @@ export const projectDataEN = [
     tags: ["Java", "Swing"],
     image: "/images/optimized/projects/tetris/card.avif",
     lang: "en",
+    isVisible: false,
   },
   {
     title: "WhatsApp Chat Analyzer",
@@ -52,6 +53,7 @@ export const projectDataEN = [
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/optimized/projects/memorygame/card.avif",
     lang: "en",
+    isVisible: false,
   },
   {
     title: "Secure Text Encryptor",
@@ -65,6 +67,7 @@ export const projectDataEN = [
     tags: ["Html", "Css", "JavaScript"],
     image: "/images/optimized/projects/encriptador/card.avif",
     lang: "en",
+    isVisible: false,
   },
   {
     title: "Lexical Analyzer for Compilers",
@@ -77,6 +80,7 @@ export const projectDataEN = [
     tags: ["C", "Compilers", "Regular Expressions", "Golang"],
     image: "/images/optimized/projects/analizador-lexico/card.avif",
     lang: "en",
+    isVisible: false,
   },
   {
     title: "Multi-Platform Unit Converter",
@@ -90,6 +94,7 @@ export const projectDataEN = [
     image: "/images/optimized/projects/conversor-de-unidades/card.avif",
     isFeatured: false,
     lang: "en",
+    isVisible: false,
   },
   {
     title: "Linear Programming Solver with GUI",
@@ -117,6 +122,7 @@ export const projectDataEN = [
     image: "/images/optimized/projects/autocompleter/card.avif",
     isFeatured: false,
     lang: "en",
+    isVisible: false,
   },
   {
     title: "URL Shortener with Access Management",
@@ -189,7 +195,7 @@ export const projectDataEN = [
       "Display Markdown presentations with maximum performance and professional aesthetics, no heavy dependencies required.",
     githubLink: "https://github.com/xeland314/slides.c",
     tags: ["C", "X11", "Cairo", "Pango", "Markdown", "High-Performance"],
-    image: "/images/slides_c_logo.png",
+    image: "/images/preview_rose.png",
     lang: "en",
   },
   {
@@ -201,7 +207,7 @@ export const projectDataEN = [
       "Visualize 13 probability models with dynamic graphs and LaTeX formulas, perfect for students and researchers.",
     githubLink: "https://github.com/xeland314/statlens",
     tags: ["Python", "PySide6", "Matplotlib", "LaTeX", "Statistics"],
-    image: "/images/statlens_pixel_cat.png",
+    image: "/images/statlens.jpg",
     lang: "en",
   },
   {
@@ -215,6 +221,7 @@ export const projectDataEN = [
     tags: ["Zig", "WASM", "WASI", "WebAssembly", "Low-Level"],
     image: "/images/zigfetch_screen1.jpg",
     lang: "en",
+    isVisible: false,
   },
   {
     title: "Animated Code Video Generator",
@@ -251,6 +258,7 @@ export const projectDataEN = [
     tags: ["WebGPU", "Hardware", "Flutter", "Developer Tools"],
     image: undefined,
     lang: "en",
+    isVisible: false,
   },
   {
     title: "GymApp 1.0 - Gym Management System [LEGACY]",
