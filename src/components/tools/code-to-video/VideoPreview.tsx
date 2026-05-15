@@ -23,15 +23,15 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
   language,
 }) => {
   return (
-    <div className="flex-1 flex flex-col gap-6">
+    <div className="flex-1 flex flex-col gap-6 w-full max-w-full">
       <textarea
-        className="w-full h-40 p-4 font-mono text-sm bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-inner outline-none resize-y hover:border-blue-500 transition-colors"
+        className="w-full h-40 p-4 font-mono text-sm bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-inner outline-none resize-none hover:border-blue-500 transition-colors"
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="Escribe tu código aquí..."
       />
 
-      <div className="flex-1 bg-black/90 rounded-2xl overflow-hidden flex items-center justify-center p-4 border border-gray-700 relative shadow-2xl">
+      <div className="flex-1 bg-black/90 rounded-2xl overflow-hidden flex items-center justify-center p-4 border border-gray-700 relative shadow-2xl min-h-[400px]">
         <canvas
           ref={canvasRef}
           width={width}
@@ -40,6 +40,8 @@ export const VideoPreview: React.FC<VideoPreviewProps> = ({
           style={{
             width: "auto",
             height: "100%",
+            maxWidth: "100%",
+            maxHeight: "70vh",
             aspectRatio: `${width}/${height}`,
           }}
         />

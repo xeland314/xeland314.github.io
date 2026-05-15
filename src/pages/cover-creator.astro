@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { CoverCreator } from "../components/tools/covers/CoverCreator";
+
+
+const title = "Crea Portadas para tus Posts | Herramienta de Cover Creator";
+const description = "Diseña portadas personalizadas para tus artículos con esta herramienta fácil de usar, perfecta para destacar tu contenido en redes sociales y blogs.";
+const keywords = "Cover Creator, Portadas para Posts, Diseño de Portadas, Herramienta de Diseño, Herramienta para Bloggers, Christopher Villamarín";
+const author = "Christopher Alexander Villamarín Pila";
+const url = "https://xeland314.github.io/code-to-img";
+const image = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout 
+  title={title} 
+  description={description}
+  keywords={keywords}
+  author={author}
+  url={url}
+  image={image}
+  canonical={url}
+>
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-8">
+      <header class="mb-8">
+        <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-flex items-center gap-2 font-bold transition-all hover:-translate-x-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          Volver al inicio
+        </a>
+        <h1 class="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+          Cover Creator
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">Diseña portadas personalizadas para tus artículos con esta herramienta fácil de usar.</p>
+      </header>
+
+      <CoverCreator client:only="react" />
+
+    </div>
+  </main>
+</BaseLayout>

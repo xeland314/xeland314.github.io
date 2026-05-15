@@ -206,7 +206,7 @@ const CodeToVideo = () => {
         ]);
 
         return (
-          <div className="flex flex-col lg:flex-row gap-8 p-4 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-200">
+          <div className="flex flex-col lg:flex-row gap-8 p-4 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-200 overflow-x-hidden">
             <Sidebar
               usePlainText={usePlainText}
               setUsePlainText={setUsePlainText}
@@ -240,16 +240,18 @@ const CodeToVideo = () => {
               onExport={() => handleExport(tokens)}
             />
 
-            <VideoPreview
-              code={code}
-              setCode={setCode}
-              canvasRef={canvasRef}
-              width={width}
-              height={height}
-              isRendering={isRendering}
-              usePlainText={usePlainText}
-              language={language}
-            />
+            <div className="flex-1 flex flex-col gap-6 w-full max-w-full min-h-0">
+              <VideoPreview
+                code={code}
+                setCode={setCode}
+                canvasRef={canvasRef}
+                width={width}
+                height={height}
+                isRendering={isRendering}
+                usePlainText={usePlainText}
+                language={language}
+              />
+            </div>
           </div>
         );
       }}

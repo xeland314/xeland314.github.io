@@ -67,7 +67,7 @@ const CodeToImage = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 p-4 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-200">
+    <div className="flex flex-col lg:flex-row gap-8 p-4 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-200 overflow-x-hidden">
       <Sidebar
         language={language}
         setLanguage={setLanguage}
@@ -103,34 +103,36 @@ const CodeToImage = () => {
         handleExport={handleExport}
       />
 
-      <div className="flex-1 flex flex-col gap-6 overflow-auto">
+      <div className="flex-1 flex flex-col gap-6 w-full max-w-full">
         <textarea
-          className="w-full h-40 p-4 font-mono text-sm bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-inner outline-none resize-y hover:border-blue-500"
+          className="w-full h-40 p-4 font-mono text-sm bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-inner outline-none resize-none hover:border-blue-500"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Escribe o pega tu código aquí..."
         />
 
-        <ImagePreview
-          exportRef={exportRef}
-          width={width}
-          height={height}
-          bgType={bgType}
-          bgColor={bgColor}
-          bgImage={bgImage}
-          bgBlur={bgBlur}
-          bgOpacity={bgOpacity}
-          padding={padding}
-          code={code}
-          language={language}
-          themeName={themeName}
-          fontSize={fontSize}
-          showLineNumbers={showLineNumbers}
-          showFooter={showFooter}
-          showLogo={showLogo}
-          showUsername={showUsername}
-          username={username}
-        />
+        <div className="w-full flex-1">
+          <ImagePreview
+            exportRef={exportRef}
+            width={width}
+            height={height}
+            bgType={bgType}
+            bgColor={bgColor}
+            bgImage={bgImage}
+            bgBlur={bgBlur}
+            bgOpacity={bgOpacity}
+            padding={padding}
+            code={code}
+            language={language}
+            themeName={themeName}
+            fontSize={fontSize}
+            showLineNumbers={showLineNumbers}
+            showFooter={showFooter}
+            showLogo={showLogo}
+            showUsername={showUsername}
+            username={username}
+          />
+        </div>
       </div>
     </div>
   );
