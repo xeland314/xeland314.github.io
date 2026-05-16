@@ -61,7 +61,7 @@ const pubDate = new Date("2026-04-14T00:00:00");
   </section>
 
   <CodeBlock
-    client:only="react"
+    client:visible
     language="python"
     code={`using PlotlyBase
 
@@ -166,7 +166,7 @@ const pubDate = new Date("2026-04-14T00:00:00");
       Para ejecutar este script necesitas instalar <code>PlotlyBase</code> en Julia.
     </p>
     <CodeBlock
-      client:only="react"
+      client:visible
       language="sh"
       code={`julia -e 'import Pkg; Pkg.add("PlotlyBase")'`}
     />
@@ -175,6 +175,12 @@ const pubDate = new Date("2026-04-14T00:00:00");
         >evolucion_codigo.html</code
       >.
     </p>
+    <p class="mt-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      El script asume que estás dentro de un repositorio Git con un historial de
+      commits y que tienes permisos para ejecutar comandos de Git desde la
+      terminal. Para ejecutarlo tienes que escribir el siguiente comando:
+    </p>
+    <CodeBlock client:visible language="sh" code={`julia script.jl`} />
   </section>
 
   <section id="Resultado">
