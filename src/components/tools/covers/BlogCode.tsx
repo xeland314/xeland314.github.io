@@ -22,11 +22,12 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
 
   return (
     <div
-      className={`flex items-center justify-center ${s.bg} overflow-hidden font-sans w-full`}
+      className={`flex items-center justify-center overflow-hidden font-sans w-full h-full aspect-square`}
     >
       <div ref={wrapperRef} className="relative">
         <div
           ref={canvasRef}
+          data-export-canvas="true"
           className={`relative overflow-hidden flex flex-col items-center p-16 ${s.bg} shadow-2xl origin-top-left`}
           style={{ width: "1080px", height: "1080px", flexShrink: 0 }}
         >
@@ -36,7 +37,7 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
           </h1>
 
           {/* Code Window */}
-          <div className={`w-full h-full flex flex-col rounded-[2.5rem] overflow-hidden shadow-2xl border-4 ${s.window}`}>
+          <div className={`w-full max-h-[650px] flex flex-col rounded-[2.5rem] overflow-hidden shadow-2xl border-4 ${s.window} mb-12`}>
             {/* Window Controls */}
             <div className={`flex items-center gap-3 px-8 py-6 ${s.windowHeader}`}>
               <div className="w-4 h-4 rounded-full bg-red-500"></div>
@@ -55,7 +56,7 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
                 language={language as any}
               >
                 {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                  <pre className={className} style={{ ...style, background: "transparent" }}>
+                  <pre className={`${className} overflow-hidden`} style={{ ...style, background: "transparent" }}>
                     {tokens.map((line, i) => (
                       <div key={i} {...getLineProps({ line, key: i })}>
                         <span className="opacity-30 mr-6 w-8 inline-block text-right">{i + 1}</span>

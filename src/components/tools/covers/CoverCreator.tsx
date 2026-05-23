@@ -108,17 +108,25 @@ export const CoverCreator = () => {
   const handleExportCurrent = async () => {
     if (!exportRef.current) return;
     try {
-      const dataUrl = await toPng(exportRef.current, { 
+      const canvas = exportRef.current.querySelector('[data-export-canvas="true"]') as HTMLElement;
+      if (!canvas) return;
+
+      // Store original transform to restore it later
+      const originalTransform = canvas.style.transform;
+      
+      // Temporarily set scale to 1 for clean capture
+      canvas.style.transform = "scale(1)";
+
+      const dataUrl = await toPng(canvas, { 
         pixelRatio: 1, 
         width: 1080,
         height: 1080,
         cacheBust: true,
-        style: {
-          transform: "scale(1)",
-          width: "1080px",
-          height: "1080px",
-        }
       });
+
+      // Restore original transform
+      canvas.style.transform = originalTransform;
+
       const link = document.createElement("a");
       link.download = `slide-${selectedSlideId}.png`;
       link.href = dataUrl;
@@ -137,23 +145,27 @@ export const CoverCreator = () => {
       const slide = slides[i];
       setSelectedSlideId(slide.id);
       
-      // Esperar un momento a que el DOM se actualice
+      // Wait for DOM update
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (exportRef.current) {
-        const dataUrl = await toPng(exportRef.current, { 
-          pixelRatio: 1, 
-          width: 1080,
-          height: 1080,
-          cacheBust: true,
-          style: {
-            transform: "scale(1)",
-            width: "1080px",
-            height: "1080px",
-          }
-        });
-        const base64Data = dataUrl.split(",")[1];
-        folder.file(`slide-${i + 1}-${slide.type}.png`, base64Data, { base64: true });
+        const canvas = exportRef.current.querySelector('[data-export-canvas="true"]') as HTMLElement;
+        if (canvas) {
+          const originalTransform = canvas.style.transform;
+          canvas.style.transform = "scale(1)";
+
+          const dataUrl = await toPng(canvas, { 
+            pixelRatio: 1, 
+            width: 1080,
+            height: 1080,
+            cacheBust: true,
+          });
+
+          canvas.style.transform = originalTransform;
+
+          const base64Data = dataUrl.split(",")[1];
+          folder.file(`slide-${i + 1}-${slide.type}.png`, base64Data, { base64: true });
+        }
       }
     }
 
@@ -202,7 +214,7 @@ export const CoverCreator = () => {
 
       <div className="flex-1 flex flex-col items-center justify-start py-10 overflow-auto bg-gray-50 dark:bg-gray-950 rounded-[3rem] border border-gray-200 dark:border-gray-800">
         <div className="w-full max-w-2xl flex flex-col items-center">
-          <div ref={exportRef} className="w-full shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.4)] rounded-2xl overflow-hidden">
+          <div ref={exportRef} className="w-full aspect-square overflow-hidden">
             {renderSlide(selectedSlide)}
           </div>
           

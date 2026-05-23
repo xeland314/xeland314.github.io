@@ -1,4 +1,4 @@
-export type ThemeMode = "light" | "dark" | "midnight" | "soft";
+export type ThemeMode = "light" | "dark" | "midnight" | "soft" |  "catppuccin" | "ambercat" | "rose" | "blue";
 
 export type AccentColor =
   | "blue"
@@ -93,6 +93,67 @@ export const THEME_STYLES: Record<ThemeMode, ThemeStyles> = {
     overlay: "#000000",
     actionBg: "bg-slate-100 border-slate-200",
     prismTheme: "light",
+  },
+  // Catppuccin — pastel suave, Mocha flavour
+  catppuccin: {
+    bg: "bg-[#1e1e2e]",
+    text: "text-[#cdd6f4]",
+    sub: "text-[#bac2de]",
+    footer: "text-[#585b70]",
+    badge: "border-[#313244] bg-[#181825]/80",
+    iconBg: "border-[#313244] bg-[#313244]/60",
+    card: "bg-[#181825]/70 border-[#313244]",
+    window: "border-[#313244] bg-[#11111b]",
+    windowHeader: "bg-[#313244]",
+    overlay: "#cdd6f4",
+    actionBg: "bg-[#313244] border-[#45475a]",
+    prismTheme: "dark",
+  },
+  // Ambercat — cálido técnico, marrones y ámbar quemado
+  ambercat: {
+    bg: "bg-[#2e1f14]",
+    text: "text-[#f9e6c6]",
+    sub: "text-[#f1a449]",
+    footer: "text-[#8a6040]",
+    badge: "border-[#5c3a20] bg-[#3d2510]/80",
+    iconBg: "border-[#5c3a20] bg-[#5c3a20]/50",
+    card: "bg-[#3d2510]/70 border-[#5c3a20]",
+    window: "border-[#5c3a20] bg-[#1e1208]",
+    windowHeader: "bg-[#4a2e18]",
+    overlay: "#f9e6c6",
+    actionBg: "bg-[#4a2e18] border-[#5c3a20]",
+    prismTheme: "dark",
+  },
+
+  // Rose — vino y rosa oscuro, femenino técnico
+  rose: {
+    bg: "bg-[#260d14]",
+    text: "text-[#fde8f0]",
+    sub: "text-[#e699b2]",
+    footer: "text-[#7a3d50]",
+    badge: "border-[#4d1a28] bg-[#3a1020]/80",
+    iconBg: "border-[#4d1a28] bg-[#4d1a28]/50",
+    card: "bg-[#3a1020]/70 border-[#4d1a28]",
+    window: "border-[#4d1a28] bg-[#1a0810]",
+    windowHeader: "bg-[#4d1a28]",
+    overlay: "#fde8f0",
+    actionBg: "bg-[#3a1020] border-[#4d1a28]",
+    prismTheme: "dark",
+  },
+  // Blue — técnico especializado, slate profundo con sky y emerald
+  blue: {
+    bg: "bg-[#0f172a]",
+    text: "text-slate-100",
+    sub: "text-sky-400",
+    footer: "text-slate-500",
+    badge: "border-blue-900 bg-blue-950/60",
+    iconBg: "border-sky-900/50 bg-sky-950/30",
+    card: "bg-blue-950/30 border-blue-900/60",
+    window: "border-blue-900 bg-[#080f1e]",
+    windowHeader: "bg-blue-950",
+    overlay: "#f1f5f9",
+    actionBg: "bg-blue-950 border-blue-900",
+    prismTheme: "dark",
   },
 };
 

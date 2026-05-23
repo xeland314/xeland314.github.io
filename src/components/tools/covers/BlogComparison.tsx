@@ -25,11 +25,12 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
 
   return (
     <div
-      className={`flex items-center justify-center ${s.bg} overflow-hidden font-sans w-full`}
+      className={`flex items-center justify-center overflow-hidden font-sans w-full h-full aspect-square`}
     >
       <div ref={wrapperRef} className="relative">
         <div
           ref={canvasRef}
+          data-export-canvas="true"
           className={`relative overflow-hidden flex flex-col items-center p-16 ${s.bg} shadow-2xl origin-top-left`}
           style={{ width: "1080px", height: "1080px", flexShrink: 0 }}
         >
@@ -38,16 +39,15 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
             {title}
           </h1>
 
-          <div className="flex w-full h-full gap-8">
+          <div className="flex w-full h-full max-h-[825px] gap-8 mb-12">
             {/* Left Side */}
-            <div className={`flex-1 flex flex-col items-center p-10 rounded-[3rem] ${s.card} border-2`}>
-              <h2 className={`text-4xl font-black mb-10 ${c.textAccent} uppercase tracking-widest`}>
+            <div className={`flex-1 flex flex-col items-center p-8 rounded-[3rem] ${s.card} border-2 overflow-hidden`}>
+              <h2 className={`text-4xl font-black mb-8 ${c.textAccent} uppercase tracking-widest`}>
                 {leftTitle}
               </h2>
-              <ul className="w-full space-y-6">
+              <ul className="w-full space-y-4 overflow-y-auto">
                 {leftItems.map((item, i) => (
-                  <li key={i} className="flex items-start gap-4 text-3xl font-bold">
-                    <span className="text-red-500 mt-1">✕</span>
+                  <li key={i} className="flex items-start gap-4 text-2xl font-bold">
                     <span className={s.sub}>{item}</span>
                   </li>
                 ))}
@@ -55,19 +55,18 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
             </div>
 
             {/* VS Badge */}
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-24 h-24 rounded-full ${s.badge.split(' ').pop()} flex items-center justify-center shadow-2xl border-4 ${theme.mode === "midnight" || theme.mode === "dark" ? "border-slate-700" : "border-slate-200"}`}>
+            <div className={`absolute top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-24 h-24 rounded-full ${s.badge.split(' ').pop()} flex items-center justify-center shadow-2xl border-4 ${theme.mode === "midnight" || theme.mode === "dark" ? "border-slate-700" : "border-slate-200"}`}>
                <span className={`text-4xl font-black ${c.textAccent}`}>VS</span>
             </div>
 
             {/* Right Side */}
-            <div className={`flex-1 flex flex-col items-center p-10 rounded-[3rem] ${s.card} border-2`}>
-              <h2 className={`text-4xl font-black mb-10 ${c.textAccent} uppercase tracking-widest`}>
+            <div className={`flex-1 flex flex-col items-center p-8 rounded-[3rem] ${s.card} border-2 overflow-hidden`}>
+              <h2 className={`text-4xl font-black mb-8 ${c.textAccent} uppercase tracking-widest`}>
                 {rightTitle}
               </h2>
-              <ul className="w-full space-y-6">
+              <ul className="w-full space-y-4 overflow-y-auto">
                 {rightItems.map((item, i) => (
-                  <li key={i} className="flex items-start gap-4 text-3xl font-bold">
-                    <span className="text-emerald-500 mt-1">✓</span>
+                  <li key={i} className="flex items-start gap-4 text-2xl font-bold">
                     <span className={s.sub}>{item}</span>
                   </li>
                 ))}

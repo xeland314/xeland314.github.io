@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-500 block mb-2">Tema</label>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap justify-evenly gap-4">
               <button
                 onClick={() => setMode("light")}
                 className={`w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center bg-white ${
@@ -103,6 +103,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 title="Modo Soft"
               >
                 <div className="w-6 h-6 rounded-full bg-[#f1f5f9] border border-slate-200" />
+              </button>
+              <button
+                onClick={() => setMode("catppuccin")}
+                className={`w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center bg-[#1e1e2e] ${
+                  mode === "catppuccin" ? "border-blue-500 scale-110 shadow-lg" : "border-gray-200 opacity-60 hover:opacity-100"
+                }`}
+                title="Modo Catppuccin"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#302d41] border border-[#f5e0dc]" />
+              </button>
+              <button
+                onClick={() => setMode("ambercat")}
+                className={`w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center bg-[#1e1e1e] ${
+                  mode === "ambercat" ? "border-blue-500 scale-110 shadow-lg" : "border-gray-200 opacity-60 hover:opacity-100"
+                }`}
+                title="Modo Ambercat"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#3c3836] border border-[#fabd2f]" />
+              </button>
+              <button
+                onClick={() => setMode("rose")}
+                className={`w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center bg-[#1f1f1f] ${
+                  mode === "rose" ? "border-blue-500 scale-110 shadow-lg" : "border-gray-200 opacity-60 hover:opacity-100"
+                }`}
+                title="Modo Rose"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#3e3e3e] border border-[#f38ba8]" />
+              </button>
+              <button
+                onClick={() => setMode("blue")}
+                className={`w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center bg-[#0c0c2b] ${
+                  mode === "blue" ? "border-blue-500 scale-110 shadow-lg" : "border-gray-200 opacity-60 hover:opacity-100"
+                }`}
+                title="Modo Blue"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#1e1e7e] border border-[#89b4fa]" />
               </button>
             </div>
           </div>

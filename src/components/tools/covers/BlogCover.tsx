@@ -23,11 +23,12 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
 
   return (
     <div
-      className={`flex items-center justify-center ${s.bg} overflow-hidden font-sans w-full`}
+      className={`flex items-center justify-center overflow-hidden font-sans w-full h-full aspect-square`}
     >
       <div ref={wrapperRef} className="relative">
         <div
           ref={canvasRef}
+          data-export-canvas="true"
           className={`relative overflow-hidden flex flex-col items-center justify-center p-12 ${s.bg} ${s.text} shadow-2xl origin-top-left`}
           style={{ width: "1080px", height: "1080px", flexShrink: 0 }}
         >
