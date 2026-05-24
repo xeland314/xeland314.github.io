@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { toPng } from "html-to-image";
 import JSZip from "jszip";
 import { Sidebar } from "./Sidebar";
@@ -7,7 +7,11 @@ import { BlogStep } from "./BlogStep";
 import { BlogComparison } from "./BlogComparison";
 import { BlogCode } from "./BlogCode";
 import { BlogEnd } from "./BlogEnd";
+import { ProjectManager, type Project } from "./ProjectManager";
 import { type ThemeMode, type AccentColor, type SlideData, type SlideType } from "./types";
+
+const STORAGE_KEY = "cover-creator-state";
+const PROJECTS_KEY = "cover-creator-projects";
 
 const INITIAL_SLIDES: SlideData[] = [
   {
@@ -46,7 +50,149 @@ export const CoverCreator = () => {
   const [username, setUsername] = useState("xeland314");
   const [slides, setSlides] = useState<SlideData[]>(INITIAL_SLIDES);
   const [selectedSlideId, setSelectedSlideId] = useState<string>(INITIAL_SLIDES[0].id);
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [currentProjectId, setCurrentProjectId] = useState<string>("default");
+  
   const exportRef = useRef<HTMLDivElement>(null);
+
+  // Load projects and current state on mount
+  useEffect(() => {
+    const savedProjects = localStorage.getItem(PROJECTS_KEY);
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects));
+    }
+
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      try {
+        const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId: savedId } = JSON.parse(savedState);
+        setMode(mode);
+        setAccent(accent);
+        setShowLogo(showLogo);
+        setLogoImage(logoImage);
+        setUsername(username);
+        setSlides(slides);
+        setSelectedSlideId(selectedSlideId);
+        setCurrentProjectId(savedId || "default");
+      } catch (e) {
+        console.error("Error loading saved state:", e);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Auto-save current project state
+  useEffect(() => {
+    if (!isLoaded) return;
+    const state = { mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+    // Also update the project in the projects list if it exists
+    setProjects(prev => prev.map(p => p.id === currentProjectId ? {
+      ...p,
+      lastModified: Date.now(),
+      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId }
+    } : p));
+  }, [mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId, isLoaded]);
+
+  // Save projects list to localStorage
+  useEffect(() => {
+    if (!isLoaded) return;
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+  }, [projects, isLoaded]);
+
+  const handleSaveProject = (name: string) => {
+    const newProject: Project = {
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      lastModified: Date.now(),
+      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId }
+    };
+    setProjects([...projects, newProject]);
+    setCurrentProjectId(newProject.id);
+  };
+
+  const handleLoadProject = (id: string) => {
+    const project = projects.find(p => p.id === id);
+    if (project) {
+      const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId } = project.data;
+      setMode(mode);
+      setAccent(accent);
+      setShowLogo(showLogo);
+      setLogoImage(logoImage);
+      setUsername(username);
+      setSlides(slides);
+      setSelectedSlideId(selectedSlideId);
+      setCurrentProjectId(id);
+    }
+  };
+
+  const handleDeleteProject = (id: string) => {
+    if (confirm("¿Estás seguro de que quieres eliminar este proyecto?")) {
+      setProjects(projects.filter(p => p.id !== id));
+      if (currentProjectId === id) {
+        setCurrentProjectId("default");
+      }
+    }
+  };
+
+  const handleNewProject = () => {
+    if (confirm("¿Crear un nuevo proyecto? Los cambios actuales se mantendrán en el proyecto actual.")) {
+      setMode("dark");
+      setAccent("blue");
+      setShowLogo(true);
+      setLogoImage("/assets/images/logo_v3.png");
+      setUsername("xeland314");
+      setSlides(INITIAL_SLIDES);
+      setSelectedSlideId(INITIAL_SLIDES[0].id);
+      setCurrentProjectId("default");
+    }
+  };
+
+  const handleReset = () => {
+    if (confirm("¿Estás seguro de que quieres restablecer el proyecto actual? Se perderán los cambios no guardados en este proyecto.")) {
+      setMode("dark");
+      setAccent("blue");
+      setShowLogo(true);
+      setLogoImage("/assets/images/logo_v3.png");
+      setUsername("xeland314");
+      setSlides(INITIAL_SLIDES);
+      setSelectedSlideId(INITIAL_SLIDES[0].id);
+    }
+  };
+
+  const handleExportProject = (id: string) => {
+    const project = projects.find(p => p.id === id);
+    if (!project) return;
+
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `project-${project.name.replace(/\s+/g, "-").toLowerCase()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportProject = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const project: Project = JSON.parse(e.target?.result as string);
+        // Clean up project ID to avoid collisions
+        project.id = Math.random().toString(36).substr(2, 9);
+        project.name = `${project.name} (Importado)`;
+        setProjects([...projects, project]);
+        alert("Proyecto importado con éxito");
+      } catch (err) {
+        console.error("Error importing project:", err);
+        alert("Error al importar el archivo JSON. Asegúrate de que es un formato válido.");
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const theme = { mode, accent, showLogo, logoImage, username };
 
@@ -190,41 +336,65 @@ export const CoverCreator = () => {
 
   return (
     <div className="flex flex-col lg:flex-row gap-10 p-4 min-h-screen">
-      <Sidebar
-        mode={mode}
-        setMode={setMode}
-        accent={accent}
-        setAccent={setAccent}
-        showLogo={showLogo}
-        setShowLogo={setShowLogo}
-        logoImage={logoImage}
-        setLogoImage={setLogoImage}
-        username={username}
-        setUsername={setUsername}
-        slides={slides}
-        selectedSlideId={selectedSlideId}
-        setSelectedSlideId={setSelectedSlideId}
-        updateSlide={updateSlide}
-        addSlide={addSlide}
-        removeSlide={removeSlide}
-        moveSlide={moveSlide}
-        onExportAll={handleExportAll}
-        onExportCurrent={handleExportCurrent}
-      />
-
-      <div className="flex-1 flex flex-col items-center justify-start py-10 overflow-auto bg-gray-50 dark:bg-gray-950 rounded-[3rem] border border-gray-200 dark:border-gray-800">
+      <div className="w-full lg:w-96 flex flex-col">
+        <ProjectManager
+          projects={projects}
+          currentProjectId={currentProjectId}
+          onSave={handleSaveProject}
+          onLoad={handleLoadProject}
+          onDelete={handleDeleteProject}
+          onNew={handleNewProject}
+          onExport={handleExportProject}
+          onImport={handleImportProject}
+        />
+        <Sidebar
+          mode={mode}
+          setMode={setMode}
+          accent={accent}
+          setAccent={setAccent}
+          showLogo={showLogo}
+          setShowLogo={setShowLogo}
+          logoImage={logoImage}
+          setLogoImage={setLogoImage}
+          username={username}
+          setUsername={setUsername}
+          slides={slides}
+          selectedSlideId={selectedSlideId}
+          setSelectedSlideId={setSelectedSlideId}
+          updateSlide={updateSlide}
+          addSlide={addSlide}
+          removeSlide={removeSlide}
+          moveSlide={moveSlide}
+          onExportAll={handleExportAll}
+          onExportCurrent={handleExportCurrent}
+        />
+      </div>
+        <div className="flex-1 flex flex-col items-center justify-start py-10 overflow-auto bg-gray-50 dark:bg-gray-950 rounded-[3rem] border border-gray-200 dark:border-gray-800">
         <div className="w-full max-w-2xl flex flex-col items-center">
-          <div ref={exportRef} className="w-full aspect-square overflow-hidden">
+          <div className="w-full flex justify-end mb-4">
+             <button 
+               onClick={handleReset}
+               className="text-xs font-bold text-red-500 hover:text-red-600 uppercase tracking-widest bg-red-50 dark:bg-red-950/30 px-3 py-1 rounded-lg border border-red-100 dark:border-red-900/50 transition-colors"
+             >
+               Restablecer Todo
+             </button>
+          </div>
+          <div ref={exportRef} className="w-full aspect-square bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
             {renderSlide(selectedSlide)}
           </div>
-          
+
           <div className="mt-12 flex items-center gap-4 bg-white dark:bg-gray-800 px-6 py-3 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
              <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">
                Previsualizando {slides.indexOf(selectedSlide) + 1} de {slides.length}
              </span>
+             <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2" />
+             <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-1">
+               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+               Autoguardado
+             </span>
           </div>
         </div>
-      </div>
+        </div>
     </div>
   );
 };
