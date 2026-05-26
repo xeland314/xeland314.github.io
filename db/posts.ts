@@ -242,6 +242,14 @@ export const postData = [
     isPublished: true,
   },
   {
+    title: "Comandos Linux: Mi Top 10",
+    url: "/es/posts/linux-most-used-commands",
+    image:
+      "/images/optimized/posts/127.0.0.1_8000_es_posts_url-anatomy-cover.avif",
+    lang: "es",
+    isPublished: true,
+  },
+  {
     title: "Hashing vs. Cifrado",
     url: "/es/posts/software-hashing-vs-encryption",
     image:

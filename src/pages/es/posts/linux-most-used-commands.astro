@@ -1,0 +1,135 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { BlogPostPresentation } from "../../../components/tools/covers/BlogPostPresentation";
+import type { SlideData, ThemeConfig } from "../../../components/tools/covers/types";
+
+const title = "Comandos en Linux más usados";
+const description = "Análisis de los comandos que más utilizo en mi día a día como programador.";
+
+const theme: ThemeConfig = {
+  mode: "rose",
+  accent: "rose",
+  showLogo: true,
+  logoImage: "/assets/images/logo_v3.png",
+  username: "xeland314",
+};
+
+const slides: SlideData[] = [
+  {
+    id: "1",
+    type: "cover",
+    title: "Comandos que más he usado en Linux",
+    subtitle: "Como programador",
+    category: "Comandos más usados en Linux",
+    iconChar: "💻"
+  },
+  {
+    id: "kr28zhqlp",
+    type: "step",
+    stepNumber: "¿Cómo hice esto?",
+    title: "",
+    description: "Con Python analicé mi zsh_history, que sería el historial de comandos cuando los ejecutó en la terminal. Luego, agrupé los comandos por familias y los resumí en un gráfico de anillo solar. Si es que alguna vez viste estadística, te debe sonar un diagrama de tallo y hoja que fue la primera idea que se me ocurrió para poder crear este gráfico."
+  },
+  {
+    id: "2",
+    type: "step",
+    stepNumber: "1.git",
+    title: "10.65%, 2362 veces",
+    description: "git commit, git status, git add, git push... etc. El control de versiones es siempre lo más importante a diario como programador. Inevitablemente queda como el comando que más he usado."
+  },
+  {
+    id: "5dk5vpu4p",
+    type: "step",
+    stepNumber: "2.sudo",
+    title: "9.14%, 2027 veces",
+    description: "Lo más habitual ha sido instalar paquetes con apt y a lo mucho ver qué procesos se ejecutan con systemctl. Luego está la parte de editar archivos de configuración, pero nada más. Esto es algo engañoso porque por sí solo sudo nunca se ejecuta solo sino acompañado de algún otro comando."
+  },
+  {
+    id: "qvcgch09l",
+    type: "step",
+    stepNumber: "3.cd",
+    title: "6.12%, 1359 veces",
+    description: "Supongo que no hay más explicación dado que es la única forma de navegar entre carpetas en la terminal, salvo que uses ranger o mc. Y junto con ls suele ser de los comandos que se listan en las guías de comandos que debes saber en Linux."
+  },
+  {
+    id: "74ld59qs7",
+    type: "step",
+    stepNumber: "4.ls",
+    title: "5.44%, 1207 veces",
+    description: "Al navegar entre carpetas, lo importante también es ver qué archivos tienes en esa carpeta, así que..."
+  },
+  {
+    id: "d329a95dz",
+    type: "step",
+    stepNumber: "5.npm",
+    title: "3.97%, 881 veces",
+    description: "Ya voy a cambiar a pnpm, no se preocupen. Como parte de lo que hago son aplicaciones web; es lo más común para manejar las dependencias del frontend. Sí, no uso Javascript o Typescript para el backend, solo para el frontend."
+  },
+  {
+    id: "ylqn3coem",
+    type: "step",
+    stepNumber: "6.uv",
+    title: "3.52%, 780 veces",
+    description: "¿Qué es uv? Yo sé que esa debe ser tu primera pregunta. En el lado del backend, suelo usar bastante Python como lenguaje de programación. Aquí entra uv: la herramienta para inicializar mis proyectos, gestionar paquetes y usar diferentes versiones de Python solo con un comando."
+  },
+  {
+    id: "gpkijzukp",
+    type: "step",
+    stepNumber: "7.go",
+    title: "2.66%, 591 veces",
+    description: "En el backend, también suelo usar Golang (go) para algún side project o trabajo pequeño que solo requiera un binario sin tanta configuración. Yo sé que cuando se habla de go se suele mencionar cosas como las goroutines, pero mi caso no es tanto por poseer esas características, sino para tener una alternativa a la hora de crear un backend pequeño."
+  },
+  {
+    id: "s9emq7txe",
+    type: "step",
+    stepNumber: "8.make",
+    title: "1.87%, 414 veces",
+    description: "Muchas aplicaciones en Linux suelen instalarse con make && make build, al menos este ha sido mi caso para cosas súper específicas. Además, aparte de usar scripts en bash, creo que es más fácil tener un Makefile para ejecutar comandos recurrentes en algunos proyectos."
+  },
+  {
+    id: "e5wy0t8n1",
+    type: "step",
+    stepNumber: "9.nvim",
+    title: "1.64%, 363 veces",
+    description: "Sí sé salir de nvim así que la razón no es porque haya tenido que abrirlo varias veces y no haya podido salir. La mayor parte del tiempo suelo revisar el código usando nvim, gracias a lazyvim. Y, observando las estadísticas, lo he usado incluso más que Visual Studio Code o zed en conjunto. Por último, consume pocos recursos. Es bastante práctico. "
+  },
+  {
+    id: "vsj0bh9x2",
+    type: "step",
+    stepNumber: "10.curl",
+    title: "1.37%, 303 veces",
+    description: "Para descargar algo de internet, es más sencillo que wget. Incluso al llamar a alguna API vía terminal es bastante intuitivo."
+  },
+  {
+    id: "mh3t7jwch",
+    type: "step",
+    stepNumber: "Conclusión",
+    title: "",
+    description: "Al final, salvo que seas programador, difícilmente vas a ejecutar muchos de los comandos que viste aquí. Así que no te sientas abrumado por usar Linux si eres nuevo, a lo mucho cd, ls y sudo apt install/update/upgrade si tu distro viene de Debian o sudo pacman si es derivada de Arch."
+  },
+  {
+    id: "3",
+    type: "end",
+    firstText: "¡Gracias por",
+    secondText: "Leer!",
+    description: "Si te ha gustado este contenido, sígueme para más cosas de Linux.",
+    likeText: "Like",
+    commentText: "Comenta",
+    saveText: "Guarda",
+    finalText: "Linux • Terminal • Comandos"
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="linux, comandos, terminal, zsh, programador"
+  author="xeland314"
+  url={Astro.url.href}
+  image="/images/optimized/posts/127.0.0.1_8000_es_posts_linux-most-used-commands-cover.avif"
+>
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <BlogPostPresentation client:load slides={slides} theme={theme} title={title} />
+  </main>
+</BaseLayout>

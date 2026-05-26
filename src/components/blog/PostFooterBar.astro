@@ -3,12 +3,14 @@ interface Props {
   logoPath?: string;
   positionClass?: string;
   middleHtml?: string;
+  rightHtml?: string;
 }
 
 const {
   logoPath = "/assets/images/logo_v3.png",
   positionClass = "absolute bottom-0 left-0 right-0",
   middleHtml = "",
+  rightHtml = "",
 } = Astro.props;
 ---
 
@@ -36,6 +38,6 @@ const {
   </div>
 
   <div class="w-24 flex justify-end">
-    <slot name="right" />
+    {rightHtml ? <span set:html={rightHtml} /> : <slot name="right" />}
   </div>
 </div>
