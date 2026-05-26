@@ -223,6 +223,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                <option value="step">Paso</option>
                <option value="comparison">Comparación</option>
                <option value="code">Código</option>
+               <option value="image">Imagen</option>
+               <option value="alert">Alerta/Tip</option>
+               <option value="metric">Métrica</option>
+               <option value="list">Lista</option>
+               <option value="quote">Cita</option>
+               <option value="timeline">Línea de Tiempo</option>
+               <option value="qna">Pregunta/Respuesta</option>
+               <option value="pros-cons">Pros y Contras</option>
+               <option value="definition">Definición</option>
+               <option value="testimonial">Testimonio</option>
                <option value="end">Final</option>
              </select>
           </div>
@@ -294,6 +304,263 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Input label="Título" value={selectedSlide.title} onChange={(v) => updateSlide(selectedSlide.id, { title: v })} />
                 <Input label="Lenguaje" value={selectedSlide.language} onChange={(v) => updateSlide(selectedSlide.id, { language: v })} />
                 <Textarea label="Código" value={selectedSlide.code} onChange={(v) => updateSlide(selectedSlide.id, { code: v })} rows={8} />
+              </div>
+            )}
+
+            {selectedSlide.type === "image" && (
+              <div className="space-y-4">
+                <Input label="Título" value={selectedSlide.title} onChange={(v) => updateSlide(selectedSlide.id, { title: v })} />
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Imagen</label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input label="" value={selectedSlide.imageUrl} onChange={(v) => updateSlide(selectedSlide.id, { imageUrl: v })} />
+                    </div>
+                    <label className="cursor-pointer">
+                      <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 h-full flex items-center">
+                        SUBIR
+                      </div>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => updateSlide(selectedSlide.id, { imageUrl: ev.target?.result as string });
+                            reader.readAsDataURL(file);
+                          }
+                        }} 
+                      />
+                    </label>
+                  </div>
+                </div>
+                <Select 
+                  label="Ajuste de Imagen" 
+                  value={selectedSlide.imageFit} 
+                  options={[{label: "Contener", value: "contain"}, {label: "Cubrir", value: "cover"}]} 
+                  onChange={(v) => updateSlide(selectedSlide.id, { imageFit: v as any })} 
+                />
+                <Textarea label="Pie de foto" value={selectedSlide.caption} onChange={(v) => updateSlide(selectedSlide.id, { caption: v })} />
+              </div>
+            )}
+
+            {selectedSlide.type === "alert" && (
+              <div className="space-y-4">
+                <Select 
+                  label="Tipo de Alerta" 
+                  value={selectedSlide.alertType} 
+                  options={[
+                    {label: "Info", value: "info"}, 
+                    {label: "Aviso", value: "warning"}, 
+                    {label: "Error", value: "error"}, 
+                    {label: "Éxito", value: "success"}
+                  ]} 
+                  onChange={(v) => updateSlide(selectedSlide.id, { alertType: v as any })} 
+                />
+                <Input label="Título" value={selectedSlide.title} onChange={(v) => updateSlide(selectedSlide.id, { title: v })} />
+                <Textarea label="Descripción" value={selectedSlide.description} onChange={(v) => updateSlide(selectedSlide.id, { description: v })} />
+              </div>
+            )}
+
+            {selectedSlide.type === "metric" && (
+              <div className="space-y-4">
+                <Input label="Valor (Grande)" value={selectedSlide.value} onChange={(v) => updateSlide(selectedSlide.id, { value: v })} />
+                <Input label="Etiqueta" value={selectedSlide.label} onChange={(v) => updateSlide(selectedSlide.id, { label: v })} />
+                <Input label="Tendencia (Opcional)" value={selectedSlide.trend} onChange={(v) => updateSlide(selectedSlide.id, { trend: v })} />
+              </div>
+            )}
+
+            {selectedSlide.type === "list" && (
+              <div className="space-y-4">
+                <Input label="Título" value={selectedSlide.title} onChange={(v) => updateSlide(selectedSlide.id, { title: v })} />
+                <Select 
+                  label="Tipo de Viñeta" 
+                  value={selectedSlide.bulletType} 
+                  options={[
+                    {label: "Punto", value: "bullet"}, 
+                    {label: "Check", value: "check"}, 
+                    {label: "Número", value: "number"}
+                  ]} 
+                  onChange={(v) => updateSlide(selectedSlide.id, { bulletType: v as any })} 
+                />
+                <Textarea label="Items (uno por línea)" value={selectedSlide.items.join("\n")} onChange={(v) => updateSlide(selectedSlide.id, { items: v.split("\n") })} />
+              </div>
+            )}
+
+            {selectedSlide.type === "quote" && (
+              <div className="space-y-4">
+                <Textarea label="Cita" value={selectedSlide.text} onChange={(v) => updateSlide(selectedSlide.id, { text: v })} rows={5} />
+                <Input label="Autor" value={selectedSlide.author} onChange={(v) => updateSlide(selectedSlide.id, { author: v })} />
+              </div>
+            )}
+
+            {selectedSlide.type === "timeline" && (
+              <div className="space-y-4">
+                <Input label="Título" value={selectedSlide.title} onChange={(v) => updateSlide(selectedSlide.id, { title: v })} />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Eventos</label>
+                    <button 
+                      onClick={() => updateSlide(selectedSlide.id, { 
+                        events: [...selectedSlide.events, { date: "2024", title: "Nuevo Evento", description: "Descripción..." }] 
+                      })}
+                      className="text-[10px] bg-blue-500 text-white px-2 py-1 rounded font-bold"
+                    >
+                      + AÑADIR
+                    </button>
+                  </div>
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {selectedSlide.events.map((event, idx) => (
+                      <div key={idx} className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-3 relative group">
+                        <button 
+                          onClick={() => updateSlide(selectedSlide.id, { 
+                            events: selectedSlide.events.filter((_, i) => i !== idx) 
+                          })}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg"
+                        >
+                          ✕
+                        </button>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="col-span-1">
+                            <Input label="Fecha" value={event.date} onChange={(v) => {
+                              const newEvents = [...selectedSlide.events];
+                              newEvents[idx] = { ...newEvents[idx], date: v };
+                              updateSlide(selectedSlide.id, { events: newEvents });
+                            }} />
+                          </div>
+                          <div className="col-span-2">
+                            <Input label="Título" value={event.title} onChange={(v) => {
+                              const newEvents = [...selectedSlide.events];
+                              newEvents[idx] = { ...newEvents[idx], title: v };
+                              updateSlide(selectedSlide.id, { events: newEvents });
+                            }} />
+                          </div>
+                        </div>
+                        <Textarea label="Descripción" value={event.description} onChange={(v) => {
+                          const newEvents = [...selectedSlide.events];
+                          newEvents[idx] = { ...newEvents[idx], description: v };
+                          updateSlide(selectedSlide.id, { events: newEvents });
+                        }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedSlide.type === "qna" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-2">
+                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Etiqueta P</label>
+                     <div className="flex gap-1">
+                        {['Q', 'P', '1', 'A'].map(l => (
+                          <button 
+                            key={l}
+                            onClick={() => updateSlide(selectedSlide.id, { questionLabel: l })}
+                            className={`flex-1 py-1 text-xs font-bold rounded border ${selectedSlide.questionLabel === l ? 'bg-blue-500 border-blue-600 text-white' : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-500'}`}
+                          >
+                            {l}
+                          </button>
+                        ))}
+                        <input 
+                          type="text" 
+                          maxLength={2}
+                          value={['Q', 'P', '1', 'A'].includes(selectedSlide.questionLabel) ? "" : selectedSlide.questionLabel}
+                          onChange={(e) => updateSlide(selectedSlide.id, { questionLabel: e.target.value })}
+                          placeholder="..."
+                          className="w-10 text-center py-1 text-xs font-bold rounded border bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 outline-none focus:border-blue-500"
+                        />
+                     </div>
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Etiqueta R</label>
+                     <div className="flex gap-1">
+                        {['A', 'R', '1', 'B'].map(l => (
+                          <button 
+                            key={l}
+                            onClick={() => updateSlide(selectedSlide.id, { answerLabel: l })}
+                            className={`flex-1 py-1 text-xs font-bold rounded border ${selectedSlide.answerLabel === l ? 'bg-blue-500 border-blue-600 text-white' : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-500'}`}
+                          >
+                            {l}
+                          </button>
+                        ))}
+                        <input 
+                          type="text" 
+                          maxLength={2}
+                          value={['A', 'R', '1', 'B'].includes(selectedSlide.answerLabel) ? "" : selectedSlide.answerLabel}
+                          onChange={(e) => updateSlide(selectedSlide.id, { answerLabel: e.target.value })}
+                          placeholder="..."
+                          className="w-10 text-center py-1 text-xs font-bold rounded border bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 outline-none focus:border-blue-500"
+                        />
+                     </div>
+                   </div>
+                </div>
+                <Input label="Pregunta" value={selectedSlide.question} onChange={(v) => updateSlide(selectedSlide.id, { question: v })} />
+                <Textarea label="Respuesta" value={selectedSlide.answer} onChange={(v) => updateSlide(selectedSlide.id, { answer: v })} rows={5} />
+              </div>
+            )}
+
+            {selectedSlide.type === "pros-cons" && (
+              <div className="space-y-4">
+                <Input label="Título" value={selectedSlide.title} onChange={(v) => updateSlide(selectedSlide.id, { title: v })} />
+                <Textarea label="Pros (uno por línea)" value={selectedSlide.pros.join("\n")} onChange={(v) => updateSlide(selectedSlide.id, { pros: v.split("\n") })} />
+                <Textarea label="Contras (uno por línea)" value={selectedSlide.cons.join("\n")} onChange={(v) => updateSlide(selectedSlide.id, { cons: v.split("\n") })} />
+              </div>
+            )}
+
+            {selectedSlide.type === "definition" && (
+              <div className="space-y-4">
+                <Input label="Término" value={selectedSlide.term} onChange={(v) => updateSlide(selectedSlide.id, { term: v })} />
+                <Input label="Fonética" value={selectedSlide.phonetic} onChange={(v) => updateSlide(selectedSlide.id, { phonetic: v })} />
+                <Textarea label="Definición" value={selectedSlide.definition} onChange={(v) => updateSlide(selectedSlide.id, { definition: v })} rows={5} />
+              </div>
+            )}
+
+            {selectedSlide.type === "testimonial" && (
+              <div className="space-y-4">
+                <Textarea label="Testimonio" value={selectedSlide.quote} onChange={(v) => updateSlide(selectedSlide.id, { quote: v })} rows={4} />
+                <Input label="Autor" value={selectedSlide.author} onChange={(v) => updateSlide(selectedSlide.id, { author: v })} />
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">Avatar</label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input label="" value={selectedSlide.avatarUrl} onChange={(v) => updateSlide(selectedSlide.id, { avatarUrl: v })} />
+                    </div>
+                    <label className="cursor-pointer">
+                      <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 h-full flex items-center transition-colors">
+                        SUBIR
+                      </div>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => updateSlide(selectedSlide.id, { avatarUrl: ev.target?.result as string });
+                            reader.readAsDataURL(file);
+                          }
+                        }} 
+                      />
+                    </label>
+                  </div>
+                </div>
+                <Select 
+                  label="Calificación (Estrellas)" 
+                  value={selectedSlide.rating.toString()} 
+                  options={[
+                    {label: "5 Estrellas", value: "5"}, 
+                    {label: "4 Estrellas", value: "4"}, 
+                    {label: "3 Estrellas", value: "3"}, 
+                    {label: "2 Estrellas", value: "2"}, 
+                    {label: "1 Estrella", value: "1"}
+                  ]} 
+                  onChange={(v) => updateSlide(selectedSlide.id, { rating: parseInt(v) })} 
+                />
               </div>
             )}
 
@@ -374,5 +641,20 @@ const Textarea = ({ label, value, onChange, rows = 3 }: { label: string; value: 
       rows={rows}
       className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2 outline-none focus:border-blue-500 resize-none"
     />
+  </div>
+);
+
+const Select = ({ label, value, options, onChange }: { label: string; value: string; options: {label: string, value: string}[]; onChange: (v: string) => void }) => (
+  <div>
+    <label className="text-xs font-bold text-gray-500 uppercase block mb-1">{label}</label>
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2 outline-none focus:border-blue-500"
+    >
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
   </div>
 );

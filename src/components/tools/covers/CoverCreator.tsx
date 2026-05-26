@@ -7,6 +7,16 @@ import { BlogStep } from "./BlogStep";
 import { BlogComparison } from "./BlogComparison";
 import { BlogCode } from "./BlogCode";
 import { BlogEnd } from "./BlogEnd";
+import { BlogImage } from "./BlogImage";
+import { BlogAlert } from "./BlogAlert";
+import { BlogMetric } from "./BlogMetric";
+import { BlogList } from "./BlogList";
+import { BlogQuote } from "./BlogQuote";
+import { BlogTimeline } from "./BlogTimeline";
+import { BlogQnA } from "./BlogQnA";
+import { BlogProsCons } from "./BlogProsCons";
+import { BlogDefinition } from "./BlogDefinition";
+import { BlogTestimonial } from "./BlogTestimonial";
 import { ProjectManager, type Project } from "./ProjectManager";
 import { type ThemeMode, type AccentColor, type SlideData, type SlideType } from "./types";
 
@@ -213,6 +223,36 @@ export const CoverCreator = () => {
       case "code":
         newSlide = { id: newId, type: "code", title: "Snippet", code: 'console.log("Hello World");', language: "javascript" };
         break;
+      case "image":
+        newSlide = { id: newId, type: "image", title: "Imagen", imageUrl: "", caption: "Pie de foto...", imageFit: "contain" };
+        break;
+      case "alert":
+        newSlide = { id: newId, type: "alert", alertType: "info", title: "Atención", description: "Este es un mensaje importante..." };
+        break;
+      case "metric":
+        newSlide = { id: newId, type: "metric", value: "100%", label: "Métrica", trend: "+10% vs ayer" };
+        break;
+      case "list":
+        newSlide = { id: newId, type: "list", title: "Resumen", items: ["Item 1", "Item 2"], bulletType: "bullet" };
+        break;
+      case "quote":
+        newSlide = { id: newId, type: "quote", text: "La mejor forma de predecir el futuro es creándolo.", author: "Peter Drucker" };
+        break;
+      case "timeline":
+        newSlide = { id: newId, type: "timeline", title: "Mi Ruta", events: [{ date: "2024", title: "Inicio", description: "Comenzando mi viaje..." }] };
+        break;
+      case "qna":
+        newSlide = { id: newId, type: "qna", question: "¿Pregunta frecuente?", answer: "Esta es una respuesta detallada...", questionLabel: "Q", answerLabel: "A" };
+        break;
+      case "pros-cons":
+        newSlide = { id: newId, type: "pros-cons", title: "¿Vale la pena?", pros: ["Velocidad"], cons: ["Aprendizaje"] };
+        break;
+      case "definition":
+        newSlide = { id: newId, type: "definition", term: "Término", phonetic: "/pronunciación/", definition: "Significado del término..." };
+        break;
+      case "testimonial":
+        newSlide = { id: newId, type: "testimonial", quote: "Excelente contenido.", author: "Usuario", avatarUrl: "", rating: 5 };
+        break;
       case "end":
         newSlide = { 
           id: newId, 
@@ -329,6 +369,16 @@ export const CoverCreator = () => {
       case "comparison": return <BlogComparison {...slide} theme={theme} />;
       case "code": return <BlogCode {...slide} theme={theme} />;
       case "end": return <BlogEnd {...slide} theme={theme} />;
+      case "image": return <BlogImage {...slide} theme={theme} />;
+      case "alert": return <BlogAlert {...slide} theme={theme} />;
+      case "metric": return <BlogMetric {...slide} theme={theme} />;
+      case "list": return <BlogList {...slide} theme={theme} />;
+      case "quote": return <BlogQuote {...slide} theme={theme} />;
+      case "timeline": return <BlogTimeline {...slide} theme={theme} />;
+      case "qna": return <BlogQnA {...slide} theme={theme} />;
+      case "pros-cons": return <BlogProsCons {...slide} theme={theme} />;
+      case "definition": return <BlogDefinition {...slide} theme={theme} />;
+      case "testimonial": return <BlogTestimonial {...slide} theme={theme} />;
     }
   };
 

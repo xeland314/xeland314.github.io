@@ -161,54 +161,70 @@ export const getThemeStyles = (mode: ThemeMode): ThemeStyles => {
   return THEME_STYLES[mode] || THEME_STYLES.dark;
 };
 
-export type SlideType = "cover" | "step" | "comparison" | "code" | "end";
+export type SlideType =
+  | "cover"
+  | "step"
+  | "comparison"
+  | "code"
+  | "end"
+  | "image"
+  | "alert"
+  | "metric"
+  | "list"
+  | "quote"
+  | "timeline"
+  | "qna"
+  | "pros-cons"
+  | "definition"
+  | "testimonial";
 
 export interface BaseSlideData {
   id: string;
   type: SlideType;
 }
 
-export interface CoverSlideData extends BaseSlideData {
-  type: "cover";
-  title: string;
-  subtitle: string;
-  category: string;
-  iconChar: string;
-}
+// ... existing interfaces ...
 
-export interface StepSlideData extends BaseSlideData {
-  type: "step";
-  stepNumber: string;
+export interface TimelineEvent {
+  date: string;
   title: string;
   description: string;
 }
 
-export interface ComparisonSlideData extends BaseSlideData {
-  type: "comparison";
+export interface TimelineSlideData extends BaseSlideData {
+  type: "timeline";
   title: string;
-  leftTitle: string;
-  leftItems: string[];
-  rightTitle: string;
-  rightItems: string[];
+  events: TimelineEvent[];
 }
 
-export interface CodeSlideData extends BaseSlideData {
-  type: "code";
-  title: string;
-  code: string;
-  language: string;
+export interface QnASlideData extends BaseSlideData {
+  type: "qna";
+  question: string;
+  answer: string;
+  questionLabel: string;
+  answerLabel: string;
 }
 
-export interface EndSlideData extends BaseSlideData {
-  type: "end";
-  username: string;
-  firstText: string;
-  secondText: string;
-  description: string;
-  likeText: string;
-  commentText: string;
-  saveText: string;
-  finalText: string;
+export interface ProsConsSlideData extends BaseSlideData {
+  type: "pros-cons";
+  title: string;
+  pros: string[];
+  cons: string[];
+}
+
+export interface DefinitionSlideData extends BaseSlideData {
+  type: "definition";
+  term: string;
+  phonetic: string;
+  definition: string;
+}
+
+export interface TestimonialSlideData extends BaseSlideData {
+  type: "testimonial";
+  quote: string;
+  author: string;
+  avatarUrl: string;
+  rating: number;
 }
 
 export type SlideData =
@@ -216,7 +232,17 @@ export type SlideData =
   | StepSlideData
   | ComparisonSlideData
   | CodeSlideData
-  | EndSlideData;
+  | EndSlideData
+  | ImageSlideData
+  | AlertSlideData
+  | MetricSlideData
+  | ListSlideData
+  | QuoteSlideData
+  | TimelineSlideData
+  | QnASlideData
+  | ProsConsSlideData
+  | DefinitionSlideData
+  | TestimonialSlideData;
 
 export const ACCENT_COLORS = {
   blue: {
