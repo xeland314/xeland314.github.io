@@ -77,15 +77,15 @@ export const BlogEnd: React.FC<BlogEndProps> = ({
             {description}
           </p>
 
-          <div className="relative z-10 flex flex-wrap justify-center gap-12">
+          <div className="relative z-10 flex flex-row items-center justify-center gap-16">
             <ActionIcon icon="❤️" label={likeText} style={s.actionBg} subStyle={s.footer} />
             <ActionIcon icon="💬" label={commentText} style={s.actionBg} subStyle={s.footer} />
-            <div className="flex flex-col items-center gap-4">
-              <div className={`w-24 h-24 rounded-full ${s.actionBg} flex items-center justify-center text-5xl border shadow-lg`}>
-                <BookmarkIcon />
-              </div>
-              <span className={`text-2xl ${s.footer} font-bold`}>{saveText}</span>
-            </div>
+            <ActionIcon 
+              icon={<BookmarkIcon />} 
+              label={saveText} 
+              style={s.actionBg} 
+              subStyle={s.footer} 
+            />
           </div>
 
           <div className={`absolute bottom-12 ${s.footer} font-mono text-xl tracking-[0.3em] uppercase font-bold`}>
@@ -97,12 +97,12 @@ export const BlogEnd: React.FC<BlogEndProps> = ({
   );
 };
 
-const ActionIcon = ({ icon, label, style, subStyle }: { icon: string; label: string; style: string; subStyle: string }) => (
-  <div className="flex flex-col items-center gap-4">
-    <div className={`w-24 h-24 rounded-full ${style} flex items-center justify-center text-5xl border shadow-lg`}>
+const ActionIcon = ({ icon, label, style, subStyle }: { icon: React.ReactNode; label: string; style: string; subStyle: string }) => (
+  <div className="flex flex-col items-center gap-5 w-32">
+    <div className={`w-28 h-28 rounded-full ${style} flex items-center justify-center text-6xl border-2 shadow-xl flex-shrink-0 transition-transform`}>
       {icon}
     </div>
-    <span className={`text-2xl ${subStyle} font-bold`}>{label}</span>
+    <span className={`text-2xl ${subStyle} font-black uppercase tracking-widest`}>{label}</span>
   </div>
 );
 
