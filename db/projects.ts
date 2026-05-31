@@ -1,5 +1,3 @@
-import { determinesIfNeedsDirectiveScript } from "astro/runtime/server/scripts.js";
-
 export const projectData = [
   {
     title: "Calendario de Adviento Digital Interactivo",
@@ -38,6 +36,19 @@ export const projectData = [
     demoLink: "https://xeland314.github.io/chat_analyzer_ui/",
     tags: ["WhatsApp", "Dart", "Flutter", "Rust", "Multiplataforma"],
     image: "/assets/chat_analyzer_logo_app.jpg",
+    isFeatured: true,
+  },
+  {
+    title: "GymApp 1.0 - Sistema de Gestión para Gimnasios [LEGACY]",
+    slug: "gymapp-v1",
+    description:
+      "Aplicación de escritorio monolítica en Python y PyQt5 para gestión de gimnasios. Proyecto universitario del 2021 que digitalizó la gestión de membresías y registro de usuarios.",
+    shortDescription:
+      "Sistema legacy para gestión de gimnasios con control de membresías y facturación básica.",
+    githubLink: null,
+    demoLink: null,
+    tags: ["Python", "PyQt5", "SQLite", "Legacy", "Desktop App"],
+    image: "/images/optimized/projects/gymapp1/imagen1.avif",
     isFeatured: true,
   },
   {
@@ -127,7 +138,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/urlshortener",
     tags: ["Django", "DRF", "Python", "Celery", "HTMX", "Redis"],
     image: "/images/optimized/projects/shortener/card.avif",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "Estimador de Proyectos de Software",
@@ -140,7 +151,7 @@ export const projectData = [
     demoLink: "https://codecraft-estimator.vercel.app/",
     tags: ["IA", "TypeScript", "Next.js"],
     image: "/images/optimized/projects/codecraft-estimator/card.avif",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "API de Geocodificación con Caché Inteligente",
@@ -242,18 +253,5 @@ export const projectData = [
     tags: ["WebGPU", "Hardware", "Flutter", "Developer Tools"],
     image: undefined,
     isVisible: false,
-  },
-  {
-    title: "GymApp 1.0 - Sistema de Gestión para Gimnasios [LEGACY]",
-    slug: "gymapp-v1",
-    description:
-      "Aplicación de escritorio monolítica en Python y PyQt5 para gestión de gimnasios. Proyecto universitario del 2021 que digitalizó la gestión de membresías y registro de usuarios.",
-    shortDescription:
-      "Sistema legacy para gestión de gimnasios con control de membresías y facturación básica.",
-    githubLink: null,
-    demoLink: null,
-    tags: ["Python", "PyQt5", "SQLite", "Legacy", "Desktop App"],
-    image: "/images/optimized/projects/gymapp1/imagen1.avif",
-    isFeatured: false,
   },
 ];

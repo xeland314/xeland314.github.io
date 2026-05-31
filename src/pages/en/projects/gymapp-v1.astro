@@ -1,4 +1,5 @@
 ---
+import ImageModal from "../../../components/common/ImageModal.astro";
 import ProjectLayout from "../../../layouts/ProjectLayout.astro";
 
 const title = "GymApp 1.0 - Gym Management System [LEGACY / ARCHIVED]";
@@ -65,11 +66,7 @@ const features = [
   </header>
 
   <div class="relative group mb-12">
-    <img
-      src={image}
-      alt={imageAlt}
-      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full transform transition group-hover:scale-[1.01]"
-    />
+    <ImageModal src={image} alt={imageAlt} />
   </div>
 
   <section class="mb-12">
@@ -141,7 +138,65 @@ const features = [
       </div>
     </div>
   </section>
-
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Screen Captures</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen1.avif"
+          alt="Invalid Member Entry"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          1. Invalid Member Entry
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen2.avif"
+          alt="Valid Member Entry"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          2. Valid Member Entry
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen6.avif"
+          alt="Login with PIN"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          3. Login with PIN
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen3.avif"
+          alt="Membership Creation"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          4. Membership Management (pricing and inventory)
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen4.avif"
+          alt="General Configuration"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          5. General Configuration and Expiration Alerts
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen5.avif"
+          alt="Invoice History"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          6. Detailed Invoice History
+        </p>
+      </div>
+    </div>
+  </section>
   <section class="mb-12">
     <h2 class="text-3xl font-bold mb-6">Post-Mortem Analysis</h2>
     <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">

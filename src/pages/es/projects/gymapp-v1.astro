@@ -1,5 +1,6 @@
 ---
 import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+import ImageModal from "../../../components/common/ImageModal.astro";
 
 const title =
   "GymApp 1.0 - Sistema de Gestión para Gimnasios [LEGACY / ARCHIVED]";
@@ -66,11 +67,7 @@ const features = [
   </header>
 
   <div class="relative group mb-12">
-    <img
-      src={image}
-      alt={imageAlt}
-      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full transform transition group-hover:scale-[1.01]"
-    />
+    <ImageModal src={image} alt={imageAlt} />
   </div>
 
   <section class="mb-12">
@@ -144,7 +141,65 @@ const features = [
       </div>
     </div>
   </section>
-
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Capturas de Pantalla</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen1.avif"
+          alt="Ingreso de socio inválido"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          1. Ingreso de socio inválido
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen2.avif"
+          alt="Ingreso de socio válido"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          2. Ingreso de socio válido
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen6.avif"
+          alt="Login con PIN"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          3. Login de administrador con PIN
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen3.avif"
+          alt="Creación de membresías"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          4. Gestión de membresías (precios e inventario)
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen4.avif"
+          alt="Configuración general"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          5. Configuración y alertas de vencimiento
+        </p>
+      </div>
+      <div class="group">
+        <ImageModal
+          src="/images/optimized/projects/gymapp1/imagen5.avif"
+          alt="Historial de facturas"
+        />
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 font-medium">
+          6. Historial detallado de facturación
+        </p>
+      </div>
+    </div>
+  </section>
   <section class="mb-12">
     <h2 class="text-3xl font-bold mb-6">Análisis Post-Mortem</h2>
     <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
