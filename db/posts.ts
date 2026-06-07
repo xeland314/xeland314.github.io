@@ -245,7 +245,7 @@ export const postData = [
     title: "Comandos Linux: Mi Top 10",
     url: "/es/posts/linux-most-used-commands",
     image:
-      "/images/optimized/posts/127.0.0.1_8000_es_posts_url-anatomy-cover.avif",
+      "/images/optimized/posts/comandos_mas_usados_linux.avif",
     lang: "es",
     isPublished: true,
   },
