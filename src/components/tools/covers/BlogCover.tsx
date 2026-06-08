@@ -73,7 +73,7 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
             </div>
 
             <h1
-              className={`text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-br ${c.gradient} mb-8 tracking-tight leading-tight max-w-4xl`}
+              className={`text-8xl font-inter font-black text-transparent bg-clip-text bg-gradient-to-br ${c.gradient} mb-8 tracking-tight leading-tight max-w-4xl`}
             >
               {title}
             </h1>
