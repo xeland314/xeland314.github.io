@@ -108,9 +108,9 @@ export const BlogPostPresentation: React.FC<BlogPostPresentationProps> = ({
         </button>
       </header>
 
-      <div className="w-full space-y-12">
+      <div className="w-full space-y-3 sm:space-y-12">
         {slides.map((slide, index) => (
-          <div key={slide.id} className="w-full aspect-square bg-slate-100 dark:bg-slate-950 rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 dark:border-slate-800">
+          <div key={slide.id} className="w-full max-w-[600px] mx-auto aspect-square flex items-center justify-center bg-slate-100 dark:bg-slate-950 overflow-hidden shadow-2xl border border-gray-100 dark:border-slate-800">
              {renderSlide(slide)}
           </div>
         ))}
