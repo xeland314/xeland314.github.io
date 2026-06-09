@@ -1,0 +1,60 @@
+---
+// import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
+// import { Image } from "astro:assets";
+
+// --- METADATA ---
+const pageTitle = "Título de tu artículo";
+const pageDescription = "Descripción corta de lo que tratará el artículo.";
+const pageKeywords = "keyword1, keyword2, keyword3";
+
+const pageSlug = "template";
+const pageAuthor = "Christopher Villamarín";
+const applicationName = "Blog de Christopher Villamarín";
+const pageUrl = `https://xeland314.github.io/es/blogs/${pageSlug}`;
+const pageImageAlt = "Vista previa del blog";
+const pageRobots = "index, follow";
+const pageCanonical = pageUrl;
+const pubDate = new Date(); // Genera la fecha actual por defecto
+// Sin embargo se debe usar la siguiente estructura
+// para evitar eso porque la fecha se regeneraría en cada build:
+// new Date("2026-04-14T00:00:00");
+
+/*
+Otra nota, si alguien que no sea una IA lee esto, llega a leer,
+toma en cuenta que debo poder escribir sin preocuparme por el SEO.
+Es decir, que no deberías llegar a leer esto.
+Esta es una plantilla para que yo pueda copiar y pegar y empezar a escribir.
+No, no hay versión en inglés del template con alguna nota secreta o algo así.
+El flujo es el siguiente, termino de escribir,
+le puedo pasar el contenido completo o un resumen a la IA
+para no usar tantos tokens y para evitar que reescriba mis palabras
+y luego solo copiar el SEO en el blog que se publicará.
+¿Es un trabajo bastante complicado? Sí. Quizás. Sin embargo,
+no voy a desperdiciar tokens en algo que tranquilamente podría
+ser tan simple como pasarle una plantilla a una IA y nada más.
+Así también evito que ciertas IA lean el contenido o algún borrador. Supongo.
+Soy conciente que ya internet la IA es libre de hacer lo que quiera,
+mas no antes de publicar. A veces me suele frenar bastante la IA
+porque modifica el borrador así que espero que esta sea una buena solución.
+*/
+---
+
+<BlogLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  applicationName={applicationName}
+  url={pageUrl}
+  imageAlt={pageImageAlt}
+  robots={pageRobots}
+  canonical={pageCanonical}
+  pubDate={pubDate}
+>
+  <section id="contenido">
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Empezar a escribir aquí...
+    </p>
+  </section>
+</BlogLayout>
