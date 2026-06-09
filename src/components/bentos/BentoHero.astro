@@ -12,8 +12,6 @@ const texts: Record<
     role: string;
     specialty: string;
     exp: string;
-    hook: string;
-    bullets: { label: string; detail: string }[];
     cta_primary: string;
     cta_secondary: string;
     copy_label: string;
@@ -25,15 +23,6 @@ const texts: Record<
     role: "Desarrollador",
     specialty: "Backend",
     exp: "+3 años de experiencia",
-    hook: "Transformo ideas en productos de software",
-    bullets: [
-      {
-        label: "Apps Multiplataforma",
-        detail: "Web · Android · Linux · Windows",
-      },
-      { label: "CI/CD", detail: "Despliegue continuo a producción" },
-      { label: "Código limpio", detail: "Testeado y documentado" },
-    ],
     cta_primary: "Ver proyectos",
     cta_secondary: "Contacto",
     copy_label: "Copiar correo",
@@ -44,15 +33,6 @@ const texts: Record<
     role: "Backend",
     specialty: "Developer",
     exp: "+3 years of experience",
-    hook: "Transforming challenges into high-impact software",
-    bullets: [
-      {
-        label: "Multiplatform Apps",
-        detail: "Web · Android · Linux · Windows",
-      },
-      { label: "CI/CD", detail: "Continuous production deployment" },
-      { label: "Clean Code", detail: "Tested & documented" },
-    ],
     cta_primary: "View projects",
     cta_secondary: "Contact",
     copy_label: "Copy email",
@@ -182,39 +162,10 @@ const T = texts[lang];
     <div
       class="flex flex-col items-center text-center mt-4 md:mt-12 gap-6 md:gap-8 w-full max-w-3xl"
     >
-      {/* Hook */}
-      <div class="hero-fade-in" style="animation-delay: 160ms">
-        <p
-          class="text-sm sm:text-base md:text-lg dark:text-gray-400 text-gray-600 leading-relaxed"
-        >
-          {T.hook}
-        </p>
-      </div>
-
-      {/* Bullets */}
-      <div
-        class="hero-fade-in flex flex-wrap justify-center gap-2 sm:gap-3"
-        style="animation-delay: 240ms"
-      >
-        {
-          T.bullets.map((b) => (
-            <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl border dark:border-white/10 border-gray-200 dark:bg-white/5 bg-gray-50 backdrop-blur-sm">
-              <div class="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-              <span class="text-xs font-semibold dark:text-white text-gray-800">
-                {b.label}
-              </span>
-              <span class="text-xs dark:text-gray-500 text-gray-400 hidden sm:inline">
-                {b.detail}
-              </span>
-            </div>
-          ))
-        }
-      </div>
-
       {/* CTAs */}
       <div
         class="hero-fade-in flex flex-wrap justify-center gap-3"
-        style="animation-delay: 320ms"
+        style="animation-delay: 160ms"
       >
         <a
           href="#projects"
@@ -233,7 +184,7 @@ const T = texts[lang];
       {/* Social row */}
       <div
         class="hero-fade-in flex flex-wrap items-center justify-center gap-4"
-        style="animation-delay: 400ms"
+        style="animation-delay: 240ms"
       >
         <a
           href="https://linkedin.com/in/christopher-villamarin"
@@ -331,7 +282,7 @@ const T = texts[lang];
               stroke-linecap="round"
               stroke-linejoin="round"
               ><rect width="20" height="16" x="2" y="4" rx="2"></rect><path
-                d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg
+                d="m22 7-8.97 5.7 a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg
             >
           </button>
           <span
