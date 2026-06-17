@@ -19,6 +19,7 @@ import { BlogDefinition } from "./BlogDefinition";
 import { BlogTestimonial } from "./BlogTestimonial";
 import { ProjectManager, type Project } from "./ProjectManager";
 import { type ThemeMode, type AccentColor, type SlideData, type SlideType } from "./types";
+import { db } from "./db";
 
 const STORAGE_KEY = "cover-creator-state";
 const PROJECTS_KEY = "cover-creator-projects";
@@ -61,43 +62,74 @@ export const CoverCreator = () => {
   const [slides, setSlides] = useState<SlideData[]>(INITIAL_SLIDES);
   const [selectedSlideId, setSelectedSlideId] = useState<string>(INITIAL_SLIDES[0].id);
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<string>("default");
-  
+
   const exportRef = useRef<HTMLDivElement>(null);
 
   // Load projects and current state on mount
   useEffect(() => {
-    const savedProjects = localStorage.getItem(PROJECTS_KEY);
-    if (savedProjects) {
-      setProjects(JSON.parse(savedProjects));
-    }
+    const init = async () => {
+      // Try to load from IndexedDB first
+      let savedProjects = await db.getItem<Project[]>(PROJECTS_KEY);
+      let savedState = await db.getItem<any>(STORAGE_KEY);
 
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    if (savedState) {
-      try {
-        const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId: savedId } = JSON.parse(savedState);
-        setMode(mode);
-        setAccent(accent);
-        setShowLogo(showLogo);
-        setLogoImage(logoImage);
-        setUsername(username);
-        setSlides(slides);
-        setSelectedSlideId(selectedSlideId);
-        setCurrentProjectId(savedId || "default");
-      } catch (e) {
-        console.error("Error loading saved state:", e);
+      // If not in IndexedDB, try localStorage and migrate
+      if (!savedProjects) {
+        const localProjects = localStorage.getItem(PROJECTS_KEY);
+        if (localProjects) {
+          try {
+            savedProjects = JSON.parse(localProjects);
+            await db.setItem(PROJECTS_KEY, savedProjects);
+          } catch (e) {
+            console.error("Error migrating projects from localStorage:", e);
+          }
+        }
       }
-    }
-    setIsLoaded(true);
+
+      if (!savedState) {
+        const localState = localStorage.getItem(STORAGE_KEY);
+        if (localState) {
+          try {
+            savedState = JSON.parse(localState);
+            await db.setItem(STORAGE_KEY, savedState);
+          } catch (e) {
+            console.error("Error migrating state from localStorage:", e);
+          }
+        }
+      }
+
+      if (savedProjects) {
+        setProjects(savedProjects);
+      }
+
+      if (savedState) {
+        try {
+          const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId: savedId } = savedState;
+          setMode(mode);
+          setAccent(accent);
+          setShowLogo(showLogo);
+          setLogoImage(logoImage);
+          setUsername(username);
+          setSlides(slides);
+          setSelectedSlideId(selectedSlideId);
+          setCurrentProjectId(savedId || "default");
+        } catch (e) {
+          console.error("Error loading saved state:", e);
+        }
+      }
+      setIsLoaded(true);
+    };
+
+    init();
   }, []);
 
   // Auto-save current project state
   useEffect(() => {
     if (!isLoaded) return;
     const state = { mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    db.setItem(STORAGE_KEY, state).catch(e => console.error("Error saving state:", e));
 
     // Also update the project in the projects list if it exists
     setProjects(prev => prev.map(p => p.id === currentProjectId ? {
@@ -107,10 +139,10 @@ export const CoverCreator = () => {
     } : p));
   }, [mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId, isLoaded]);
 
-  // Save projects list to localStorage
+  // Save projects list to IndexedDB
   useEffect(() => {
     if (!isLoaded) return;
-    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+    db.setItem(PROJECTS_KEY, projects).catch(e => console.error("Error saving projects:", e));
   }, [projects, isLoaded]);
 
   const handleSaveProject = (name: string) => {
