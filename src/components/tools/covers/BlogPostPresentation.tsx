@@ -15,7 +15,7 @@ import { BlogQnA } from "./BlogQnA";
 import { BlogProsCons } from "./BlogProsCons";
 import { BlogDefinition } from "./BlogDefinition";
 import { BlogTestimonial } from "./BlogTestimonial";
-import { toPng } from "html-to-image";
+import { toJpeg } from "html-to-image";
 import JSZip from "jszip";
 
 interface BlogPostPresentationProps {
@@ -46,18 +46,20 @@ export const BlogPostPresentation: React.FC<BlogPostPresentationProps> = ({
       // Temporarily set scale to 1 for clean capture
       canvas.style.transform = "scale(1)";
       
-      const dataUrl = await toPng(canvas, { 
+      const dataUrl = await toJpeg(canvas, { 
         pixelRatio: 1, 
         width: 1080,
-        height: 1080,
+        height: 1350,
+        quality: 1,
         cacheBust: true,
+        backgroundColor: "#ffffff",
       });
 
       canvas.style.transform = originalTransform;
       
       const base64Data = dataUrl.split(",")[1];
       const slide = slides[i];
-      folder.file(`slide-${i + 1}-${slide?.type || "unknown"}.png`, base64Data, { base64: true });
+      folder.file(`slide-${i + 1}-${slide?.type || "unknown"}.jpg`, base64Data, { base64: true });
     }
 
     const content = await zip.generateAsync({ type: "blob" });
@@ -110,7 +112,7 @@ export const BlogPostPresentation: React.FC<BlogPostPresentationProps> = ({
 
       <div className="w-full space-y-3 sm:space-y-12">
         {slides.map((slide, index) => (
-          <div key={slide.id} className="w-full max-w-[600px] mx-auto aspect-square flex items-center justify-center bg-slate-100 dark:bg-slate-950 overflow-hidden shadow-2xl border border-gray-100 dark:border-slate-800">
+          <div key={slide.id} className="w-full max-w-[600px] mx-auto aspect-[4/5] flex items-center justify-center bg-slate-100 dark:bg-slate-950 overflow-hidden shadow-2xl border border-gray-100 dark:border-slate-800">
              {renderSlide(slide)}
           </div>
         ))}

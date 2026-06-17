@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { toPng } from "html-to-image";
+import { toJpeg } from "html-to-image";
 import JSZip from "jszip";
 import { Sidebar } from "./Sidebar";
 import { BlogCover } from "./BlogCover";
@@ -23,6 +23,9 @@ import { db } from "./db";
 
 const STORAGE_KEY = "cover-creator-state";
 const PROJECTS_KEY = "cover-creator-projects";
+
+const EXPORT_WIDTH = 1080;
+const EXPORT_HEIGHT = 1350;
 
 const INITIAL_SLIDES: SlideData[] = [
   {
@@ -335,18 +338,20 @@ export const CoverCreator = () => {
       // Temporarily set scale to 1 for clean capture
       canvas.style.transform = "scale(1)";
 
-      const dataUrl = await toPng(canvas, { 
+      const dataUrl = await toJpeg(canvas, { 
         pixelRatio: 1, 
-        width: 1080,
-        height: 1080,
+        width: EXPORT_WIDTH,
+        height: EXPORT_HEIGHT,
+        quality: 1,
         cacheBust: true,
+        backgroundColor: "#ffffff",
       });
 
       // Restore original transform
       canvas.style.transform = originalTransform;
 
       const link = document.createElement("a");
-      link.download = `slide-${selectedSlideId}.png`;
+      link.download = `slide-${selectedSlideId}.jpg`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -372,17 +377,19 @@ export const CoverCreator = () => {
           const originalTransform = canvas.style.transform;
           canvas.style.transform = "scale(1)";
 
-          const dataUrl = await toPng(canvas, { 
+          const dataUrl = await toJpeg(canvas, { 
             pixelRatio: 1, 
-            width: 1080,
-            height: 1080,
+            width: EXPORT_WIDTH,
+            height: EXPORT_HEIGHT,
+            quality: 1,
             cacheBust: true,
+            backgroundColor: "#ffffff",
           });
 
           canvas.style.transform = originalTransform;
 
           const base64Data = dataUrl.split(",")[1];
-          folder.file(`slide-${i + 1}-${slide.type}.png`, base64Data, { base64: true });
+          folder.file(`slide-${i + 1}-${slide.type}.jpg`, base64Data, { base64: true });
         }
       }
     }
@@ -461,7 +468,7 @@ export const CoverCreator = () => {
                Restablecer Todo
              </button>
           </div>
-          <div ref={exportRef} className="w-full aspect-square bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
+          <div ref={exportRef} className="w-full aspect-[4/5] bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
             {renderSlide(selectedSlide)}
           </div>
 
