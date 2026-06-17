@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export const useCanvasScale = (targetWidth: number = 1080) => {
+export const useCanvasScale = (targetWidth: number = 1080, targetHeight: number = 1080) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -11,14 +11,17 @@ export const useCanvasScale = (targetWidth: number = 1080) => {
       const parent = wrapperRef.current.parentElement;
       if (!parent) return;
 
-      // Use offsetWidth which is more stable
       const containerWidth = parent.offsetWidth;
-      if (containerWidth <= 0) return;
+      const containerHeight = parent.offsetHeight;
+      if (containerWidth <= 0 || containerHeight <= 0) return;
 
-      const padding = 32; 
-      const maxWidth = Math.min(containerWidth - padding, 600); 
+      const padding = 32;
+      const maxWidth = Math.min(containerWidth - padding, 600);
+      const maxHeight = Math.max(containerHeight - padding, 200);
       
-      const scale = maxWidth / targetWidth;
+      const widthScale = maxWidth / targetWidth;
+      const heightScale = maxHeight / targetHeight;
+      const scale = Math.min(widthScale, heightScale);
       
       // Only apply if the scale has significantly changed to avoid jitter/loops
       const currentScale = parseFloat(canvasRef.current.style.transform.replace("scale(", "").replace(")", "")) || 0;
@@ -28,7 +31,7 @@ export const useCanvasScale = (targetWidth: number = 1080) => {
         canvasRef.current.style.transformOrigin = "top left";
         
         wrapperRef.current.style.width = `${targetWidth * scale}px`;
-        wrapperRef.current.style.height = `${targetWidth * scale}px`;
+        wrapperRef.current.style.height = `${targetHeight * scale}px`;
       }
     };
 

@@ -161,6 +161,22 @@ export const getThemeStyles = (mode: ThemeMode): ThemeStyles => {
   return THEME_STYLES[mode] || THEME_STYLES.dark;
 };
 
+// Mapa de colores hex de fondo para cada tema (para exportación a JPEG)
+export const THEME_BG_COLORS: Record<ThemeMode, string> = {
+  light: "#ffffff",
+  dark: "#0f172a",
+  midnight: "#020617",
+  soft: "#f8fafc",
+  catppuccin: "#1e1e2e",
+  ambercat: "#2e1f14",
+  rose: "#260d14",
+  blue: "#0f172a",
+};
+
+export const getThemeBgColor = (mode: ThemeMode): string => {
+  return THEME_BG_COLORS[mode] || "#0f172a";
+};
+
 export type SlideType =
   | "cover"
   | "step"

@@ -9,6 +9,8 @@ interface BlogComparisonProps {
   rightTitle: string;
   rightItems: string[];
   theme: ThemeConfig;
+  previewWidth?: number;
+  previewHeight?: number;
 }
 
 export const BlogComparison: React.FC<BlogComparisonProps> = ({
@@ -18,21 +20,23 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
   rightTitle,
   rightItems,
   theme,
+  previewWidth = 1080,
+  previewHeight = 1080,
 }) => {
-  const { canvasRef, wrapperRef } = useCanvasScale();
+  const { canvasRef, wrapperRef } = useCanvasScale(previewWidth, previewHeight);
   const c = ACCENT_COLORS[theme.accent] || ACCENT_COLORS.blue;
   const s = getThemeStyles(theme.mode);
 
   return (
     <div
-      className={`flex items-center justify-center overflow-hidden font-sans w-full h-full aspect-square`}
+      className="flex items-center justify-center overflow-hidden font-sans w-full h-full"
     >
       <div ref={wrapperRef} className="relative">
         <div
           ref={canvasRef}
           data-export-canvas="true"
           className={`relative overflow-hidden flex flex-col items-center p-16 ${s.bg} shadow-2xl origin-top-left`}
-          style={{ width: "1080px", height: "1080px", flexShrink: 0 }}
+          style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
           {/* Header */}
           <h1 className={`text-6xl font-black mb-16 tracking-tight text-center ${s.text}`}>

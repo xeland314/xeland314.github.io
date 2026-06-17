@@ -7,6 +7,8 @@ interface BlogListProps {
   items: string[];
   bulletType: "check" | "number" | "bullet";
   theme: ThemeConfig;
+  previewWidth?: number;
+  previewHeight?: number;
 }
 
 export const BlogList: React.FC<BlogListProps> = ({
@@ -14,8 +16,10 @@ export const BlogList: React.FC<BlogListProps> = ({
   items,
   bulletType = "bullet",
   theme,
+  previewWidth = 1080,
+  previewHeight = 1080,
 }) => {
-  const { canvasRef, wrapperRef } = useCanvasScale();
+  const { canvasRef, wrapperRef } = useCanvasScale(previewWidth, previewHeight);
   const c = ACCENT_COLORS[theme.accent] || ACCENT_COLORS.blue;
   const s = getThemeStyles(theme.mode);
 
@@ -29,14 +33,14 @@ export const BlogList: React.FC<BlogListProps> = ({
 
   return (
     <div
-      className={`flex items-center justify-center overflow-hidden font-sans w-full h-full aspect-square`}
+      className="flex items-center justify-center overflow-hidden font-sans w-full h-full"
     >
       <div ref={wrapperRef} className="relative">
         <div
           ref={canvasRef}
           data-export-canvas="true"
           className={`relative overflow-hidden flex flex-col items-start p-24 ${s.bg} ${s.text} shadow-2xl origin-top-left`}
-          style={{ width: "1080px", height: "1080px", flexShrink: 0 }}
+          style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
           <h1 className={`text-7xl font-black mb-16 tracking-tight ${s.text}`}>
             {title}

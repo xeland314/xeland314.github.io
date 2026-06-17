@@ -18,14 +18,19 @@ import { BlogProsCons } from "./BlogProsCons";
 import { BlogDefinition } from "./BlogDefinition";
 import { BlogTestimonial } from "./BlogTestimonial";
 import { ProjectManager, type Project } from "./ProjectManager";
-import { type ThemeMode, type AccentColor, type SlideData, type SlideType } from "./types";
+import { type ThemeMode, type AccentColor, type SlideData, type SlideType, getThemeBgColor } from "./types";
 import { db } from "./db";
 
 const STORAGE_KEY = "cover-creator-state";
 const PROJECTS_KEY = "cover-creator-projects";
 
-const EXPORT_WIDTH = 1080;
-const EXPORT_HEIGHT = 1350;
+type SocialPreviewMode = "threads" | "facebook" | "tiktok";
+
+const SOCIAL_PREVIEW_MODES: Record<SocialPreviewMode, { label: string; width: number; height: number; info: string }> = {
+  threads: { label: "Threads", width: 1080, height: 1350, info: "4:5 — Imagen única/carrusel" },
+  facebook: { label: "Facebook", width: 1080, height: 1080, info: "1:1 — Carrusel/mosaico" },
+  tiktok: { label: "TikTok", width: 1080, height: 1920, info: "9:16 — Formato móvil" },
+};
 
 const INITIAL_SLIDES: SlideData[] = [
   {
@@ -64,6 +69,7 @@ export const CoverCreator = () => {
   const [username, setUsername] = useState("xeland314");
   const [slides, setSlides] = useState<SlideData[]>(INITIAL_SLIDES);
   const [selectedSlideId, setSelectedSlideId] = useState<string>(INITIAL_SLIDES[0].id);
+  const [previewMode, setPreviewMode] = useState<SocialPreviewMode>("threads");
   const [isLoaded, setIsLoaded] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -326,6 +332,8 @@ export const CoverCreator = () => {
     setSlides(newSlides);
   };
 
+  const previewSettings = SOCIAL_PREVIEW_MODES[previewMode];
+
   const handleExportCurrent = async () => {
     if (!exportRef.current) return;
     try {
@@ -340,18 +348,18 @@ export const CoverCreator = () => {
 
       const dataUrl = await toJpeg(canvas, { 
         pixelRatio: 1, 
-        width: EXPORT_WIDTH,
-        height: EXPORT_HEIGHT,
+        width: previewSettings.width,
+        height: previewSettings.height,
         quality: 1,
         cacheBust: true,
-        backgroundColor: "#ffffff",
+        backgroundColor: getThemeBgColor(mode),
       });
 
       // Restore original transform
       canvas.style.transform = originalTransform;
 
       const link = document.createElement("a");
-      link.download = `slide-${selectedSlideId}.jpg`;
+      link.download = `${previewSettings.label.toLowerCase()}-slide-${selectedSlideId}.jpg`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -379,17 +387,17 @@ export const CoverCreator = () => {
 
           const dataUrl = await toJpeg(canvas, { 
             pixelRatio: 1, 
-            width: EXPORT_WIDTH,
-            height: EXPORT_HEIGHT,
+            width: previewSettings.width,
+            height: previewSettings.height,
             quality: 1,
             cacheBust: true,
-            backgroundColor: "#ffffff",
+            backgroundColor: getThemeBgColor(mode),
           });
 
           canvas.style.transform = originalTransform;
 
           const base64Data = dataUrl.split(",")[1];
-          folder.file(`slide-${i + 1}-${slide.type}.jpg`, base64Data, { base64: true });
+          folder.file(`${previewSettings.label.toLowerCase()}-slide-${i + 1}-${slide.type}.jpg`, base64Data, { base64: true });
         }
       }
     }
@@ -402,22 +410,29 @@ export const CoverCreator = () => {
   };
 
   const renderSlide = (slide: SlideData) => {
+    const slideProps = {
+      ...slide,
+      theme,
+      previewWidth: previewSettings.width,
+      previewHeight: previewSettings.height,
+    };
+
     switch (slide.type) {
-      case "cover": return <BlogCover {...slide} theme={theme} />;
-      case "step": return <BlogStep {...slide} theme={theme} />;
-      case "comparison": return <BlogComparison {...slide} theme={theme} />;
-      case "code": return <BlogCode {...slide} theme={theme} />;
-      case "end": return <BlogEnd {...slide} theme={theme} />;
-      case "image": return <BlogImage {...slide} theme={theme} />;
-      case "alert": return <BlogAlert {...slide} theme={theme} />;
-      case "metric": return <BlogMetric {...slide} theme={theme} />;
-      case "list": return <BlogList {...slide} theme={theme} />;
-      case "quote": return <BlogQuote {...slide} theme={theme} />;
-      case "timeline": return <BlogTimeline {...slide} theme={theme} />;
-      case "qna": return <BlogQnA {...slide} theme={theme} />;
-      case "pros-cons": return <BlogProsCons {...slide} theme={theme} />;
-      case "definition": return <BlogDefinition {...slide} theme={theme} />;
-      case "testimonial": return <BlogTestimonial {...slide} theme={theme} />;
+      case "cover": return <BlogCover {...slideProps as any} />;
+      case "step": return <BlogStep {...slideProps as any} />;
+      case "comparison": return <BlogComparison {...slideProps as any} />;
+      case "code": return <BlogCode {...slideProps as any} />;
+      case "end": return <BlogEnd {...slideProps as any} />;
+      case "image": return <BlogImage {...slideProps as any} />;
+      case "alert": return <BlogAlert {...slideProps as any} />;
+      case "metric": return <BlogMetric {...slideProps as any} />;
+      case "list": return <BlogList {...slideProps as any} />;
+      case "quote": return <BlogQuote {...slideProps as any} />;
+      case "timeline": return <BlogTimeline {...slideProps as any} />;
+      case "qna": return <BlogQnA {...slideProps as any} />;
+      case "pros-cons": return <BlogProsCons {...slideProps as any} />;
+      case "definition": return <BlogDefinition {...slideProps as any} />;
+      case "testimonial": return <BlogTestimonial {...slideProps as any} />;
     }
   };
 
@@ -447,6 +462,8 @@ export const CoverCreator = () => {
           setLogoImage={setLogoImage}
           username={username}
           setUsername={setUsername}
+          previewMode={previewMode}
+          setPreviewMode={setPreviewMode}
           slides={slides}
           selectedSlideId={selectedSlideId}
           setSelectedSlideId={setSelectedSlideId}
@@ -459,7 +476,7 @@ export const CoverCreator = () => {
         />
       </div>
         <div className="flex-1 flex flex-col items-center justify-start py-10 overflow-auto bg-gray-50 dark:bg-gray-950 rounded-[3rem] border border-gray-200 dark:border-gray-800">
-        <div className="w-full max-w-2xl flex flex-col items-center">
+        <div className="w-full max-w-5xl flex flex-col items-center px-4">
           <div className="w-full flex justify-end mb-4">
              <button 
                onClick={handleReset}
@@ -468,13 +485,27 @@ export const CoverCreator = () => {
                Restablecer Todo
              </button>
           </div>
-          <div ref={exportRef} className="w-full aspect-[4/5] bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
-            {renderSlide(selectedSlide)}
+          <div
+            className="w-full bg-gray-100 dark:bg-gray-900 rounded-2xl overflow-hidden flex items-center justify-center"
+            style={{ aspectRatio: `${previewSettings.width}/${previewSettings.height}` }}
+          >
+            <div
+              ref={exportRef}
+              className="w-full h-full bg-white dark:bg-slate-900 shadow-lg"
+            >
+              {renderSlide(selectedSlide)}
+            </div>
           </div>
 
-          <div className="mt-12 flex items-center gap-4 bg-white dark:bg-gray-800 px-6 py-3 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+          <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white dark:bg-gray-800 px-6 py-3 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
              <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">
                Previsualizando {slides.indexOf(selectedSlide) + 1} de {slides.length}
+             </span>
+             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+               Vista: {previewSettings.label} — {previewSettings.width}×{previewSettings.height}
+             </span>
+             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+               Vista: {previewSettings.label} — {previewSettings.width}×{previewSettings.height}
              </span>
              <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2" />
              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-1">

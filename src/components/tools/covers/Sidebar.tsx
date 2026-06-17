@@ -1,6 +1,8 @@
 import React from "react";
 import { ACCENT_COLORS, type ThemeMode, type AccentColor, type SlideData, type SlideType } from "./types";
 
+type SocialPreviewMode = "threads" | "facebook" | "tiktok";
+
 interface SidebarProps {
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
@@ -12,6 +14,8 @@ interface SidebarProps {
   setLogoImage: (logo: string) => void;
   username: string;
   setUsername: (name: string) => void;
+  previewMode: SocialPreviewMode;
+  setPreviewMode: (mode: SocialPreviewMode) => void;
   slides: SlideData[];
   selectedSlideId: string;
   setSelectedSlideId: (id: string) => void;
@@ -34,6 +38,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setLogoImage,
   username,
   setUsername,
+  previewMode,
+  setPreviewMode,
   slides,
   selectedSlideId,
   setSelectedSlideId,
@@ -196,6 +202,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2 outline-none focus:border-blue-500 text-sm font-bold"
               placeholder="Ej. xeland314"
             />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-500 block mb-2">Vista Social</label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { value: "threads", label: "Threads", hint: "1080×1350" },
+                { value: "facebook", label: "Facebook", hint: "1080×1080" },
+                { value: "tiktok", label: "TikTok", hint: "1080×1920" },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setPreviewMode(option.value as SocialPreviewMode)}
+                  className={`py-3 px-2 rounded-2xl border text-xs font-bold transition-all ${
+                    previewMode === option.value
+                      ? "bg-blue-600 text-white border-blue-700"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:text-blue-600"
+                  }`}
+                >
+                  <span>{option.label}</span>
+                  <span className="block text-[10px] mt-1 opacity-80">{option.hint}</span>
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-gray-400 mt-2">LinkedIn no se muestra aquí; la vista se concentra en carruseles e imágenes individuales de Threads, Facebook y TikTok.</p>
           </div>
         </div>
       </section>
