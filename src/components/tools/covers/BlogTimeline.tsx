@@ -30,10 +30,12 @@ export const BlogTimeline: React.FC<BlogTimelineProps> = ({
           className={`relative overflow-hidden flex flex-col items-center p-20 ${s.bg} ${s.text} shadow-2xl origin-top-left`}
           style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
-          <h1 className={`text-6xl font-black mb-16 tracking-tight text-center ${s.text}`}>
-            {title}
-          </h1>
 
+          <div className={`mb-12 px-8 py-4 rounded-3xl ${c.bg} shadow-2xl shadow-${theme.accent}-500/40`}>
+            <h1 className={`text-6xl font-black mb-0 tracking-tight text-center ${s.text}`}>
+              {title}
+            </h1>
+          </div>
           <div className="relative w-full max-w-4xl px-10">
             {/* Center Line */}
             <div className={`absolute left-[52px] top-0 bottom-0 w-1.5 ${c.bg} opacity-20 rounded-full`} />
@@ -43,9 +45,9 @@ export const BlogTimeline: React.FC<BlogTimelineProps> = ({
                 <div key={i} className="relative flex items-start gap-10">
                   {/* Dot */}
                   <div className={`z-10 w-14 h-14 rounded-full ${c.bg} shadow-xl border-8 ${theme.mode === 'light' || theme.mode === 'soft' ? 'border-white' : 'border-slate-900'} flex-shrink-0 flex items-center justify-center`}>
-                     <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                    <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
                   </div>
-                  
+
                   <div className="flex-1 pt-1">
                     <span className={`text-3xl font-mono font-black ${c.textAccent} block mb-2`}>
                       {event.date}

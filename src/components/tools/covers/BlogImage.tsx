@@ -36,12 +36,14 @@ export const BlogImage: React.FC<BlogImageProps> = ({
           className={`relative overflow-hidden flex flex-col items-center p-16 ${s.bg} ${s.text} shadow-2xl origin-top-left`}
           style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
-          <h1
-            className={`text-5xl font-black mb-10 tracking-tight text-center ${s.text}`}
-          >
-            {title}
-          </h1>
 
+          <div className={`mb-12 px-8 py-4 rounded-3xl ${c.bg} shadow-2xl shadow-${theme.accent}-500/40`}>
+            <h1
+              className={`text-5xl font-black mb-0 tracking-tight text-center ${s.text}`}
+            >
+              {title}
+            </h1>
+          </div>
           <div className="w-full flex items-center justify-center mb-10 bg-black/5 dark:bg-white/5 rounded-[2rem] overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-700">
             {imageUrl ? (
               <img

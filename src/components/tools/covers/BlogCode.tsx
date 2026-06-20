@@ -36,10 +36,11 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
           style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
           {/* Header */}
-          <h1 className={`text-6xl font-black mb-12 tracking-tight text-center ${s.text}`}>
-            {title}
-          </h1>
-
+          <div className={`mb-12 px-8 py-4 rounded-3xl ${c.bg} shadow-2xl shadow-${theme.accent}-500/40`}>
+            <h1 className={`text-6xl font-black mb-0 tracking-tight text-center ${s.text}`}>
+              {title}
+            </h1>
+          </div>
           {/* Code Window */}
           <div className={`w-full max-h-[650px] flex flex-col rounded-[2.5rem] overflow-hidden shadow-2xl border-4 ${s.window} mb-12`}>
             {/* Window Controls */}
@@ -75,9 +76,9 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
             </div>
           </div>
 
-           {/* Footer Brand */}
-           <div className="absolute bottom-10 right-20 flex items-center gap-4">
-             <span
+          {/* Footer Brand */}
+          <div className="absolute bottom-10 right-20 flex items-center gap-4">
+            <span
               className={`${s.footer} font-mono text-xl tracking-[0.2em] font-bold`}
             >
               {theme.username}

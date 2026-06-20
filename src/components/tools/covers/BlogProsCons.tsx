@@ -32,10 +32,12 @@ export const BlogProsCons: React.FC<BlogProsConsProps> = ({
           className={`relative overflow-hidden flex flex-col items-center p-16 ${s.bg} shadow-2xl origin-top-left`}
           style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
-          <h1 className={`text-6xl font-black mb-16 tracking-tight text-center ${s.text}`}>
-            {title}
-          </h1>
 
+          <div className={`mb-12 px-8 py-4 rounded-3xl ${c.bg} shadow-2xl shadow-${theme.accent}-500/40`}>
+            <h1 className={`text-6xl font-black mb-0 tracking-tight text-center ${s.text}`}>
+              {title}
+            </h1>
+          </div>
           <div className="grid grid-cols-2 w-full h-full max-h-[600px] gap-8">
             {/* Pros */}
             <div className={`flex flex-col p-10 rounded-[3rem] ${s.card} border-2 border-emerald-500/30 bg-emerald-500/5`}>

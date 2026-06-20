@@ -39,9 +39,13 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
           style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
           {/* Header */}
-          <h1 className={`text-6xl font-black mb-16 tracking-tight text-center ${s.text}`}>
-            {title}
-          </h1>
+
+          <div className={`mb-12 px-8 py-4 rounded-3xl ${c.bg} shadow-2xl shadow-${theme.accent}-500/40`}>
+            <h1 className={`text-6xl font-black mb-0 tracking-tight leading-tight text-center ${s.text} max-w-5xl`}>
+              {title}
+            </h1>
+          </div>
+
 
           <div className="flex w-full h-full max-h-[825px] gap-8 mb-12">
             {/* Left Side */}
@@ -60,7 +64,7 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
 
             {/* VS Badge */}
             <div className={`absolute top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-24 h-24 rounded-full ${s.badge.split(' ').pop()} flex items-center justify-center shadow-2xl border-4 ${theme.mode === "midnight" || theme.mode === "dark" ? "border-slate-700" : "border-slate-200"}`}>
-               <span className={`text-4xl font-black ${c.textAccent}`}>VS</span>
+              <span className={`text-4xl font-black ${c.textAccent}`}>VS</span>
             </div>
 
             {/* Right Side */}

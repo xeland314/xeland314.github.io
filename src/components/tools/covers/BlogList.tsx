@@ -42,10 +42,12 @@ export const BlogList: React.FC<BlogListProps> = ({
           className={`relative overflow-hidden flex flex-col items-start p-24 ${s.bg} ${s.text} shadow-2xl origin-top-left`}
           style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
         >
-          <h1 className={`text-7xl font-black mb-16 tracking-tight ${s.text}`}>
-            {title}
-          </h1>
 
+          <div className={`mb-12 px-8 py-4 rounded-3xl ${c.bg} shadow-2xl shadow-${theme.accent}-500/40`}>
+            <h1 className={`text-7xl font-black mb-0 tracking-tight ${s.text}`}>
+              {title}
+            </h1>
+          </div>
           <ul className="w-full space-y-10">
             {items.map((item, i) => (
               <li key={i} className="flex items-start gap-8">
