@@ -69,11 +69,8 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
             {/* Main Icon */}
             <div
               className={`mb-12 w-48 h-48 rounded-[3rem] flex items-center justify-center shadow-2xl ${c.shadow} border ${s.iconBg}`}
-              style={{
-                backdropFilter: "blur(10px)",
-              }}
             >
-              <span className="text-[100px] filter drop-shadow-lg">{iconChar}</span>
+              <span className="text-[100px]">{iconChar}</span>
             </div>
 
             <h1
