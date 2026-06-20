@@ -16,7 +16,7 @@ const description = "Radiografía: SemVer x.y.z - El estándar de la industria";
   lang="es"
 >
   <div class="relative p-16 flex flex-col text-white overflow-hidden h-full">
-    <div class="absolute top-4 right-4 z-50">
+    <div class="print-hidden absolute top-4 right-4 z-50">
       <a
         href="/en/posts/software-semver"
         class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
@@ -29,7 +29,7 @@ const description = "Radiografía: SemVer x.y.z - El estándar de la industria";
       categoryColorClass="text-emerald-400"
       titlePrefix="Radiografía:"
       titleHighlightText="SemVer"
-      titleHighlightColorClass="highlight-emerald"
+      titleHighlightColorClass="text-emerald-400"
       subtitle="Semantic Versioning 2.0.0"
     />
 
@@ -80,11 +80,11 @@ const description = "Radiografía: SemVer x.y.z - El estándar de la industria";
       <div class="space-y-4">
         <div class="glass-tag p-5 rounded-xl border-l-4 border-emerald-500">
           <h4
-            class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-1"
+            class="text-emerald-400 font-bold text-2xl uppercase tracking-widest mb-1"
           >
             Regla de Oro
           </h4>
-          <p class="text-slate-200 leading-snug">
+          <p class="text-slate-200 leading-snug text-xl">
             Si cambias algo que obliga a tus usuarios a <span
               class="font-bold text-white">modificar su código</span
             > para que siga funcionando, DEBES incrementar la versión <span
@@ -94,11 +94,11 @@ const description = "Radiografía: SemVer x.y.z - El estándar de la industria";
         </div>
         <div class="glass-tag p-5 rounded-xl border-l-4 border-blue-400">
           <h4
-            class="text-blue-400 font-bold text-lg uppercase tracking-widest mb-1"
+            class="text-blue-400 font-bold text-2xl uppercase tracking-widest mb-1"
           >
             Pre-releases
           </h4>
-          <p class="text-slate-200 leading-snug">
+          <p class="text-slate-200 leading-snug text-xl">
             Puedes añadir sufijos para versiones inestables: <span
               class="code-font text-white bg-slate-800 px-2 rounded"
               >1.0.0-alpha.1</span
@@ -111,26 +111,26 @@ const description = "Radiografía: SemVer x.y.z - El estándar de la industria";
 
       <div class="grid grid-cols-2 gap-4">
         <div class="feature-card p-4 rounded-2xl">
-          <h3 class="text-rose-500 font-bold text-xl mb-2">0.y.z</h3>
-          <p class="text-slate-400 text-lg">
+          <h3 class="text-rose-500 font-bold text-2xl mb-2">0.y.z</h3>
+          <p class="text-slate-400 text-xl">
             Desarrollo inicial. Todo puede cambiar en cualquier momento.
           </p>
         </div>
         <div class="feature-card p-4 rounded-2xl">
-          <h3 class="text-blue-400 font-bold text-xl mb-2">Lógica</h3>
-          <p class="text-slate-400 text-lg">
+          <h3 class="text-blue-400 font-bold text-2xl mb-2">Lógica</h3>
+          <p class="text-slate-400 text-xl">
             Evita el "Dependency Hell" (infierno de dependencias).
           </p>
         </div>
         <div class="feature-card p-4 rounded-2xl">
-          <h3 class="text-emerald-400 font-bold text-xl mb-2">Automatizable</h3>
-          <p class="text-slate-400 text-lg">
+          <h3 class="text-emerald-400 font-bold text-2xl mb-2">Automatizable</h3>
+          <p class="text-slate-400 text-xl">
             Herramientas pueden decidir si actualizar según el rango.
           </p>
         </div>
         <div class="feature-card p-4 rounded-2xl">
-          <h3 class="text-white font-bold text-xl mb-2">Estándar</h3>
-          <p class="text-slate-400 text-lg">
+          <h3 class="text-white font-bold text-2xl mb-2">Estándar</h3>
+          <p class="text-slate-400 text-xl">
             Creado por Tom Preston-Werner (cofundador de GitHub).
           </p>
         </div>
@@ -150,9 +150,6 @@ const description = "Radiografía: SemVer x.y.z - El estándar de la industria";
     .glass-tag {
       background: rgba(16, 185, 129, 0.05);
       border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-    .highlight-emerald {
-      color: #10b981;
     }
   </style>
 </BlogPostLayout>

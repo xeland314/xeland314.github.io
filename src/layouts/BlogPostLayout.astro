@@ -17,8 +17,6 @@ const {
   lang = "es",
 } = Astro.props;
 
-// Construimos la URL de las fuentes adicionales si existen
-// El BaseLayout ya incluye Inter, aquí añadimos otras si se piden
 const googleFontUrl = extraFonts
   ? `https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900${extraFonts}&display=swap`
   : "";
@@ -37,6 +35,21 @@ const googleFontUrl = extraFonts
 >
   {googleFontUrl && <link rel="stylesheet" href={googleFontUrl} slot="head" />}
 
+  <div class="fixed bottom-4 left-4 z-50 flex flex-col gap-2 print-hidden">
+    <button
+      id="btn-aspect-1-1"
+      class="bg-slate-800 text-white hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600 text-xs font-bold transition-all shadow-md active:scale-95"
+    >
+      Cuadrado (1:1)
+    </button>
+    <button
+      id="btn-aspect-4-5"
+      class="bg-slate-800 text-white hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600 text-xs font-bold transition-all shadow-md active:scale-95"
+    >
+      Vertical (4:5)
+    </button>
+  </div>
+
   <div
     class={`min-h-screen ${bgColor} flex items-center justify-center overflow-hidden`}
   >
@@ -52,30 +65,100 @@ const googleFontUrl = extraFonts
 </BaseLayout>
 
 <script>
+  let targetHeight = 1080;
+  const targetWidth = 1080;
+
+  function initAspect() {
+    // Recuperar preferencia guardada o usar 1080 por defecto
+    const savedHeight = localStorage.getItem("blog-canvas-height");
+    if (savedHeight) {
+      targetHeight = parseInt(savedHeight, 10);
+    }
+    updateCanvasDimensions();
+    scaleCanvas();
+    updateButtonStates();
+  }
+
+  function updateCanvasDimensions() {
+    const canvas = document.getElementById("canvas-target-post");
+    if (canvas) {
+      canvas.style.height = `${targetHeight}px`;
+    }
+  }
+
+  function updateButtonStates() {
+    const btn11 = document.getElementById("btn-aspect-1-1");
+    const btn45 = document.getElementById("btn-aspect-4-5");
+    
+    if (!btn11 || !btn45) return;
+
+    if (targetHeight === 1080) {
+      btn11.classList.add("border-emerald-500", "bg-slate-900");
+      btn45.classList.remove("border-emerald-500", "bg-slate-900");
+    } else {
+      btn45.classList.add("border-emerald-500", "bg-slate-900");
+      btn11.classList.remove("border-emerald-500", "bg-slate-900");
+    }
+  }
+
   function scaleCanvas() {
     const wrapper = document.getElementById("scaler-wrapper-post");
     const canvas = document.getElementById("canvas-target-post");
     if (!wrapper || !canvas) return;
 
     const screenWidth = window.innerWidth;
-    const targetWidth = 1080;
+    const screenHeight = window.innerHeight;
 
-    if (screenWidth < targetWidth) {
-      const scale = screenWidth / targetWidth;
+    // Calculamos la escala basada en el ancho y verificamos si se desborda en alto
+    let scale = screenWidth / targetWidth;
+    
+    if (targetHeight * scale > screenHeight) {
+      scale = screenHeight / targetHeight;
+    }
+
+    // Si la pantalla es más grande que el canvas real, dejamos de escalar (opcional)
+    if (screenWidth >= targetWidth && screenHeight >= targetHeight) {
+      canvas.style.transform = "none";
+      wrapper.style.width = `${targetWidth}px`;
+      wrapper.style.height = `${targetHeight}px`;
+    } else {
       canvas.style.transform = `scale(${scale})`;
       wrapper.style.width = `${targetWidth * scale}px`;
-      wrapper.style.height = `${1080 * scale}px`;
-    } else {
-      canvas.style.transform = "none";
-      wrapper.style.width = "";
-      wrapper.style.height = "";
+      wrapper.style.height = `${targetHeight * scale}px`;
     }
   }
 
+  // Setup de selectores
+  function setupListeners() {
+    document.getElementById("btn-aspect-1-1")?.addEventListener("click", () => {
+      targetHeight = 1080;
+      localStorage.setItem("blog-canvas-height", "1080");
+      updateCanvasDimensions();
+      scaleCanvas();
+      updateButtonStates();
+    });
+
+    document.getElementById("btn-aspect-4-5")?.addEventListener("click", () => {
+      targetHeight = 1350;
+      localStorage.setItem("blog-canvas-height", "1350");
+      updateCanvasDimensions();
+      scaleCanvas();
+      updateButtonStates();
+    });
+  }
+
   window.addEventListener("resize", scaleCanvas);
-  window.addEventListener("DOMContentLoaded", scaleCanvas);
-  document.addEventListener("astro:page-load", scaleCanvas);
-  scaleCanvas();
+  window.addEventListener("DOMContentLoaded", () => {
+    initAspect();
+    setupListeners();
+  });
+  document.addEventListener("astro:page-load", () => {
+    initAspect();
+    setupListeners();
+  });
+
+  // Ejecución inicial por seguridad en recargas
+  initAspect();
 </script>
 
 <style is:global>
@@ -101,7 +184,14 @@ const googleFontUrl = extraFonts
 
   .canvas {
     width: 1080px;
-    height: 1080px;
+    /* La altura se controla dinámicamente mediante JS */
     background: #0f172a;
+  }
+
+  /* Regla para ocultar los selectores durante impresiones o exportaciones a PDF/PNG */
+  @media print {
+    .print-hidden {
+      display: none !important;
+    }
   }
 </style>
