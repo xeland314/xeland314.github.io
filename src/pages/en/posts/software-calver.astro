@@ -1,0 +1,149 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Calendar Versioning";
+const description = "Radiography: CalVer YY.MM.Micro - Time-based";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div class="relative p-16 flex flex-col bg-slate-900 text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/software-calver"
+        class="glass-tag print-hidden px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+        >ES</a
+      >
+    </div>
+
+    <RadiographyHeader
+      categoryText="Software Standards"
+      categoryColorClass="text-amber-400"
+      titlePrefix="Radiography:"
+      titleHighlightText="CalVer"
+      titleHighlightColorClass="text-amber-400"
+      subtitle="Calendar Versioning"
+    />
+
+    <div
+      class="feature-card rounded-3xl p-6 mb-6 relative flex flex-row gap-8 items-center justify-center"
+    >
+      <div
+        class="code-font text-8xl font-black tracking-tighter flex items-baseline"
+      >
+        <span class="text-slate-500 text-4xl mr-2">v</span>
+        <span class="text-amber-400">26</span>
+        <span class="text-slate-600">.</span>
+        <span class="text-cyan-400">06</span>
+        <span class="text-slate-600">.</span>
+        <span class="text-purple-400">1</span>
+      </div>
+
+      <RadiographyLegend
+        items={[
+          {
+            bgColor: "bg-amber-400",
+            shadowRgba: "rgba(251,191,36,0.5)",
+            textColor: "text-amber-400",
+            title: "YEAR (YY / YYYY)",
+            description: "Release year. <br>E.g.: 26 for 2026 or full 2026.",
+          },
+          {
+            bgColor: "bg-cyan-400",
+            shadowRgba: "rgba(34,211,238,0.5)",
+            textColor: "text-cyan-400",
+            title: "MONTH (MM / 0M)",
+            description: "Release month. <br>Shows how old the software is.",
+          },
+          {
+            bgColor: "bg-purple-400",
+            shadowRgba: "rgba(192,132,252,0.5)",
+            textColor: "text-purple-400",
+            title: "MICRO (OR PATCH)",
+            description: "Minor changes or <br>bug fixes within the cycle.",
+          },
+        ]}
+        gap="gap-8"
+        minWidth="min-w-[240px]"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 items-start mb-auto text-lg">
+      <div class="space-y-4">
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-amber-400">
+          <h4
+            class="text-amber-400 font-bold text-2xl uppercase tracking-widest mb-1"
+          >
+            Golden Rule
+          </h4>
+          <p class="text-slate-200 leading-snug text-xl">
+            Versions are driven by the <span class="font-bold text-white">business calendar</span>, 
+            not by API compatibility. It prioritizes knowing <span class="text-amber-400 font-black">WHEN</span> 
+            the software was released.
+          </p>
+        </div>
+        <div class="glass-tag p-5 rounded-xl border-l-4 border-cyan-400">
+          <h4
+            class="text-cyan-400 font-bold text-2xl uppercase tracking-widest mb-1"
+          >
+            Flexibility
+          </h4>
+          <p class="text-slate-200 leading-snug text-xl">
+            There is no single format. Projects like Ubuntu use <span class="code-font text-white bg-slate-800 px-2 rounded">YY.MM</span> 
+            (24.04), while others prefer <span class="code-font text-white bg-slate-800 px-2 rounded">YYYY.Micro</span>.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-amber-400 font-bold text-2xl mb-2">Use Cases</h3>
+          <p class="text-slate-400 text-lg">
+            Ideal for operating systems, browsers, or apps with long-term support (LTS).
+          </p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-cyan-400 font-bold text-2xl mb-2">Logic</h3>
+          <p class="text-slate-400 text-lg">
+            Clear visibility of obsolescence. You instantly know if your version is years behind.
+          </p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-purple-400 font-bold text-2xl mb-2">Hybrids</h3>
+          <p class="text-slate-400 text-lg">
+            Sometimes combined with SemVer, using the year as MAJOR and the month as MINOR.
+          </p>
+        </div>
+        <div class="feature-card p-4 rounded-2xl">
+          <h3 class="text-white font-bold text-2xl mb-2">Giants</h3>
+          <p class="text-slate-400 text-lg">
+            Used by massive projects like Ubuntu, Windows, JetBrains, and pip.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <PostFooterBar
+      middleHtml='<span class="text-amber-400 font-black italic">YEAR</span> • <span class="text-cyan-400 font-black italic">MONTH</span> • <span class="text-purple-400 font-black italic">MICRO</span>'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(251, 191, 36, 0.03);
+      border: 1px solid rgba(251, 191, 36, 0.1);
+    }
+    .glass-tag {
+      background: rgba(251, 191, 36, 0.05);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+  </style>
+</BlogPostLayout>
