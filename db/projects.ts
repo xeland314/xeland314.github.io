@@ -49,7 +49,7 @@ export const projectData = [
     demoLink: null,
     tags: ["Python", "PyQt5", "SQLite", "Legacy", "Desktop App"],
     image: "/images/optimized/projects/gymapp1/imagen1.avif",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "Juego de Memoria de Cartas",
