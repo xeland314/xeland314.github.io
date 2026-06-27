@@ -1,0 +1,48 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Footer from "../../../components/common/Footer.astro";
+import HeroSection from "../../../components/services/Hero.astro";
+import PropuestaSection from "../../../components/services/Propuesta.astro";
+import ServicesSection from "../../../components/services/Services.astro";
+import CTASection from "../../../components/services/CTA.astro";
+import ResultsSection from "../../../components/services/Results.astro";
+import TechFrontend from "../../../components/services/TechFrontend.astro";
+import FAQSection from "../../../components/services/FAQ.astro";
+
+const lang = "es";
+const siteTitle =
+  "Desarrollo Web Profesional en Quito · Christopher Villamarín";
+const siteDescription =
+  "Soluciones web a medida para negocios, talleres y empresas en Quito. Sitios web optimizados, catálogos digitales y sistemas de gestión. Cotiza tu proyecto.";
+const siteKeywords =
+  "desarrollo web Quito, páginas web Ecuador, programador freelance Quito, diseño web corporativo, Christopher Villamarín, xeland314";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/es/services";
+const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  lang={lang}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <main
+    class="min-h-screen [background-image:radial-gradient(circle,_#94a3b8_1px,_transparent_1px)] [background-size:24px_24px] dark:[background-image:radial-gradient(circle,_#334155_1px,_transparent_1px)] text-gray-900 dark:text-gray-200 py-12 px-4 sm:px-8 transition-colors duration-300"
+  >
+    <div class="max-w-3xl mx-auto space-y-8">
+      <HeroSection />
+      <PropuestaSection />
+      <ServicesSection />
+      <ResultsSection />
+      <TechFrontend />
+      <FAQSection />
+      <CTASection />
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

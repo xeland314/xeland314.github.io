@@ -1,0 +1,75 @@
+---
+const categories = [
+  {
+    id: "fundamentals",
+    label: "Tecnologías Web Que Usamos",
+    techs: [
+      { name: "HTML", icon: "/icons/html.svg" },
+      { name: "CSS", icon: "/icons/css.svg" },
+      { name: "JavaScript", icon: "/icons/js.svg" },
+      { name: "TypeScript", icon: "/icons/ts.svg" },
+      { name: "Astro", icon: "/icons/astro.svg" },
+      { name: "React", icon: "/icons/react.svg" },
+      { name: "Tailwind", icon: "/icons/tailwind.svg" },
+    ],
+  },
+];
+---
+
+<section class="space-y-4 pt-4">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white px-2">
+    Tecnologías Modernas
+  </h2>
+
+  <div
+    class="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex flex-col"
+  >
+    <div class="pb-4">
+      <p class="text-gray-600 dark:text-gray-400 text-sm">
+        No uso plantillas pesadas de WordPress. Programo tu sitio a medida
+        utilizando las mismas tecnologías que usan las grandes empresas de
+        tecnología para asegurar velocidad y seguridad.
+      </p>
+    </div>
+
+    <div
+      class="flex flex-col md:flex-row flex-1 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
+    >
+      {
+        categories.map((cat, index) => (
+          <div
+            class={`flex flex-col gap-4 py-6 md:px-8 flex-1
+              border-gray-100 dark:border-gray-800
+              ${index !== categories.length - 1 ? "border-b md:border-b-0 md:border-r" : ""}`}
+          >
+            <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 text-center md:text-left">
+              {cat.label}
+            </span>
+
+            <div class="flex-1 flex items-center">
+              <ul class="flex flex-wrap justify-center md:justify-start items-center gap-6 w-full">
+                {cat.techs.map((tech) => (
+                  <li class="flex flex-col items-center gap-2 group cursor-default">
+                    <div class="w-8 h-8 flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-1">
+                      <img
+                        src={tech.icon}
+                        alt={tech.name}
+                        class="w-full h-full object-contain opacity-70 dark:opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
+                        loading="lazy"
+                        width="32"
+                        height="32"
+                      />
+                    </div>
+                    <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      {tech.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

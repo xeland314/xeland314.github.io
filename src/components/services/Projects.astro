@@ -1,0 +1,65 @@
+---
+const projects = [
+  {
+    name: "Talleres Servi Auto",
+    location: "Quito",
+    url: "https://talleresserviauto.onrender.com/",
+    description:
+      "Desarrollo integral para taller mecánico. Incluye catálogo de servicios, presentación del equipo de trabajo y optimización para búsquedas locales.",
+    tags: ["Diseño Responsive", "SEO Local", "Alta Velocidad"],
+  },
+  {
+    name: "Eventos MW",
+    location: "Plataforma Web",
+    url: "https://eventosmw.vercel.app/",
+    description:
+      "Landing page y catálogo digital para servicios de organización de eventos. Interfaz moderna y atractiva enfocada en la conversión visual de clientes.",
+    tags: ["UI/UX Moderno", "Catálogo Dinámico", "Conversión"],
+  },
+];
+---
+
+<!-- PROYECTOS / CASOS DE ÉXITO -->
+<section id="portafolio" class="space-y-4 pt-4">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white px-2">
+    Proyectos Destacados
+  </h2>
+  <div class="grid sm:grid-cols-2 gap-4">
+    {
+      projects.map((project) => (
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 space-y-4 flex flex-col justify-between">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                {project.location}
+              </p>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+              {project.name}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+              {project.description}
+            </p>
+            <div class="flex flex-wrap gap-2 pt-2">
+              {project.tags.map((tag) => (
+                <span class="text-[11px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div class="pt-4 mt-auto">
+            <a
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold transition-colors"
+            >
+              Ver proyecto en vivo <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

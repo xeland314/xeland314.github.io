@@ -1,0 +1,75 @@
+---
+// components/services/FaqSection.astro
+// FAQ component using native HTML details/summary elements for accessibility
+
+const faqQuestions = [
+  {
+    question: "¿Qué incluye la entrega y quién es dueño del dominio?",
+    answer: "Eres 100% dueño de tu página. El dominio web (.com) se registra bajo tu propia cuenta personal y correo. Nosotros nos encargamos de toda la configuración técnica, pero la propiedad y la renovación anual del dominio es completamente tuya. Nunca secuestramos tu web."
+  },
+  {
+    question: "¿Tengo que pagar mensualidades por el servidor?",
+    answer: "Para el plan de $200, utilizamos infraestructura en la nube de alto rendimiento que no genera costos mensuales de mantenimiento de servidor. Solo pagarás la renovación anual de tu dominio. (Si tu proyecto es un sistema a medida que requiere un servidor dedicado, los costos se detallan en la cotización)."
+  },
+  {
+    question: "¿El servicio incluye el diseño del logotipo?",
+    answer: "No, el desarrollo del sitio web comienza una vez que nos entregas el logotipo y las fotografías reales de tu negocio. Si no cuentas con un logotipo profesional, podemos cotizar su creación como un servicio independiente."
+  },
+  {
+    question: "¿Cómo es el proceso de pago?",
+    answer: "Trabajamos con un anticipo de $50 para iniciar el proyecto junto con la recepción de tus fotografías. Al finalizar en el plazo acordado, subimos tu sitio a un enlace temporal válido por 7 días para tu revisión. Una vez cancelado el valor restante, vinculamos tu sitio a tu dominio oficial de forma definitiva."
+  },
+  {
+    question: "¿Qué pasa si necesito actualizar información después?",
+    answer: "Incluimos 2 meses de soporte gratuito para cambios menores (actualizar textos de servicios o reemplazar fotos). Los cambios de dirección del local siempre son gratuitos e inmediatos. No tienes que lidiar con sistemas difíciles; nos envías un mensaje y nosotros lo actualizamos. Los rediseños completos (como cambiar el logo, que afecta toda la paleta de colores) o actualizaciones fuera de los 2 meses, tienen un costo adicional accesible."
+  }
+];
+---
+
+<section class="space-y-6 pt-8 pb-4">
+  <div class="space-y-2 px-2">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+      Preguntas Frecuentes
+    </h2>
+    <p class="text-gray-600 dark:text-gray-400 text-sm">
+      Respuestas claras sobre cómo trabajamos. Sin letras pequeñas.
+    </p>
+  </div>
+
+  <div class="space-y-4">
+    {
+      faqQuestions.map((item) => (
+        <details class="group bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-5 text-gray-900 dark:text-white font-medium">
+            <span class="text-[15px] pr-4">{item.question}</span>
+            <span class="shrink-0 bg-gray-50 dark:bg-gray-800 p-1.5 rounded-full sm:p-2 group-open:-rotate-180 transition-transform duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </span>
+          </summary>
+
+          <div class="px-5 pb-5 pt-0">
+            <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-gray-100 dark:border-gray-800 pt-4">
+              {item.answer}
+            </p>
+          </div>
+        </details>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  /* Smooth transition for the details element */
+  details > summary {
+    list-style: none;
+  }
+  details[open] summary ~ * {
+    animation: sweep .3s ease-in-out;
+  }
+  @keyframes sweep {
+    0%    {opacity: 0; transform: translateY(-10px)}
+    100%  {opacity: 1; transform: translateY(0)}
+  }
+</style>

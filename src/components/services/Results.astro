@@ -1,0 +1,115 @@
+---
+import { Image } from "astro:assets";
+---
+
+<section class="space-y-4 pt-4">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white px-2">
+    Resultados que marcan la diferencia
+  </h2>
+
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div
+      class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:col-span-2 overflow-hidden relative flex flex-col md:flex-row gap-6 items-center"
+    >
+      <div class="flex flex-col space-y-3 z-10 w-full md:w-3/5">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold self-start"
+        >
+          <span class="relative flex h-2 w-2">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
+            ></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"
+            ></span>
+          </span>
+          Diseño Adaptable
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+          Perfecto en cualquier pantalla
+        </h3>
+        <p
+          class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed max-w-md"
+        >
+          Más del 80% de tus clientes te buscarán desde su celular. Tu sitio web
+          se adaptará automáticamente para lucir profesional en teléfonos,
+          tablets y computadoras de escritorio.
+        </p>
+      </div>
+
+      <div
+        class="w-full max-w-[500px] md:w-2/5 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center shrink-0"
+      >
+        <Image
+          src="/images/talleresserviauto.png"
+          alt="Vista previa del sitio web"
+          class="w-full h-full object-cover"
+          width="400"
+          height="400"
+        />
+      </div>
+    </div>
+
+    <!-- Rendimiento SpeedPage -->
+    <div
+      class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 space-y-4"
+    >
+      <div class="flex items-center gap-3">
+        <div class="text-green-500">
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg
+          >
+        </div>
+        <div>
+          <h3 class="font-bold text-gray-900 dark:text-white">
+            Carga Inmediata
+          </h3>
+          <p class="text-xs text-gray-500">Google PageSpeed 100/100</p>
+        </div>
+      </div>
+      <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+        Nadie espera a que cargue una página lenta. Sitios web ultrarrápidos que
+        evitan que tus clientes se vayan a la competencia por frustración.
+      </p>
+    </div>
+
+    <!-- Optimización IA -->
+    <div
+      class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 space-y-4"
+    >
+      <div class="flex items-center gap-3">
+        <div class="text-purple-500">
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+            ></path></svg
+          >
+        </div>
+        <div>
+          <h3 class="font-bold text-gray-900 dark:text-white">
+            Lista para Inteligencia Artificial
+          </h3>
+          <p class="text-xs text-gray-500">SEO y Datos Estructurados</p>
+        </div>
+      </div>
+      <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+        Optimizada no solo para Google, sino estructurada para que asistentes
+        como ChatGPT puedan entender tus servicios y recomendarte.
+      </p>
+    </div>
+  </div>
+</section>
