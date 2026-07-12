@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toJpeg } from "html-to-image";
 import JSZip from "jszip";
 import { Sidebar } from "./Sidebar";
 import { BlogCover } from "./BlogCover";
+import { BlogCoverImage } from "./BlogCoverImage";
 import { BlogStep } from "./BlogStep";
 import { BlogComparison } from "./BlogComparison";
 import { BlogCode } from "./BlogCode";
@@ -255,6 +256,9 @@ export const CoverCreator = () => {
       case "cover":
         newSlide = { id: newId, type: "cover", title: "Nuevo Título", subtitle: "Nuevo Subtítulo", category: "TECH", iconChar: "🚀" };
         break;
+      case "cover-image":
+        newSlide = { id: newId, type: "cover-image", title: "Nueva Imagen", subtitle: "Subtítulo de la imagen", category: "PHOTO", imageUrl: "", imageFit: "contain" };
+        break;
       case "step":
         newSlide = { id: newId, type: "step", stepNumber: "01", title: "Nuevo Paso", description: "Descripción del paso..." };
         break;
@@ -419,6 +423,7 @@ export const CoverCreator = () => {
 
     switch (slide.type) {
       case "cover": return <BlogCover {...slideProps as any} />;
+      case "cover-image": return <BlogCoverImage {...slideProps as any} />;
       case "step": return <BlogStep {...slideProps as any} />;
       case "comparison": return <BlogComparison {...slideProps as any} />;
       case "code": return <BlogCode {...slideProps as any} />;

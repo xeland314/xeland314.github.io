@@ -179,6 +179,7 @@ export const getThemeBgColor = (mode: ThemeMode): string => {
 
 export type SlideType =
   | "cover"
+  | "cover-image"
   | "step"
   | "comparison"
   | "code"
@@ -199,7 +200,83 @@ export interface BaseSlideData {
   type: SlideType;
 }
 
-// ... existing interfaces ...
+export interface CoverSlideData extends BaseSlideData {
+  type: "cover";
+  title: string;
+  subtitle: string;
+  category: string;
+  iconChar: string;
+}
+
+export interface StepSlideData extends BaseSlideData {
+  type: "step";
+  stepNumber: string;
+  title: string;
+  description: string;
+}
+
+export interface ComparisonSlideData extends BaseSlideData {
+  type: "comparison";
+  title: string;
+  leftTitle: string;
+  rightTitle: string;
+  leftItems: string[];
+  rightItems: string[];
+}
+
+export interface CodeSlideData extends BaseSlideData {
+  type: "code";
+  title: string;
+  language: string;
+  code: string;
+}
+
+export interface EndSlideData extends BaseSlideData {
+  type: "end";
+  firstText: string;
+  secondText: string;
+  description: string;
+  likeText: string;
+  commentText: string;
+  saveText: string;
+  finalText: string;
+}
+
+export interface ImageSlideData extends BaseSlideData {
+  type: "image";
+  title: string;
+  imageUrl: string;
+  caption: string;
+  imageFit: "contain" | "cover";
+}
+
+export interface AlertSlideData extends BaseSlideData {
+  type: "alert";
+  title: string;
+  description: string;
+  alertType: "info" | "warning" | "error" | "success";
+}
+
+export interface MetricSlideData extends BaseSlideData {
+  type: "metric";
+  value: string;
+  label: string;
+  trend: string | "up" | "down" | "flat";
+}
+
+export interface ListSlideData extends BaseSlideData {
+  type: "list";
+  title: string;
+  bulletType: "bullet" | "numbered";
+  items: string[];
+}
+
+export interface QuoteSlideData extends BaseSlideData {
+  type: "quote";
+  text: string;
+  author: string;
+  authorTitle?: string;
+}
 
 export interface TimelineEvent {
   date: string;
@@ -243,8 +320,18 @@ export interface TestimonialSlideData extends BaseSlideData {
   rating: number;
 }
 
+export interface CoverImageSlideData extends BaseSlideData {
+  type: "cover-image";
+  title: string;
+  subtitle: string;
+  category: string;
+  imageUrl: string;
+  imageFit: "contain" | "cover";
+}
+
 export type SlideData =
   | CoverSlideData
+  | CoverImageSlideData
   | StepSlideData
   | ComparisonSlideData
   | CodeSlideData
