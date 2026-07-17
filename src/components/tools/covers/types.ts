@@ -191,6 +191,7 @@ export type SlideType =
   | "quote"
   | "timeline"
   | "qna"
+  | "poll"
   | "pros-cons"
   | "definition"
   | "testimonial";
@@ -329,6 +330,13 @@ export interface CoverImageSlideData extends BaseSlideData {
   imageFit: "contain" | "cover";
 }
 
+export interface PollSlideData extends BaseSlideData {
+  type: "poll";
+  question: string;
+  options: string[];
+  questionLabel: string;
+}
+
 export type SlideData =
   | CoverSlideData
   | CoverImageSlideData
@@ -343,6 +351,7 @@ export type SlideData =
   | QuoteSlideData
   | TimelineSlideData
   | QnASlideData
+  | PollSlideData
   | ProsConsSlideData
   | DefinitionSlideData
   | TestimonialSlideData;

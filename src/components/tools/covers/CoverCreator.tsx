@@ -15,6 +15,7 @@ import { BlogList } from "./BlogList";
 import { BlogQuote } from "./BlogQuote";
 import { BlogTimeline } from "./BlogTimeline";
 import { BlogQnA } from "./BlogQnA";
+import { BlogPoll } from "./BlogPoll";
 import { BlogProsCons } from "./BlogProsCons";
 import { BlogDefinition } from "./BlogDefinition";
 import { BlogTestimonial } from "./BlogTestimonial";
@@ -289,6 +290,9 @@ export const CoverCreator = () => {
       case "qna":
         newSlide = { id: newId, type: "qna", question: "¿Pregunta frecuente?", answer: "Esta es una respuesta detallada...", questionLabel: "Q", answerLabel: "A" };
         break;
+      case "poll":
+        newSlide = { id: newId, type: "poll", question: "¿Cuál es tu color favorito?", options: ["Rojo", "Azul", "Verde"], questionLabel: "P" };
+        break;
       case "pros-cons":
         newSlide = { id: newId, type: "pros-cons", title: "¿Vale la pena?", pros: ["Velocidad"], cons: ["Aprendizaje"] };
         break;
@@ -435,6 +439,7 @@ export const CoverCreator = () => {
       case "quote": return <BlogQuote {...slideProps as any} />;
       case "timeline": return <BlogTimeline {...slideProps as any} />;
       case "qna": return <BlogQnA {...slideProps as any} />;
+      case "poll": return <BlogPoll {...slideProps as any} />;
       case "pros-cons": return <BlogProsCons {...slideProps as any} />;
       case "definition": return <BlogDefinition {...slideProps as any} />;
       case "testimonial": return <BlogTestimonial {...slideProps as any} />;

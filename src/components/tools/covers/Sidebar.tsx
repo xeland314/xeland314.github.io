@@ -313,6 +313,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <option value="quote">Cita</option>
               <option value="timeline">Línea de Tiempo</option>
               <option value="qna">Pregunta/Respuesta</option>
+              <option value="poll">Encuesta</option>
               <option value="pros-cons">Pros y Contras</option>
               <option value="definition">Definición</option>
               <option value="testimonial">Testimonio</option>
@@ -909,6 +910,106 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onChange={(v) => updateSlide(selectedSlide.id, { answer: v })}
                   rows={5}
                 />
+              </div>
+            )}
+
+            {selectedSlide.type === "poll" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
+                      Etiqueta P
+                    </label>
+                    <div className="flex gap-1">
+                      {["Q", "P", "1", "A"].map((l) => (
+                        <button
+                          key={l}
+                          onClick={() =>
+                            updateSlide(selectedSlide.id, { questionLabel: l })
+                          }
+                          className={`flex-1 py-1 text-xs font-bold rounded border ${selectedSlide.questionLabel === l ? "bg-blue-500 border-blue-600 text-white" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-500"}`}
+                        >
+                          {l}
+                        </button>
+                      ))}
+                      <input
+                        type="text"
+                        maxLength={2}
+                        value={
+                          ["Q", "P", "1", "A"].includes(
+                            selectedSlide.questionLabel,
+                          )
+                            ? ""
+                            : selectedSlide.questionLabel
+                        }
+                        onChange={(e) =>
+                          updateSlide(selectedSlide.id, {
+                            questionLabel: e.target.value,
+                          })
+                        }
+                        placeholder="..."
+                        className="w-10 text-center py-1 text-xs font-bold rounded border bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 outline-none focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <Input
+                  label="Pregunta"
+                  value={selectedSlide.question}
+                  onChange={(v) =>
+                    updateSlide(selectedSlide.id, { question: v })
+                  }
+                />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-500">
+                      Opciones
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSlide(selectedSlide.id, {
+                          options: [...selectedSlide.options, ""],
+                        })
+                      }
+                      className="px-3 py-1 text-xs font-bold rounded bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Añadir opción
+                    </button>
+                  </div>
+                  {selectedSlide.options.map((option, idx) => (
+                    <div key={idx} className="relative group">
+                      <Textarea
+                        label={`Opción ${idx + 1}`}
+                        value={option}
+                        onChange={(v) => {
+                          const newOptions = [...selectedSlide.options];
+                          newOptions[idx] = v;
+                          updateSlide(selectedSlide.id, {
+                            options: newOptions,
+                          });
+                        }}
+                        rows={3}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newOptions = selectedSlide.options.filter(
+                            (_, i) => i !== idx,
+                          );
+                          updateSlide(selectedSlide.id, {
+                            options: newOptions.length ? newOptions : [""],
+                          });
+                        }}
+                        className={`absolute top-3 right-3 w-8 h-8 rounded-full text-white text-xs flex items-center justify-center transition-opacity ${selectedSlide.options.length > 1 ? "bg-red-500 opacity-100 hover:bg-red-600" : "bg-gray-300 opacity-50 cursor-not-allowed"}`}
+                        disabled={selectedSlide.options.length <= 1}
+                        aria-label="Eliminar opción"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
