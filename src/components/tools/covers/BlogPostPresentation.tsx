@@ -9,12 +9,17 @@ import { BlogImage } from "./BlogImage";
 import { BlogAlert } from "./BlogAlert";
 import { BlogMetric } from "./BlogMetric";
 import { BlogList } from "./BlogList";
-import { BlogQuote } from "./BlogQuote";
+import { BlogHighlight } from "./BlogHighlight";
 import { BlogTimeline } from "./BlogTimeline";
 import { BlogQnA } from "./BlogQnA";
 import { BlogProsCons } from "./BlogProsCons";
 import { BlogDefinition } from "./BlogDefinition";
-import { BlogTestimonial } from "./BlogTestimonial";
+import { BlogMythFact } from "./BlogMythFact";
+import { BlogChecklist } from "./BlogChecklist";
+import { BlogTechStack } from "./BlogTechStack";
+import { BlogMistakes } from "./BlogMistakes";
+import { BlogTakeaways } from "./BlogTakeaways";
+import { BlogAnnouncement } from "./BlogAnnouncement";
 import { toJpeg } from "html-to-image";
 import JSZip from "jszip";
 
@@ -81,12 +86,17 @@ export const BlogPostPresentation: React.FC<BlogPostPresentationProps> = ({
       case "alert": return <BlogAlert {...(props as any)} />;
       case "metric": return <BlogMetric {...(props as any)} />;
       case "list": return <BlogList {...(props as any)} />;
-      case "quote": return <BlogQuote {...(props as any)} />;
+      case "highlight": return <BlogHighlight {...(props as any)} />;
       case "timeline": return <BlogTimeline {...(props as any)} />;
       case "qna": return <BlogQnA {...(props as any)} />;
       case "pros-cons": return <BlogProsCons {...(props as any)} />;
       case "definition": return <BlogDefinition {...(props as any)} />;
-      case "testimonial": return <BlogTestimonial {...(props as any)} />;
+      case "myth-fact": return <BlogMythFact {...(props as any)} />;
+      case "checklist": return <BlogChecklist {...(props as any)} />;
+      case "tech-stack": return <BlogTechStack {...(props as any)} />;
+      case "mistakes": return <BlogMistakes {...(props as any)} />;
+      case "takeaways": return <BlogTakeaways {...(props as any)} />;
+      case "announcement": return <BlogAnnouncement {...(props as any)} />;
     }
   };
 

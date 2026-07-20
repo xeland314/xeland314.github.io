@@ -302,21 +302,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <option value="">+ Añadir</option>
               <option value="cover">Portada</option>
-              <option value="cover-image">Portada con Imagen</option>
+              <option value="announcement">Anuncio</option>
               <option value="step">Paso</option>
               <option value="comparison">Comparación</option>
               <option value="code">Código</option>
+              <option value="mistakes">Errores (Mal/Bien)</option>
               <option value="image">Imagen</option>
               <option value="alert">Alerta/Tip</option>
               <option value="metric">Métrica</option>
               <option value="list">Lista</option>
-              <option value="quote">Cita</option>
+              <option value="checklist">Checklist</option>
+              <option value="highlight">Cita / Testimonio</option>
+              <option value="myth-fact">Mito vs Realidad</option>
+              <option value="tech-stack">Tech Stack</option>
               <option value="timeline">Línea de Tiempo</option>
               <option value="qna">Pregunta/Respuesta</option>
               <option value="poll">Encuesta</option>
               <option value="pros-cons">Pros y Contras</option>
               <option value="definition">Definición</option>
-              <option value="testimonial">Testimonio</option>
+              <option value="takeaways">Puntos Clave</option>
               <option value="end">Final</option>
             </select>
           </div>
@@ -410,41 +414,90 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     updateSlide(selectedSlide.id, { iconChar: v })
                   }
                 />
-              </div>
-            )}
-
-            {selectedSlide.type === "cover-image" && (
-              <div className="space-y-4">
-                <Input
-                  label="Título"
-                  value={selectedSlide.title}
-                  onChange={(v) => updateSlide(selectedSlide.id, { title: v })}
-                />
-                <Input
-                  label="Subtítulo"
-                  value={selectedSlide.subtitle}
-                  onChange={(v) =>
-                    updateSlide(selectedSlide.id, { subtitle: v })
-                  }
-                />
-                <Input
-                  label="Categoría"
-                  value={selectedSlide.category}
-                  onChange={(v) =>
-                    updateSlide(selectedSlide.id, { category: v })
-                  }
-                />
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase block mb-1">
-                    Imagen
+                    Imagen (opcional - reemplaza el icono)
                   </label>
                   <div className="flex gap-2">
                     <div className="flex-1">
                       <Input
                         label=""
-                        value={selectedSlide.imageUrl}
+                        value={selectedSlide.imageUrl || ""}
                         onChange={(v) =>
-                          updateSlide(selectedSlide.id, { imageUrl: v })
+                          updateSlide(selectedSlide.id, { imageUrl: v || undefined })
+                        }
+                      />
+                    </div>
+                    <label className="cursor-pointer">
+                      <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 h-full flex items-center">
+                        SUBIR
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) =>
+                              updateSlide(selectedSlide.id, {
+                                imageUrl: ev.target?.result as string,
+                              });
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+                {selectedSlide.imageUrl && (
+                  <Select
+                    label="Ajuste de Imagen"
+                    value={selectedSlide.imageFit || "contain"}
+                    options={[
+                      { label: "Contener", value: "contain" },
+                      { label: "Cubrir", value: "cover" },
+                    ]}
+                    onChange={(v) =>
+                      updateSlide(selectedSlide.id, { imageFit: v as any })
+                    }
+                  />
+                )}
+              </div>
+            )}
+
+            {selectedSlide.type === "announcement" && (
+              <div className="space-y-4">
+                <Input
+                  label="Badge (ej. NUEVO)"
+                  value={selectedSlide.badge}
+                  onChange={(v) => updateSlide(selectedSlide.id, { badge: v })}
+                />
+                <Input
+                  label="Título"
+                  value={selectedSlide.title}
+                  onChange={(v) => updateSlide(selectedSlide.id, { title: v })}
+                />
+                <Textarea
+                  label="Subtítulo"
+                  value={selectedSlide.subtitle}
+                  onChange={(v) =>
+                    updateSlide(selectedSlide.id, { subtitle: v })
+                  }
+                  rows={3}
+                />
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">
+                    Imagen (opcional)
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        label=""
+                        value={selectedSlide.imageUrl || ""}
+                        onChange={(v) =>
+                          updateSlide(selectedSlide.id, { imageUrl: v || undefined })
                         }
                       />
                     </div>
@@ -705,10 +758,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             )}
 
-            {selectedSlide.type === "quote" && (
+            {selectedSlide.type === "highlight" && (
               <div className="space-y-4">
                 <Textarea
-                  label="Cita"
+                  label="Texto / Cita"
                   value={selectedSlide.text}
                   onChange={(v) => updateSlide(selectedSlide.id, { text: v })}
                   rows={5}
@@ -717,6 +770,65 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   label="Autor"
                   value={selectedSlide.author}
                   onChange={(v) => updateSlide(selectedSlide.id, { author: v })}
+                />
+                <Input
+                  label="Título del Autor (opcional)"
+                  value={selectedSlide.authorTitle || ""}
+                  onChange={(v) => updateSlide(selectedSlide.id, { authorTitle: v || undefined })}
+                />
+                <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Opciones de Testimonio</p>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">
+                    Avatar URL (opcional - activa modo testimonio)
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        label=""
+                        value={selectedSlide.avatarUrl || ""}
+                        onChange={(v) =>
+                          updateSlide(selectedSlide.id, { avatarUrl: v || undefined })
+                        }
+                      />
+                    </div>
+                    <label className="cursor-pointer">
+                      <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 h-full flex items-center transition-colors">
+                        SUBIR
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) =>
+                              updateSlide(selectedSlide.id, {
+                                avatarUrl: ev.target?.result as string,
+                              });
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+                <Select
+                  label="Calificación (0 = sin estrellas)"
+                  value={(selectedSlide.rating || 0).toString()}
+                  options={[
+                    { label: "Sin estrellas", value: "0" },
+                    { label: "5 Estrellas", value: "5" },
+                    { label: "4 Estrellas", value: "4" },
+                    { label: "3 Estrellas", value: "3" },
+                    { label: "2 Estrellas", value: "2" },
+                    { label: "1 Estrella", value: "1" },
+                  ]}
+                  onChange={(v) =>
+                    updateSlide(selectedSlide.id, { rating: parseInt(v) || undefined })
+                  }
                 />
               </div>
             )}
@@ -1062,70 +1174,258 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             )}
 
-            {selectedSlide.type === "testimonial" && (
+            {selectedSlide.type === "myth-fact" && (
               <div className="space-y-4">
+                <Input
+                  label="Título"
+                  value={selectedSlide.title}
+                  onChange={(v) => updateSlide(selectedSlide.id, { title: v })}
+                />
                 <Textarea
-                  label="Testimonio"
-                  value={selectedSlide.quote}
-                  onChange={(v) => updateSlide(selectedSlide.id, { quote: v })}
+                  label="Mito"
+                  value={selectedSlide.myth}
+                  onChange={(v) => updateSlide(selectedSlide.id, { myth: v })}
                   rows={4}
                 />
+                <Textarea
+                  label="Realidad"
+                  value={selectedSlide.fact}
+                  onChange={(v) => updateSlide(selectedSlide.id, { fact: v })}
+                  rows={4}
+                />
+              </div>
+            )}
+
+            {selectedSlide.type === "checklist" && (
+              <div className="space-y-4">
                 <Input
-                  label="Autor"
-                  value={selectedSlide.author}
-                  onChange={(v) => updateSlide(selectedSlide.id, { author: v })}
+                  label="Título"
+                  value={selectedSlide.title}
+                  onChange={(v) => updateSlide(selectedSlide.id, { title: v })}
                 />
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase block mb-1">
-                    Avatar
-                  </label>
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <Input
-                        label=""
-                        value={selectedSlide.avatarUrl}
-                        onChange={(v) =>
-                          updateSlide(selectedSlide.id, { avatarUrl: v })
-                        }
-                      />
-                    </div>
-                    <label className="cursor-pointer">
-                      <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 h-full flex items-center transition-colors">
-                        SUBIR
-                      </div>
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (ev) =>
-                              updateSlide(selectedSlide.id, {
-                                avatarUrl: ev.target?.result as string,
-                              });
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-500">
+                      Items
                     </label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSlide(selectedSlide.id, {
+                          items: [...selectedSlide.items, { text: "", checked: false }],
+                        })
+                      }
+                      className="px-3 py-1 text-xs font-bold rounded bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Añadir item
+                    </button>
                   </div>
+                  {selectedSlide.items.map((item, idx) => (
+                    <div key={idx} className="relative group flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newItems = [...selectedSlide.items];
+                          newItems[idx] = { ...newItems[idx], checked: !newItems[idx].checked };
+                          updateSlide(selectedSlide.id, { items: newItems });
+                        }}
+                        className={`flex-shrink-0 w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all ${
+                          item.checked
+                            ? "bg-blue-500 border-blue-600 text-white"
+                            : "border-gray-300 dark:border-gray-600"
+                        }`}
+                      >
+                        {item.checked && "✓"}
+                      </button>
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          value={item.text}
+                          onChange={(e) => {
+                            const newItems = [...selectedSlide.items];
+                            newItems[idx] = { ...newItems[idx], text: e.target.value };
+                            updateSlide(selectedSlide.id, { items: newItems });
+                          }}
+                          className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+                          placeholder="Texto del item..."
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newItems = selectedSlide.items.filter((_, i) => i !== idx);
+                          updateSlide(selectedSlide.id, { items: newItems.length ? newItems : [{ text: "", checked: false }] });
+                        }}
+                        className="flex-shrink-0 w-8 h-8 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
                 </div>
-                <Select
-                  label="Calificación (Estrellas)"
-                  value={selectedSlide.rating.toString()}
-                  options={[
-                    { label: "5 Estrellas", value: "5" },
-                    { label: "4 Estrellas", value: "4" },
-                    { label: "3 Estrellas", value: "3" },
-                    { label: "2 Estrellas", value: "2" },
-                    { label: "1 Estrella", value: "1" },
-                  ]}
-                  onChange={(v) =>
-                    updateSlide(selectedSlide.id, { rating: parseInt(v) })
-                  }
+              </div>
+            )}
+
+            {selectedSlide.type === "tech-stack" && (
+              <div className="space-y-4">
+                <Input
+                  label="Título"
+                  value={selectedSlide.title}
+                  onChange={(v) => updateSlide(selectedSlide.id, { title: v })}
                 />
+                <Select
+                  label="Columnas"
+                  value={selectedSlide.cols.toString()}
+                  options={[
+                    { label: "2 columnas", value: "2" },
+                    { label: "3 columnas", value: "3" },
+                    { label: "4 columnas", value: "4" },
+                  ]}
+                  onChange={(v) => updateSlide(selectedSlide.id, { cols: parseInt(v) })}
+                />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-500">
+                      Herramientas
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSlide(selectedSlide.id, {
+                          items: [...selectedSlide.items, { name: "", icon: "🔧" }],
+                        })
+                      }
+                      className="px-3 py-1 text-xs font-bold rounded bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Añadir
+                    </button>
+                  </div>
+                  {selectedSlide.items.map((item, idx) => (
+                    <div key={idx} className="relative group flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={item.icon}
+                        onChange={(e) => {
+                          const newItems = [...selectedSlide.items];
+                          newItems[idx] = { ...newItems[idx], icon: e.target.value };
+                          updateSlide(selectedSlide.id, { items: newItems });
+                        }}
+                        className="w-14 text-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-2 py-2 text-lg outline-none focus:border-blue-500"
+                        maxLength={4}
+                      />
+                      <input
+                        type="text"
+                        value={item.name}
+                        onChange={(e) => {
+                          const newItems = [...selectedSlide.items];
+                          newItems[idx] = { ...newItems[idx], name: e.target.value };
+                          updateSlide(selectedSlide.id, { items: newItems });
+                        }}
+                        className="flex-1 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        placeholder="Nombre..."
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newItems = selectedSlide.items.filter((_, i) => i !== idx);
+                          updateSlide(selectedSlide.id, { items: newItems.length ? newItems : [{ name: "", icon: "🔧" }] });
+                        }}
+                        className="flex-shrink-0 w-8 h-8 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selectedSlide.type === "mistakes" && (
+              <div className="space-y-4">
+                <Input
+                  label="Título"
+                  value={selectedSlide.title}
+                  onChange={(v) => updateSlide(selectedSlide.id, { title: v })}
+                />
+                <Input
+                  label="Lenguaje"
+                  value={selectedSlide.language}
+                  onChange={(v) => updateSlide(selectedSlide.id, { language: v })}
+                />
+                <Input
+                  label="Etiqueta Mal"
+                  value={selectedSlide.badLabel}
+                  onChange={(v) => updateSlide(selectedSlide.id, { badLabel: v })}
+                />
+                <Textarea
+                  label="Código Mal"
+                  value={selectedSlide.badCode}
+                  onChange={(v) => updateSlide(selectedSlide.id, { badCode: v })}
+                  rows={6}
+                />
+                <Input
+                  label="Etiqueta Bien"
+                  value={selectedSlide.goodLabel}
+                  onChange={(v) => updateSlide(selectedSlide.id, { goodLabel: v })}
+                />
+                <Textarea
+                  label="Código Bien"
+                  value={selectedSlide.goodCode}
+                  onChange={(v) => updateSlide(selectedSlide.id, { goodCode: v })}
+                  rows={6}
+                />
+              </div>
+            )}
+
+            {selectedSlide.type === "takeaways" && (
+              <div className="space-y-4">
+                <Input
+                  label="Título"
+                  value={selectedSlide.title}
+                  onChange={(v) => updateSlide(selectedSlide.id, { title: v })}
+                />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-500">
+                      Puntos Clave
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSlide(selectedSlide.id, {
+                          items: [...selectedSlide.items, ""],
+                        })
+                      }
+                      className="px-3 py-1 text-xs font-bold rounded bg-blue-500 text-white hover:bg-blue-600"
+                    >
+                      Añadir punto
+                    </button>
+                  </div>
+                  {selectedSlide.items.map((item, idx) => (
+                    <div key={idx} className="relative group">
+                      <Textarea
+                        label={`Punto ${idx + 1}`}
+                        value={item}
+                        onChange={(v) => {
+                          const newItems = [...selectedSlide.items];
+                          newItems[idx] = v;
+                          updateSlide(selectedSlide.id, { items: newItems });
+                        }}
+                        rows={2}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newItems = selectedSlide.items.filter((_, i) => i !== idx);
+                          updateSlide(selectedSlide.id, { items: newItems.length ? newItems : [""] });
+                        }}
+                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

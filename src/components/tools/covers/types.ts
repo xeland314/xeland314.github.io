@@ -179,7 +179,6 @@ export const getThemeBgColor = (mode: ThemeMode): string => {
 
 export type SlideType =
   | "cover"
-  | "cover-image"
   | "step"
   | "comparison"
   | "code"
@@ -188,13 +187,18 @@ export type SlideType =
   | "alert"
   | "metric"
   | "list"
-  | "quote"
+  | "highlight"
   | "timeline"
   | "qna"
   | "poll"
   | "pros-cons"
   | "definition"
-  | "testimonial";
+  | "myth-fact"
+  | "checklist"
+  | "tech-stack"
+  | "mistakes"
+  | "takeaways"
+  | "announcement";
 
 export interface BaseSlideData {
   id: string;
@@ -207,6 +211,8 @@ export interface CoverSlideData extends BaseSlideData {
   subtitle: string;
   category: string;
   iconChar: string;
+  imageUrl?: string;
+  imageFit?: "contain" | "cover";
 }
 
 export interface StepSlideData extends BaseSlideData {
@@ -272,11 +278,13 @@ export interface ListSlideData extends BaseSlideData {
   items: string[];
 }
 
-export interface QuoteSlideData extends BaseSlideData {
-  type: "quote";
+export interface HighlightSlideData extends BaseSlideData {
+  type: "highlight";
   text: string;
   author: string;
   authorTitle?: string;
+  avatarUrl?: string;
+  rating?: number;
 }
 
 export interface TimelineEvent {
@@ -313,23 +321,6 @@ export interface DefinitionSlideData extends BaseSlideData {
   definition: string;
 }
 
-export interface TestimonialSlideData extends BaseSlideData {
-  type: "testimonial";
-  quote: string;
-  author: string;
-  avatarUrl: string;
-  rating: number;
-}
-
-export interface CoverImageSlideData extends BaseSlideData {
-  type: "cover-image";
-  title: string;
-  subtitle: string;
-  category: string;
-  imageUrl: string;
-  imageFit: "contain" | "cover";
-}
-
 export interface PollSlideData extends BaseSlideData {
   type: "poll";
   question: string;
@@ -337,9 +328,52 @@ export interface PollSlideData extends BaseSlideData {
   questionLabel: string;
 }
 
+export interface MythFactSlideData extends BaseSlideData {
+  type: "myth-fact";
+  title: string;
+  myth: string;
+  fact: string;
+}
+
+export interface ChecklistSlideData extends BaseSlideData {
+  type: "checklist";
+  title: string;
+  items: { text: string; checked: boolean }[];
+}
+
+export interface TechStackSlideData extends BaseSlideData {
+  type: "tech-stack";
+  title: string;
+  items: { name: string; icon: string }[];
+  cols: number;
+}
+
+export interface MistakesSlideData extends BaseSlideData {
+  type: "mistakes";
+  title: string;
+  badCode: string;
+  goodCode: string;
+  badLabel: string;
+  goodLabel: string;
+  language: string;
+}
+
+export interface TakeawaysSlideData extends BaseSlideData {
+  type: "takeaways";
+  title: string;
+  items: string[];
+}
+
+export interface AnnouncementSlideData extends BaseSlideData {
+  type: "announcement";
+  badge: string;
+  title: string;
+  subtitle: string;
+  imageUrl?: string;
+}
+
 export type SlideData =
   | CoverSlideData
-  | CoverImageSlideData
   | StepSlideData
   | ComparisonSlideData
   | CodeSlideData
@@ -348,13 +382,18 @@ export type SlideData =
   | AlertSlideData
   | MetricSlideData
   | ListSlideData
-  | QuoteSlideData
+  | HighlightSlideData
   | TimelineSlideData
   | QnASlideData
   | PollSlideData
   | ProsConsSlideData
   | DefinitionSlideData
-  | TestimonialSlideData;
+  | MythFactSlideData
+  | ChecklistSlideData
+  | TechStackSlideData
+  | MistakesSlideData
+  | TakeawaysSlideData
+  | AnnouncementSlideData;
 
 export const ACCENT_COLORS = {
   blue: {

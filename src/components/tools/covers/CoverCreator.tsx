@@ -3,7 +3,6 @@ import { toJpeg } from "html-to-image";
 import JSZip from "jszip";
 import { Sidebar } from "./Sidebar";
 import { BlogCover } from "./BlogCover";
-import { BlogCoverImage } from "./BlogCoverImage";
 import { BlogStep } from "./BlogStep";
 import { BlogComparison } from "./BlogComparison";
 import { BlogCode } from "./BlogCode";
@@ -12,13 +11,18 @@ import { BlogImage } from "./BlogImage";
 import { BlogAlert } from "./BlogAlert";
 import { BlogMetric } from "./BlogMetric";
 import { BlogList } from "./BlogList";
-import { BlogQuote } from "./BlogQuote";
+import { BlogHighlight } from "./BlogHighlight";
 import { BlogTimeline } from "./BlogTimeline";
 import { BlogQnA } from "./BlogQnA";
 import { BlogPoll } from "./BlogPoll";
 import { BlogProsCons } from "./BlogProsCons";
 import { BlogDefinition } from "./BlogDefinition";
-import { BlogTestimonial } from "./BlogTestimonial";
+import { BlogMythFact } from "./BlogMythFact";
+import { BlogChecklist } from "./BlogChecklist";
+import { BlogTechStack } from "./BlogTechStack";
+import { BlogMistakes } from "./BlogMistakes";
+import { BlogTakeaways } from "./BlogTakeaways";
+import { BlogAnnouncement } from "./BlogAnnouncement";
 import { ProjectManager, type Project } from "./ProjectManager";
 import { type ThemeMode, type AccentColor, type SlideData, type SlideType, getThemeBgColor } from "./types";
 import { db } from "./db";
@@ -257,9 +261,6 @@ export const CoverCreator = () => {
       case "cover":
         newSlide = { id: newId, type: "cover", title: "Nuevo Título", subtitle: "Nuevo Subtítulo", category: "TECH", iconChar: "🚀" };
         break;
-      case "cover-image":
-        newSlide = { id: newId, type: "cover-image", title: "Nueva Imagen", subtitle: "Subtítulo de la imagen", category: "PHOTO", imageUrl: "", imageFit: "contain" };
-        break;
       case "step":
         newSlide = { id: newId, type: "step", stepNumber: "01", title: "Nuevo Paso", description: "Descripción del paso..." };
         break;
@@ -281,8 +282,8 @@ export const CoverCreator = () => {
       case "list":
         newSlide = { id: newId, type: "list", title: "Resumen", items: ["Item 1", "Item 2"], bulletType: "bullet" };
         break;
-      case "quote":
-        newSlide = { id: newId, type: "quote", text: "La mejor forma de predecir el futuro es creándolo.", author: "Peter Drucker" };
+      case "highlight":
+        newSlide = { id: newId, type: "highlight", text: "La mejor forma de predecir el futuro es creándolo.", author: "Peter Drucker" };
         break;
       case "timeline":
         newSlide = { id: newId, type: "timeline", title: "Mi Ruta", events: [{ date: "2024", title: "Inicio", description: "Comenzando mi viaje..." }] };
@@ -299,8 +300,23 @@ export const CoverCreator = () => {
       case "definition":
         newSlide = { id: newId, type: "definition", term: "Término", phonetic: "/pronunciación/", definition: "Significado del término..." };
         break;
-      case "testimonial":
-        newSlide = { id: newId, type: "testimonial", quote: "Excelente contenido.", author: "Usuario", avatarUrl: "", rating: 5 };
+      case "myth-fact":
+        newSlide = { id: newId, type: "myth-fact", title: "Mito vs Realidad", myth: "El mito común...", fact: "La realidad es..." };
+        break;
+      case "checklist":
+        newSlide = { id: newId, type: "checklist", title: "Checklist", items: [{ text: "Paso 1", checked: true }, { text: "Paso 2", checked: false }] };
+        break;
+      case "tech-stack":
+        newSlide = { id: newId, type: "tech-stack", title: "Mi Stack", items: [{ name: "React", icon: "⚛️" }, { name: "TypeScript", icon: "📘" }, { name: "Node.js", icon: "🟢" }], cols: 3 };
+        break;
+      case "mistakes":
+        newSlide = { id: newId, type: "mistakes", title: "Errores Comunes", badCode: '// Mal\nvar x = 1;', goodCode: '// Bien\nconst x = 1;', badLabel: "Mal", goodLabel: "Bien", language: "javascript" };
+        break;
+      case "takeaways":
+        newSlide = { id: newId, type: "takeaways", title: "Puntos Clave", items: ["Punto 1", "Punto 2", "Punto 3"] };
+        break;
+      case "announcement":
+        newSlide = { id: newId, type: "announcement", badge: "NUEVO", title: "Anuncio", subtitle: "Descripción del anuncio..." };
         break;
       case "end":
         newSlide = { 
@@ -427,7 +443,6 @@ export const CoverCreator = () => {
 
     switch (slide.type) {
       case "cover": return <BlogCover {...slideProps as any} />;
-      case "cover-image": return <BlogCoverImage {...slideProps as any} />;
       case "step": return <BlogStep {...slideProps as any} />;
       case "comparison": return <BlogComparison {...slideProps as any} />;
       case "code": return <BlogCode {...slideProps as any} />;
@@ -436,13 +451,18 @@ export const CoverCreator = () => {
       case "alert": return <BlogAlert {...slideProps as any} />;
       case "metric": return <BlogMetric {...slideProps as any} />;
       case "list": return <BlogList {...slideProps as any} />;
-      case "quote": return <BlogQuote {...slideProps as any} />;
+      case "highlight": return <BlogHighlight {...slideProps as any} />;
       case "timeline": return <BlogTimeline {...slideProps as any} />;
       case "qna": return <BlogQnA {...slideProps as any} />;
       case "poll": return <BlogPoll {...slideProps as any} />;
       case "pros-cons": return <BlogProsCons {...slideProps as any} />;
       case "definition": return <BlogDefinition {...slideProps as any} />;
-      case "testimonial": return <BlogTestimonial {...slideProps as any} />;
+      case "myth-fact": return <BlogMythFact {...slideProps as any} />;
+      case "checklist": return <BlogChecklist {...slideProps as any} />;
+      case "tech-stack": return <BlogTechStack {...slideProps as any} />;
+      case "mistakes": return <BlogMistakes {...slideProps as any} />;
+      case "takeaways": return <BlogTakeaways {...slideProps as any} />;
+      case "announcement": return <BlogAnnouncement {...slideProps as any} />;
     }
   };
 
