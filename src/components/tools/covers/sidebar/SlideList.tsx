@@ -9,6 +9,7 @@ interface SlideListProps {
   addSlide: (type: SlideType) => void;
   removeSlide: (id: string) => void;
   moveSlide: (id: string, direction: "up" | "down") => void;
+  duplicateSlide: (id: string) => void;
 }
 
 export const SlideList: React.FC<SlideListProps> = ({
@@ -18,13 +19,17 @@ export const SlideList: React.FC<SlideListProps> = ({
   addSlide,
   removeSlide,
   moveSlide,
+  duplicateSlide,
 }) => (
   <div className="space-y-2">
     <div className="space-y-2">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
+          role="button"
+          tabIndex={0}
           onClick={() => setSelectedSlideId(slide.id)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedSlideId(slide.id); } }}
           className={`group flex items-center gap-3 p-3 rounded-xl cursor-pointer border-2 transition-all ${
             selectedSlideId === slide.id
               ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
@@ -37,18 +42,29 @@ export const SlideList: React.FC<SlideListProps> = ({
           </span>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); duplicateSlide(slide.id); }}
+              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-xs"
+              title="Duplicar (Ctrl+D)"
+            >
+              ⧉
+            </button>
+            <button
+              type="button"
               onClick={(e) => { e.stopPropagation(); moveSlide(slide.id, "up"); }}
               className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-xs"
             >
               ↑
             </button>
             <button
+              type="button"
               onClick={(e) => { e.stopPropagation(); moveSlide(slide.id, "down"); }}
               className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-xs"
             >
               ↓
             </button>
             <button
+              type="button"
               onClick={(e) => { e.stopPropagation(); removeSlide(slide.id); }}
               className="p-1 hover:bg-red-100 text-red-500 rounded text-xs"
             >

@@ -4,7 +4,7 @@ import type { SocialPreviewMode } from "./sidebar/types";
 import { GlobalSettings } from "./sidebar/GlobalSettings";
 import { SlideList, SlideAdder } from "./sidebar/SlideList";
 import { SlideEditor } from "./sidebar/SlideEditor";
-import { ExportActions } from "./sidebar/ExportActions";
+import { ExportActions, type ExportFormat } from "./sidebar/ExportActions";
 
 interface SidebarProps {
   mode: ThemeMode;
@@ -26,6 +26,11 @@ interface SidebarProps {
   addSlide: (type: SlideType) => void;
   removeSlide: (id: string) => void;
   moveSlide: (id: string, direction: "up" | "down") => void;
+  duplicateSlide: (id: string) => void;
+  exportFormat: ExportFormat;
+  setExportFormat: (format: ExportFormat) => void;
+  exportQuality: number;
+  setExportQuality: (quality: number) => void;
   onExportAll: () => void;
   onExportCurrent: () => void;
 }
@@ -50,6 +55,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   addSlide,
   removeSlide,
   moveSlide,
+  duplicateSlide,
+  exportFormat,
+  setExportFormat,
+  exportQuality,
+  setExportQuality,
   onExportAll,
   onExportCurrent,
 }) => {
@@ -59,7 +69,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="w-full lg:w-96 h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden">
       {/* Fixed header with export buttons */}
       <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 p-4 space-y-3">
-        <ExportActions onExportCurrent={onExportCurrent} onExportAll={onExportAll} />
+        <ExportActions
+          onExportCurrent={onExportCurrent}
+          onExportAll={onExportAll}
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          exportQuality={exportQuality}
+          setExportQuality={setExportQuality}
+        />
       </div>
 
       {/* Scrollable content */}
@@ -104,6 +121,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               addSlide={addSlide}
               removeSlide={removeSlide}
               moveSlide={moveSlide}
+              duplicateSlide={duplicateSlide}
             />
           </div>
         </details>

@@ -1,4 +1,4 @@
-import type { SlideData, SlideType } from "../types";
+import type { SlideType } from "../types";
 
 export type SocialPreviewMode = "threads" | "facebook" | "tiktok";
 

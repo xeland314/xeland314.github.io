@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { toJpeg } from "html-to-image";
+import { toJpeg, toPng } from "html-to-image";
 import JSZip from "jszip";
 import { Sidebar } from "./Sidebar";
+import type { ExportFormat } from "./sidebar/ExportActions";
 import { BlogCover } from "./BlogCover";
 import { BlogStep } from "./BlogStep";
 import { BlogComparison } from "./BlogComparison";
@@ -80,6 +81,8 @@ export const CoverCreator = () => {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<string>("default");
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("jpeg");
+  const [exportQuality, setExportQuality] = useState<number>(0.92);
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -159,97 +162,6 @@ export const CoverCreator = () => {
     if (!isLoaded) return;
     db.setItem(PROJECTS_KEY, projects).catch(e => console.error("Error saving projects:", e));
   }, [projects, isLoaded]);
-
-  const handleSaveProject = (name: string) => {
-    const newProject: Project = {
-      id: Math.random().toString(36).substr(2, 9),
-      name,
-      lastModified: Date.now(),
-      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId }
-    };
-    setProjects([...projects, newProject]);
-    setCurrentProjectId(newProject.id);
-  };
-
-  const handleLoadProject = (id: string) => {
-    const project = projects.find(p => p.id === id);
-    if (project) {
-      const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId } = project.data;
-      setMode(mode);
-      setAccent(accent);
-      setShowLogo(showLogo);
-      setLogoImage(logoImage);
-      setUsername(username);
-      setSlides(slides);
-      setSelectedSlideId(selectedSlideId);
-      setCurrentProjectId(id);
-    }
-  };
-
-  const handleDeleteProject = (id: string) => {
-    if (confirm("¿Estás seguro de que quieres eliminar este proyecto?")) {
-      setProjects(projects.filter(p => p.id !== id));
-      if (currentProjectId === id) {
-        setCurrentProjectId("default");
-      }
-    }
-  };
-
-  const handleNewProject = () => {
-    if (confirm("¿Crear un nuevo proyecto? Los cambios actuales se mantendrán en el proyecto actual.")) {
-      setMode("dark");
-      setAccent("blue");
-      setShowLogo(true);
-      setLogoImage("/assets/images/logo_v3.png");
-      setUsername("xeland314");
-      setSlides(INITIAL_SLIDES);
-      setSelectedSlideId(INITIAL_SLIDES[0].id);
-      setCurrentProjectId("default");
-    }
-  };
-
-  const handleReset = () => {
-    if (confirm("¿Estás seguro de que quieres restablecer el proyecto actual? Se perderán los cambios no guardados en este proyecto.")) {
-      setMode("dark");
-      setAccent("blue");
-      setShowLogo(true);
-      setLogoImage("/assets/images/logo_v3.png");
-      setUsername("xeland314");
-      setSlides(INITIAL_SLIDES);
-      setSelectedSlideId(INITIAL_SLIDES[0].id);
-    }
-  };
-
-  const handleExportProject = (id: string) => {
-    const project = projects.find(p => p.id === id);
-    if (!project) return;
-
-    const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `project-${project.name.replace(/\s+/g, "-").toLowerCase()}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleImportProject = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const project: Project = JSON.parse(e.target?.result as string);
-        // Clean up project ID to avoid collisions
-        project.id = Math.random().toString(36).substr(2, 9);
-        project.name = `${project.name} (Importado)`;
-        setProjects([...projects, project]);
-        alert("Proyecto importado con éxito");
-      } catch (err) {
-        console.error("Error importing project:", err);
-        alert("Error al importar el archivo JSON. Asegúrate de que es un formato válido.");
-      }
-    };
-    reader.readAsText(file);
-  };
 
   const theme = { mode, accent, showLogo, logoImage, username };
 
@@ -343,6 +255,18 @@ export const CoverCreator = () => {
     if (selectedSlideId === id) setSelectedSlideId(newSlides[0].id);
   };
 
+  const duplicateSlide = (id: string) => {
+    const slide = slides.find((s) => s.id === id);
+    if (!slide) return;
+    const newId = Math.random().toString(36).substr(2, 9);
+    const duplicate = { ...slide, id: newId } as SlideData;
+    const index = slides.findIndex((s) => s.id === id);
+    const newSlides = [...slides];
+    newSlides.splice(index + 1, 0, duplicate);
+    setSlides(newSlides);
+    setSelectedSlideId(newId);
+  };
+
   const updateSlide = (id: string, data: Partial<SlideData>) => {
     setSlides(slides.map((s) => (s.id === id ? { ...s, ...data } as SlideData : s)));
   };
@@ -354,6 +278,159 @@ export const CoverCreator = () => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     [newSlides[index], newSlides[targetIndex]] = [newSlides[targetIndex], newSlides[index]];
     setSlides(newSlides);
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!isLoaded) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in inputs
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT") {
+        return;
+      }
+
+      // Ctrl+D: Duplicate slide
+      if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+        e.preventDefault();
+        duplicateSlide(selectedSlideId);
+        return;
+      }
+
+      // Delete/Backspace: Remove slide
+      if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        removeSlide(selectedSlideId);
+        return;
+      }
+
+      // ArrowUp: Select previous slide
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const currentIndex = slides.findIndex(s => s.id === selectedSlideId);
+        if (currentIndex > 0) {
+          setSelectedSlideId(slides[currentIndex - 1].id);
+        }
+        return;
+      }
+
+      // ArrowDown: Select next slide
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const currentIndex = slides.findIndex(s => s.id === selectedSlideId);
+        if (currentIndex < slides.length - 1) {
+          setSelectedSlideId(slides[currentIndex + 1].id);
+        }
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLoaded, selectedSlideId, slides, duplicateSlide, removeSlide, setSelectedSlideId]);
+
+  const handleSaveProject = (name: string) => {
+    const newProject: Project = {
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      lastModified: Date.now(),
+      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId }
+    };
+    setProjects([...projects, newProject]);
+    setCurrentProjectId(newProject.id);
+  };
+
+  const handleLoadProject = (id: string) => {
+    const project = projects.find(p => p.id === id);
+    if (project) {
+      const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId } = project.data;
+      setMode(mode);
+      setAccent(accent);
+      setShowLogo(showLogo);
+      setLogoImage(logoImage);
+      setUsername(username);
+      setSlides(slides);
+      setSelectedSlideId(selectedSlideId);
+      setCurrentProjectId(id);
+    }
+  };
+
+  const handleDeleteProject = (id: string) => {
+    if (confirm("¿Estás seguro de que quieres eliminar este proyecto?")) {
+      setProjects(projects.filter(p => p.id !== id));
+      if (currentProjectId === id) {
+        setCurrentProjectId("default");
+      }
+    }
+  };
+
+  const handleDuplicateProject = (id: string) => {
+    const project = projects.find(p => p.id === id);
+    if (!project) return;
+    const newProject: Project = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: `${project.name} (Copia)`,
+      lastModified: Date.now(),
+      data: { ...project.data },
+    };
+    setProjects([...projects, newProject]);
+    setCurrentProjectId(newProject.id);
+  };
+
+  const handleNewProject = () => {
+    if (confirm("¿Crear un nuevo proyecto? Los cambios actuales se mantendrán en el proyecto actual.")) {
+      setMode("dark");
+      setAccent("blue");
+      setShowLogo(true);
+      setLogoImage("/assets/images/logo_v3.png");
+      setUsername("xeland314");
+      setSlides(INITIAL_SLIDES);
+      setSelectedSlideId(INITIAL_SLIDES[0].id);
+      setCurrentProjectId("default");
+    }
+  };
+
+  const handleReset = () => {
+    if (confirm("¿Estás seguro de que quieres restablecer el proyecto actual? Se perderán los cambios no guardados en este proyecto.")) {
+      setMode("dark");
+      setAccent("blue");
+      setShowLogo(true);
+      setLogoImage("/assets/images/logo_v3.png");
+      setUsername("xeland314");
+      setSlides(INITIAL_SLIDES);
+      setSelectedSlideId(INITIAL_SLIDES[0].id);
+    }
+  };
+
+  const handleExportProject = (id: string) => {
+    const project = projects.find(p => p.id === id);
+    if (!project) return;
+
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `project-${project.name.replace(/\s+/g, "-").toLowerCase()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportProject = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const project: Project = JSON.parse(e.target?.result as string);
+        // Clean up project ID to avoid collisions
+        project.id = Math.random().toString(36).substr(2, 9);
+        project.name = `${project.name} (Importado)`;
+        setProjects([...projects, project]);
+        alert("Proyecto importado con éxito");
+      } catch (err) {
+        console.error("Error importing project:", err);
+        alert("Error al importar el archivo JSON. Asegúrate de que es un formato válido.");
+      }
+    };
+    reader.readAsText(file);
   };
 
   const previewSettings = SOCIAL_PREVIEW_MODES[previewMode];
@@ -370,11 +447,13 @@ export const CoverCreator = () => {
       // Temporarily set scale to 1 for clean capture
       canvas.style.transform = "scale(1)";
 
-      const dataUrl = await toJpeg(canvas, { 
+      const toImage = exportFormat === "png" ? toPng : toJpeg;
+      const ext = exportFormat === "png" ? "png" : "jpg";
+      const dataUrl = await toImage(canvas, { 
         pixelRatio: 1, 
         width: previewSettings.width,
         height: previewSettings.height,
-        quality: 1,
+        quality: exportFormat === "jpeg" ? exportQuality : undefined,
         cacheBust: true,
         backgroundColor: getThemeBgColor(mode),
       });
@@ -383,7 +462,7 @@ export const CoverCreator = () => {
       canvas.style.transform = originalTransform;
 
       const link = document.createElement("a");
-      link.download = `${previewSettings.label.toLowerCase()}-slide-${selectedSlideId}.jpg`;
+      link.download = `${previewSettings.label.toLowerCase()}-slide-${selectedSlideId}.${ext}`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -395,6 +474,9 @@ export const CoverCreator = () => {
     const zip = new JSZip();
     const folder = zip.folder("slides");
     if (!folder) return;
+
+    const toImage = exportFormat === "png" ? toPng : toJpeg;
+    const ext = exportFormat === "png" ? "png" : "jpg";
 
     for (let i = 0; i < slides.length; i++) {
       const slide = slides[i];
@@ -409,11 +491,11 @@ export const CoverCreator = () => {
           const originalTransform = canvas.style.transform;
           canvas.style.transform = "scale(1)";
 
-          const dataUrl = await toJpeg(canvas, { 
+          const dataUrl = await toImage(canvas, { 
             pixelRatio: 1, 
             width: previewSettings.width,
             height: previewSettings.height,
-            quality: 1,
+            quality: exportFormat === "jpeg" ? exportQuality : undefined,
             cacheBust: true,
             backgroundColor: getThemeBgColor(mode),
           });
@@ -421,7 +503,7 @@ export const CoverCreator = () => {
           canvas.style.transform = originalTransform;
 
           const base64Data = dataUrl.split(",")[1];
-          folder.file(`${previewSettings.label.toLowerCase()}-slide-${i + 1}-${slide.type}.jpg`, base64Data, { base64: true });
+          folder.file(`${previewSettings.label.toLowerCase()}-slide-${i + 1}-${slide.type}.${ext}`, base64Data, { base64: true });
         }
       }
     }
@@ -463,6 +545,7 @@ export const CoverCreator = () => {
       case "mistakes": return <BlogMistakes {...slideProps as any} />;
       case "takeaways": return <BlogTakeaways {...slideProps as any} />;
       case "announcement": return <BlogAnnouncement {...slideProps as any} />;
+      default: return <div className="w-full h-full flex items-center justify-center text-gray-400">Tipo no soportado: {(slide as any).type}</div>;
     }
   };
 
@@ -480,6 +563,7 @@ export const CoverCreator = () => {
           onNew={handleNewProject}
           onExport={handleExportProject}
           onImport={handleImportProject}
+          onDuplicate={handleDuplicateProject}
         />
         <Sidebar
           mode={mode}
@@ -501,6 +585,11 @@ export const CoverCreator = () => {
           addSlide={addSlide}
           removeSlide={removeSlide}
           moveSlide={moveSlide}
+          duplicateSlide={duplicateSlide}
+          exportFormat={exportFormat}
+          setExportFormat={setExportFormat}
+          exportQuality={exportQuality}
+          setExportQuality={setExportQuality}
           onExportAll={handleExportAll}
           onExportCurrent={handleExportCurrent}
         />
@@ -530,9 +619,6 @@ export const CoverCreator = () => {
           <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white dark:bg-gray-800 px-6 py-3 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
              <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">
                Previsualizando {slides.indexOf(selectedSlide) + 1} de {slides.length}
-             </span>
-             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-               Vista: {previewSettings.label} — {previewSettings.width}×{previewSettings.height}
              </span>
              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                Vista: {previewSettings.label} — {previewSettings.width}×{previewSettings.height}
