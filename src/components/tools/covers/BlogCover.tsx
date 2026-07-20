@@ -26,61 +26,107 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
   const s = getThemeStyles(theme.mode);
 
   return (
-    <div
-      className="flex items-center justify-center overflow-hidden font-sans w-full h-full"
-    >
+    <div className="flex items-center justify-center overflow-hidden font-sans w-full h-full">
       <div ref={wrapperRef} className="relative">
         <div
           ref={canvasRef}
           data-export-canvas="true"
           className={`relative overflow-hidden flex flex-col items-center justify-center p-12 ${s.bg} ${s.text} shadow-2xl origin-top-left`}
-          style={{ width: `${previewWidth}px`, height: `${previewHeight}px`, flexShrink: 0 }}
+          style={{
+            width: `${previewWidth}px`,
+            height: `${previewHeight}px`,
+            flexShrink: 0,
+          }}
         >
-          {/* Background Ambient Blobs */}
-          <div
-            className={`absolute top-0 left-0 w-[500px] h-[500px] ${c.bg}/10 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2 pointer-events-none`}
-          />
-          <div
-            className={`absolute bottom-0 right-0 w-[500px] h-[500px] ${c.bg}/10 rounded-full blur-[150px] translate-x-1/3 translate-y-1/3 pointer-events-none`}
-          />
-
-          {/* Pattern Overlay */}
-          <div
-            className={`absolute inset-0 opacity-[0.07] pointer-events-none`}
-            style={{
-              backgroundImage: `radial-gradient(${s.overlay} 1px, transparent 1px)`,
-              backgroundSize: "40px 40px",
-            }}
-          />
-
-          <div className="relative z-10 flex flex-col items-center text-center">
-            {/* Category Badge */}
+          {/* Enhanced Background Effects */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Ambient glow orbs */}
             <div
-              className={`mb-8 px-6 py-2 rounded-full border ${s.badge} backdrop-blur-md shadow-xl`}
-            >
-              <span
-                className={`${c.textAccent} font-bold tracking-[0.3em] uppercase text-2xl font-mono flex items-center gap-3`}
+              className={`absolute -top-40 -left-40 w-[600px] h-[600px] ${c.bg}/15 rounded-full blur-[150px]`}
+            />
+            <div
+              className={`absolute -bottom-20 -right-20 w-[500px] h-[500px] ${c.bg}/10 rounded-full blur-[120px]`}
+            />
+            <div
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] ${c.bg}/5 rounded-full blur-[100px]`}
+            />
+
+            {/* Subtle grid pattern */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]" />
+
+            {/* Decorative floating shapes */}
+            <div
+              className={`absolute top-32 right-32 w-24 h-24 border-4 ${c.border}/20 rounded-2xl rotate-12`}
+            />
+            <div
+              className={`absolute bottom-48 left-24 w-16 h-16 ${c.bg}/20 rounded-full blur-sm`}
+            />
+            <div
+              className={`absolute top-40 right-40 w-16 h-16 ${c.bg}/15 rounded-lg rotate-45`}
+            />
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center text-center max-w-5xl">
+            {/* Enhanced Category Badge */}
+            <div className="mb-10 relative group">
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${c.gradient} rounded-full blur-lg opacity-40 group-hover:opacity-60 transition-opacity`}
+              />
+              <div
+                className={`relative px-8 py-3 rounded-full border-2 ${c.border}/40 ${s.bg || "bg-white/10"} backdrop-blur-md shadow-xl`}
               >
-                <span className={`w-3 h-3 rounded-full ${c.bg}`}></span>
-                {category}
-              </span>
+                <span
+                  className={`${c.textAccent} font-bold tracking-[0.3em] uppercase text-2xl font-mono flex items-center gap-3`}
+                >
+                  <span
+                    className={`w-3 h-3 rounded-full ${c.bg} animate-pulse`}
+                  ></span>
+                  {category}
+                </span>
+              </div>
             </div>
 
-            {/* Main Icon */}
-            <div
-              className={`mb-12 w-48 h-48 rounded-[3rem] flex items-center justify-center shadow-2xl ${c.shadow} border ${s.iconBg}`}
-            >
-              <span className="text-[100px]">{iconChar}</span>
+            {/* Main Icon as Hero Element */}
+            <div className="mb-14 relative group">
+              {/* Outer deep glow */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-tr ${c.gradient} rounded-[3rem] blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500`}
+              />
+
+              {/* Gradient border frame */}
+              <div
+                className={`relative p-1.5 rounded-[3rem] bg-gradient-to-tr ${c.gradient} shadow-2xl transform hover:scale-105 transition-transform duration-500`}
+              >
+                {/* Inner container */}
+                <div
+                  className={`relative w-48 h-48 rounded-[2.75rem] ${s.bg || "bg-black/40"} flex items-center justify-center backdrop-blur-sm overflow-hidden`}
+                >
+                  {/* Inner subtle gradient wash */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${c.gradient} opacity-10`}
+                  />
+
+                  {/* The Icon */}
+                  <span className="relative text-[110px] drop-shadow-2xl transform group-hover:scale-110 transition-transform duration-500">
+                    {iconChar}
+                  </span>
+                </div>
+              </div>
             </div>
 
+            {/* Title with enhanced gradient and shadow */}
             <h1
-              className={`text-8xl font-inter font-black text-transparent bg-clip-text bg-gradient-to-br ${c.gradient} mb-8 tracking-tight leading-tight max-w-4xl`}
+              className={`text-8xl font-inter font-black text-transparent bg-clip-text bg-gradient-to-br ${c.gradient} mb-8 tracking-tight leading-tight max-w-4xl drop-shadow-2xl`}
             >
               {title}
             </h1>
 
-            <div className={`h-2 w-32 ${c.bg} rounded-full mb-10 opacity-80`} />
+            {/* Gradient divider */}
+            <div
+              className={`h-2 w-32 rounded-full bg-gradient-to-r ${c.gradient} mb-10 opacity-80 shadow-lg`}
+            />
 
+            {/* Subtitle */}
             <h2
               className={`text-4xl font-bold ${s.sub} max-w-3xl leading-snug tracking-tight`}
             >
@@ -88,21 +134,58 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
             </h2>
           </div>
 
-          {/* Footer Brand */}
-          <div className="absolute bottom-12 flex items-center gap-4">
-            {theme.showLogo && (
-              <img
-                src={theme.logoImage}
-                alt="Logo"
-                className={`w-14 h-14 rounded-xl border ${theme.mode === "midnight" || theme.mode === "dark" ? "border-slate-600" : "border-slate-300"} object-cover`}
-              />
-            )}
-            <span
-              className={`${s.footer} font-mono text-xl tracking-[0.2em] font-bold`}
+          {/* Enhanced Footer Brand */}
+          <div className="absolute bottom-12 left-0 right-0 px-20">
+            <div
+              className={`flex items-center justify-between py-4 px-8 rounded-2xl ${s.bg || "bg-black/20"} border border-white/10 backdrop-blur-md shadow-lg max-w-4xl mx-auto`}
             >
-              {theme.username}
-            </span>
+              <div className="flex items-center gap-4">
+                <span
+                  className={`${s.footer} font-mono text-3xl tracking-[0.2em] font-bold`}
+                >
+                  {theme.username}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-4">
+                {/* Decorative tech dots */}
+                <div className="flex gap-2">
+                  <div
+                    className={`w-3 h-3 rounded-full ${c.bg} animate-pulse`}
+                  />
+                  <div className={`w-3 h-3 rounded-full ${c.bg}/40`} />
+                  <div className={`w-3 h-3 rounded-full ${c.bg}/20`} />
+                </div>
+
+                {theme.showLogo && (
+                  <div
+                    className={`p-1.5 rounded-xl bg-gradient-to-tr ${c.gradient} shadow-md`}
+                  >
+                    <img
+                      src={theme.logoImage}
+                      alt="Logo"
+                      className="w-20 h-20 rounded-lg object-cover border border-white/20"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+
+          {/* Corner decorations for framing */}
+          <div
+            className={`absolute top-8 left-8 w-16 h-16 border-t-4 border-l-4 ${c.border}/30 rounded-tl-2xl`}
+          />
+          <div
+            className={`absolute top-8 right-8 w-16 h-16 border-t-4 border-r-4 ${c.border}/30 rounded-tr-2xl`}
+          />
+          <div
+            className={`absolute bottom-28 left-8 w-16 h-16 border-b-4 border-l-4 ${c.border}/30 rounded-bl-2xl`}
+          />
+          <div
+            className={`absolute bottom-28 right-8 w-16 h-16 border-b-4 border-r-4 ${c.border}/30 rounded-br-2xl`}
+          />
         </div>
       </div>
     </div>
