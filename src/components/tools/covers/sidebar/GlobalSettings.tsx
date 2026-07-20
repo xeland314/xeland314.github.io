@@ -15,6 +15,7 @@ const THEME_OPTIONS: { value: ThemeMode; label: string; bg: string; dot: string 
   { value: "ambercat", label: "Ambercat", bg: "bg-[#1e1e1e]", dot: "bg-[#3c3836] border border-[#fabd2f]" },
   { value: "rose", label: "Rose", bg: "bg-[#1f1f1f]", dot: "bg-[#3e3e3e] border border-[#f38ba8]" },
   { value: "blue", label: "Blue", bg: "bg-[#0c0c2b]", dot: "bg-[#1e1e7e] border border-[#89b4fa]" },
+  { value: "obsidian", label: "Obsidian", bg: "bg-[#09090b]", dot: "bg-zinc-900 border border-zinc-700" },
 ];
 
 const PREVIEW_OPTIONS: { value: SocialPreviewMode; label: string; hint: string }[] = [

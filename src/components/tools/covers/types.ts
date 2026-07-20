@@ -1,4 +1,4 @@
-export type ThemeMode = "light" | "dark" | "midnight" | "soft" |  "catppuccin" | "ambercat" | "rose" | "blue";
+export type ThemeMode = "light" | "dark" | "midnight" | "soft" | "catppuccin" | "ambercat" | "rose" | "blue" | "obsidian";
 
 export type AccentColor =
   | "blue"
@@ -12,7 +12,12 @@ export type AccentColor =
   | "cyan"
   | "teal"
   | "pink"
-  | "slate";
+  | "slate"
+  | "violet"
+  | "lime"
+  | "red"
+  | "amber"
+  | "fuchsia";
 
 export interface ThemeConfig {
   mode: ThemeMode;
@@ -155,6 +160,21 @@ export const THEME_STYLES: Record<ThemeMode, ThemeStyles> = {
     actionBg: "bg-blue-950 border-blue-900",
     prismTheme: "dark",
   },
+  // Obsidian — negro ultra premium, zinc profundo, estilo Apple Pro / Vercel
+  obsidian: {
+    bg: "bg-[#09090b]",
+    text: "text-zinc-100",
+    sub: "text-zinc-400",
+    footer: "text-zinc-600",
+    badge: "border-zinc-800 bg-zinc-900/80",
+    iconBg: "border-zinc-800 bg-zinc-900/50",
+    card: "bg-zinc-900/40 border-zinc-800/60",
+    window: "border-zinc-800 bg-[#0c0c0e]",
+    windowHeader: "bg-zinc-900",
+    overlay: "#ffffff",
+    actionBg: "bg-zinc-900 border-zinc-800",
+    prismTheme: "dark",
+  },
 };
 
 export const getThemeStyles = (mode: ThemeMode): ThemeStyles => {
@@ -171,6 +191,7 @@ export const THEME_BG_COLORS: Record<ThemeMode, string> = {
   ambercat: "#2e1f14",
   rose: "#260d14",
   blue: "#0f172a",
+  obsidian: "#09090b",
 };
 
 export const getThemeBgColor = (mode: ThemeMode): string => {
@@ -479,5 +500,40 @@ export const ACCENT_COLORS = {
     bg: "bg-slate-500",
     shadow: "shadow-slate-500/20",
     border: "border-slate-500/30",
+  },
+  violet: {
+    gradient: "from-violet-600 to-purple-400",
+    textAccent: "text-violet-500 dark:text-violet-400",
+    bg: "bg-violet-500",
+    shadow: "shadow-violet-500/20",
+    border: "border-violet-500/30",
+  },
+  lime: {
+    gradient: "from-lime-500 to-green-400",
+    textAccent: "text-lime-500 dark:text-lime-400",
+    bg: "bg-lime-500",
+    shadow: "shadow-lime-500/20",
+    border: "border-lime-500/30",
+  },
+  red: {
+    gradient: "from-red-600 to-orange-400",
+    textAccent: "text-red-500 dark:text-red-400",
+    bg: "bg-red-500",
+    shadow: "shadow-red-500/20",
+    border: "border-red-500/30",
+  },
+  amber: {
+    gradient: "from-amber-500 to-yellow-400",
+    textAccent: "text-amber-500 dark:text-amber-400",
+    bg: "bg-amber-500",
+    shadow: "shadow-amber-500/20",
+    border: "border-amber-500/30",
+  },
+  fuchsia: {
+    gradient: "from-fuchsia-600 to-pink-400",
+    textAccent: "text-fuchsia-500 dark:text-fuchsia-400",
+    bg: "bg-fuchsia-500",
+    shadow: "shadow-fuchsia-500/20",
+    border: "border-fuchsia-500/30",
   },
 };
