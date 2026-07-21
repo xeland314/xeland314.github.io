@@ -1,334 +1,400 @@
 ---
+
 ---
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>El Intruso — Detector de elemento exclusivo</title>
-<style>
-  :root{
-    --paper: #EAF1F3;
-    --grid: #D3E0E4;
-    --ink: #33393E;
-    --ink-soft: #6B7680;
-    --pencil: #8B98A3;
-    --pen-red: #C4392B;
-    --pen-red-soft: #F6DEDA;
-    --ok-green: #3E7B5E;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:
-      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/100% 32px,
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 100%,
-      var(--paper);
-    color:var(--ink);
-    font-family: "Courier New", ui-monospace, monospace;
-    padding: 40px 20px;
-    min-height:100vh;
-  }
-  .sheet{
-    max-width: 720px;
-    margin: 0 auto;
-    background: rgba(255,255,255,0.55);
-    border: 1px solid var(--grid);
-    border-radius: 4px;
-    padding: 32px 36px;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.03);
-  }
-  .eyebrow{
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    color: var(--pencil);
-    text-transform: uppercase;
-    margin: 0 0 6px 0;
-  }
-  h1{
-    font-family: Georgia, "Times New Roman", serif;
-    font-weight: 700;
-    font-size: 28px;
-    margin: 0 0 6px 0;
-    color: var(--ink);
-  }
-  .sub{
-    color: var(--ink-soft);
-    font-family: Georgia, serif;
-    font-size: 14.5px;
-    line-height: 1.5;
-    margin: 0 0 26px 0;
-    max-width: 56ch;
-  }
-  label{
-    display:block;
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
-  }
-  textarea{
-    width: 100%;
-    min-height: 110px;
-    background: #fff;
-    border: 1px solid var(--grid);
-    border-radius: 3px;
-    padding: 12px 14px;
-    font-family: inherit;
-    font-size: 16px;
-    letter-spacing: 0.04em;
-    color: var(--ink);
-    resize: vertical;
-  }
-  textarea:focus, button:focus-visible{
-    outline: 2px solid var(--pen-red);
-    outline-offset: 1px;
-  }
-  .hint{
-    font-size: 11.5px;
-    color: var(--pencil);
-    margin-top: 6px;
-    font-family: Georgia, serif;
-    font-style: italic;
-  }
-  .row{ margin-bottom: 22px; }
-  button{
-    font-family: Georgia, serif;
-    font-weight: 700;
-    font-size: 14px;
-    background: var(--ink);
-    color: #fff;
-    border: none;
-    padding: 11px 22px;
-    border-radius: 3px;
-    cursor: pointer;
-    letter-spacing: 0.02em;
-  }
-  button:hover{ background: #1f2428; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>El Intruso — Detector de elemento exclusivo</title>
+    <style>
+      :root {
+        --paper: #eaf1f3;
+        --grid: #d3e0e4;
+        --ink: #33393e;
+        --ink-soft: #6b7680;
+        --pencil: #8b98a3;
+        --pen-red: #c4392b;
+        --pen-red-soft: #f6deda;
+        --ok-green: #3e7b5e;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background:
+          linear-gradient(var(--grid) 1px, transparent 1px) 0 0/100% 32px,
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 100%,
+          var(--paper);
+        color: var(--ink);
+        font-family: "Courier New", ui-monospace, monospace;
+        padding: 40px 20px;
+        min-height: 100vh;
+      }
+      .sheet {
+        max-width: 720px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid var(--grid);
+        border-radius: 4px;
+        padding: 32px 36px;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        color: var(--pencil);
+        text-transform: uppercase;
+        margin: 0 0 6px 0;
+      }
+      h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        font-size: 28px;
+        margin: 0 0 6px 0;
+        color: var(--ink);
+      }
+      .sub {
+        color: var(--ink-soft);
+        font-family: Georgia, serif;
+        font-size: 14.5px;
+        line-height: 1.5;
+        margin: 0 0 26px 0;
+        max-width: 56ch;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        margin-bottom: 8px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 110px;
+        background: #fff;
+        border: 1px solid var(--grid);
+        border-radius: 3px;
+        padding: 12px 14px;
+        font-family: inherit;
+        font-size: 16px;
+        letter-spacing: 0.04em;
+        color: var(--ink);
+        resize: vertical;
+      }
+      textarea:focus,
+      button:focus-visible {
+        outline: 2px solid var(--pen-red);
+        outline-offset: 1px;
+      }
+      .hint {
+        font-size: 11.5px;
+        color: var(--pencil);
+        margin-top: 6px;
+        font-family: Georgia, serif;
+        font-style: italic;
+      }
+      .row {
+        margin-bottom: 22px;
+      }
+      button {
+        font-family: Georgia, serif;
+        font-weight: 700;
+        font-size: 14px;
+        background: var(--ink);
+        color: #fff;
+        border: none;
+        padding: 11px 22px;
+        border-radius: 3px;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+      }
+      button:hover {
+        background: #1f2428;
+      }
 
-  #resultado{ margin-top: 30px; }
-  .empty{ color: var(--pencil); font-family: Georgia, serif; font-size: 14px; }
+      #resultado {
+        margin-top: 30px;
+      }
+      .empty {
+        color: var(--pencil);
+        font-family: Georgia, serif;
+        font-size: 14px;
+      }
 
-  .groups{
-    display:flex; flex-direction:column; gap:10px;
-    margin: 18px 0 22px 0;
-  }
-  .group-row{
-    display:flex; align-items:center; gap:14px;
-    padding: 8px 10px;
-    border-radius: 3px;
-  }
-  .group-row.candidate{ background: rgba(196,57,43,0.06); }
-  .group-idx{
-    font-family: Georgia, serif;
-    font-style: italic;
-    color: var(--pencil);
-    font-size: 12px;
-    width: 18px;
-    flex-shrink:0;
-  }
-  .word{
-    font-size: 19px;
-    letter-spacing: 0.12em;
-    position: relative;
-  }
-  .word .char{ position: relative; padding: 0 1px; }
-  .word .char.exclusive{ color: var(--pen-red); font-weight: 700; }
-  .word .char.exclusive::after{
-    content:"";
-    position:absolute;
-    left:-3px; right:-3px; top:-4px; bottom:-3px;
-    border: 1.5px solid var(--pen-red);
-    border-radius: 50%;
-    transform: rotate(-4deg);
-  }
-  .badge{
-    font-family: Georgia, serif;
-    font-size: 11px;
-    color: var(--ink-soft);
-  }
-  .verdict{
-    border-top: 1px dashed var(--grid);
-    padding-top: 20px;
-    margin-top: 6px;
-  }
-  .verdict .answer{
-    display:flex;
-    align-items:baseline;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .answer .mark{
-    color: var(--pen-red);
-    font-family: Georgia, serif;
-    font-weight: 700;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .answer .word-big{
-    font-size: 24px;
-    color: var(--pen-red);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-  }
-  .reasoning{
-    font-family: Georgia, serif;
-    font-size: 14.5px;
-    line-height: 1.65;
-    color: var(--ink);
-  }
-  .reasoning code{
-    background: #fff;
-    border: 1px solid var(--grid);
-    border-radius: 2px;
-    padding: 1px 5px;
-    font-family: inherit;
-    color: var(--ink);
-  }
-  details{
-    margin-top: 22px;
-    font-family: Georgia, serif;
-    font-size: 13px;
-  }
-  summary{
-    cursor:pointer;
-    color: var(--ink-soft);
-    letter-spacing: 0.02em;
-  }
-  table{
-    width:100%;
-    border-collapse: collapse;
-    margin-top: 12px;
-    font-family: "Courier New", monospace;
-    font-size: 13px;
-  }
-  th, td{
-    border-bottom: 1px solid var(--grid);
-    text-align: left;
-    padding: 6px 8px;
-  }
-  th{ color: var(--ink-soft); font-weight: 600; font-family: Georgia, serif; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
-  .count-shared{ color: var(--pencil); }
-  .count-unique{ color: var(--pen-red); font-weight: 700; }
-</style>
-</head>
-<body>
-  <div class="sheet">
-    <p class="eyebrow">Razonamiento verbal · elemento exclusivo</p>
-    <h1>El Intruso</h1>
-    <p class="sub">Pega los grupos de letras o números. La herramienta marca, en cada grupo, el elemento que no aparece en ningún otro — y explica cuál es la respuesta preferida cuando hay más de un candidato.</p>
+      .groups {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 18px 0 22px 0;
+      }
+      .group-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 8px 10px;
+        border-radius: 3px;
+      }
+      .group-row.candidate {
+        background: rgba(196, 57, 43, 0.06);
+      }
+      .group-idx {
+        font-family: Georgia, serif;
+        font-style: italic;
+        color: var(--pencil);
+        font-size: 12px;
+        width: 18px;
+        flex-shrink: 0;
+      }
+      .word {
+        font-size: 19px;
+        letter-spacing: 0.12em;
+        position: relative;
+      }
+      .word .char {
+        position: relative;
+        padding: 0 1px;
+      }
+      .word .char.exclusive {
+        color: var(--pen-red);
+        font-weight: 700;
+      }
+      .word .char.exclusive::after {
+        content: "";
+        position: absolute;
+        left: -3px;
+        right: -3px;
+        top: -4px;
+        bottom: -3px;
+        border: 1.5px solid var(--pen-red);
+        border-radius: 50%;
+        transform: rotate(-4deg);
+      }
+      .badge {
+        font-family: Georgia, serif;
+        font-size: 11px;
+        color: var(--ink-soft);
+      }
+      .verdict {
+        border-top: 1px dashed var(--grid);
+        padding-top: 20px;
+        margin-top: 6px;
+      }
+      .verdict .answer {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .answer .mark {
+        color: var(--pen-red);
+        font-family: Georgia, serif;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .answer .word-big {
+        font-size: 24px;
+        color: var(--pen-red);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+      }
+      .reasoning {
+        font-family: Georgia, serif;
+        font-size: 14.5px;
+        line-height: 1.65;
+        color: var(--ink);
+      }
+      .reasoning code {
+        background: #fff;
+        border: 1px solid var(--grid);
+        border-radius: 2px;
+        padding: 1px 5px;
+        font-family: inherit;
+        color: var(--ink);
+      }
+      details {
+        margin-top: 22px;
+        font-family: Georgia, serif;
+        font-size: 13px;
+      }
+      summary {
+        cursor: pointer;
+        color: var(--ink-soft);
+        letter-spacing: 0.02em;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-family: "Courier New", monospace;
+        font-size: 13px;
+      }
+      th,
+      td {
+        border-bottom: 1px solid var(--grid);
+        text-align: left;
+        padding: 6px 8px;
+      }
+      th {
+        color: var(--ink-soft);
+        font-weight: 600;
+        font-family: Georgia, serif;
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .count-shared {
+        color: var(--pencil);
+      }
+      .count-unique {
+        color: var(--pen-red);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sheet">
+      <p class="eyebrow">Razonamiento verbal · elemento exclusivo</p>
+      <h1>El Intruso</h1>
+      <p class="sub">
+        Pega los grupos de letras o números. La herramienta marca, en cada
+        grupo, el elemento que no aparece en ningún otro — y explica cuál es la
+        respuesta preferida cuando hay más de un candidato.
+      </p>
 
-    <div class="row">
-      <label for="input-groups">Grupos (uno por línea, o separados por coma)</label>
-      <textarea id="input-groups" placeholder="NMOPS
+      <div class="row">
+        <label for="input-groups"
+          >Grupos (uno por línea, o separados por coma)</label
+        >
+        <textarea id="input-groups" placeholder="NMOPS
 MSOPQ
 PQRSM
-QRSPM"></textarea>
-      <p class="hint">Funciona igual con números o combinaciones alfanuméricas.</p>
+QRSPM"
+        ></textarea>
+        <p class="hint">
+          Funciona igual con números o combinaciones alfanuméricas.
+        </p>
+      </div>
+
+      <button id="btn-analizar">Analizar grupos</button>
+
+      <div id="resultado"></div>
     </div>
 
-    <button id="btn-analizar">Analizar grupos</button>
-
-    <div id="resultado"></div>
-  </div>
-
-<script is:inline>
-function parseGroups(raw) {
-  return raw
-    .split(/[\n,]/)
-    .map(s => s.trim().toUpperCase())
-    .filter(s => s.length > 0);
-}
-
-function analyze(groups) {
-  // map: char -> Set of group indices that contain it
-  const owners = new Map();
-  groups.forEach((word, gi) => {
-    const seen = new Set(word.split(''));
-    seen.forEach(ch => {
-      if (!owners.has(ch)) owners.set(ch, new Set());
-      owners.get(ch).add(gi);
-    });
-  });
-
-  // for each group, find chars that belong ONLY to it
-  const perGroup = groups.map((word, gi) => {
-    const exclusiveChars = [];
-    [...new Set(word.split(''))].forEach(ch => {
-      if (owners.get(ch).size === 1) {
-        exclusiveChars.push({ ch, pos: word.indexOf(ch) });
+    <script is:inline>
+      function parseGroups(raw) {
+        return raw
+          .split(/[\n,]/)
+          .map((s) => s.trim().toUpperCase())
+          .filter((s) => s.length > 0);
       }
-    });
-    exclusiveChars.sort((a, b) => a.pos - b.pos);
-    return { gi, word, exclusiveChars };
-  });
 
-  const candidates = perGroup.filter(g => g.exclusiveChars.length > 0);
-  let winner = null;
-  if (candidates.length > 0) {
-    winner = candidates.reduce((best, cur) => {
-      const curPos = cur.exclusiveChars[0].pos;
-      const bestPos = best.exclusiveChars[0].pos;
-      if (curPos < bestPos) return cur;
-      if (curPos === bestPos && cur.gi < best.gi) return cur;
-      return best;
-    });
-  }
+      function analyze(groups) {
+        // map: char -> Set of group indices that contain it
+        const owners = new Map();
+        groups.forEach((word, gi) => {
+          const seen = new Set(word.split(""));
+          seen.forEach((ch) => {
+            if (!owners.has(ch)) owners.set(ch, new Set());
+            owners.get(ch).add(gi);
+          });
+        });
 
-  return { owners, perGroup, candidates, winner };
-}
+        // for each group, find chars that belong ONLY to it
+        const perGroup = groups.map((word, gi) => {
+          const exclusiveChars = [];
+          [...new Set(word.split(""))].forEach((ch) => {
+            if (owners.get(ch).size === 1) {
+              exclusiveChars.push({ ch, pos: word.indexOf(ch) });
+            }
+          });
+          exclusiveChars.sort((a, b) => a.pos - b.pos);
+          return { gi, word, exclusiveChars };
+        });
 
-function renderWord(word, exclusiveChars) {
-  const exclusivePositions = new Set(exclusiveChars.map(e => e.pos));
-  return word.split('').map((ch, i) =>
-    `<span class="char${exclusivePositions.has(i) ? ' exclusive' : ''}">${ch}</span>`
-  ).join('');
-}
+        const candidates = perGroup.filter((g) => g.exclusiveChars.length > 0);
+        let winner = null;
+        if (candidates.length > 0) {
+          winner = candidates.reduce((best, cur) => {
+            const curPos = cur.exclusiveChars[0].pos;
+            const bestPos = best.exclusiveChars[0].pos;
+            if (curPos < bestPos) return cur;
+            if (curPos === bestPos && cur.gi < best.gi) return cur;
+            return best;
+          });
+        }
 
-function render(groups, analysis) {
-  const container = document.getElementById('resultado');
-  const { owners, perGroup, candidates, winner } = analysis;
+        return { owners, perGroup, candidates, winner };
+      }
 
-  if (candidates.length === 0) {
-    container.innerHTML = `<p class="empty">Ningún grupo tiene un elemento que esté ausente en todos los demás. Revisa los datos, o puede que este set no siga ese patrón.</p>`;
-    return;
-  }
+      function renderWord(word, exclusiveChars) {
+        const exclusivePositions = new Set(exclusiveChars.map((e) => e.pos));
+        return word
+          .split("")
+          .map(
+            (ch, i) =>
+              `<span class="char${exclusivePositions.has(i) ? " exclusive" : ""}">${ch}</span>`,
+          )
+          .join("");
+      }
 
-  const groupsHtml = perGroup.map(g => {
-    const isCandidate = g.exclusiveChars.length > 0;
-    return `
-      <div class="group-row${isCandidate ? ' candidate' : ''}">
+      function render(groups, analysis) {
+        const container = document.getElementById("resultado");
+        const { owners, perGroup, candidates, winner } = analysis;
+
+        if (candidates.length === 0) {
+          container.innerHTML = `<p class="empty">Ningún grupo tiene un elemento que esté ausente en todos los demás. Revisa los datos, o puede que este set no siga ese patrón.</p>`;
+          return;
+        }
+
+        const groupsHtml = perGroup
+          .map((g) => {
+            const isCandidate = g.exclusiveChars.length > 0;
+            return `
+      <div class="group-row${isCandidate ? " candidate" : ""}">
         <span class="group-idx">${g.gi + 1}</span>
         <span class="word">${renderWord(g.word, g.exclusiveChars)}</span>
-        ${isCandidate ? `<span class="badge">exclusivo: ${g.exclusiveChars.map(e => `${e.ch} (pos. ${e.pos + 1})`).join(', ')}</span>` : ''}
+        ${isCandidate ? `<span class="badge">exclusivo: ${g.exclusiveChars.map((e) => `${e.ch} (pos. ${e.pos + 1})`).join(", ")}</span>` : ""}
       </div>`;
-  }).join('');
+          })
+          .join("");
 
-  let reasoningHtml;
-  if (candidates.length === 1) {
-    const w = winner;
-    const first = w.exclusiveChars[0];
-    reasoningHtml = `La letra <code>${first.ch}</code> es la única de todo el conjunto que aparece en un solo grupo — el grupo ${w.gi + 1} (<code>${w.word}</code>), en la posición ${first.pos + 1}. Ningún otro grupo tiene un elemento exclusivo, así que no hay ambigüedad.`;
-  } else {
-    const others = candidates.filter(c => c.gi !== winner.gi);
-    const othersList = others.map(c => `<code>${c.exclusiveChars[0].ch}</code> en el grupo ${c.gi + 1} (posición ${c.exclusiveChars[0].pos + 1})`).join('; ');
-    const w = winner;
-    const first = w.exclusiveChars[0];
-    reasoningHtml = `Hay ${candidates.length} grupos con un elemento exclusivo: ${candidates.map(c => `<code>${c.exclusiveChars[0].ch}</code> (grupo ${c.gi + 1})`).join(', ')}. Como puede haber varias respuestas válidas, se prioriza la que aparece primero dentro de su palabra: <code>${first.ch}</code> está en la posición ${first.pos + 1} del grupo ${w.gi + 1} (<code>${w.word}</code>), antes que ${othersList}.`;
-  }
+        let reasoningHtml;
+        if (candidates.length === 1) {
+          const w = winner;
+          const first = w.exclusiveChars[0];
+          reasoningHtml = `La letra <code>${first.ch}</code> es la única de todo el conjunto que aparece en un solo grupo — el grupo ${w.gi + 1} (<code>${w.word}</code>), en la posición ${first.pos + 1}. Ningún otro grupo tiene un elemento exclusivo, así que no hay ambigüedad.`;
+        } else {
+          const others = candidates.filter((c) => c.gi !== winner.gi);
+          const othersList = others
+            .map(
+              (c) =>
+                `<code>${c.exclusiveChars[0].ch}</code> en el grupo ${c.gi + 1} (posición ${c.exclusiveChars[0].pos + 1})`,
+            )
+            .join("; ");
+          const w = winner;
+          const first = w.exclusiveChars[0];
+          reasoningHtml = `Hay ${candidates.length} grupos con un elemento exclusivo: ${candidates.map((c) => `<code>${c.exclusiveChars[0].ch}</code> (grupo ${c.gi + 1})`).join(", ")}. Como puede haber varias respuestas válidas, se prioriza la que aparece primero dentro de su palabra: <code>${first.ch}</code> está en la posición ${first.pos + 1} del grupo ${w.gi + 1} (<code>${w.word}</code>), antes que ${othersList}.`;
+        }
 
-  const freqRows = [...owners.entries()]
-    .sort((a, b) => a[1].size - b[1].size || a[0].localeCompare(b[0]))
-    .map(([ch, set]) => `
+        const freqRows = [...owners.entries()]
+          .sort((a, b) => a[1].size - b[1].size || a[0].localeCompare(b[0]))
+          .map(
+            ([ch, set]) => `
       <tr>
         <td>${ch}</td>
-        <td class="${set.size === 1 ? 'count-unique' : 'count-shared'}">${set.size}</td>
-        <td>${[...set].map(gi => gi + 1).join(', ')}</td>
-      </tr>`).join('');
+        <td class="${set.size === 1 ? "count-unique" : "count-shared"}">${set.size}</td>
+        <td>${[...set].map((gi) => gi + 1).join(", ")}</td>
+      </tr>`,
+          )
+          .join("");
 
-  container.innerHTML = `
+        container.innerHTML = `
     <div class="groups">${groupsHtml}</div>
     <div class="verdict">
       <div class="answer">
@@ -345,21 +411,23 @@ function render(groups, analysis) {
       </table>
     </details>
   `;
-}
+      }
 
-document.getElementById('btn-analizar').addEventListener('click', () => {
-  const raw = document.getElementById('input-groups').value;
-  const groups = parseGroups(raw);
-  if (groups.length < 2) {
-    document.getElementById('resultado').innerHTML = `<p class="empty">Ingresa al menos dos grupos.</p>`;
-    return;
-  }
-  render(groups, analyze(groups));
-});
+      document.getElementById("btn-analizar").addEventListener("click", () => {
+        const raw = document.getElementById("input-groups").value;
+        const groups = parseGroups(raw);
+        if (groups.length < 2) {
+          document.getElementById("resultado").innerHTML =
+            `<p class="empty">Ingresa al menos dos grupos.</p>`;
+          return;
+        }
+        render(groups, analyze(groups));
+      });
 
-// Demo prefilled from the example
-document.getElementById('input-groups').value = 'NMOPS\nMSOPQ\nPQRSM\nQRSPM';
-document.getElementById('btn-analizar').click();
-</script>
-</body>
+      // Demo prefilled from the example
+      document.getElementById("input-groups").value =
+        "NMOPS\nMSOPQ\nPQRSM\nQRSPM";
+      document.getElementById("btn-analizar").click();
+    </script>
+  </body>
 </html>
