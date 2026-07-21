@@ -1,0 +1,365 @@
+---
+// src/pages/es/flyer.astro
+// Volante A4 imprimible · xeland314 · Servicios web para negocios locales
+// Uso: abrir en navegador → Ctrl+P → Sin márgenes → Guardar como PDF
+import { Image } from "astro:assets";
+import "../../../styles/global.css";
+---
+
+<!doctype html>
+<html lang="es" class="bg-white text-gray-900 antialiased">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Volante · Christopher Villamarín · Servicios Web</title>
+    <style>
+      /* Ajustes estrictos obligatorios para la simulación e impresión exacta A4 */
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      @media print {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .page-container {
+          page-break-after: always;
+        }
+      }
+      /* Forzar renderizado exacto de colores de fondo al imprimir */
+      html,
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    </style>
+  </head>
+  <body class="w-[210mm] h-[297mm] font-sans text-[10pt]">
+    <div
+      class="page-container w-[210mm] h-[297mm] flex flex-col overflow-hidden bg-white"
+    >
+      <div class="flex-1 p-[10mm_12mm_6mm] flex flex-col gap-5">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1">
+            <p
+              class="text-[7pt] font-semibold tracking-wider uppercase text-blue-600 mb-2"
+            >
+              Desarrollo web · Quito, Ecuador
+            </p>
+            <h1 class="text-[24pt] font-extrabold text-gray-900 leading-tight">
+              Tu negocio<br /><span class="text-blue-600">en internet.</span>
+            </h1>
+            <p
+              class="mt-2.5 text-[10pt] text-gray-700安全 leading-relaxed max-w-[150mm]"
+            >
+              Sitios web profesionales para talleres, tiendas y restaurantes.<br
+              />
+              Con tus fotos reales, tus servicios y tu información — no plantillas.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div
+            class="flex items-start gap-2 text-[7.5pt] text-gray-700 leading-snug"
+          >
+            <span
+              class="text-red-500 font-bold text-[12pt] leading-none shrink-0 mt-0.5"
+              >✗</span
+            >
+            <span>Tu negocio no aparece cuando alguien te busca en Google.</span
+            >
+          </div>
+          <div
+            class="flex items-start gap-2 text-[7.5pt] text-gray-700 leading-snug"
+          >
+            <span
+              class="text-red-500 font-bold text-[12pt] leading-none shrink-0 mt-0.5"
+              >✗</span
+            >
+            <span>Tu página no funciona en el celular y el cliente se va.</span>
+          </div>
+          <div
+            class="flex items-start gap-2 text-[7.5pt] text-gray-700 leading-snug"
+          >
+            <span
+              class="text-red-500 font-bold text-[12pt] leading-none shrink-0 mt-0.5"
+              >✗</span
+            >
+            <span>No tienes dónde mostrar tus trabajos ni tus precios.</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div
+            class="bg-blue-50/50 border-1.5 border-blue-100 rounded-[14px] p-4 flex flex-col gap-1.5"
+          >
+            <div class="text-[14pt] leading-none">🌐</div>
+            <div class="text-[9pt] font-bold text-gray-900 leading-tight">
+              Sitio web profesional
+            </div>
+            <div class="text-[12pt] font-extrabold text-blue-600">$200</div>
+            <div class="text-[6.5pt] text-gray-500 -mt-0.5">
+              Entrega en 5 días
+            </div>
+            <div class="text-[7pt] text-gray-700 leading-relaxed mt-1">
+              Diseño con tus fotos, sección de servicios, contacto directo y
+              optimizado para aparecer en Google.
+            </div>
+          </div>
+          <div
+            class="bg-blue-50/50 border-1.5 border-blue-100 rounded-[14px] p-4 flex flex-col gap-1.5"
+          >
+            <div class="text-[14pt] leading-none">📋</div>
+            <div class="text-[9pt] font-bold text-gray-900 leading-tight">
+              Sistema de clientes
+            </div>
+            <div class="text-[12pt] font-extrabold text-blue-600">Cotizar</div>
+            <div class="text-[6.5pt] text-gray-500 -mt-0.5">A convenir</div>
+            <div class="text-[7pt] text-gray-700 leading-relaxed mt-1">
+              Controla citas, pagos pendientes e historial de clientes desde el
+              celular. Sin internet requerido.
+            </div>
+          </div>
+        </div>
+
+        <section class="space-y-3 pt-1">
+          <h2 class="text-[11pt] font-bold text-gray-900 px-1">
+            Resultados que marcan la diferencia
+          </h2>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div
+              class="col-span-2 bg-white border border-gray-200 rounded-2xl p-4 flex gap-4 items-center justify-between"
+            >
+              <div class="flex flex-col space-y-1.5 flex-1">
+                <div
+                  class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[6.5pt] font-semibold self-start"
+                >
+                  <span class="relative flex h-1.5 w-1.5">
+                    <span
+                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
+                    ></span>
+                    <span
+                      class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"
+                    ></span>
+                  </span>
+                  Diseño Adaptable
+                </div>
+                <h3 class="text-[12pt] font-bold text-gray-900">
+                  Perfecto en cualquier pantalla
+                </h3>
+                <p class="text-gray-600 text-[7pt] leading-relaxed max-w-md">
+                  Más del 80% de tus clientes te buscarán desde su celular. Tu
+                  sitio web se adaptará automáticamente para lucir profesional
+                  en teléfonos, tablets y computadoras.
+                </p>
+              </div>
+
+              <div
+                class="w-[35mm] h-[22mm] bg-gray-100 rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center shrink-0"
+              >
+                <Image
+                  src="/images/talleresserviauto.png"
+                  alt="Vista previa del sitio web"
+                  class="w-full h-full object-cover"
+                  width="150"
+                  height="100"
+                />
+              </div>
+            </div>
+
+            <div
+              class="col-span-1 bg-white border border-gray-200 rounded-2xl p-3.5 space-y-1.5"
+            >
+              <div class="flex items-center gap-2">
+                <div class="text-green-500 shrink-0">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-900 text-[12pt]">
+                    Carga Inmediata
+                  </h3>
+                  <p class="text-[8.5pt] text-gray-500 font-medium">
+                    Google PageSpeed 100/100
+                  </p>
+                </div>
+              </div>
+              <p class="text-gray-600 text-[9pt] leading-normal">
+                Nadie espera una página lenta. Sitios ultrarrápidos para evitar
+                que tus clientes se vayan con la competencia.
+              </p>
+            </div>
+
+            <div
+              class="col-span-1 bg-white border border-gray-200 rounded-2xl p-3.5 space-y-1.5"
+            >
+              <div class="flex items-center gap-2">
+                <div class="text-purple-500 shrink-0">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    ></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-900 text-[12pt]">
+                    Optimizado para IA
+                  </h3>
+                  <p class="text-[8.5pt] text-gray-500 font-medium">
+                    SEO y Datos Estructurados
+                  </p>
+                </div>
+              </div>
+              <p class="text-gray-600 text-[9pt] leading-normal">
+                Estructurado inteligentemente para que asistentes como ChatGPT o
+                Google puedan recomendar tus servicios directamente.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div
+        class="bg-blue-900 p-[7mm_12mm] grid grid-cols-[1fr_auto] gap-6 items-center"
+      >
+        <div class="flex flex-col">
+          <p
+            class="text-[7pt] font-semibold tracking-wider uppercase text-blue-400 mb-2"
+          >
+            ¿Listo para empezar?
+          </p>
+          <p class="text-[15pt] font-extrabold text-white leading-tight mb-3">
+            Escríbeme hoy.<br />Precio de lanzamiento<br />esta semana.
+          </p>
+          <div class="flex flex-col gap-2">
+            <div
+              class="flex items-center gap-2.5 text-[8.5pt] text-blue-100 leading-none"
+            >
+              <span class="text-[10pt] leading-none shrink-0">📞</span>
+              <span
+                >Teléfono / WhatsApp: <strong class="text-white font-semibold"
+                  >0987129357</strong
+                ></span
+              >
+            </div>
+            <div
+              class="flex items-center gap-2.5 text-[8.5pt] text-blue-100 leading-none"
+            >
+              <span class="text-[10pt] leading-none shrink-0">✉️</span>
+              <span
+                >Correo: <strong class="text-white font-semibold"
+                  >christopher.villamarin@protonmail.com</strong
+                ></span
+              >
+            </div>
+            <div
+              class="flex items-center gap-2.5 text-[8.5pt] text-blue-100 leading-none"
+            >
+              <span class="text-[10pt] leading-none shrink-0">🐱</span>
+              <span
+                >Redes sociales: <strong class="text-white font-semibold"
+                  >@xeland314</strong
+                ></span
+              >
+            </div>
+          </div>
+          <p class="mt-4 text-[7.2pt] text-blue-400">
+            ¿Quieres ver más de mi trabajo? →&nbsp;<strong class="text-white"
+              >xeland314.github.io</strong
+            >
+          </p>
+        </div>
+
+        <div class="flex flex-col items-center gap-2 shrink-0">
+          <div
+            class="w-[36mm] h-[36mm] bg-white rounded-xl flex items-center justify-center"
+          >
+            <svg
+              width="120"
+              height="120"
+              viewBox="0 0 120 120"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="Espacio para código QR"
+            >
+              <rect
+                x="8"
+                y="8"
+                width="32"
+                height="32"
+                rx="4"
+                fill="none"
+                stroke="#1e3a8a"
+                stroke-width="4"></rect>
+              <rect x="16" y="16" width="16" height="16" rx="2" fill="#1e3a8a"
+              ></rect>
+              <rect
+                x="80"
+                y="8"
+                width="32"
+                height="32"
+                rx="4"
+                fill="none"
+                stroke="#1e3a8a"
+                stroke-width="4"></rect>
+              <rect x="88" y="16" width="16" height="16" rx="2" fill="#1e3a8a"
+              ></rect>
+              <rect
+                x="8"
+                y="80"
+                width="32"
+                height="32"
+                rx="4"
+                fill="none"
+                stroke="#1e3a8a"
+                stroke-width="4"></rect>
+              <rect x="16" y="88" width="16" height="16" rx="2" fill="#1e3a8a"
+              ></rect>
+              <text
+                x="60"
+                y="56"
+                text-anchor="middle"
+                font-family="sans-serif"
+                font-size="7"
+                fill="#6b7280">Reemplazar con</text
+              >
+              <text
+                x="60"
+                y="66"
+                text-anchor="middle"
+                font-family="sans-serif"
+                font-size="7"
+                fill="#6b7280">QR real</text
+              >
+            </svg>
+          </div>
+          <p class="text-[6.5pt] text-blue-200 text-center leading-tight">
+            Escanea para<br />ver mi portafolio
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
