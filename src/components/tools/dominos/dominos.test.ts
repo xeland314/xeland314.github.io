@@ -5,9 +5,9 @@ import {
   buildFullSet, findMatchingTiles, scoreRemainingTiles, renderTileSVG,
   TILE_DIMENSIONS, resetIdCounter, layoutTiles, generatePattern,
   getSubsets, renderLayoutHTML, layoutTilesCircular, generateMatrixPattern,
-  renderMatrixHTML,
+  renderMatrixHTML, getBoundingBox, getTileDimensions,
 } from './dominos';
-import type { PipCount, DominoTile } from './dominos';
+import type { PipCount, DominoTile, PlacedTile } from './dominos';
 
 beforeEach(() => {
   resetIdCounter();
@@ -769,6 +769,100 @@ describe('renderMatrixHTML', () => {
     const html = renderMatrixHTML(matrix);
     expect(html).toContain('<div');
     expect(html).toContain('relative');
+    expect(html).toContain('position:absolute');
+    expect(html).toContain('<svg');
+  });
+});
+
+describe('getTileDimensions', () => {
+  it('returns correct dimensions for vertical small', () => {
+    const d = getTileDimensions({ size: "small", orientation: "vertical" });
+    expect(d).toEqual({ w: 32, h: 64 });
+  });
+
+  it('flips dimensions for horizontal small', () => {
+    const d = getTileDimensions({ size: "small", orientation: "horizontal" });
+    expect(d).toEqual({ w: 64, h: 32 });
+  });
+
+  it('returns correct dimensions for large vertical', () => {
+    const d = getTileDimensions({ size: "large", orientation: "vertical" });
+    expect(d).toEqual({ w: 72, h: 144 });
+  });
+
+  it('flips dimensions for large horizontal', () => {
+    const d = getTileDimensions({ size: "large", orientation: "horizontal" });
+    expect(d).toEqual({ w: 144, h: 72 });
+  });
+});
+
+describe('getBoundingBox', () => {
+  it('returns zero bbox for empty', () => {
+    expect(getBoundingBox([])).toEqual({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
+  });
+
+  it('computes correct bbox for single vertical tile', () => {
+    const p: PlacedTile[] = [{ tile: createTile(1, 2), x: 0, y: 0 }];
+    const bbox = getBoundingBox(p);
+    expect(bbox).toEqual({ offsetX: 0, offsetY: 0, width: 48, height: 96 });
+  });
+
+  it('handles negative coordinates', () => {
+    const p: PlacedTile[] = [{ tile: createTile(1, 2), x: -10, y: -20 }];
+    const bbox = getBoundingBox(p);
+    expect(bbox.offsetX).toBe(10);
+    expect(bbox.offsetY).toBe(20);
+    expect(bbox.width).toBe(48);
+    expect(bbox.height).toBe(96);
+  });
+
+  it('handles large horizontal tiles', () => {
+    const tile = { ...createTile(1, 2), size: "large" as const, orientation: "horizontal" as const };
+    const p: PlacedTile[] = [{ tile, x: 0, y: 0 }];
+    const bbox = getBoundingBox(p);
+    expect(bbox.width).toBe(144);
+    expect(bbox.height).toBe(72);
+  });
+
+  it('handles multiple tiles across different positions', () => {
+    const t1 = createTile(1, 2);
+    const t2 = createTile(3, 4);
+    const p: PlacedTile[] = [
+      { tile: t1, x: 0, y: 0 },
+      { tile: t2, x: 60, y: 0 },
+    ];
+    const bbox = getBoundingBox(p);
+    expect(bbox.width).toBe(108);
+    expect(bbox.height).toBe(96);
+  });
+});
+
+describe('renderLayoutHTML edge cases', () => {
+  it('renders large horizontal tiles with correct container size', () => {
+    const largeH = { ...createTile(1, 2), size: "large" as const, orientation: "horizontal" as const };
+    const html = renderLayoutHTML([largeH], { mode: "grid", gap: 4, columns: 1 });
+    expect(html).toContain('144');
+    expect(html).toContain('72');
+    expect(html).toContain('<svg');
+  });
+
+  it('renders vertical small tiles with correct dimensions', () => {
+    const html = renderLayoutHTML([createTile(1, 2)], { mode: "grid", gap: 4, columns: 1 });
+    expect(html).toContain('48');
+    expect(html).toContain('96');
+  });
+
+  it('handles free mode with negative coordinates (offset applied in HTML)', () => {
+    const tile = { ...createTile(1, 2), x: -5, y: -10 };
+    const html = renderLayoutHTML([tile], { mode: "free", gap: 4 });
+    expect(html).toContain('position:relative');
+    expect(html).toContain('<svg');
+  });
+
+  it('uses getBoundingBox offsets for free mode negative coords', () => {
+    const tile1 = { ...createTile(1, 2), x: -10, y: -5 };
+    const tile2 = { ...createTile(3, 4), x: 50, y: 40 };
+    const html = renderLayoutHTML([tile1, tile2], { mode: "free", gap: 4 });
     expect(html).toContain('position:absolute');
     expect(html).toContain('<svg');
   });

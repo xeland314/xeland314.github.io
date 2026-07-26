@@ -89,8 +89,20 @@ export function initExportController() {
         const html = renderLayoutHTML(subset, currentLayout);
         ghost.innerHTML = html;
         await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-        const blob = await toBlob(ghost, { pixelRatio: 2 });
-        if (blob) blobs.push(blob);
+
+        const rect = ghost.getBoundingClientRect();
+        try {
+          const blob = await toBlob(ghost, {
+            pixelRatio: 2,
+            width: Math.ceil(rect.width),
+            height: Math.ceil(rect.height),
+            cacheBust: true,
+          });
+          if (blob) blobs.push(blob);
+          else console.warn("toBlob devolvió null para subset", subset.map(t => tileLabel(t)));
+        } catch (err) {
+          console.error("Falló la captura de un subset:", err);
+        }
         ghost.innerHTML = "";
       }
 

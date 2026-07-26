@@ -1,16 +1,12 @@
 import {
-  createTile, buildFullSet, shuffleTiles, canPlaceRight, canPlaceLeft,
-  placeRight, placeLeft, chainScore, isClosedChain, findMatchingTiles,
-  scoreRemainingTiles,
+  createTile,
 } from "../core";
 import { generatePattern, generateMatrixPattern } from "../pattern";
-import { layoutTiles } from "../layout";
-import type { PipCount, TileSize, TileOrientation, DominoTile, LayoutConfig, LayoutMode, MatrixPatternConfig, PatternRule } from "../types";
+import { layoutTiles, getBoundingBox } from "../layout";
+import type { PipCount, TileSize, TileOrientation, DominoTile, LayoutConfig, LayoutMode, PatternRule } from "../types";
 import { renderTileSVG, tileLabel, renderMatrixHTML } from "../svg";
 
 export const state = {
-  availableTiles: [] as DominoTile[],
-  chain: [] as DominoTile[],
   sequence: [] as DominoTile[],
   currentLayout: { mode: "grid", gap: 12, columns: 3 } as LayoutConfig,
   matrix: null as DominoTile[][] | null,
@@ -23,78 +19,6 @@ export function readLayout(): LayoutConfig {
   const colsWrap = document.getElementById("seq-columns-wrap");
   if (colsWrap) colsWrap.classList.toggle("hidden", mode === "free");
   return { mode, gap, columns };
-}
-
-export function renderAvailableTiles() {
-  const container = document.getElementById("available-tiles");
-  if (!container) return;
-  if (state.availableTiles.length === 0) {
-    container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">No hay fichas. Crea una o genera el juego completo.</p>';
-    return;
-  }
-
-  container.innerHTML = state.availableTiles.map((tile, i) => {
-    const svg = renderTileSVG(tile);
-    const label = tileLabel(tile);
-    return `
-      <div class="flex flex-col items-center gap-1 bg-white border border-[#d3e0e4] rounded-[3px] p-1.5">
-        ${svg}
-        <span class="text-[9px] text-[#8b98a3] font-mono">${label}</span>
-        <div class="flex gap-1">
-          <button 
-            data-index="${i}" 
-            data-side="left"
-            class="btn-chain-left font-serif text-[10px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1.5 py-0.5 hover:border-[#6b7680] transition-all"
-            title="${label} ← izquierda"
-          >↩</button>
-          <button 
-            data-index="${i}" 
-            data-side="right"
-            class="btn-chain-right font-serif text-[10px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1.5 py-0.5 hover:border-[#c4392b] transition-all"
-            title="${label} → derecha"
-          >→</button>
-          <button 
-            data-index="${i}"
-            class="btn-delete-tile font-serif text-[10px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1.5 py-0.5 hover:border-[#c4392b] transition-all"
-            title="Borrar ficha"
-          >✖</button>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-export function renderChain() {
-  const container = document.getElementById("chain-tiles");
-  const info = document.getElementById("chain-info");
-  if (!container) return;
-
-  if (state.chain.length === 0) {
-    container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">Haz clic en una ficha para agregarla a la cadena.</p>';
-    if (info) info.textContent = "";
-    return;
-  }
-
-  container.innerHTML = state.chain.map((tile, i) => {
-    const svg = renderTileSVG(tile);
-    const label = tileLabel(tile);
-    return `
-      <div class="flex items-center">
-        ${i > 0 ? '<span class="text-[#8b98a3] text-[10px] mx-0.5">—</span>' : ""}
-        <div class="flex flex-col items-center">
-          ${svg}
-          <span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  if (info) {
-    const score = chainScore(state.chain);
-    const closed = isClosedChain(state.chain);
-    const remaining = state.availableTiles.length;
-    info.textContent = `Fichas: ${state.chain.length} · Puntas: ${score} · Cerrada: ${closed ? "Sí" : "No"} · En mano: ${remaining}`;
-  }
 }
 
 export function updatePreview() {
@@ -110,14 +34,14 @@ export function updatePreview() {
 
   const placed = layoutTiles(state.sequence, state.currentLayout);
   const isFree = state.currentLayout.mode === "free";
-
-  const maxX = placed.reduce((m, p) => Math.max(m, p.x), 0) + 48;
-  const maxY = placed.reduce((m, p) => Math.max(m, p.y), 0) + 96;
+  const bbox = getBoundingBox(placed);
+  const ox = bbox.offsetX;
+  const oy = bbox.offsetY;
 
   const tilesHtml = placed.map((p, i) => {
     const svg = renderTileSVG(p.tile);
     const label = tileLabel(p.tile);
-    const dragAttr = isFree ? `data-seq-drag="${i}" style="position:absolute;left:${p.x}px;top:${p.y}px;cursor:grab;"` : `style="position:absolute;left:${p.x}px;top:${p.y}px;"`;
+    const dragAttr = isFree ? `data-seq-drag="${i}" style="position:absolute;left:${p.x + ox}px;top:${p.y + oy}px;cursor:grab;"` : `style="position:absolute;left:${p.x + ox}px;top:${p.y + oy}px;"`;
     return `
       <div ${dragAttr} class="flex flex-col items-center">
         ${svg}
@@ -127,7 +51,7 @@ export function updatePreview() {
   }).join("");
 
   container.innerHTML = `
-    <div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${maxX}px;height:${maxY}px;">
+    <div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${bbox.width}px;height:${bbox.height}px;">
       ${tilesHtml}
     </div>
   `;
@@ -144,44 +68,59 @@ function renderMatrix() {
   container.innerHTML = renderMatrixHTML(state.matrix);
 }
 
-function buildMatrixRule(prefix: string, ruleType: string) {
+function buildRule(): PatternRule {
+  const ruleType = (document.getElementById("gen-rule") as HTMLSelectElement).value;
   switch (ruleType) {
     case "fraccion":
       return {
-        type: "fraccion" as const,
-        topDelta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
-        bottomDelta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
+        type: "fraccion",
+        topDelta: parseInt((document.getElementById("gen-top-delta") as HTMLInputElement).value) || 2,
+        bottomDelta: parseInt((document.getElementById("gen-bottom-delta") as HTMLInputElement).value) || 3,
       };
     case "suma-constante":
+      return { type: "suma-constante", delta: parseInt((document.getElementById("gen-delta") as HTMLInputElement).value) || 1 };
+    case "espejo":
+      return { type: "espejo" };
+    case "encadenado-clasico":
+      return { type: "encadenado-clasico" };
+    case "operacion-interna":
+      return { type: "operacion-interna", delta: parseInt((document.getElementById("gen-delta") as HTMLInputElement).value) || 2 };
+    case "series-alternadas":
       return {
-        type: "suma-constante" as const,
-        delta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
+        type: "series-alternadas",
+        deltaA: parseInt((document.getElementById("gen-delta-a") as HTMLInputElement).value) || 1,
+        deltaB: parseInt((document.getElementById("gen-delta-b") as HTMLInputElement).value) || -1,
       };
+    case "lectura-z":
+      return { type: "lectura-z", delta: parseInt((document.getElementById("gen-delta") as HTMLInputElement).value) || 1 };
+    case "progresion-geometrica":
+      return { type: "progresion-geometrica", factor: parseInt((document.getElementById("gen-factor") as HTMLInputElement).value) || 2 };
+    case "inversion-polar":
+      return { type: "inversion-polar" };
+    default:
+      return { type: "fraccion", topDelta: 2, bottomDelta: 3 };
+  }
+}
+
+function buildMatrixRuleFromDOM(prefix: string, ruleType: string): PatternRule {
+  const delta = parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1;
+  switch (ruleType) {
+    case "fraccion":
+      return { type: "fraccion" as const, topDelta: delta, bottomDelta: delta };
+    case "suma-constante":
+      return { type: "suma-constante" as const, delta };
     case "espejo":
       return { type: "espejo" as const };
     case "encadenado-clasico":
       return { type: "encadenado-clasico" as const };
     case "operacion-interna":
-      return {
-        type: "operacion-interna" as const,
-        delta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 2,
-      };
+      return { type: "operacion-interna" as const, delta };
     case "series-alternadas":
-      return {
-        type: "series-alternadas" as const,
-        deltaA: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
-        deltaB: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || -1,
-      };
+      return { type: "series-alternadas" as const, deltaA: delta, deltaB: -delta };
     case "lectura-z":
-      return {
-        type: "lectura-z" as const,
-        delta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
-      };
+      return { type: "lectura-z" as const, delta };
     case "progresion-geometrica":
-      return {
-        type: "progresion-geometrica" as const,
-        factor: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 2,
-      };
+      return { type: "progresion-geometrica" as const, factor: delta };
     case "inversion-polar":
       return { type: "inversion-polar" as const };
     default:
@@ -249,8 +188,6 @@ export function renderOperationsList() {
 }
 
 export function renderAll() {
-  renderAvailableTiles();
-  renderChain();
   state.currentLayout = readLayout();
   if (state.matrix) {
     renderMatrix();
@@ -265,40 +202,6 @@ function initDragHandlers() {
 }
 
 export function initStateManager() {
-  document.getElementById("available-tiles")?.addEventListener("click", (e) => {
-    const target = e.target as HTMLElement;
-    const btn = target.closest<HTMLButtonElement>(".btn-chain-right, .btn-chain-left, .btn-delete-tile");
-    if (!btn) return;
-
-    const idx = parseInt(btn.dataset.index!);
-    if (isNaN(idx) || idx < 0 || idx >= state.availableTiles.length) return;
-
-    if (btn.classList.contains("btn-delete-tile")) {
-      state.availableTiles.splice(idx, 1);
-      renderAll();
-      return;
-    }
-
-    const tile = state.availableTiles[idx];
-
-    if (state.chain.length === 0) {
-      state.chain.push(tile);
-      state.availableTiles.splice(idx, 1);
-      renderAll();
-      return;
-    }
-
-    if (btn.classList.contains("btn-chain-right") && canPlaceRight(state.chain, tile)) {
-      state.chain = placeRight(state.chain, tile);
-      state.availableTiles.splice(idx, 1);
-      renderAll();
-    } else if (btn.classList.contains("btn-chain-left") && canPlaceLeft(state.chain, tile)) {
-      state.chain = placeLeft(state.chain, tile);
-      state.availableTiles.splice(idx, 1);
-      renderAll();
-    }
-  });
-
   document.getElementById("seq-operations")?.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
 
@@ -363,41 +266,13 @@ export function initStateManager() {
     updatePreview();
   });
 
-  document.getElementById("btn-add-tile")?.addEventListener("click", () => {
-    const topSelect = document.getElementById("top-pip") as HTMLSelectElement;
-    const bottomSelect = document.getElementById("bottom-pip") as HTMLSelectElement;
-    const sizeSelect = document.getElementById("tile-size") as HTMLSelectElement;
-    const top = parseInt(topSelect.value) as PipCount;
-    const bottom = parseInt(bottomSelect.value) as PipCount;
-    const size = sizeSelect.value as TileSize;
-    state.availableTiles.push(createTile(top, bottom, "vertical", size));
-    renderAvailableTiles();
-  });
-
-  document.getElementById("btn-generate-set")?.addEventListener("click", () => {
-    state.availableTiles = buildFullSet(6);
-    state.chain = [];
-    renderAll();
-  });
-
-  document.getElementById("btn-shuffle")?.addEventListener("click", () => {
-    state.availableTiles = shuffleTiles(state.availableTiles);
-    renderAvailableTiles();
-  });
-
-  document.getElementById("btn-clear-chain")?.addEventListener("click", () => {
-    const returnToAvailable = [...state.chain];
-    state.chain = [];
-    state.availableTiles = [...state.availableTiles, ...returnToAvailable];
-    renderAll();
-  });
-
   document.getElementById("btn-seq-add")?.addEventListener("click", () => {
     const top = parseInt((document.getElementById("seq-top") as HTMLSelectElement).value) as PipCount;
     const bottom = parseInt((document.getElementById("seq-bottom") as HTMLSelectElement).value) as PipCount;
     const size = (document.getElementById("seq-size") as HTMLSelectElement).value as TileSize;
     const orientation = (document.getElementById("seq-orientation") as HTMLSelectElement).value as TileOrientation;
     state.sequence.push(createTile(top, bottom, orientation, size));
+    state.matrix = null;
     renderAll();
   });
 
@@ -415,7 +290,32 @@ export function initStateManager() {
     });
   });
 
-  const ruleSelect = document.getElementById("pattern-rule") as HTMLSelectElement;
+  // Generator mode toggle
+  let genMode: "seq" | "matrix" = "seq";
+  const btnSeq = document.getElementById("gen-mode-seq");
+  const btnMatrix = document.getElementById("gen-mode-matrix");
+  const seqParams = document.getElementById("gen-seq-params");
+  const matrixParams = document.getElementById("gen-matrix-params");
+
+  function setGenMode(mode: "seq" | "matrix") {
+    genMode = mode;
+    if (btnSeq && btnMatrix) {
+      btnSeq.className = `gen-mode-btn font-serif font-bold text-[11px] py-1.5 px-4 rounded-[3px] cursor-pointer transition-all ${
+        mode === "seq" ? "bg-[#33393e] text-white border border-[#33393e]" : "bg-white text-[#6b7680] border border-[#d3e0e4] hover:bg-[#f5f7f8]"
+      }`;
+      btnMatrix.className = `gen-mode-btn font-serif font-bold text-[11px] py-1.5 px-4 rounded-[3px] cursor-pointer transition-all ${
+        mode === "matrix" ? "bg-[#33393e] text-white border border-[#33393e]" : "bg-white text-[#6b7680] border border-[#d3e0e4] hover:bg-[#f5f7f8]"
+      }`;
+    }
+    if (seqParams) seqParams.classList.toggle("hidden", mode !== "seq");
+    if (matrixParams) matrixParams.classList.toggle("hidden", mode !== "matrix");
+  }
+
+  btnSeq?.addEventListener("click", () => setGenMode("seq"));
+  btnMatrix?.addEventListener("click", () => setGenMode("matrix"));
+
+  // Rule param visibility
+  const ruleSelect = document.getElementById("gen-rule") as HTMLSelectElement;
   const paramFraccionTop = document.getElementById("param-fraccion-top");
   const paramFraccionBottom = document.getElementById("param-fraccion-bottom");
   const paramDelta = document.getElementById("param-delta");
@@ -436,103 +336,47 @@ export function initStateManager() {
   ruleSelect?.addEventListener("change", updateRuleParams);
   updateRuleParams();
 
-  document.getElementById("btn-generate-pattern")?.addEventListener("click", () => {
-    const ruleType = ruleSelect.value;
-    const startTop = parseInt((document.getElementById("pattern-start-top") as HTMLSelectElement).value) as PipCount;
-    const startBottom = parseInt((document.getElementById("pattern-start-bottom") as HTMLSelectElement).value) as PipCount;
-    const length = parseInt((document.getElementById("pattern-length") as HTMLInputElement).value) || 9;
-    const hideInput = (document.getElementById("pattern-hide") as HTMLInputElement).value;
-    const hideIndices = hideInput ? hideInput.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : [];
+  // Unified generate button
+  document.getElementById("btn-generate")?.addEventListener("click", () => {
+    if (genMode === "matrix") {
+      const rowRuleType = (document.getElementById("gen-matrix-row-rule") as HTMLSelectElement).value;
+      const colRuleType = (document.getElementById("gen-matrix-col-rule") as HTMLSelectElement).value;
+      const rows = parseInt((document.getElementById("gen-matrix-rows") as HTMLInputElement).value) || 4;
+      const cols = parseInt((document.getElementById("gen-matrix-cols") as HTMLInputElement).value) || 4;
+      const startTop = parseInt((document.getElementById("gen-matrix-start-top") as HTMLSelectElement).value) as PipCount || 0;
+      const startBottom = parseInt((document.getElementById("gen-matrix-start-bottom") as HTMLSelectElement).value) as PipCount || 0;
+      const hiddenRowRaw = (document.getElementById("gen-matrix-hidden-row") as HTMLInputElement).value;
+      const hiddenColRaw = (document.getElementById("gen-matrix-hidden-col") as HTMLInputElement).value;
+      const hiddenCell = (hiddenRowRaw !== "" && hiddenColRaw !== "")
+        ? { row: parseInt(hiddenRowRaw), col: parseInt(hiddenColRaw) }
+        : undefined;
 
-    let rule: PatternRule;
-    switch (ruleType) {
-      case "fraccion":
-        rule = {
-          type: "fraccion",
-          topDelta: parseInt((document.getElementById("pattern-top-delta") as HTMLInputElement).value) || 2,
-          bottomDelta: parseInt((document.getElementById("pattern-bottom-delta") as HTMLInputElement).value) || 3,
-        };
-        break;
-      case "suma-constante":
-        rule = {
-          type: "suma-constante",
-          delta: parseInt((document.getElementById("pattern-delta") as HTMLInputElement).value) || 1,
-        };
-        break;
-      case "espejo":
-        rule = { type: "espejo" };
-        break;
-      case "encadenado-clasico":
-        rule = { type: "encadenado-clasico" };
-        break;
-      case "operacion-interna":
-        rule = {
-          type: "operacion-interna",
-          delta: parseInt((document.getElementById("pattern-delta") as HTMLInputElement).value) || 2,
-        };
-        break;
-      case "series-alternadas":
-        rule = {
-          type: "series-alternadas",
-          deltaA: parseInt((document.getElementById("pattern-delta-a") as HTMLInputElement).value) || 1,
-          deltaB: parseInt((document.getElementById("pattern-delta-b") as HTMLInputElement).value) || -1,
-        };
-        break;
-      case "lectura-z":
-        rule = {
-          type: "lectura-z",
-          delta: parseInt((document.getElementById("pattern-delta") as HTMLInputElement).value) || 1,
-        };
-        break;
-      case "progresion-geometrica":
-        rule = {
-          type: "progresion-geometrica",
-          factor: parseInt((document.getElementById("pattern-factor") as HTMLInputElement).value) || 2,
-        };
-        break;
-      case "inversion-polar":
-        rule = { type: "inversion-polar" };
-        break;
-      default:
-        rule = { type: "fraccion", topDelta: 2, bottomDelta: 3 };
+      state.matrix = generateMatrixPattern({
+        rows,
+        columns: cols,
+        rowRule: buildMatrixRuleFromDOM("gen-matrix-row", rowRuleType),
+        columnRule: buildMatrixRuleFromDOM("gen-matrix-col", colRuleType),
+        hiddenCell,
+        startTop,
+        startBottom,
+      });
+    } else {
+      const startTop = parseInt((document.getElementById("gen-start-top") as HTMLSelectElement).value) as PipCount;
+      const startBottom = parseInt((document.getElementById("gen-start-bottom") as HTMLSelectElement).value) as PipCount;
+      const length = parseInt((document.getElementById("gen-length") as HTMLInputElement).value) || 9;
+      const hideInput = (document.getElementById("gen-hide") as HTMLInputElement).value;
+      const hideIndices = hideInput ? hideInput.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : [];
+
+      state.sequence = generatePattern({
+        rule: buildRule(),
+        length,
+        hideIndices,
+        startTop,
+        startBottom,
+      });
+      state.matrix = null;
     }
 
-    state.sequence = generatePattern({
-      rule,
-      length,
-      hideIndices,
-      startTop,
-      startBottom,
-    });
-
-    state.matrix = null;
-    renderAll();
-  });
-
-  document.getElementById("btn-generate-matrix")?.addEventListener("click", () => {
-    const rowRuleType = (document.getElementById("matrix-row-rule") as HTMLSelectElement).value;
-    const colRuleType = (document.getElementById("matrix-col-rule") as HTMLSelectElement).value;
-    const rows = parseInt((document.getElementById("matrix-rows") as HTMLInputElement).value) || 4;
-    const cols = parseInt((document.getElementById("matrix-cols") as HTMLInputElement).value) || 4;
-    const startTop = parseInt((document.getElementById("matrix-start-top") as HTMLSelectElement).value) as PipCount || 0;
-    const startBottom = parseInt((document.getElementById("matrix-start-bottom") as HTMLSelectElement).value) as PipCount || 0;
-    const hiddenRowRaw = (document.getElementById("matrix-hidden-row") as HTMLInputElement).value;
-    const hiddenColRaw = (document.getElementById("matrix-hidden-col") as HTMLInputElement).value;
-    const hiddenCell = (hiddenRowRaw !== "" && hiddenColRaw !== "")
-      ? { row: parseInt(hiddenRowRaw), col: parseInt(hiddenColRaw) }
-      : undefined;
-
-    const config: MatrixPatternConfig = {
-      rows,
-      columns: cols,
-      rowRule: buildMatrixRule("matrix-row", rowRuleType),
-      columnRule: buildMatrixRule("matrix-col", colRuleType),
-      hiddenCell,
-      startTop,
-      startBottom,
-    };
-
-    state.matrix = generateMatrixPattern(config);
     renderAll();
   });
 

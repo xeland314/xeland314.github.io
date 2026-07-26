@@ -1,6 +1,11 @@
-import type { PipCount, DominoTile, LayoutConfig } from "./types";
+import type { PipCount, DominoTile, LayoutConfig, TileSize, TileOrientation } from "./types";
 import { TILE_DIMENSIONS } from "./types";
-import { layoutTiles, layoutTilesCircular } from "./layout";
+import { layoutTiles, layoutTilesCircular, getBoundingBox } from "./layout";
+
+export function getTileDimensions(tile: { size: TileSize; orientation: TileOrientation }): { w: number; h: number } {
+  const dim = TILE_DIMENSIONS[tile.size];
+  return tile.orientation === "horizontal" ? { w: dim.h, h: dim.w } : { w: dim.w, h: dim.h };
+}
 
 function getPips(value: PipCount, isBottomHalf: boolean): string {
   const offsetY = isBottomHalf ? 100 : 0;
@@ -88,26 +93,29 @@ export function tileLabel(tile: DominoTile): string {
 export function renderLayoutHTML(tiles: DominoTile[], config: LayoutConfig): string {
   if (tiles.length === 0) return "";
   const placed = layoutTiles(tiles, config);
-  const maxX = placed.reduce((m, p) => Math.max(m, p.x), 0) + 48;
-  const maxY = placed.reduce((m, p) => Math.max(m, p.y), 0) + 96;
+  const bbox = getBoundingBox(placed);
+  const ox = bbox.offsetX;
+  const oy = bbox.offsetY;
   const tilesHtml = placed.map((p) => {
     const svg = renderTileSVG(p.tile);
     const label = tileLabel(p.tile);
-    return `<div style="position:absolute;left:${p.x}px;top:${p.y}px;" class="flex flex-col items-center">${svg}<span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span></div>`;
+    return `<div style="position:absolute;left:${p.x + ox}px;top:${p.y + oy}px;display:flex;flex-direction:column;align-items:center;">${svg}<span style="font-size:9px;color:#8b98a3;font-family:monospace;margin-top:2px;">${label}</span></div>`;
   }).join("");
-  return `<div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${maxX}px;height:${maxY}px;">${tilesHtml}</div>`;
+  return `<div style="position:relative;background:white;border:1px solid #e8edef;border-radius:3px;padding:16px;width:${bbox.width}px;height:${bbox.height}px;">${tilesHtml}</div>`;
 }
 
 export function renderCircularLayoutHTML(tiles: DominoTile[], direction: "horario" | "antihorario" | "lineal", radius: number = 120): string {
   if (tiles.length === 0) return "";
   const placed = layoutTilesCircular(tiles, direction, radius);
-  const size = radius * 2 + 144;
+  const bbox = getBoundingBox(placed);
+  const ox = bbox.offsetX;
+  const oy = bbox.offsetY;
   const tilesHtml = placed.map((p) => {
     const svg = renderTileSVG(p.tile);
     const label = tileLabel(p.tile);
-    return `<div style="position:absolute;left:${p.x}px;top:${p.y}px;" class="flex flex-col items-center">${svg}<span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span></div>`;
+    return `<div style="position:absolute;left:${p.x + ox}px;top:${p.y + oy}px;display:flex;flex-direction:column;align-items:center;">${svg}<span style="font-size:9px;color:#8b98a3;font-family:monospace;margin-top:2px;">${label}</span></div>`;
   }).join("");
-  return `<div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${size}px;height:${size}px;">${tilesHtml}</div>`;
+  return `<div style="position:relative;background:white;border:1px solid #e8edef;border-radius:3px;padding:16px;width:${bbox.width}px;height:${bbox.height}px;">${tilesHtml}</div>`;
 }
 
 export function renderMatrixHTML(matrix: DominoTile[][]): string {
@@ -125,9 +133,9 @@ export function renderMatrixHTML(matrix: DominoTile[][]): string {
       const y = gap + r * (dim.h + 20 + gap);
       const svg = renderTileSVG(tile);
       const label = tileLabel(tile);
-      return `<div style="position:absolute;left:${x}px;top:${y}px;" class="flex flex-col items-center">${svg}<span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span></div>`;
+      return `<div style="position:absolute;left:${x}px;top:${y}px;display:flex;flex-direction:column;align-items:center;">${svg}<span style="font-size:9px;color:#8b98a3;font-family:monospace;margin-top:2px;">${label}</span></div>`;
     })
   ).join("");
 
-  return `<div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${totalW}px;height:${totalH}px;">${tilesHtml}</div>`;
+  return `<div style="position:relative;background:white;border:1px solid #e8edef;border-radius:3px;padding:16px;width:${totalW}px;height:${totalH}px;">${tilesHtml}</div>`;
 }

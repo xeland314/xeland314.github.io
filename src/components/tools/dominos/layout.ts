@@ -1,6 +1,39 @@
 import type { DominoTile, LayoutConfig, PlacedTile, PartialExportConfig, ReadingDirection } from "./types";
 import { TILE_DIMENSIONS } from "./types";
 
+export interface BoundingBox {
+  offsetX: number;
+  offsetY: number;
+  width: number;
+  height: number;
+}
+
+export function getBoundingBox(placed: PlacedTile[]): BoundingBox {
+  if (placed.length === 0) return { offsetX: 0, offsetY: 0, width: 0, height: 0 };
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  for (const p of placed) {
+    const dim = TILE_DIMENSIONS[p.tile.size];
+    const tileW = p.tile.orientation === "horizontal" ? dim.h : dim.w;
+    const tileH = p.tile.orientation === "horizontal" ? dim.w : dim.h;
+    if (p.x < minX) minX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.x + tileW > maxX) maxX = p.x + tileW;
+    if (p.y + tileH > maxY) maxY = p.y + tileH;
+  }
+
+  return {
+    offsetX: minX < 0 ? -minX : 0,
+    offsetY: minY < 0 ? -minY : 0,
+    width: maxX - minX,
+    height: maxY - minY,
+  };
+}
+
 export function layoutTiles(tiles: DominoTile[], config: LayoutConfig): PlacedTile[] {
   if (tiles.length === 0) return [];
 
