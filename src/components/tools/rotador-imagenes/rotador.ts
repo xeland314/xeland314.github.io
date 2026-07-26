@@ -17,8 +17,8 @@ export interface AnimationOptions {
 }
 
 export const DEFAULT_ANIMATION_OPTIONS: AnimationOptions = {
-  stepDuration: 1000,
-  holdDuration: 1000,
+  stepDuration: 2000,
+  holdDuration: 1500,
   fps: 30,
 };
 

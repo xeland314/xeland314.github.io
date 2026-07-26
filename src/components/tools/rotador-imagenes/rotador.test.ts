@@ -157,8 +157,8 @@ describe('buildAnimationSteps', () => {
     const ops: RotationOperation[] = [{ degrees: 90, direction: 'cw' }];
     const steps = buildAnimationSteps(ops);
     expect(steps).toHaveLength(2);
-    expect(steps[0]).toEqual({ fromAngle: 0, toAngle: 90, duration: 1000, label: 'Paso 1: 90° horario' });
-    expect(steps[1]).toEqual({ fromAngle: 90, toAngle: 90, duration: 1000, label: 'Resultado final' });
+    expect(steps[0]).toEqual({ fromAngle: 0, toAngle: 90, duration: 2000, label: 'Paso 1: 90° horario' });
+    expect(steps[1]).toEqual({ fromAngle: 90, toAngle: 90, duration: 1500, label: 'Resultado final' });
   });
 
   it('should chain cumulative angles across steps', () => {

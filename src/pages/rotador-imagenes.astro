@@ -100,6 +100,21 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         </button>
       </div>
 
+      <div id="image-export-buttons" class="hidden flex gap-2 mb-[22px]">
+        <button
+          id="btn-download-png"
+          class="font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Descargar PNG
+        </button>
+        <button
+          id="btn-export-zip"
+          class="font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Exportar pasos (ZIP)
+        </button>
+      </div>
+
       <div id="export-progress" class="hidden mb-[22px]">
         <div class="flex items-center gap-3 mb-1.5">
           <span class="text-[11px] tracking-[0.06em] uppercase text-[#6b7680]">Exportando video</span>
@@ -118,12 +133,13 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
 
   <script>
     import { parseDirection, calculateTotalAngle, normalizeAngle, validateDegrees, buildAnimationSteps } from "../components/tools/rotador-imagenes/rotador";
-    import type { RotationOperation } from "../components/tools/rotador-imagenes/rotador";
-    import { loadImage, exportVideo } from "../components/tools/rotador-imagenes/canvas";
+    import type { RotationOperation, AnimationStep } from "../components/tools/rotador-imagenes/rotador";
+    import { loadImage, exportVideo, exportStepAsPng, exportAllStepsAsZip } from "../components/tools/rotador-imagenes/canvas";
 
     let operations: RotationOperation[] = [];
     let imageDataUrl: string | null = null;
     let currentExport: { cancel: () => void } | null = null;
+    let lastBuiltSteps: AnimationStep[] = [];
 
     function renderOperations() {
       const container = document.getElementById("operations-list");
@@ -252,8 +268,14 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
     document.getElementById("btn-apply")?.addEventListener("click", () => {
       applyRotations();
       const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
-      if (btnExport) {
-        btnExport.disabled = !imageDataUrl || operations.length === 0;
+      const imageExportButtons = document.getElementById("image-export-buttons");
+      const canExport = !!imageDataUrl && operations.length > 0;
+      if (btnExport) btnExport.disabled = !canExport;
+      if (imageExportButtons) {
+        imageExportButtons.classList.toggle("hidden", !canExport);
+      }
+      if (canExport) {
+        lastBuiltSteps = buildAnimationSteps(operations);
       }
     });
 
@@ -274,14 +296,13 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       progressContainer?.classList.remove("hidden");
 
       const img = await loadImage(imageDataUrl);
-      const steps = buildAnimationSteps(operations);
       const canvas = document.getElementById("export-canvas") as HTMLCanvasElement;
 
       const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
       const { promise, cancel } = exportVideo(
         canvas,
         img,
-        steps,
+        lastBuiltSteps,
         { canvasWidth: size, canvasHeight: size, fps: 30, bgColor: "#ffffff" },
         (p) => {
           if (progressText) progressText.textContent = `${p}%`;
@@ -299,6 +320,28 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       if (progressBar) progressBar.style.width = "0%";
     });
 
+    document.getElementById("btn-download-png")?.addEventListener("click", async () => {
+      if (!imageDataUrl || lastBuiltSteps.length === 0) return;
+      const img = await loadImage(imageDataUrl);
+      const finalStep = lastBuiltSteps[lastBuiltSteps.length - 1];
+      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+      await exportStepAsPng(img, finalStep, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff" });
+    });
+
+    document.getElementById("btn-export-zip")?.addEventListener("click", async () => {
+      if (!imageDataUrl || lastBuiltSteps.length === 0) return;
+      const btnZip = document.getElementById("btn-export-zip") as HTMLButtonElement;
+      btnZip.disabled = true;
+      btnZip.textContent = "Generando...";
+
+      const img = await loadImage(imageDataUrl);
+      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+      await exportAllStepsAsZip(img, lastBuiltSteps, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff" });
+
+      btnZip.disabled = false;
+      btnZip.textContent = "Exportar pasos (ZIP)";
+    });
+
     document.getElementById("btn-clear")?.addEventListener("click", () => {
       if (currentExport) {
         currentExport.cancel();
@@ -306,6 +349,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       }
       operations = [];
       imageDataUrl = null;
+      lastBuiltSteps = [];
       const inputImage = document.getElementById("input-image") as HTMLInputElement;
       if (inputImage) inputImage.value = "";
       renderOperations();
@@ -313,6 +357,8 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       if (resultado) resultado.innerHTML = "";
       const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
       if (btnExport) btnExport.disabled = true;
+      const imageExportButtons = document.getElementById("image-export-buttons");
+      if (imageExportButtons) imageExportButtons.classList.add("hidden");
       const progressContainer = document.getElementById("export-progress");
       if (progressContainer) progressContainer.classList.add("hidden");
     });

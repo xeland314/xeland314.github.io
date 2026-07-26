@@ -1,4 +1,5 @@
-import { totalAnimationDuration, resolveAngleAtTime, resolveStepAtTime } from "./rotador";
+import JSZip from "jszip";
+import { resolveAngleAtTime, resolveStepAtTime } from "./rotador";
 import type { AnimationStep } from "./rotador";
 
 export interface CanvasExportOptions {
@@ -202,4 +203,65 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
     img.onerror = reject;
     img.src = src;
   });
+}
+
+export function renderStepToCanvas(
+  img: HTMLImageElement,
+  step: AnimationStep,
+  options: Partial<CanvasExportOptions> = {},
+): HTMLCanvasElement {
+  const opts = { ...DEFAULT_EXPORT_OPTIONS, ...options };
+  const canvas = document.createElement("canvas");
+  canvas.width = opts.canvasWidth;
+  canvas.height = opts.canvasHeight;
+  const ctx = canvas.getContext("2d")!;
+
+  drawRotatedImage(ctx, img, step.toAngle, opts.canvasWidth, opts.canvasHeight, opts.bgColor);
+  drawStepLabel(ctx, step.label, opts.canvasWidth, opts.canvasHeight);
+
+  return canvas;
+}
+
+export function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export async function exportStepAsPng(
+  img: HTMLImageElement,
+  step: AnimationStep,
+  options: Partial<CanvasExportOptions> = {},
+): Promise<void> {
+  const canvas = renderStepToCanvas(img, step, options);
+  const blob = await new Promise<Blob>((resolve) =>
+    canvas.toBlob((b) => resolve(b!), "image/png"),
+  );
+  const safeName = step.label.replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ -]/g, "").trim();
+  downloadBlob(blob, `${safeName}.png`);
+}
+
+export async function exportAllStepsAsZip(
+  img: HTMLImageElement,
+  steps: AnimationStep[],
+  options: Partial<CanvasExportOptions> = {},
+  onProgress?: (step: number, total: number) => void,
+): Promise<void> {
+  const zip = new JSZip();
+  const folder = zip.folder("pasos-rotacion")!;
+
+  for (let i = 0; i < steps.length; i++) {
+    const canvas = renderStepToCanvas(img, steps[i], options);
+    const dataUrl = canvas.toDataURL("image/png");
+    const base64 = dataUrl.split(",")[1];
+    const filename = `${String(i + 1).padStart(2, "0")}-${steps[i].label.replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ -]/g, "").trim()}.png`;
+    folder.file(filename, base64, { base64: true });
+    onProgress?.(i + 1, steps.length);
+  }
+
+  const blob = await zip.generateAsync({ type: "blob" });
+  downloadBlob(blob, "pasos-rotacion.zip");
 }
