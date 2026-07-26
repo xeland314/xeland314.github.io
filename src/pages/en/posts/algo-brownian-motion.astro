@@ -5,7 +5,8 @@ import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro"
 import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
 
 const title = "Modified Brownian Motion";
-const description = "Radiography: Algorithms for realistic trajectory simulation vs pure randomness";
+const description =
+  "Radiography: Algorithms for realistic trajectory simulation vs pure randomness";
 ---
 
 <BlogPostLayout
@@ -15,9 +16,15 @@ const description = "Radiography: Algorithms for realistic trajectory simulation
   extraFonts="&family=Fira+Code:wght@400;700"
   lang="en"
 >
-  <div class="relative p-6 md:p-12 flex flex-col text-white overflow-hidden h-full">
+  <div
+    class="relative p-6 md:p-12 flex flex-col text-white overflow-hidden h-full"
+  >
     <div class="absolute top-4 right-4 z-50">
-      <a href="/es/posts/algo-brownian-motion" class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors">ES</a>
+      <a
+        href="/es/posts/algo-brownian-motion"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+        >ES</a
+      >
     </div>
 
     <RadiographyHeader
@@ -30,36 +37,57 @@ const description = "Radiography: Algorithms for realistic trajectory simulation
     />
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6 flex-1">
-      
       <!-- Comparison: Random vs Brownian -->
-      <div class="feature-card rounded-3xl p-6 border border-white/5 bg-white/5">
-        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Movement Evolution</h3>
+      <div
+        class="feature-card rounded-3xl p-6 border border-white/5 bg-white/5"
+      >
+        <h3
+          class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4"
+        >
+          Movement Evolution
+        </h3>
         <div class="space-y-4">
-          <div class="flex items-center gap-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20">
+          <div
+            class="flex items-center gap-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20"
+          >
             <span class="text-2xl">🎲</span>
             <div>
               <p class="text-rose-400 font-bold text-sm">Pure Randomness</p>
-              <p class="text-slate-400 text-[10px]">Erratic, impossible jumps. Ideal only for load testing.</p>
+              <p class="text-slate-400 text-[10px]">
+                Erratic, impossible jumps. Ideal only for load testing.
+              </p>
             </div>
           </div>
-          <div class="flex items-center gap-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+          <div
+            class="flex items-center gap-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20"
+          >
             <span class="text-2xl">🦿</span>
             <div>
-              <p class="text-emerald-400 font-bold text-sm">Modified Brownian</p>
-              <p class="text-slate-400 text-[10px]">Based on previous state (ΔΘ, ΔV). Natural movement.</p>
+              <p class="text-emerald-400 font-bold text-sm">
+                Modified Brownian
+              </p>
+              <p class="text-slate-400 text-[10px]">
+                Based on previous state (ΔΘ, ΔV). Natural movement.
+              </p>
             </div>
           </div>
-          <div class="flex items-center gap-4 p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
+          <div
+            class="flex items-center gap-4 p-3 rounded-xl bg-sky-500/10 border border-sky-500/20"
+          >
             <span class="text-2xl">🏎️</span>
             <div>
               <p class="text-sky-400 font-bold text-sm">Predefined Routes</p>
-              <p class="text-slate-400 text-[10px]">GeoJSON/GPX loading. Professional vehicular simulation.</p>
+              <p class="text-slate-400 text-[10px]">
+                GeoJSON/GPX loading. Professional vehicular simulation.
+              </p>
             </div>
           </div>
         </div>
 
         <!-- Formula Snippet -->
-        <div class="mt-6 bg-black/40 p-4 rounded-xl font-mono text-[10px] text-emerald-300 border border-emerald-500/20">
+        <div
+          class="mt-6 bg-black/40 p-4 rounded-xl font-mono text-[10px] text-emerald-300 border border-emerald-500/20"
+        >
           <p class="text-slate-500 mb-2">// Heading Adjustment (Noise)</p>
           <p>Θ_new = Θ_prev + Random(-5°, +5°)</p>
           <p class="text-slate-500 my-2">// Speed Adjustment</p>
@@ -68,24 +96,40 @@ const description = "Radiography: Algorithms for realistic trajectory simulation
       </div>
 
       <!-- Go Implementation -->
-      <div class="feature-card rounded-3xl p-6 border border-white/5 bg-black/20">
+      <div
+        class="feature-card rounded-3xl p-6 border border-white/5 bg-black/20"
+      >
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-emerald-400 text-sm font-bold uppercase">Go Implementation</h3>
-          <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">Route Follower</span>
+          <h3 class="text-emerald-400 text-sm font-bold uppercase">
+            Go Implementation
+          </h3>
+          <span
+            class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded"
+            >Route Follower</span
+          >
         </div>
         <div class="code-font text-[10px] leading-relaxed overflow-x-auto">
-          <p><span class="text-purple-400">func</span> (rf *Follower) <span class="text-blue-400">NextLocation</span>() {</p>
-          <p class="pl-4">target := rf.Route[rf.CurrentIndex]</p>
-          <p class="pl-4 text-slate-500">// 1. Add Noise</p>
-          <p class="pl-4">noiseLat := (rand.Float64() - 0.5) * 0.00005</p>
-          <p class="pl-4 text-slate-500">// 2. Interpolate towards target</p>
-          <p class="pl-4">newLat := rf.LastPos.Lat + (target.Lat - rf.LastPos.Lat) * 0.1 + noiseLat</p>
-          <p class="pl-4 text-slate-500">// 3. Advance index if d &lt; 10m</p>
-          <p class="pl-4"><span class="text-purple-400">if</span> dist &lt; 10.0 &lbrace; rf.CurrentIndex++ &rbrace;</p>
-          <p>}</p>
+          <p>
+            <span class="text-purple-400">func</span> (rf *Follower) <span
+              class="text-blue-400">NextLocation</span
+            >() {}
+            <p class="pl-4">target := rf.Route[rf.CurrentIndex]</p>
+            <p class="pl-4 text-slate-500">// 1. Add Noise</p>
+            <p class="pl-4">noiseLat := (rand.Float64() - 0.5) * 0.00005</p>
+            <p class="pl-4 text-slate-500">// 2. Interpolate towards target</p>
+            <p class="pl-4">
+              newLat := rf.LastPos.Lat + (target.Lat - rf.LastPos.Lat) * 0.1 +
+              noiseLat
+            </p>
+            <p class="pl-4 text-slate-500">// 3. Advance index if d &lt; 10m</p>
+            <p class="pl-4">
+              <span class="text-purple-400">if</span> dist &lt; 10.0 &lbrace; rf.CurrentIndex++
+              &rbrace;
+            </p>
+            <p></p>
+          </p>
         </div>
       </div>
-
     </div>
 
     <!-- Components Legend -->
@@ -125,7 +169,12 @@ const description = "Radiography: Algorithms for realistic trajectory simulation
   </div>
 
   <style>
-    .highlight-emerald { color: #10b981; }
-    .glass-tag { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
+    .highlight-emerald {
+      color: #10b981;
+    }
+    .glass-tag {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+    }
   </style>
 </BlogPostLayout>
