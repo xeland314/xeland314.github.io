@@ -53,6 +53,30 @@ export function generatePattern(config: PatternGenerationConfig): DominoTile[] {
         nextTop = tileTop;
         nextBottom = tileBottom;
         break;
+      case "operacion-interna": {
+        const targetSum = mod7(tileTop + tileBottom + config.rule.delta);
+        nextTop = mod7(tileTop + 1);
+        nextBottom = mod7(targetSum - nextTop);
+        break;
+      }
+      case "series-alternadas": {
+        const d = i % 2 === 0 ? config.rule.deltaA : config.rule.deltaB;
+        nextTop = mod7(currentTop + d);
+        nextBottom = mod7(currentBottom + d);
+        break;
+      }
+      case "lectura-z":
+        nextTop = currentBottom;
+        nextBottom = mod7(currentBottom + config.rule.delta);
+        break;
+      case "progresion-geometrica":
+        nextTop = mod7(currentTop * config.rule.factor);
+        nextBottom = mod7(currentBottom * config.rule.factor);
+        break;
+      case "inversion-polar":
+        nextTop = mod7(6 - currentTop);
+        nextBottom = mod7(6 - currentBottom);
+        break;
     }
 
     currentTop = nextTop;

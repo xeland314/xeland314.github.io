@@ -473,6 +473,86 @@ describe('generatePattern', () => {
     expect(result[6].top).toBe(5);
     expect(result[7].top).toBe(6);
   });
+
+  it('generates operacion-interna pattern', () => {
+    const result = generatePattern({
+      rule: { type: "operacion-interna", delta: 2 },
+      length: 3,
+      startTop: 0,
+      startBottom: 2,
+    });
+    expect(result).toHaveLength(3);
+    expect(result[0].top).toBe(0);
+    expect(result[0].bottom).toBe(2);
+  });
+
+  it('generates series-alternadas pattern', () => {
+    const result = generatePattern({
+      rule: { type: "series-alternadas", deltaA: 1, deltaB: -1 },
+      length: 4,
+      startTop: 1,
+      startBottom: 1,
+    });
+    expect(result).toHaveLength(4);
+    expect(result[0].top).toBe(1);
+    expect(result[0].bottom).toBe(1);
+    expect(result[1].top).toBe(2);
+    expect(result[1].bottom).toBe(2);
+    expect(result[2].top).toBe(1);
+    expect(result[2].bottom).toBe(1);
+  });
+
+  it('generates lectura-z pattern', () => {
+    const result = generatePattern({
+      rule: { type: "lectura-z", delta: 1 },
+      length: 3,
+      startTop: 1,
+      startBottom: 2,
+    });
+    expect(result).toHaveLength(3);
+    expect(result[0].top).toBe(1);
+    expect(result[0].bottom).toBe(2);
+    expect(result[1].top).toBe(2);
+    expect(result[1].bottom).toBe(3);
+    expect(result[2].top).toBe(3);
+    expect(result[2].bottom).toBe(4);
+  });
+
+  it('generates progresion-geometrica pattern', () => {
+    const result = generatePattern({
+      rule: { type: "progresion-geometrica", factor: 2 },
+      length: 4,
+      startTop: 1,
+      startBottom: 2,
+    });
+    expect(result).toHaveLength(4);
+    expect(result[0].top).toBe(1);
+    expect(result[0].bottom).toBe(2);
+    expect(result[1].top).toBe(2);
+    expect(result[1].bottom).toBe(4);
+    expect(result[2].top).toBe(4);
+    expect(result[2].bottom).toBe(1);
+    expect(result[3].top).toBe(1);
+    expect(result[3].bottom).toBe(2);
+  });
+
+  it('generates inversion-polar pattern', () => {
+    const result = generatePattern({
+      rule: { type: "inversion-polar" },
+      length: 4,
+      startTop: 1,
+      startBottom: 4,
+    });
+    expect(result).toHaveLength(4);
+    expect(result[0].top).toBe(1);
+    expect(result[0].bottom).toBe(4);
+    expect(result[1].top).toBe(5);
+    expect(result[1].bottom).toBe(2);
+    expect(result[2].top).toBe(1);
+    expect(result[2].bottom).toBe(4);
+    expect(result[3].top).toBe(5);
+    expect(result[3].bottom).toBe(2);
+  });
 });
 
 describe('renderTileSVG hidden', () => {

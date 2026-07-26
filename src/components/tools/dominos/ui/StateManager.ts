@@ -358,15 +358,19 @@ export function initStateManager() {
   const ruleSelect = document.getElementById("pattern-rule") as HTMLSelectElement;
   const paramFraccionTop = document.getElementById("param-fraccion-top");
   const paramFraccionBottom = document.getElementById("param-fraccion-bottom");
-  const paramConstante = document.getElementById("param-constante");
+  const paramDelta = document.getElementById("param-delta");
+  const paramFactor = document.getElementById("param-factor");
+  const paramDeltaA = document.getElementById("param-delta-a");
+  const paramDeltaB = document.getElementById("param-delta-b");
 
   function updateRuleParams() {
     const rule = ruleSelect.value;
-    const isFraccion = rule === "fraccion";
-    const isConstante = rule === "suma-constante";
-    if (paramFraccionTop) paramFraccionTop.classList.toggle("hidden", !isFraccion);
-    if (paramFraccionBottom) paramFraccionBottom.classList.toggle("hidden", !isFraccion);
-    if (paramConstante) paramConstante.classList.toggle("hidden", !isConstante);
+    if (paramFraccionTop) paramFraccionTop.classList.toggle("hidden", rule !== "fraccion");
+    if (paramFraccionBottom) paramFraccionBottom.classList.toggle("hidden", rule !== "fraccion");
+    if (paramDelta) paramDelta.classList.toggle("hidden", !["suma-constante", "operacion-interna", "lectura-z"].includes(rule));
+    if (paramFactor) paramFactor.classList.toggle("hidden", rule !== "progresion-geometrica");
+    if (paramDeltaA) paramDeltaA.classList.toggle("hidden", rule !== "series-alternadas");
+    if (paramDeltaB) paramDeltaB.classList.toggle("hidden", rule !== "series-alternadas");
   }
 
   ruleSelect?.addEventListener("change", updateRuleParams);
@@ -400,6 +404,34 @@ export function initStateManager() {
         break;
       case "encadenado-clasico":
         rule = { type: "encadenado-clasico" };
+        break;
+      case "operacion-interna":
+        rule = {
+          type: "operacion-interna",
+          delta: parseInt((document.getElementById("pattern-delta") as HTMLInputElement).value) || 2,
+        };
+        break;
+      case "series-alternadas":
+        rule = {
+          type: "series-alternadas",
+          deltaA: parseInt((document.getElementById("pattern-delta-a") as HTMLInputElement).value) || 1,
+          deltaB: parseInt((document.getElementById("pattern-delta-b") as HTMLInputElement).value) || -1,
+        };
+        break;
+      case "lectura-z":
+        rule = {
+          type: "lectura-z",
+          delta: parseInt((document.getElementById("pattern-delta") as HTMLInputElement).value) || 1,
+        };
+        break;
+      case "progresion-geometrica":
+        rule = {
+          type: "progresion-geometrica",
+          factor: parseInt((document.getElementById("pattern-factor") as HTMLInputElement).value) || 2,
+        };
+        break;
+      case "inversion-polar":
+        rule = { type: "inversion-polar" };
         break;
       default:
         rule = { type: "fraccion", topDelta: 2, bottomDelta: 3 };

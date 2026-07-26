@@ -45,7 +45,14 @@ export type PatternRule =
   | { type: "espejo" }
   | { type: "encadenado-clasico" }
   | { type: "alternado"; valoresFijos: PipCount[] }
-  | { type: "fraccion"; topDelta: number; bottomDelta: number };
+  | { type: "fraccion"; topDelta: number; bottomDelta: number }
+  | { type: "operacion-interna"; delta: number }
+  | { type: "series-alternadas"; deltaA: number; deltaB: number }
+  | { type: "lectura-z"; delta: number }
+  | { type: "progresion-geometrica"; factor: number }
+  | { type: "inversion-polar" };
+
+export type PatternRuleType = PatternRule["type"];
 
 export interface PatternGenerationConfig {
   rule: PatternRule;
