@@ -146,90 +146,75 @@ export function scoreRemainingTiles(hand: DominoTile[]): number {
   return hand.reduce((sum, tile) => sum + tile.top + tile.bottom, 0);
 }
 
-const PIP_PATTERNS: Record<number, { x: number; y: number }[]> = {
-  1: [{ x: 0.5, y: 0.5 }],
-  2: [
-    { x: 0.3, y: 0.3 },
-    { x: 0.7, y: 0.7 },
-  ],
-  3: [
-    { x: 0.3, y: 0.3 },
-    { x: 0.5, y: 0.5 },
-    { x: 0.7, y: 0.7 },
-  ],
-  4: [
-    { x: 0.3, y: 0.3 },
-    { x: 0.7, y: 0.3 },
-    { x: 0.3, y: 0.7 },
-    { x: 0.7, y: 0.7 },
-  ],
-  5: [
-    { x: 0.3, y: 0.3 },
-    { x: 0.7, y: 0.3 },
-    { x: 0.5, y: 0.5 },
-    { x: 0.3, y: 0.7 },
-    { x: 0.7, y: 0.7 },
-  ],
-  6: [
-    { x: 0.3, y: 0.3 },
-    { x: 0.7, y: 0.3 },
-    { x: 0.3, y: 0.5 },
-    { x: 0.7, y: 0.5 },
-    { x: 0.3, y: 0.7 },
-    { x: 0.7, y: 0.7 },
-  ],
-};
+function getPips(value: PipCount, isBottomHalf: boolean): string {
+  const offsetY = isBottomHalf ? 100 : 0;
+  const left = 25;
+  const midX = 50;
+  const right = 75;
+  const top = 25 + offsetY;
+  const midY = 50 + offsetY;
+  const bot = 75 + offsetY;
+  const color = "#33393e";
 
-function pipsForHalf(
-  count: PipCount,
-  offsetX: number,
-  offsetY: number,
-  halfW: number,
-  halfH: number,
-  pipR: number,
-  color: string,
-): string {
-  if (count === 0) return "";
-  return PIP_PATTERNS[count]
-    .map((p) => {
-      const cx = offsetX + p.x * halfW;
-      const cy = offsetY + p.y * halfH;
-      return `<circle cx="${cx}" cy="${cy}" r="${pipR}" fill="${color}"/>`;
-    })
-    .join("");
+  const pips: { cx: number; cy: number }[] = [];
+
+  switch (value) {
+    case 1:
+      pips.push({ cx: midX, cy: midY });
+      break;
+    case 2:
+      pips.push({ cx: left, cy: top }, { cx: right, cy: bot });
+      break;
+    case 3:
+      pips.push({ cx: left, cy: top }, { cx: midX, cy: midY }, { cx: right, cy: bot });
+      break;
+    case 4:
+      pips.push(
+        { cx: left, cy: top }, { cx: right, cy: top },
+        { cx: left, cy: bot }, { cx: right, cy: bot },
+      );
+      break;
+    case 5:
+      pips.push(
+        { cx: left, cy: top }, { cx: right, cy: top },
+        { cx: midX, cy: midY },
+        { cx: left, cy: bot }, { cx: right, cy: bot },
+      );
+      break;
+    case 6:
+      pips.push(
+        { cx: left, cy: top }, { cx: left, cy: midY }, { cx: left, cy: bot },
+        { cx: right, cy: top }, { cx: right, cy: midY }, { cx: right, cy: bot },
+      );
+      break;
+  }
+
+  return pips.map((p) => `<circle cx="${p.cx}" cy="${p.cy}" r="9" fill="${color}"/>`).join("");
 }
 
 export function renderTileSVG(tile: DominoTile): string {
   const dim = TILE_DIMENSIONS[tile.size];
   const isH = tile.orientation === "horizontal";
-  const W = isH ? dim.h : dim.w;
-  const H = isH ? dim.w : dim.h;
-  const halfW = isH ? dim.h / 2 : dim.w / 2;
-  const halfH = isH ? dim.w : dim.h / 2;
-  const pipR = tile.size === "small" ? 2 : tile.size === "medium" ? 3 : 4.5;
-  const color = "#33393e";
+  const vw = isH ? 200 : 100;
+  const vh = isH ? 100 : 200;
 
-  const borderWidth = 1;
-  const radius = tile.size === "small" ? 3 : tile.size === "medium" ? 4 : 6;
+  const topPipsSVG = getPips(tile.top, false);
+  const bottomPipsSVG = getPips(tile.bottom, true);
 
-  const topPips = pipsForHalf(tile.top, 0, 0, halfW, halfH, pipR, color);
-  const bottomPips = pipsForHalf(tile.bottom, isH ? halfW : 0, isH ? 0 : halfH, halfW, halfH, pipR, color);
+  const divider = isH
+    ? `<line x1="100" y1="2" x2="100" y2="98" stroke="#8b98a3" stroke-width="2"/>`
+    : `<line x1="2" y1="100" x2="98" y2="100" stroke="#8b98a3" stroke-width="2"/>`;
 
-  const dividerLine = isH
-    ? `<line x1="${halfW}" y1="0" x2="${halfW}" y2="${H}" stroke="#8b98a3" stroke-width="1"/>`
-    : `<line x1="0" y1="${halfH}" x2="${W}" y2="${halfH}" stroke="#8b98a3" stroke-width="1"/>`;
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  <rect x="${borderWidth / 2}" y="${borderWidth / 2}" width="${W - borderWidth}" height="${H - borderWidth}" rx="${radius}" fill="#f0f4f5" stroke="#8b98a3" stroke-width="${borderWidth}"/>
-  ${dividerLine}
-  ${topPips}
-  ${bottomPips}
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${dim.w}" height="${dim.h}" viewBox="0 0 ${vw} ${vh}">
+  <rect x="2" y="2" width="${vw - 4}" height="${vh - 4}" rx="12" fill="#f0f4f8" stroke="#cbd5e1" stroke-width="2"/>
+  ${divider}
+  ${topPipsSVG}
+  ${bottomPipsSVG}
 </svg>`;
 }
 
 export function renderTileInline(tile: DominoTile): string {
-  const svg = renderTileSVG(tile);
-  return svg;
+  return renderTileSVG(tile);
 }
 
 export type LayoutMode = "grid" | "row" | "column" | "free";

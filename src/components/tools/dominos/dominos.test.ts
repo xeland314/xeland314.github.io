@@ -244,12 +244,14 @@ describe('renderTileSVG', () => {
     const svg = renderTileSVG(createTile(1, 2, "vertical", "medium"));
     expect(svg).toContain('width="48"');
     expect(svg).toContain('height="96"');
+    expect(svg).toContain('viewBox="0 0 100 200"');
   });
 
   it('has correct dimensions for horizontal large tile', () => {
     const svg = renderTileSVG(createTile(1, 2, "horizontal", "large"));
-    expect(svg).toContain('width="144"');
-    expect(svg).toContain('height="72"');
+    expect(svg).toContain('width="72"');
+    expect(svg).toContain('height="144"');
+    expect(svg).toContain('viewBox="0 0 200 100"');
   });
 
   it('has divider line', () => {
@@ -268,6 +270,20 @@ describe('renderTileSVG', () => {
     const svg = renderTileSVG(createTile(0, 0));
     const circles = svg.match(/<circle/g);
     expect(circles).toBeNull();
+  });
+
+  it('pips are centered at 25/50/75 grid', () => {
+    const svg = renderTileSVG(createTile(1, 1));
+    expect(svg).toContain('cx="50" cy="50"');
+    expect(svg).toContain('cx="50" cy="150"');
+  });
+
+  it('6-pip uses two columns at x=25 and x=75', () => {
+    const svg = renderTileSVG(createTile(6, 6));
+    expect(svg).toContain('cx="25"');
+    expect(svg).toContain('cx="75"');
+    const circles = svg.match(/<circle/g);
+    expect(circles!.length).toBe(12);
   });
 });
 
