@@ -97,22 +97,16 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
     </div>
   </div>
 
-  <script is:inline>
-    let operations = [];
-    let imageDataUrl = null;
+  <script>
+    import { parseDirection, calculateTotalAngle, normalizeAngle, validateDegrees } from "../components/tools/rotador-imagenes/rotador";
+    import type { RotationOperation } from "../components/tools/rotador-imagenes/rotador";
 
-    function parseDirection(dir) {
-      return dir === "cw" ? "horario" : "antihorario";
-    }
-
-    function calculateTotalAngle() {
-      return operations.reduce((total, op) => {
-        return total + (op.direction === "cw" ? op.degrees : -op.degrees);
-      }, 0);
-    }
+    let operations: RotationOperation[] = [];
+    let imageDataUrl: string | null = null;
 
     function renderOperations() {
       const container = document.getElementById("operations-list");
+      if (!container) return;
       if (operations.length === 0) {
         container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">No hay operaciones. Agrega una arriba.</p>';
         return;
@@ -135,7 +129,8 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
 
       container.querySelectorAll(".btn-remove-operation").forEach(btn => {
         btn.addEventListener("click", (e) => {
-          const idx = parseInt(e.target.dataset.index);
+          const target = e.target as HTMLElement;
+          const idx = parseInt(target.dataset.index!);
           operations.splice(idx, 1);
           renderOperations();
         });
@@ -144,6 +139,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
 
     function applyRotations() {
       const container = document.getElementById("resultado");
+      if (!container) return;
       
       if (!imageDataUrl) {
         container.innerHTML = '<p class="text-[#8b98a3] font-serif text-sm">Carga una imagen primero.</p>';
@@ -155,14 +151,14 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         return;
       }
 
-      const totalAngle = calculateTotalAngle();
-      const normalizedAngle = ((totalAngle % 360) + 360) % 360;
+      const totalAngle = calculateTotalAngle(operations);
+      const normalizedAngle = normalizeAngle(totalAngle);
       
       const stepsHtml = operations.map((op, i) => `
         <div class="flex items-center gap-2 py-1">
           <span class="text-[#8b98a3] text-xs">${i + 1}.</span>
           <span class="text-sm">${op.degrees}° ${parseDirection(op.direction)}</span>
-          <span class="text-[#8b98a3] text-xs">→ acumulado: ${totalAngle - calculateTotalAngle().toFixed(0)}°</span>
+          <span class="text-[#8b98a3] text-xs">→ acumulado: ${calculateTotalAngle(operations.slice(0, i + 1))}°</span>
         </div>
       `).join("");
 
@@ -195,24 +191,29 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       `;
     }
 
-    document.getElementById("input-image").addEventListener("change", (e) => {
-      const file = e.target.files[0];
+    document.getElementById("input-image")?.addEventListener("change", (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (event) => {
-          imageDataUrl = event.target.result;
-          document.getElementById("resultado").innerHTML = 
-            '<p class="text-[#6b7680] font-serif text-sm">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
+          imageDataUrl = event.target?.result as string;
+          const resultado = document.getElementById("resultado");
+          if (resultado) {
+            resultado.innerHTML = 
+              '<p class="text-[#6b7680] font-serif text-sm">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
+          }
         };
         reader.readAsDataURL(file);
       }
     });
 
-    document.getElementById("btn-add-operation").addEventListener("click", () => {
-      const degrees = parseInt(document.getElementById("rotation-degrees").value);
-      const direction = document.getElementById("rotation-direction").value;
+    document.getElementById("btn-add-operation")?.addEventListener("click", () => {
+      const degreesInput = document.getElementById("rotation-degrees") as HTMLInputElement;
+      const directionSelect = document.getElementById("rotation-direction") as HTMLSelectElement;
+      const degrees = parseInt(degreesInput.value);
+      const direction = directionSelect.value as "cw" | "ccw";
       
-      if (isNaN(degrees) || degrees < 0) {
+      if (!validateDegrees(degrees)) {
         alert("Ingresa un número de grados válido (0 o mayor).");
         return;
       }
@@ -221,14 +222,16 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       renderOperations();
     });
 
-    document.getElementById("btn-apply").addEventListener("click", applyRotations);
+    document.getElementById("btn-apply")?.addEventListener("click", applyRotations);
 
-    document.getElementById("btn-clear").addEventListener("click", () => {
+    document.getElementById("btn-clear")?.addEventListener("click", () => {
       operations = [];
       imageDataUrl = null;
-      document.getElementById("input-image").value = "";
+      const inputImage = document.getElementById("input-image") as HTMLInputElement;
+      if (inputImage) inputImage.value = "";
       renderOperations();
-      document.getElementById("resultado").innerHTML = "";
+      const resultado = document.getElementById("resultado");
+      if (resultado) resultado.innerHTML = "";
     });
 
     renderOperations();
