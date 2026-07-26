@@ -10,6 +10,7 @@ export interface DominoTile {
   bottom: PipCount;
   orientation: TileOrientation;
   size: TileSize;
+  isHidden?: boolean;
 }
 
 export interface DominoSet {
@@ -198,6 +199,13 @@ export function renderTileSVG(tile: DominoTile): string {
   const vw = isH ? 200 : 100;
   const vh = isH ? 100 : 200;
 
+  if (tile.isHidden) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${dim.w}" height="${dim.h}" viewBox="0 0 ${vw} ${vh}" style="pointer-events:none">
+  <rect x="2" y="2" width="${vw - 4}" height="${vh - 4}" rx="12" fill="#e8edef" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="${vw / 2}" y="${vh / 2 + 14}" text-anchor="middle" font-size="48" font-family="serif" fill="#8b98a3">?</text>
+</svg>`;
+  }
+
   const topPipsSVG = getPips(tile.top, false);
   const bottomPipsSVG = getPips(tile.bottom, true);
 
@@ -229,6 +237,83 @@ export interface PlacedTile {
   tile: DominoTile;
   x: number;
   y: number;
+}
+
+export type PatternRule =
+  | { type: "suma-constante"; delta: number }
+  | { type: "espejo" }
+  | { type: "encadenado-clasico" }
+  | { type: "alternado"; valoresFijos: PipCount[] }
+  | { type: "fraccion"; topDelta: number; bottomDelta: number };
+
+export interface PatternGenerationConfig {
+  rule: PatternRule;
+  length: number;
+  hideIndices?: number[];
+  startTop?: PipCount;
+  startBottom?: PipCount;
+}
+
+function mod7(n: number): PipCount {
+  return ((n % 7) + 7) % 7 as PipCount;
+}
+
+export function generatePattern(config: PatternGenerationConfig): DominoTile[] {
+  const result: DominoTile[] = [];
+  let currentTop = config.startTop ?? 0;
+  let currentBottom = config.startBottom ?? 0;
+
+  for (let i = 0; i < config.length; i++) {
+    const isHidden = config.hideIndices?.includes(i) ?? false;
+
+    let tileTop = currentTop;
+    let tileBottom = currentBottom;
+
+    if (config.rule.type === "alternado") {
+      tileTop = config.rule.valoresFijos[(i * 2) % config.rule.valoresFijos.length];
+      tileBottom = config.rule.valoresFijos[(i * 2 + 1) % config.rule.valoresFijos.length];
+    }
+
+    result.push({
+      id: `pattern-${i}`,
+      top: tileTop,
+      bottom: tileBottom,
+      orientation: "vertical",
+      size: "medium",
+      isHidden,
+    });
+
+    let nextTop = currentTop;
+    let nextBottom = currentBottom;
+
+    switch (config.rule.type) {
+      case "fraccion":
+        nextTop = mod7(currentTop + config.rule.topDelta);
+        nextBottom = mod7(currentBottom + config.rule.bottomDelta);
+        break;
+      case "suma-constante":
+        nextTop = mod7(currentTop + config.rule.delta);
+        nextBottom = mod7(currentBottom + config.rule.delta);
+        break;
+      case "espejo":
+        nextTop = currentBottom;
+        nextBottom = currentTop;
+        break;
+      case "encadenado-clasico":
+        nextTop = currentBottom;
+        nextBottom = mod7(currentBottom + 1);
+        break;
+      case "alternado":
+        nextTop = tileTop;
+        nextBottom = tileBottom;
+        break;
+    }
+
+    currentTop = nextTop;
+    currentBottom = nextBottom;
+  }
+
+  return result;
 }
 
 export function layoutTiles(tiles: DominoTile[], config: LayoutConfig): PlacedTile[] {

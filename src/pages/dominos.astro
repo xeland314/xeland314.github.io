@@ -122,6 +122,98 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         </div>
       </div>
 
+      <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4">
+        <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Patrones</p>
+        <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">Generador de patrones</h2>
+        <p class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]">
+          Genera secuencias de fichas según una regla matemática. Oculta fichas para crear problemas de examen.
+        </p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="pattern-rule" class="block text-[11px] text-[#8b98a3] mb-1">Regla</label>
+            <select id="pattern-rule" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="fraccion">Fracción (delta independiente)</option>
+              <option value="suma-constante">Suma constante</option>
+              <option value="espejo">Espejo</option>
+              <option value="encadenado-clasico">Encadenado clásico</option>
+            </select>
+          </div>
+          <div id="param-fraccion-top">
+            <label for="pattern-top-delta" class="block text-[11px] text-[#8b98a3] mb-1">Top Δ</label>
+            <input type="number" id="pattern-top-delta" value="2" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div id="param-fraccion-bottom">
+            <label for="pattern-bottom-delta" class="block text-[11px] text-[#8b98a3] mb-1">Bottom Δ</label>
+            <input type="number" id="pattern-bottom-delta" value="3" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div id="param-constante" class="hidden">
+            <label for="pattern-delta" class="block text-[11px] text-[#8b98a3] mb-1">Delta</label>
+            <input type="number" id="pattern-delta" value="1" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="pattern-start-top" class="block text-[11px] text-[#8b98a3] mb-1">Inicio top</label>
+            <select id="pattern-start-top" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div>
+            <label for="pattern-start-bottom" class="block text-[11px] text-[#8b98a3] mb-1">Inicio bottom</label>
+            <select id="pattern-start-bottom" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div>
+            <label for="pattern-length" class="block text-[11px] text-[#8b98a3] mb-1">Longitud</label>
+            <input type="number" id="pattern-length" value="9" min="1" max="28" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="pattern-layout" class="block text-[11px] text-[#8b98a3] mb-1">Layout</label>
+            <select id="pattern-layout" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="grid">Cuadrícula</option>
+              <option value="row">Fila</option>
+              <option value="column">Columna</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="pattern-columns" class="block text-[11px] text-[#8b98a3] mb-1">Columnas (grid)</label>
+            <input type="number" id="pattern-columns" value="3" min="1" max="7" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="pattern-hide" class="block text-[11px] text-[#8b98a3] mb-1">Ocultar (índices)</label>
+            <input type="text" id="pattern-hide" placeholder="ej: 7,8" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div class="flex items-end">
+            <button
+              id="btn-generate-pattern"
+              class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              Generar patrón
+            </button>
+          </div>
+        </div>
+
+        <div id="pattern-result" class="mt-[10px]"></div>
+      </div>
+
       <div id="resultado" class="mt-[30px]"></div>
     </div>
   </div>
@@ -131,8 +223,9 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       createTile, buildFullSet, shuffleTiles, canPlaceRight, canPlaceLeft,
       placeRight, placeLeft, chainScore, isClosedChain, findMatchingTiles,
       scoreRemainingTiles, renderTileSVG, isDouble, tileSum,
+      generatePattern, layoutTiles,
     } from "../components/tools/dominos/dominos";
-    import type { PipCount, TileSize, DominoTile } from "../components/tools/dominos/dominos";
+    import type { PipCount, TileSize, DominoTile, PatternRule, LayoutConfig } from "../components/tools/dominos/dominos";
 
     let availableTiles: DominoTile[] = [];
     let chain: DominoTile[] = [];
@@ -277,6 +370,105 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       chain = [];
       availableTiles = [...availableTiles, ...returnToAvailable];
       renderAll();
+    });
+
+    const ruleSelect = document.getElementById("pattern-rule") as HTMLSelectElement;
+    const paramFraccionTop = document.getElementById("param-fraccion-top");
+    const paramFraccionBottom = document.getElementById("param-fraccion-bottom");
+    const paramConstante = document.getElementById("param-constante");
+
+    function updateRuleParams() {
+      const rule = ruleSelect.value;
+      const isFraccion = rule === "fraccion";
+      const isConstante = rule === "suma-constante";
+      if (paramFraccionTop) paramFraccionTop.classList.toggle("hidden", !isFraccion);
+      if (paramFraccionBottom) paramFraccionBottom.classList.toggle("hidden", !isFraccion);
+      if (paramConstante) paramConstante.classList.toggle("hidden", !isConstante);
+    }
+
+    ruleSelect?.addEventListener("change", updateRuleParams);
+    updateRuleParams();
+
+    document.getElementById("btn-generate-pattern")?.addEventListener("click", () => {
+      const container = document.getElementById("pattern-result");
+      if (!container) return;
+
+      const ruleType = ruleSelect.value;
+      const startTop = parseInt((document.getElementById("pattern-start-top") as HTMLSelectElement).value) as PipCount;
+      const startBottom = parseInt((document.getElementById("pattern-start-bottom") as HTMLSelectElement).value) as PipCount;
+      const length = parseInt((document.getElementById("pattern-length") as HTMLInputElement).value) || 9;
+      const layoutMode = (document.getElementById("pattern-layout") as HTMLSelectElement).value as "grid" | "row" | "column";
+      const columns = parseInt((document.getElementById("pattern-columns") as HTMLInputElement).value) || 3;
+      const hideInput = (document.getElementById("pattern-hide") as HTMLInputElement).value;
+      const hideIndices = hideInput ? hideInput.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : [];
+
+      let rule: PatternRule;
+      switch (ruleType) {
+        case "fraccion":
+          rule = {
+            type: "fraccion",
+            topDelta: parseInt((document.getElementById("pattern-top-delta") as HTMLInputElement).value) || 2,
+            bottomDelta: parseInt((document.getElementById("pattern-bottom-delta") as HTMLInputElement).value) || 3,
+          };
+          break;
+        case "suma-constante":
+          rule = {
+            type: "suma-constante",
+            delta: parseInt((document.getElementById("pattern-delta") as HTMLInputElement).value) || 1,
+          };
+          break;
+        case "espejo":
+          rule = { type: "espejo" };
+          break;
+        case "encadenado-clasico":
+          rule = { type: "encadenado-clasico" };
+          break;
+        default:
+          rule = { type: "fraccion", topDelta: 2, bottomDelta: 3 };
+      }
+
+      const tiles = generatePattern({
+        rule,
+        length,
+        hideIndices,
+        startTop,
+        startBottom,
+      });
+
+      const layoutConfig: LayoutConfig = { mode: layoutMode, gap: 12, columns };
+      const placed = layoutTiles(tiles, layoutConfig);
+
+      const maxX = Math.max(...placed.map(p => p.x)) + 48;
+      const maxY = Math.max(...placed.map(p => p.y)) + 96;
+
+      const tilesHtml = placed.map(p => {
+        const svg = renderTileSVG(p.tile);
+        const label = p.tile.isHidden
+          ? "?"
+          : p.tile.top === p.tile.bottom
+            ? `Doble ${p.tile.top}`
+            : `${p.tile.top}·${p.tile.bottom}`;
+        return `
+          <div style="position:absolute;left:${p.x}px;top:${p.y}px;" class="flex flex-col items-center">
+            ${svg}
+            <span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="border-t border-dashed border-[#d3e0e4] pt-4">
+          <div class="flex items-baseline gap-2.5 mb-3">
+            <span class="text-[#c4392b] font-serif font-bold text-[13px] uppercase tracking-[0.08em]">Patrón generado</span>
+            <span class="text-[#6b7680] font-mono text-[11px]">${tiles.length} fichas · ocultas: ${hideIndices.length}</span>
+          </div>
+          <div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4 overflow-x-auto" style="min-height:${maxY + 20}px;">
+            <div style="position:relative;width:${maxX}px;height:${maxY}px;">
+              ${tilesHtml}
+            </div>
+          </div>
+        </div>
+      `;
     });
 
     renderAll();

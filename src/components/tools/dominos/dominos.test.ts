@@ -3,7 +3,7 @@ import {
   createTile, isDouble, tileSum, flipTile, canChainToRight, canChainToLeft,
   canPlaceRight, canPlaceLeft, placeRight, placeLeft, chainScore, isClosedChain,
   buildFullSet, findMatchingTiles, scoreRemainingTiles, renderTileSVG,
-  TILE_DIMENSIONS, resetIdCounter, layoutTiles,
+  TILE_DIMENSIONS, resetIdCounter, layoutTiles, generatePattern,
 } from './dominos';
 import type { PipCount, DominoTile } from './dominos';
 
@@ -365,5 +365,128 @@ describe('layoutTiles', () => {
     const tiles = [createTile(1, 2, "horizontal"), createTile(3, 4, "horizontal")];
     const result = layoutTiles(tiles, { mode: "column", gap: 4 });
     expect(result[1].y).toBe(52);
+  });
+});
+
+describe('generatePattern', () => {
+  it('generates correct fraccion pattern', () => {
+    const result = generatePattern({
+      rule: { type: "fraccion", topDelta: 2, bottomDelta: 3 },
+      length: 4,
+      startTop: 1,
+      startBottom: 2,
+    });
+    expect(result).toHaveLength(4);
+    expect(result[0].top).toBe(1);
+    expect(result[0].bottom).toBe(2);
+    expect(result[1].top).toBe(3);
+    expect(result[1].bottom).toBe(5);
+    expect(result[2].top).toBe(5);
+    expect(result[2].bottom).toBe(1);
+    expect(result[3].top).toBe(0);
+    expect(result[3].bottom).toBe(4);
+  });
+
+  it('generates correct suma-constante pattern', () => {
+    const result = generatePattern({
+      rule: { type: "suma-constante", delta: 1 },
+      length: 3,
+      startTop: 0,
+      startBottom: 0,
+    });
+    expect(result[0].top).toBe(0);
+    expect(result[0].bottom).toBe(0);
+    expect(result[1].top).toBe(1);
+    expect(result[1].bottom).toBe(1);
+    expect(result[2].top).toBe(2);
+    expect(result[2].bottom).toBe(2);
+  });
+
+  it('generates espejo pattern', () => {
+    const result = generatePattern({
+      rule: { type: "espejo" },
+      length: 3,
+      startTop: 1,
+      startBottom: 6,
+    });
+    expect(result[0].top).toBe(1);
+    expect(result[0].bottom).toBe(6);
+    expect(result[1].top).toBe(6);
+    expect(result[1].bottom).toBe(1);
+    expect(result[2].top).toBe(1);
+    expect(result[2].bottom).toBe(6);
+  });
+
+  it('generates encadenado-clasico pattern', () => {
+    const result = generatePattern({
+      rule: { type: "encadenado-clasico" },
+      length: 3,
+      startTop: 0,
+      startBottom: 1,
+    });
+    expect(result[0].top).toBe(0);
+    expect(result[0].bottom).toBe(1);
+    expect(result[1].top).toBe(1);
+    expect(result[1].bottom).toBe(2);
+    expect(result[2].top).toBe(2);
+    expect(result[2].bottom).toBe(3);
+  });
+
+  it('generates alternado pattern', () => {
+    const result = generatePattern({
+      rule: { type: "alternado", valoresFijos: [1, 2, 3] },
+      length: 4,
+      startTop: 1,
+      startBottom: 2,
+    });
+    expect(result[0].top).toBe(1);
+    expect(result[0].bottom).toBe(2);
+    expect(result[1].top).toBe(3);
+    expect(result[1].bottom).toBe(1);
+    expect(result[2].top).toBe(2);
+    expect(result[2].bottom).toBe(3);
+    expect(result[3].top).toBe(1);
+    expect(result[3].bottom).toBe(2);
+  });
+
+  it('marks hideIndices as hidden', () => {
+    const result = generatePattern({
+      rule: { type: "suma-constante", delta: 1 },
+      length: 4,
+      hideIndices: [2, 3],
+    });
+    expect(result[0].isHidden).toBeFalsy();
+    expect(result[1].isHidden).toBeFalsy();
+    expect(result[2].isHidden).toBe(true);
+    expect(result[3].isHidden).toBe(true);
+  });
+
+  it('wraps around with modulo 7', () => {
+    const result = generatePattern({
+      rule: { type: "suma-constante", delta: 1 },
+      length: 8,
+      startTop: 6,
+      startBottom: 6,
+    });
+    expect(result[0].top).toBe(6);
+    expect(result[6].top).toBe(5);
+    expect(result[7].top).toBe(6);
+  });
+});
+
+describe('renderTileSVG hidden', () => {
+  it('renders question mark for hidden tile', () => {
+    const tile = createTile(3, 5);
+    tile.isHidden = true;
+    const svg = renderTileSVG(tile);
+    expect(svg).toContain('text');
+    expect(svg).toContain('?</text>');
+    expect(svg).toContain('#e8edef');
+  });
+
+  it('renders normal pips for non-hidden tile', () => {
+    const svg = renderTileSVG(createTile(3, 5));
+    expect(svg).toContain('<circle');
+    expect(svg).not.toContain('?</text>');
   });
 });
