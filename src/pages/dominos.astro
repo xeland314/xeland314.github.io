@@ -1,0 +1,286 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const siteTitle = "Dominos — Visualizador de fichas de dominó";
+const siteDescription = "Visualiza y construye cadenas de dominó con SVG. Genera fichas estándar con puntos, prueba cadenas y exporta.";
+const siteKeywords = "dominó, fichas, dominó visualización, cadena de dominó, SVG dominó";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/dominos";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <div 
+    class="min-h-screen py-10 px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
+    style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
+  >
+    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+      <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Juegos de mesa · dominó</p>
+      <h1 class="font-serif font-bold text-[28px] mb-1.5 text-[#33393e]">Dominós</h1>
+      <p class="text-[#6b7680] font-serif text-[14.5px] leading-relaxed mb-[26px] max-w-[56ch]">
+        Genera fichas de dominó con SVG puro. Selecciona valores, arma cadenas y visualiza cómo encajan las piezas.
+      </p>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Crear ficha
+        </label>
+        <div class="flex gap-2 items-end">
+          <div class="flex-1">
+            <label for="top-pip" class="block text-[11px] text-[#8b98a3] mb-1">Mitad superior</label>
+            <select
+              id="top-pip"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="bottom-pip" class="block text-[11px] text-[#8b98a3] mb-1">Mitad inferior</label>
+            <select
+              id="bottom-pip"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5" selected>5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="tile-size" class="block text-[11px] text-[#8b98a3] mb-1">Tamaño</label>
+            <select
+              id="tile-size"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="small">Pequeña</option>
+              <option value="medium" selected>Mediana</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+          <button
+            id="btn-add-tile"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Crear
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Fichas disponibles
+        </label>
+        <div id="available-tiles" class="flex flex-wrap gap-2 mb-3 min-h-[40px] bg-white border border-[#d3e0e4] rounded-[3px] p-2.5"></div>
+      </div>
+
+      <div class="flex gap-2 mb-[22px]">
+        <button
+          id="btn-generate-set"
+          class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Generar juego completo
+        </button>
+        <button
+          id="btn-shuffle"
+          class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Mezclar
+        </button>
+      </div>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Cadena
+        </label>
+        <div id="chain-tiles" class="flex flex-wrap gap-1 min-h-[80px] bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-3 items-center mb-3"></div>
+        <div id="chain-info" class="text-[11px] text-[#8b98a3] font-mono mb-2"></div>
+        <div class="flex gap-2">
+          <button
+            id="btn-clear-chain"
+            class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Vaciar cadena
+          </button>
+        </div>
+      </div>
+
+      <div id="resultado" class="mt-[30px]"></div>
+    </div>
+  </div>
+
+  <script>
+    import {
+      createTile, buildFullSet, shuffleTiles, canPlaceRight, canPlaceLeft,
+      placeRight, placeLeft, chainScore, isClosedChain, findMatchingTiles,
+      scoreRemainingTiles, renderTileSVG, isDouble, tileSum,
+    } from "../components/tools/dominos/dominos";
+    import type { PipCount, TileSize, DominoTile } from "../components/tools/dominos/dominos";
+
+    let availableTiles: DominoTile[] = [];
+    let chain: DominoTile[] = [];
+
+    function renderAvailableTiles() {
+      const container = document.getElementById("available-tiles");
+      if (!container) return;
+      if (availableTiles.length === 0) {
+        container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">No hay fichas. Crea una o genera el juego completo.</p>';
+        return;
+      }
+
+      container.innerHTML = availableTiles.map((tile, i) => {
+        const svg = renderTileSVG(tile);
+        const label = tile.top === tile.bottom ? `Doble ${tile.top}` : `${tile.top}·${tile.bottom}`;
+        return `
+          <button 
+            data-index="${i}" 
+            data-side="right"
+            class="btn-chain-right flex flex-col items-center gap-1 bg-white border border-[#d3e0e4] rounded-[3px] p-1.5 cursor-pointer hover:border-[#c4392b] hover:shadow-sm focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 transition-all"
+            title="${label} → derecha"
+          >
+            ${svg}
+            <span class="text-[9px] text-[#8b98a3] font-mono">${label}</span>
+          </button>
+        `;
+      }).join("") + availableTiles.map((tile, i) => {
+        const svg = renderTileSVG(tile);
+        const label = tile.top === tile.bottom ? `Doble ${tile.top}` : `${tile.top}·${tile.bottom}`;
+        return `
+          <button 
+            data-index="${i}" 
+            data-side="left"
+            class="btn-chain-left flex flex-col items-center gap-1 bg-white border border-[#d3e0e4] rounded-[3px] p-1.5 cursor-pointer hover:border-[#6b7680] hover:shadow-sm focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 transition-all opacity-70"
+            title="${label} ← izquierda"
+          >
+            ${svg}
+            <span class="text-[9px] text-[#8b98a3] font-mono">↩ ${label}</span>
+          </button>
+        `;
+      }).join("");
+
+      container.querySelectorAll(".btn-chain-right").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
+          const tile = availableTiles[idx];
+          if (chain.length === 0) {
+            chain.push(tile);
+            availableTiles.splice(idx, 1);
+            renderAll();
+            return;
+          }
+          if (canPlaceRight(chain, tile)) {
+            chain = placeRight(chain, tile);
+            availableTiles.splice(idx, 1);
+            renderAll();
+          }
+        });
+      });
+
+      container.querySelectorAll(".btn-chain-left").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
+          const tile = availableTiles[idx];
+          if (chain.length === 0) {
+            chain.push(tile);
+            availableTiles.splice(idx, 1);
+            renderAll();
+            return;
+          }
+          if (canPlaceLeft(chain, tile)) {
+            chain = placeLeft(chain, tile);
+            availableTiles.splice(idx, 1);
+            renderAll();
+          }
+        });
+      });
+    }
+
+    function renderChain() {
+      const container = document.getElementById("chain-tiles");
+      const info = document.getElementById("chain-info");
+      if (!container) return;
+
+      if (chain.length === 0) {
+        container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">Haz clic en una ficha para agregarla a la cadena.</p>';
+        if (info) info.textContent = "";
+        return;
+      }
+
+      container.innerHTML = chain.map((tile, i) => {
+        const svg = renderTileSVG(tile);
+        const label = tile.top === tile.bottom ? `Doble ${tile.top}` : `${tile.top}·${tile.bottom}`;
+        return `
+          <div class="flex items-center">
+            ${i > 0 ? '<span class="text-[#8b98a3] text-[10px] mx-0.5">—</span>' : ""}
+            <div class="flex flex-col items-center">
+              ${svg}
+              <span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if (info) {
+        const score = chainScore(chain);
+        const closed = isClosedChain(chain);
+        const remaining = availableTiles.length;
+        info.textContent = `Fichas: ${chain.length} · Puntas: ${score} · Cerrada: ${closed ? "Sí" : "No"} · En mano: ${remaining}`;
+      }
+    }
+
+    function renderAll() {
+      renderAvailableTiles();
+      renderChain();
+    }
+
+    document.getElementById("btn-add-tile")?.addEventListener("click", () => {
+      const topSelect = document.getElementById("top-pip") as HTMLSelectElement;
+      const bottomSelect = document.getElementById("bottom-pip") as HTMLSelectElement;
+      const sizeSelect = document.getElementById("tile-size") as HTMLSelectElement;
+      const top = parseInt(topSelect.value) as PipCount;
+      const bottom = parseInt(bottomSelect.value) as PipCount;
+      const size = sizeSelect.value as TileSize;
+      availableTiles.push(createTile(top, bottom, "vertical", size));
+      renderAvailableTiles();
+    });
+
+    document.getElementById("btn-generate-set")?.addEventListener("click", () => {
+      availableTiles = buildFullSet(6);
+      chain = [];
+      renderAll();
+      const resultado = document.getElementById("resultado");
+      if (resultado) resultado.innerHTML = "";
+    });
+
+    document.getElementById("btn-shuffle")?.addEventListener("click", () => {
+      availableTiles = shuffleTiles(availableTiles);
+      renderAvailableTiles();
+    });
+
+    document.getElementById("btn-clear-chain")?.addEventListener("click", () => {
+      const returnToAvailable = [...chain];
+      chain = [];
+      availableTiles = [...availableTiles, ...returnToAvailable];
+      renderAll();
+    });
+
+    renderAll();
+  </script>
+</BaseLayout>
