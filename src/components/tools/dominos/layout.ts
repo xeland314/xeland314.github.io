@@ -1,4 +1,4 @@
-import type { DominoTile, LayoutConfig, PlacedTile, PartialExportConfig } from "./types";
+import type { DominoTile, LayoutConfig, PlacedTile, PartialExportConfig, ReadingDirection } from "./types";
 import { TILE_DIMENSIONS } from "./types";
 
 export function layoutTiles(tiles: DominoTile[], config: LayoutConfig): PlacedTile[] {
@@ -60,4 +60,34 @@ export function getSubsets(tiles: DominoTile[], config: PartialExportConfig): Do
     return chunks;
   }
   return [tiles];
+}
+
+export function layoutTilesCircular(tiles: DominoTile[], direction: ReadingDirection, radius: number = 120): PlacedTile[] {
+  if (tiles.length === 0) return [];
+  if (tiles.length === 1) return [{ tile: tiles[0], x: 0, y: 0 }];
+
+  const center = radius + 48;
+  const angleStep = (2 * Math.PI) / tiles.length;
+
+  return tiles.map((tile, i) => {
+    let angle: number;
+    if (direction === "horario") {
+      angle = -Math.PI / 2 + i * angleStep;
+    } else if (direction === "antihorario") {
+      angle = -Math.PI / 2 - i * angleStep;
+    } else {
+      const col = i % Math.ceil(Math.sqrt(tiles.length));
+      const row = Math.floor(i / Math.ceil(Math.sqrt(tiles.length)));
+      const dim = TILE_DIMENSIONS[tile.size];
+      const tileW = tile.orientation === "horizontal" ? dim.h : dim.w;
+      const tileH = tile.orientation === "horizontal" ? dim.w : dim.h;
+      return { tile, x: col * (tileW + 12), y: row * (tileH + 12) };
+    }
+
+    return {
+      tile,
+      x: Math.round(center + radius * Math.cos(angle)),
+      y: Math.round(center + radius * Math.sin(angle)),
+    };
+  });
 }

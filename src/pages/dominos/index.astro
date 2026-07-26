@@ -330,6 +330,106 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         </button>
       </div>
 
+      <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4 mb-[22px]">
+        <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Matriz</p>
+        <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">Generador de matriz</h2>
+        <p class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]">
+          Genera una cuadrícula de fichas donde cada fila sigue una regla y cada columna sigue otra. Útil para ejercicios de validación cruzada.
+        </p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="matrix-row-rule" class="block text-[11px] text-[#8b98a3] mb-1">Regla de fila</label>
+            <select id="matrix-row-rule" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="fraccion">Fracción</option>
+              <option value="suma-constante" selected>Suma constante</option>
+              <option value="espejo">Espejo</option>
+              <option value="encadenado-clasico">Encadenado clásico</option>
+              <option value="operacion-interna">Operación interna</option>
+              <option value="series-alternadas">Series alternadas</option>
+              <option value="lectura-z">Lectura en Z</option>
+              <option value="progresion-geometrica">Progresión geométrica</option>
+              <option value="inversion-polar">Inversión polar</option>
+            </select>
+          </div>
+          <div>
+            <label for="matrix-col-rule" class="block text-[11px] text-[#8b98a3] mb-1">Regla de columna</label>
+            <select id="matrix-col-rule" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="fraccion">Fracción</option>
+              <option value="suma-constante" selected>Suma constante</option>
+              <option value="espejo">Espejo</option>
+              <option value="encadenado-clasico">Encadenado clásico</option>
+              <option value="operacion-interna">Operación interna</option>
+              <option value="series-alternadas">Series alternadas</option>
+              <option value="lectura-z">Lectura en Z</option>
+              <option value="progresion-geometrica">Progresión geométrica</option>
+              <option value="inversion-polar">Inversión polar</option>
+            </select>
+          </div>
+          <div>
+            <label for="matrix-rows" class="block text-[11px] text-[#8b98a3] mb-1">Filas</label>
+            <input type="number" id="matrix-rows" value="4" min="1" max="10" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="matrix-cols" class="block text-[11px] text-[#8b98a3] mb-1">Columnas</label>
+            <input type="number" id="matrix-cols" value="4" min="1" max="10" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="matrix-row-delta" class="block text-[11px] text-[#8b98a3] mb-1">Δ fila</label>
+            <input type="number" id="matrix-row-delta" value="1" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="matrix-col-delta" class="block text-[11px] text-[#8b98a3] mb-1">Δ columna</label>
+            <input type="number" id="matrix-col-delta" value="2" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="matrix-hidden-row" class="block text-[11px] text-[#8b98a3] mb-1">Fila oculta</label>
+            <input type="number" id="matrix-hidden-row" value="" min="0" max="9" placeholder="—" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="matrix-hidden-col" class="block text-[11px] text-[#8b98a3] mb-1">Columna oculta</label>
+            <input type="number" id="matrix-hidden-col" value="" min="0" max="9" placeholder="—" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="matrix-start-top" class="block text-[11px] text-[#8b98a3] mb-1">Inicio top</label>
+            <select id="matrix-start-top" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0" selected>0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div>
+            <label for="matrix-start-bottom" class="block text-[11px] text-[#8b98a3] mb-1">Inicio bottom</label>
+            <select id="matrix-start-bottom" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0" selected>0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+        </div>
+
+        <button
+          id="btn-generate-matrix"
+          class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Generar matriz
+        </button>
+      </div>
+
       <div id="resultado" class="mt-[30px]"></div>
     </div>
   </div>

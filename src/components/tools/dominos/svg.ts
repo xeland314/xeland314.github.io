@@ -1,6 +1,6 @@
 import type { PipCount, DominoTile, LayoutConfig } from "./types";
 import { TILE_DIMENSIONS } from "./types";
-import { layoutTiles } from "./layout";
+import { layoutTiles, layoutTilesCircular } from "./layout";
 
 function getPips(value: PipCount, isBottomHalf: boolean): string {
   const offsetY = isBottomHalf ? 100 : 0;
@@ -96,4 +96,38 @@ export function renderLayoutHTML(tiles: DominoTile[], config: LayoutConfig): str
     return `<div style="position:absolute;left:${p.x}px;top:${p.y}px;" class="flex flex-col items-center">${svg}<span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span></div>`;
   }).join("");
   return `<div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${maxX}px;height:${maxY}px;">${tilesHtml}</div>`;
+}
+
+export function renderCircularLayoutHTML(tiles: DominoTile[], direction: "horario" | "antihorario" | "lineal", radius: number = 120): string {
+  if (tiles.length === 0) return "";
+  const placed = layoutTilesCircular(tiles, direction, radius);
+  const size = radius * 2 + 144;
+  const tilesHtml = placed.map((p) => {
+    const svg = renderTileSVG(p.tile);
+    const label = tileLabel(p.tile);
+    return `<div style="position:absolute;left:${p.x}px;top:${p.y}px;" class="flex flex-col items-center">${svg}<span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span></div>`;
+  }).join("");
+  return `<div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${size}px;height:${size}px;">${tilesHtml}</div>`;
+}
+
+export function renderMatrixHTML(matrix: DominoTile[][]): string {
+  if (matrix.length === 0 || matrix[0].length === 0) return "";
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const dim = TILE_DIMENSIONS.medium;
+  const gap = 12;
+  const totalW = cols * (dim.w + gap) + gap;
+  const totalH = rows * (dim.h + 20 + gap) + gap;
+
+  const tilesHtml = matrix.flatMap((row, r) =>
+    row.map((tile, c) => {
+      const x = gap + c * (dim.w + gap);
+      const y = gap + r * (dim.h + 20 + gap);
+      const svg = renderTileSVG(tile);
+      const label = tileLabel(tile);
+      return `<div style="position:absolute;left:${x}px;top:${y}px;" class="flex flex-col items-center">${svg}<span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span></div>`;
+    })
+  ).join("");
+
+  return `<div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${totalW}px;height:${totalH}px;">${tilesHtml}</div>`;
 }

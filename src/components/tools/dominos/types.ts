@@ -54,10 +54,23 @@ export type PatternRule =
 
 export type PatternRuleType = PatternRule["type"];
 
+export type ReadingDirection = "horario" | "antihorario" | "lineal";
+
 export interface PatternGenerationConfig {
   rule: PatternRule;
   length: number;
   hideIndices?: number[];
+  startTop?: PipCount;
+  startBottom?: PipCount;
+  direction?: ReadingDirection;
+}
+
+export interface MatrixPatternConfig {
+  rows: number;
+  columns: number;
+  rowRule: PatternRule;
+  columnRule: PatternRule;
+  hiddenCell?: { row: number; col: number };
   startTop?: PipCount;
   startBottom?: PipCount;
 }

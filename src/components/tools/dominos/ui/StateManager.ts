@@ -3,16 +3,17 @@ import {
   placeRight, placeLeft, chainScore, isClosedChain, findMatchingTiles,
   scoreRemainingTiles,
 } from "../core";
-import { generatePattern } from "../pattern";
+import { generatePattern, generateMatrixPattern } from "../pattern";
 import { layoutTiles } from "../layout";
-import type { PipCount, TileSize, TileOrientation, DominoTile, LayoutConfig, LayoutMode } from "../types";
-import { renderTileSVG, tileLabel } from "../svg";
+import type { PipCount, TileSize, TileOrientation, DominoTile, LayoutConfig, LayoutMode, MatrixPatternConfig, PatternRule } from "../types";
+import { renderTileSVG, tileLabel, renderMatrixHTML } from "../svg";
 
 export const state = {
   availableTiles: [] as DominoTile[],
   chain: [] as DominoTile[],
   sequence: [] as DominoTile[],
   currentLayout: { mode: "grid", gap: 12, columns: 3 } as LayoutConfig,
+  matrix: null as DominoTile[][] | null,
 };
 
 export function readLayout(): LayoutConfig {
@@ -134,6 +135,60 @@ export function updatePreview() {
   if (isFree) initDragHandlers();
 }
 
+function renderMatrix() {
+  const container = document.getElementById("seq-preview");
+  if (!container) return;
+
+  if (!state.matrix || state.matrix.length === 0) return;
+
+  container.innerHTML = renderMatrixHTML(state.matrix);
+}
+
+function buildMatrixRule(prefix: string, ruleType: string) {
+  switch (ruleType) {
+    case "fraccion":
+      return {
+        type: "fraccion" as const,
+        topDelta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
+        bottomDelta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
+      };
+    case "suma-constante":
+      return {
+        type: "suma-constante" as const,
+        delta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
+      };
+    case "espejo":
+      return { type: "espejo" as const };
+    case "encadenado-clasico":
+      return { type: "encadenado-clasico" as const };
+    case "operacion-interna":
+      return {
+        type: "operacion-interna" as const,
+        delta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 2,
+      };
+    case "series-alternadas":
+      return {
+        type: "series-alternadas" as const,
+        deltaA: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
+        deltaB: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || -1,
+      };
+    case "lectura-z":
+      return {
+        type: "lectura-z" as const,
+        delta: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 1,
+      };
+    case "progresion-geometrica":
+      return {
+        type: "progresion-geometrica" as const,
+        factor: parseInt((document.getElementById(`${prefix}-delta`) as HTMLInputElement)?.value) || 2,
+      };
+    case "inversion-polar":
+      return { type: "inversion-polar" as const };
+    default:
+      return { type: "suma-constante" as const, delta: 1 };
+  }
+}
+
 export function renderOperationsList() {
   const container = document.getElementById("seq-operations");
   if (!container) return;
@@ -197,7 +252,11 @@ export function renderAll() {
   renderAvailableTiles();
   renderChain();
   state.currentLayout = readLayout();
-  updatePreview();
+  if (state.matrix) {
+    renderMatrix();
+  } else {
+    updatePreview();
+  }
   renderOperationsList();
 }
 
@@ -344,6 +403,7 @@ export function initStateManager() {
 
   document.getElementById("btn-clear-sequence")?.addEventListener("click", () => {
     state.sequence = [];
+    state.matrix = null;
     renderAll();
   });
 
@@ -445,6 +505,34 @@ export function initStateManager() {
       startBottom,
     });
 
+    state.matrix = null;
+    renderAll();
+  });
+
+  document.getElementById("btn-generate-matrix")?.addEventListener("click", () => {
+    const rowRuleType = (document.getElementById("matrix-row-rule") as HTMLSelectElement).value;
+    const colRuleType = (document.getElementById("matrix-col-rule") as HTMLSelectElement).value;
+    const rows = parseInt((document.getElementById("matrix-rows") as HTMLInputElement).value) || 4;
+    const cols = parseInt((document.getElementById("matrix-cols") as HTMLInputElement).value) || 4;
+    const startTop = parseInt((document.getElementById("matrix-start-top") as HTMLSelectElement).value) as PipCount || 0;
+    const startBottom = parseInt((document.getElementById("matrix-start-bottom") as HTMLSelectElement).value) as PipCount || 0;
+    const hiddenRowRaw = (document.getElementById("matrix-hidden-row") as HTMLInputElement).value;
+    const hiddenColRaw = (document.getElementById("matrix-hidden-col") as HTMLInputElement).value;
+    const hiddenCell = (hiddenRowRaw !== "" && hiddenColRaw !== "")
+      ? { row: parseInt(hiddenRowRaw), col: parseInt(hiddenColRaw) }
+      : undefined;
+
+    const config: MatrixPatternConfig = {
+      rows,
+      columns: cols,
+      rowRule: buildMatrixRule("matrix-row", rowRuleType),
+      columnRule: buildMatrixRule("matrix-col", colRuleType),
+      hiddenCell,
+      startTop,
+      startBottom,
+    };
+
+    state.matrix = generateMatrixPattern(config);
     renderAll();
   });
 

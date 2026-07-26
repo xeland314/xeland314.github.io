@@ -4,7 +4,8 @@ import {
   canPlaceRight, canPlaceLeft, placeRight, placeLeft, chainScore, isClosedChain,
   buildFullSet, findMatchingTiles, scoreRemainingTiles, renderTileSVG,
   TILE_DIMENSIONS, resetIdCounter, layoutTiles, generatePattern,
-  getSubsets, renderLayoutHTML,
+  getSubsets, renderLayoutHTML, layoutTilesCircular, generateMatrixPattern,
+  renderMatrixHTML,
 } from './dominos';
 import type { PipCount, DominoTile } from './dominos';
 
@@ -636,5 +637,139 @@ describe('renderLayoutHTML', () => {
     const tiles = [createTile(1, 2), createTile(3, 4)];
     const html = renderLayoutHTML(tiles, { mode: "row", gap: 4 });
     expect(html).toContain('position:absolute');
+  });
+});
+
+describe('layoutTilesCircular', () => {
+  it('returns empty array for empty input', () => {
+    expect(layoutTilesCircular([], "horario")).toEqual([]);
+  });
+
+  it('returns single tile at origin', () => {
+    const result = layoutTilesCircular([createTile(1, 2)], "horario");
+    expect(result).toHaveLength(1);
+    expect(result[0].x).toBe(0);
+    expect(result[0].y).toBe(0);
+  });
+
+  it('distributes tiles in clockwise circle', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4), createTile(5, 6)];
+    const result = layoutTilesCircular(tiles, "horario", 100);
+    expect(result).toHaveLength(3);
+    expect(result[0].x).toBe(148);
+    expect(result[0].y).toBe(48);
+  });
+
+  it('distributes tiles in counter-clockwise circle', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4), createTile(5, 6)];
+    const cw = layoutTilesCircular(tiles, "horario", 100);
+    const ccw = layoutTilesCircular(tiles, "antihorario", 100);
+    expect(ccw).toHaveLength(3);
+    expect(ccw[0].x).toBe(cw[0].x);
+    expect(ccw[0].y).toBe(cw[0].y);
+    expect(ccw[1].x).not.toBe(cw[1].x);
+  });
+
+  it('falls back to grid for lineal direction', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4), createTile(5, 6), createTile(0, 1)];
+    const result = layoutTilesCircular(tiles, "lineal");
+    expect(result).toHaveLength(4);
+    expect(result[0].x).toBe(0);
+    expect(result[0].y).toBe(0);
+  });
+});
+
+describe('generateMatrixPattern', () => {
+  it('generates a 2x2 matrix', () => {
+    const matrix = generateMatrixPattern({
+      rows: 2,
+      columns: 2,
+      rowRule: { type: "suma-constante", delta: 1 },
+      columnRule: { type: "suma-constante", delta: 2 },
+      startTop: 0,
+      startBottom: 0,
+    });
+    expect(matrix).toHaveLength(2);
+    expect(matrix[0]).toHaveLength(2);
+    expect(matrix[1]).toHaveLength(2);
+    expect(matrix[0][0].top).toBe(0);
+    expect(matrix[0][0].bottom).toBe(0);
+    expect(matrix[0][1].top).toBe(1);
+    expect(matrix[0][1].bottom).toBe(1);
+    expect(matrix[1][0].top).toBe(2);
+    expect(matrix[1][0].bottom).toBe(2);
+  });
+
+  it('generates a 3x3 matrix', () => {
+    const matrix = generateMatrixPattern({
+      rows: 3,
+      columns: 3,
+      rowRule: { type: "fraccion", topDelta: 1, bottomDelta: 2 },
+      columnRule: { type: "fraccion", topDelta: 2, bottomDelta: 1 },
+      startTop: 0,
+      startBottom: 0,
+    });
+    expect(matrix).toHaveLength(3);
+    expect(matrix[0]).toHaveLength(3);
+    expect(matrix[1]).toHaveLength(3);
+    expect(matrix[2]).toHaveLength(3);
+    expect(matrix[0][0].top).toBe(0);
+    expect(matrix[0][0].bottom).toBe(0);
+    expect(matrix[0][1].top).toBe(1);
+    expect(matrix[0][1].bottom).toBe(2);
+    expect(matrix[1][0].top).toBe(2);
+    expect(matrix[1][0].bottom).toBe(1);
+  });
+
+  it('marks hidden cell correctly', () => {
+    const matrix = generateMatrixPattern({
+      rows: 2,
+      columns: 2,
+      rowRule: { type: "suma-constante", delta: 1 },
+      columnRule: { type: "suma-constante", delta: 1 },
+      hiddenCell: { row: 1, col: 0 },
+    });
+    expect(matrix[0][0].isHidden).toBeFalsy();
+    expect(matrix[1][0].isHidden).toBe(true);
+    expect(matrix[1][1].isHidden).toBeFalsy();
+  });
+
+  it('uses cross-validation between row and column rules', () => {
+    const matrix = generateMatrixPattern({
+      rows: 2,
+      columns: 2,
+      rowRule: { type: "espejo" },
+      columnRule: { type: "suma-constante", delta: 1 },
+      startTop: 1,
+      startBottom: 3,
+    });
+    expect(matrix[0][0].top).toBe(1);
+    expect(matrix[0][0].bottom).toBe(3);
+    expect(matrix[0][1].top).toBe(3);
+    expect(matrix[0][1].bottom).toBe(1);
+    expect(matrix[1][0].top).toBe(2);
+    expect(matrix[1][0].bottom).toBe(4);
+    expect(matrix[1][1].top).toBe(4);
+    expect(matrix[1][1].bottom).toBe(2);
+  });
+});
+
+describe('renderMatrixHTML', () => {
+  it('returns empty string for empty matrix', () => {
+    expect(renderMatrixHTML([])).toBe("");
+  });
+
+  it('returns HTML string with matrix layout', () => {
+    const matrix = generateMatrixPattern({
+      rows: 2,
+      columns: 2,
+      rowRule: { type: "suma-constante", delta: 1 },
+      columnRule: { type: "suma-constante", delta: 1 },
+    });
+    const html = renderMatrixHTML(matrix);
+    expect(html).toContain('<div');
+    expect(html).toContain('relative');
+    expect(html).toContain('position:absolute');
+    expect(html).toContain('<svg');
   });
 });

@@ -7,11 +7,11 @@ import type { PatternRule, PipCount } from "../../../components/tools/dominos/ty
 export async function getStaticPaths() {
   const rules = [
     { id: "fraccion", name: "Fracción (Delta Independiente)", desc: "La mitad superior e inferior cambian con incrementos independientes. Es uno de los patrones más comunes en razonamiento numérico.", formula: "top(n+1) = (top(n) + Δt) mod 7 · bottom(n+1) = (bottom(n) + Δb) mod 7", example: "Δt=2, Δb=3: [1,2] → [3,5] → [5,1] → [0,4]" },
-    { id: "suma-constante", name: "Suma Constante", desc: "Ambas mitades se incrementan por el mismo delta en cada paso.", formula: "top(n+1) = (top(n) + δ) mod 7 · bottom(n+1) = (bottom(n) + δ) mod 7", example: "δ=1: [0,0] → [1,1] → [2,2] → [3,3]" },
+    { id: "suma-constante", name: "Suma Constante", desc: "Ambas mitades se incrementan por el mismo delta en cada paso. Un delta negativo produce Resta Directa (decremento constante), patrón frecuente en pruebas.", formula: "top(n+1) = (top(n) + δ) mod 7 · bottom(n+1) = (bottom(n) + δ) mod 7", example: "δ=1: [0,0] → [1,1] → [2,2] · δ=-2: [5,5] → [3,3] → [1,1] (Resta Directa)" },
     { id: "espejo", name: "Espejo (Inversión)", desc: "Cada ficha invierte la posición de sus mitades respecto a la anterior.", formula: "top(n+1) = bottom(n) · bottom(n+1) = top(n)", example: "[1,6] → [6,1] → [1,6] → [6,1]" },
     { id: "encadenado-clasico", name: "Encadenado Clásico", desc: "El bottom de una ficha se convierte en el top de la siguiente, y el bottom avanza en +1.", formula: "top(n+1) = bottom(n) · bottom(n+1) = (bottom(n) + 1) mod 7", example: "[0,1] → [1,2] → [2,3] → [3,4]" },
     { id: "operacion-interna", name: "Operación Interna", desc: "La suma total de puntos de la ficha avanza con un delta fijo. Los valores individuales se ajustan para cumplir la suma objetivo.", formula: "suma(n+1) = (suma(n) + δ) mod 7 · top avanza +1, bottom = (suma - top) mod 7", example: "δ=2: [0,2] → [1,3] → [2,4] → [3,5]" },
-    { id: "series-alternadas", name: "Series Alternadas", desc: "Dos patrones distintos se alternan entre fichas en posiciones pares e impares.", formula: "Si i es par: top/bottom += Δa · Si i es impar: top/bottom += Δb", example: "Δa=1, Δb=-1: [1,1] → [2,2] → [1,1] → [2,2]" },
+    { id: "series-alternadas", name: "Series Alternadas", desc: "Dos patrones distintos se alternan entre fichas en posiciones pares e impares. Cubre Series Salteadas (cada 2+ fichas) y Repetición Periódica, comunes en bancos de preguntas.", formula: "Si i es par: top/bottom += Δa · Si i es impar: top/bottom += Δb", example: "Δa=1, Δb=-1: [1,1] → [2,2] → [1,1] → [2,2] · Δa=0, Δb=0: [3,4] → [3,4] → [3,4] (Repetición)" },
     { id: "lectura-z", name: "Lectura Lineal en Z", desc: "Los puntos se leen de forma continua: el bottom de una ficha se convierte en el top de la siguiente, y el nuevo bottom avanza por delta.", formula: "top(n+1) = bottom(n) · bottom(n+1) = (bottom(n) + δ) mod 7", example: "δ=1: [1,2] → [2,3] → [3,4] → [4,5]" },
     { id: "progresion-geometrica", name: "Progresión Geométrica", desc: "Los valores se multiplican por un factor constante bajo aritmética modular.", formula: "top(n+1) = (top(n) × f) mod 7 · bottom(n+1) = (bottom(n) × f) mod 7", example: "f=2: [1,2] → [2,4] → [4,1] → [1,2]" },
     { id: "inversion-polar", name: "Inversión Polar (Complemento a 6)", desc: "Cada valor se reemplaza por su complemento aritmético respecto a 6.", formula: "top(n+1) = (6 - top(n)) mod 7 · bottom(n+1) = (6 - bottom(n)) mod 7", example: "[1,4] → [5,2] → [1,4] → [5,2]" },
@@ -107,6 +107,25 @@ const allRules = [
           es clave para resolver los reactivos en tiempo límite.
         </p>
       </div>
+
+      {(rule.id === "suma-constante" || rule.id === "series-alternadas") && (
+        <div class="bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-4 mb-6">
+          <p class="text-[11px] text-[#8b98a3] uppercase tracking-wider mb-2">Casos de estudio absorbidos</p>
+          {rule.id === "suma-constante" && (
+            <div class="text-xs text-[#6b7680] leading-relaxed space-y-2">
+              <p><strong class="text-[#33393e]">Resta Directa:</strong> Usa un delta negativo (ej. <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">δ=-2</code>). La lógica es idéntica a Suma Constante pero decrementa en cada paso. Es uno de los patrones más frecuentes en exámenes de razonamiento.</p>
+              <p><strong class="text-[#33393e]">Ejemplo:</strong> [6,6] → [4,4] → [2,2] → [0,0] (delta = -2)</p>
+            </div>
+          )}
+          {rule.id === "series-alternadas" && (
+            <div class="text-xs text-[#6b7680] leading-relaxed space-y-2">
+              <p><strong class="text-[#33393e]">Series Salteadas (cada N fichas):</strong> Configura <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δa</code> y <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δb</code> para alternar entre dos sub-secuencias. Las fichas 1,3,5 siguen Δa y las 2,4,6 siguen Δb.</p>
+              <p><strong class="text-[#33393e]">Repetición Periódica:</strong> Si <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δa=Δb=0</code>, la secuencia repite el mismo valor indefinidamente. Si <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δa=1, Δb=0</code>, solo avanza cada segunda ficha.</p>
+              <p><strong class="text-[#33393e]">Ejemplo:</strong> Δa=2, Δb=0 → [1,1] → [3,3] → [3,3] → [5,5] → [5,5]</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div class="border-t border-[#d3e0e4] pt-4">
         <h3 class="font-bold text-sm mb-3">Todos los patrones</h3>
