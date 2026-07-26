@@ -174,51 +174,41 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
           </div>
         `;
       }).join("");
-
-      container.querySelectorAll(".btn-chain-right").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
-          const tile = availableTiles[idx];
-          if (chain.length === 0) {
-            chain.push(tile);
-            availableTiles.splice(idx, 1);
-            renderAll();
-            return;
-          }
-          if (canPlaceRight(chain, tile)) {
-            chain = placeRight(chain, tile);
-            availableTiles.splice(idx, 1);
-            renderAll();
-          }
-        });
-      });
-
-      container.querySelectorAll(".btn-chain-left").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
-          const tile = availableTiles[idx];
-          if (chain.length === 0) {
-            chain.push(tile);
-            availableTiles.splice(idx, 1);
-            renderAll();
-            return;
-          }
-          if (canPlaceLeft(chain, tile)) {
-            chain = placeLeft(chain, tile);
-            availableTiles.splice(idx, 1);
-            renderAll();
-          }
-        });
-      });
-
-      container.querySelectorAll(".btn-delete-tile").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
-          availableTiles.splice(idx, 1);
-          renderAll();
-        });
-      });
     }
+
+    document.getElementById("available-tiles")?.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const btn = target.closest<HTMLButtonElement>(".btn-chain-right, .btn-chain-left, .btn-delete-tile");
+      if (!btn) return;
+
+      const idx = parseInt(btn.dataset.index!);
+      if (isNaN(idx) || idx < 0 || idx >= availableTiles.length) return;
+
+      if (btn.classList.contains("btn-delete-tile")) {
+        availableTiles.splice(idx, 1);
+        renderAll();
+        return;
+      }
+
+      const tile = availableTiles[idx];
+
+      if (chain.length === 0) {
+        chain.push(tile);
+        availableTiles.splice(idx, 1);
+        renderAll();
+        return;
+      }
+
+      if (btn.classList.contains("btn-chain-right") && canPlaceRight(chain, tile)) {
+        chain = placeRight(chain, tile);
+        availableTiles.splice(idx, 1);
+        renderAll();
+      } else if (btn.classList.contains("btn-chain-left") && canPlaceLeft(chain, tile)) {
+        chain = placeLeft(chain, tile);
+        availableTiles.splice(idx, 1);
+        renderAll();
+      }
+    });
 
     function renderChain() {
       const container = document.getElementById("chain-tiles");

@@ -205,7 +205,7 @@ export function renderTileSVG(tile: DominoTile): string {
     ? `<line x1="100" y1="2" x2="100" y2="98" stroke="#8b98a3" stroke-width="2"/>`
     : `<line x1="2" y1="100" x2="98" y2="100" stroke="#8b98a3" stroke-width="2"/>`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${dim.w}" height="${dim.h}" viewBox="0 0 ${vw} ${vh}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${dim.w}" height="${dim.h}" viewBox="0 0 ${vw} ${vh}" style="pointer-events:none">
   <rect x="2" y="2" width="${vw - 4}" height="${vh - 4}" rx="12" fill="#f0f4f8" stroke="#cbd5e1" stroke-width="2"/>
   ${divider}
   ${topPipsSVG}
