@@ -122,6 +122,91 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         </div>
       </div>
 
+      <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4 mb-[22px]">
+        <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Constructor</p>
+        <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">Secuencia</h2>
+        <p class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]">
+          Construye una secuencia de fichas manualmente o desde un patrón. El layout determina cómo se dibujan en el lienzo.
+        </p>
+
+        <div class="flex gap-2 items-end mb-3">
+          <div>
+            <label for="seq-layout" class="block text-[11px] text-[#8b98a3] mb-1">Layout</label>
+            <select id="seq-layout" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="grid">Cuadrícula</option>
+              <option value="row">Fila</option>
+              <option value="column">Columna</option>
+              <option value="free">Libre</option>
+            </select>
+          </div>
+          <div id="seq-columns-wrap">
+            <label for="seq-columns" class="block text-[11px] text-[#8b98a3] mb-1">Columnas</label>
+            <input type="number" id="seq-columns" value="3" min="1" max="7" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="seq-gap" class="block text-[11px] text-[#8b98a3] mb-1">Gap</label>
+            <input type="number" id="seq-gap" value="12" min="0" max="60" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <button
+            id="btn-clear-sequence"
+            class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Vaciar
+          </button>
+        </div>
+
+        <div class="flex gap-2 items-end mb-3">
+          <div class="flex-1">
+            <label for="seq-top" class="block text-[11px] text-[#8b98a3] mb-1">Top</label>
+            <select id="seq-top" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="seq-bottom" class="block text-[11px] text-[#8b98a3] mb-1">Bottom</label>
+            <select id="seq-bottom" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5" selected>5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="seq-size" class="block text-[11px] text-[#8b98a3] mb-1">Tamaño</label>
+            <select id="seq-size" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="small">Pequeña</option>
+              <option value="medium" selected>Mediana</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="seq-orientation" class="block text-[11px] text-[#8b98a3] mb-1">Orientación</label>
+            <select id="seq-orientation" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="vertical">Vertical</option>
+              <option value="horizontal">Horizontal</option>
+            </select>
+          </div>
+          <button
+            id="btn-seq-add"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Agregar
+          </button>
+        </div>
+
+        <div id="seq-operations" class="mb-3"></div>
+        <div id="seq-preview" class="bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-3"></div>
+      </div>
+
       <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4">
         <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Patrones</p>
         <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">Generador de patrones</h2>
@@ -183,35 +268,17 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
             <input type="number" id="pattern-length" value="9" min="1" max="28" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
           </div>
           <div>
-            <label for="pattern-layout" class="block text-[11px] text-[#8b98a3] mb-1">Layout</label>
-            <select id="pattern-layout" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
-              <option value="grid">Cuadrícula</option>
-              <option value="row">Fila</option>
-              <option value="column">Columna</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
-          <div>
-            <label for="pattern-columns" class="block text-[11px] text-[#8b98a3] mb-1">Columnas (grid)</label>
-            <input type="number" id="pattern-columns" value="3" min="1" max="7" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
-          </div>
-          <div>
             <label for="pattern-hide" class="block text-[11px] text-[#8b98a3] mb-1">Ocultar (índices)</label>
             <input type="text" id="pattern-hide" placeholder="ej: 7,8" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
           </div>
-          <div class="flex items-end">
-            <button
-              id="btn-generate-pattern"
-              class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
-            >
-              Generar patrón
-            </button>
-          </div>
         </div>
 
-        <div id="pattern-result" class="mt-[10px]"></div>
+        <button
+          id="btn-generate-pattern"
+          class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Generar patrón en secuencia
+        </button>
       </div>
 
       <div id="resultado" class="mt-[30px]"></div>
@@ -225,10 +292,12 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       scoreRemainingTiles, renderTileSVG, isDouble, tileSum,
       generatePattern, layoutTiles,
     } from "../components/tools/dominos/dominos";
-    import type { PipCount, TileSize, DominoTile, PatternRule, LayoutConfig } from "../components/tools/dominos/dominos";
+    import type { PipCount, TileSize, TileOrientation, DominoTile, PatternRule, LayoutConfig, LayoutMode } from "../components/tools/dominos/dominos";
 
     let availableTiles: DominoTile[] = [];
     let chain: DominoTile[] = [];
+    let sequence: DominoTile[] = [];
+    let currentLayout: LayoutConfig = { mode: "grid", gap: 12, columns: 3 };
 
     function renderAvailableTiles() {
       const container = document.getElementById("available-tiles");
@@ -336,9 +405,237 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       }
     }
 
+    function readLayout(): LayoutConfig {
+      const mode = (document.getElementById("seq-layout") as HTMLSelectElement)?.value as LayoutMode || "grid";
+      const columns = parseInt((document.getElementById("seq-columns") as HTMLInputElement)?.value) || 3;
+      const gap = parseInt((document.getElementById("seq-gap") as HTMLInputElement)?.value) || 12;
+      const colsWrap = document.getElementById("seq-columns-wrap");
+      if (colsWrap) colsWrap.classList.toggle("hidden", mode === "free");
+      return { mode, gap, columns };
+    }
+
+    function tileLabel(tile: DominoTile): string {
+      if (tile.isHidden) return "?";
+      return tile.top === tile.bottom ? `Doble ${tile.top}` : `${tile.top}·${tile.bottom}`;
+    }
+
+    function updatePreview() {
+      const container = document.getElementById("seq-preview");
+      if (!container) return;
+
+      currentLayout = readLayout();
+
+      if (sequence.length === 0) {
+        container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">Agrega fichas o genera un patrón para ver la vista previa.</p>';
+        return;
+      }
+
+      const placed = layoutTiles(sequence, currentLayout);
+      const isFree = currentLayout.mode === "free";
+
+      const maxX = placed.reduce((m, p) => Math.max(m, p.x), 0) + 48;
+      const maxY = placed.reduce((m, p) => Math.max(m, p.y), 0) + 96;
+
+      const tilesHtml = placed.map((p, i) => {
+        const svg = renderTileSVG(p.tile);
+        const label = tileLabel(p.tile);
+        const dragAttr = isFree ? `data-seq-drag="${i}" style="position:absolute;left:${p.x}px;top:${p.y}px;cursor:grab;"` : `style="position:absolute;left:${p.x}px;top:${p.y}px;"`;
+        return `
+          <div ${dragAttr} class="flex flex-col items-center">
+            ${svg}
+            <span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${maxX}px;height:${maxY}px;">
+          ${tilesHtml}
+        </div>
+      `;
+
+      if (isFree) initDragHandlers();
+    }
+
+    function renderOperationsList() {
+      const container = document.getElementById("seq-operations");
+      if (!container) return;
+
+      if (sequence.length === 0) {
+        container.innerHTML = "";
+        return;
+      }
+
+      const isFree = currentLayout.mode === "free";
+
+      const rows = sequence.map((tile, i) => {
+        const label = tileLabel(tile);
+        const hiddenBtnClass = tile.isHidden
+          ? "bg-[#c4392b] text-white border-[#c4392b]"
+          : "text-[#6b7680] border-[#d3e0e4]";
+        const hiddenBtnText = tile.isHidden ? "Visible" : "Oculta";
+
+        const freeInputs = isFree ? `
+          <input type="number" data-seq-idx="${i}" data-seq-field="x" value="${tile.x ?? 0}" class="seq-free-input w-16 bg-white border border-[#d3e0e4] rounded-[3px] py-1 px-2 font-mono text-[11px] text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          <input type="number" data-seq-idx="${i}" data-seq-field="y" value="${tile.y ?? 0}" class="seq-free-input w-16 bg-white border border-[#d3e0e4] rounded-[3px] py-1 px-2 font-mono text-[11px] text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+        ` : "";
+
+        return `
+          <div class="flex items-center gap-2 py-1.5 px-2 border-b border-[#e8edef] text-[12px]">
+            <span class="text-[#8b98a3] font-mono w-5 text-right shrink-0">${i + 1}</span>
+            <span class="font-mono text-[#33393e] shrink-0">${label}</span>
+            <span class="text-[#8b98a3] font-mono text-[10px] shrink-0">${tile.orientation === "horizontal" ? "H" : "V"} · ${tile.size}</span>
+            <div class="flex items-center gap-1 ml-auto shrink-0">
+              ${freeInputs}
+              <button data-seq-toggle="${i}" class="btn-seq-toggle font-serif text-[9px] ${hiddenBtnClass} border rounded px-1.5 py-0.5 cursor-pointer hover:opacity-80 transition-all">${hiddenBtnText}</button>
+              <button data-seq-up="${i}" class="font-serif text-[10px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1 py-0.5 hover:border-[#6b7680] transition-all" title="Subir">↑</button>
+              <button data-seq-down="${i}" class="font-serif text-[10px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1 py-0.5 hover:border-[#6b7680] transition-all" title="Bajar">↓</button>
+              <button data-seq-delete="${i}" class="font-serif text-[10px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1 py-0.5 hover:border-[#c4392b] transition-all" title="Eliminar">✖</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="bg-white border border-[#d3e0e4] rounded-[3px] mb-1">
+          <div class="flex items-center gap-2 py-1 px-2 border-b border-[#e8edef] text-[10px] text-[#8b98a3] uppercase tracking-wider">
+            <span class="w-5 text-right shrink-0">#</span>
+            <span class="shrink-0">Ficha</span>
+            <span class="shrink-0">Conf</span>
+            <div class="flex items-center gap-1 ml-auto shrink-0">
+              ${isFree ? '<span class="w-16 text-center">X</span><span class="w-16 text-center">Y</span>' : ""}
+              <span class="w-12"></span>
+              <span class="w-5"></span>
+              <span class="w-5"></span>
+              <span class="w-5"></span>
+            </div>
+          </div>
+          ${rows}
+        </div>
+        <p class="text-[10px] text-[#8b98a3] font-mono">${sequence.length} fichas en secuencia</p>
+      `;
+    }
+
+    document.getElementById("seq-operations")?.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+
+      const toggleBtn = target.closest<HTMLButtonElement>("[data-seq-toggle]");
+      if (toggleBtn) {
+        const idx = parseInt(toggleBtn.dataset.seqToggle!);
+        if (!isNaN(idx) && sequence[idx]) {
+          sequence[idx].isHidden = !sequence[idx].isHidden;
+          renderAll();
+        }
+        return;
+      }
+
+      const upBtn = target.closest<HTMLButtonElement>("[data-seq-up]");
+      if (upBtn) {
+        const idx = parseInt(upBtn.dataset.seqUp!);
+        if (!isNaN(idx) && idx > 0 && sequence[idx]) {
+          [sequence[idx - 1], sequence[idx]] = [sequence[idx], sequence[idx - 1]];
+          renderAll();
+        }
+        return;
+      }
+
+      const downBtn = target.closest<HTMLButtonElement>("[data-seq-down]");
+      if (downBtn) {
+        const idx = parseInt(downBtn.dataset.seqDown!);
+        if (!isNaN(idx) && idx < sequence.length - 1 && sequence[idx]) {
+          [sequence[idx], sequence[idx + 1]] = [sequence[idx + 1], sequence[idx]];
+          renderAll();
+        }
+        return;
+      }
+
+      const deleteBtn = target.closest<HTMLButtonElement>("[data-seq-delete]");
+      if (deleteBtn) {
+        const idx = parseInt(deleteBtn.dataset.seqDelete!);
+        if (!isNaN(idx) && sequence[idx]) {
+          sequence.splice(idx, 1);
+          renderAll();
+        }
+        return;
+      }
+    });
+
+    document.getElementById("seq-operations")?.addEventListener("change", (e) => {
+      const target = e.target as HTMLInputElement;
+      if (!target.classList.contains("seq-free-input")) return;
+      const idx = parseInt(target.dataset.seqIdx!);
+      const field = target.dataset.seqField as "x" | "y";
+      if (isNaN(idx) || !sequence[idx] || !field) return;
+      sequence[idx][field] = parseInt(target.value) || 0;
+      updatePreview();
+    });
+
+    document.getElementById("seq-operations")?.addEventListener("input", (e) => {
+      const target = e.target as HTMLInputElement;
+      if (!target.classList.contains("seq-free-input")) return;
+      const idx = parseInt(target.dataset.seqIdx!);
+      const field = target.dataset.seqField as "x" | "y";
+      if (isNaN(idx) || !sequence[idx] || !field) return;
+      sequence[idx][field] = parseInt(target.value) || 0;
+      updatePreview();
+    });
+
+    let dragState: { idx: number; startX: number; startY: number; origX: number; origY: number } | null = null;
+
+    function initDragHandlers() {
+      const preview = document.getElementById("seq-preview");
+      if (!preview) return;
+
+      preview.querySelectorAll<HTMLElement>("[data-seq-drag]").forEach((el) => {
+        el.addEventListener("mousedown", (e) => {
+          const idx = parseInt(el.dataset.seqDrag!);
+          if (isNaN(idx) || !sequence[idx]) return;
+          e.preventDefault();
+          const tile = sequence[idx];
+          dragState = {
+            idx,
+            startX: e.clientX,
+            startY: e.clientY,
+            origX: tile.x ?? 0,
+            origY: tile.y ?? 0,
+          };
+          el.style.cursor = "grabbing";
+        });
+      });
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      if (!dragState) return;
+      const dx = e.clientX - dragState.startX;
+      const dy = e.clientY - dragState.startY;
+      sequence[dragState.idx].x = dragState.origX + dx;
+      sequence[dragState.idx].y = dragState.origY + dy;
+
+      const el = document.querySelector<HTMLElement>(`[data-seq-drag="${dragState.idx}"]`);
+      if (el) {
+        el.style.left = `${sequence[dragState.idx].x}px`;
+        el.style.top = `${sequence[dragState.idx].y}px`;
+      }
+
+      const opInputX = document.querySelector<HTMLInputElement>(`[data-seq-idx="${dragState.idx}"][data-seq-field="x"]`);
+      const opInputY = document.querySelector<HTMLInputElement>(`[data-seq-idx="${dragState.idx}"][data-seq-field="y"]`);
+      if (opInputX) opInputX.value = String(sequence[dragState.idx].x);
+      if (opInputY) opInputY.value = String(sequence[dragState.idx].y);
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (!dragState) return;
+      const el = document.querySelector<HTMLElement>(`[data-seq-drag="${dragState.idx}"]`);
+      if (el) el.style.cursor = "grab";
+      dragState = null;
+    });
+
     function renderAll() {
       renderAvailableTiles();
       renderChain();
+      currentLayout = readLayout();
+      updatePreview();
+      renderOperationsList();
     }
 
     document.getElementById("btn-add-tile")?.addEventListener("click", () => {
@@ -356,8 +653,6 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       availableTiles = buildFullSet(6);
       chain = [];
       renderAll();
-      const resultado = document.getElementById("resultado");
-      if (resultado) resultado.innerHTML = "";
     });
 
     document.getElementById("btn-shuffle")?.addEventListener("click", () => {
@@ -370,6 +665,28 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       chain = [];
       availableTiles = [...availableTiles, ...returnToAvailable];
       renderAll();
+    });
+
+    document.getElementById("btn-seq-add")?.addEventListener("click", () => {
+      const top = parseInt((document.getElementById("seq-top") as HTMLSelectElement).value) as PipCount;
+      const bottom = parseInt((document.getElementById("seq-bottom") as HTMLSelectElement).value) as PipCount;
+      const size = (document.getElementById("seq-size") as HTMLSelectElement).value as TileSize;
+      const orientation = (document.getElementById("seq-orientation") as HTMLSelectElement).value as TileOrientation;
+      sequence.push(createTile(top, bottom, orientation, size));
+      renderAll();
+    });
+
+    document.getElementById("btn-clear-sequence")?.addEventListener("click", () => {
+      sequence = [];
+      renderAll();
+    });
+
+    ["seq-layout", "seq-columns", "seq-gap"].forEach((id) => {
+      document.getElementById(id)?.addEventListener("change", () => {
+        currentLayout = readLayout();
+        updatePreview();
+        renderOperationsList();
+      });
     });
 
     const ruleSelect = document.getElementById("pattern-rule") as HTMLSelectElement;
@@ -390,15 +707,10 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
     updateRuleParams();
 
     document.getElementById("btn-generate-pattern")?.addEventListener("click", () => {
-      const container = document.getElementById("pattern-result");
-      if (!container) return;
-
       const ruleType = ruleSelect.value;
       const startTop = parseInt((document.getElementById("pattern-start-top") as HTMLSelectElement).value) as PipCount;
       const startBottom = parseInt((document.getElementById("pattern-start-bottom") as HTMLSelectElement).value) as PipCount;
       const length = parseInt((document.getElementById("pattern-length") as HTMLInputElement).value) || 9;
-      const layoutMode = (document.getElementById("pattern-layout") as HTMLSelectElement).value as "grid" | "row" | "column";
-      const columns = parseInt((document.getElementById("pattern-columns") as HTMLInputElement).value) || 3;
       const hideInput = (document.getElementById("pattern-hide") as HTMLInputElement).value;
       const hideIndices = hideInput ? hideInput.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n)) : [];
 
@@ -427,7 +739,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
           rule = { type: "fraccion", topDelta: 2, bottomDelta: 3 };
       }
 
-      const tiles = generatePattern({
+      sequence = generatePattern({
         rule,
         length,
         hideIndices,
@@ -435,40 +747,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         startBottom,
       });
 
-      const layoutConfig: LayoutConfig = { mode: layoutMode, gap: 12, columns };
-      const placed = layoutTiles(tiles, layoutConfig);
-
-      const maxX = Math.max(...placed.map(p => p.x)) + 48;
-      const maxY = Math.max(...placed.map(p => p.y)) + 96;
-
-      const tilesHtml = placed.map(p => {
-        const svg = renderTileSVG(p.tile);
-        const label = p.tile.isHidden
-          ? "?"
-          : p.tile.top === p.tile.bottom
-            ? `Doble ${p.tile.top}`
-            : `${p.tile.top}·${p.tile.bottom}`;
-        return `
-          <div style="position:absolute;left:${p.x}px;top:${p.y}px;" class="flex flex-col items-center">
-            ${svg}
-            <span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span>
-          </div>
-        `;
-      }).join("");
-
-      container.innerHTML = `
-        <div class="border-t border-dashed border-[#d3e0e4] pt-4">
-          <div class="flex items-baseline gap-2.5 mb-3">
-            <span class="text-[#c4392b] font-serif font-bold text-[13px] uppercase tracking-[0.08em]">Patrón generado</span>
-            <span class="text-[#6b7680] font-mono text-[11px]">${tiles.length} fichas · ocultas: ${hideIndices.length}</span>
-          </div>
-          <div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4 overflow-x-auto" style="min-height:${maxY + 20}px;">
-            <div style="position:relative;width:${maxX}px;height:${maxY}px;">
-              ${tilesHtml}
-            </div>
-          </div>
-        </div>
-      `;
+      renderAll();
     });
 
     renderAll();

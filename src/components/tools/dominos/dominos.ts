@@ -11,6 +11,8 @@ export interface DominoTile {
   orientation: TileOrientation;
   size: TileSize;
   isHidden?: boolean;
+  x?: number;
+  y?: number;
 }
 
 export interface DominoSet {
@@ -322,8 +324,8 @@ export function layoutTiles(tiles: DominoTile[], config: LayoutConfig): PlacedTi
   if (config.mode === "free") {
     return tiles.map((tile) => ({
       tile,
-      x: 0,
-      y: 0,
+      x: tile.x ?? 0,
+      y: tile.y ?? 0,
     }));
   }
 
