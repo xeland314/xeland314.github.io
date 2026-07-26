@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   parseDirection, calculateTotalAngle, normalizeAngle, validateDegrees,
   interpolateAngle, buildAnimationSteps, totalAnimationDuration,
-  resolveAngleAtTime, resolveStepAtTime,
+  resolveAngleAtTime, resolveStepAtTime, parseDegreesInput, formatFormula,
 } from './rotador';
 import type { RotationOperation, AnimationStep } from './rotador';
 
@@ -257,5 +257,77 @@ describe('resolveStepAtTime', () => {
 
   it('should return null for empty steps', () => {
     expect(resolveStepAtTime([], 1000)).toBeNull();
+  });
+});
+
+describe('parseDegreesInput', () => {
+  it('should parse valid integer string', () => {
+    expect(parseDegreesInput('90')).toBe(90);
+  });
+
+  it('should parse decimal string', () => {
+    expect(parseDegreesInput('45.5')).toBe(45.5);
+  });
+
+  it('should return null for empty string', () => {
+    expect(parseDegreesInput('')).toBeNull();
+  });
+
+  it('should return null for whitespace only', () => {
+    expect(parseDegreesInput('   ')).toBeNull();
+  });
+
+  it('should return null for non-numeric string', () => {
+    expect(parseDegreesInput('abc')).toBeNull();
+  });
+
+  it('should return null for negative value', () => {
+    expect(parseDegreesInput('-10')).toBeNull();
+  });
+
+  it('should parse zero', () => {
+    expect(parseDegreesInput('0')).toBe(0);
+  });
+
+  it('should handle leading/trailing spaces', () => {
+    expect(parseDegreesInput('  90  ')).toBe(90);
+  });
+
+  it('should return null for NaN result', () => {
+    expect(parseDegreesInput('NaN')).toBeNull();
+  });
+});
+
+describe('formatFormula', () => {
+  it('should return 0° for empty operations', () => {
+    expect(formatFormula([])).toBe('0°');
+  });
+
+  it('should format single clockwise operation', () => {
+    const ops: RotationOperation[] = [{ degrees: 90, direction: 'cw' }];
+    expect(formatFormula(ops)).toBe('+90° = 90°');
+  });
+
+  it('should format single counter-clockwise operation', () => {
+    const ops: RotationOperation[] = [{ degrees: 90, direction: 'ccw' }];
+    expect(formatFormula(ops)).toBe('-90° = 270° efectivos');
+  });
+
+  it('should format multiple mixed operations', () => {
+    const ops: RotationOperation[] = [
+      { degrees: 180, direction: 'cw' },
+      { degrees: 90, direction: 'ccw' },
+    ];
+    expect(formatFormula(ops)).toBe('+180° -90° = 90°');
+  });
+
+  it('should show effective when normalized differs from total', () => {
+    const ops: RotationOperation[] = [{ degrees: 450, direction: 'cw' }];
+    expect(formatFormula(ops)).toBe('+450° = 90° efectivos');
+  });
+
+  it('should not show effective when normalized equals total', () => {
+    const ops: RotationOperation[] = [{ degrees: 90, direction: 'cw' }, { degrees: 90, direction: 'cw' }];
+    expect(formatFormula(ops)).toBe('+90° +90° = 180°');
   });
 });

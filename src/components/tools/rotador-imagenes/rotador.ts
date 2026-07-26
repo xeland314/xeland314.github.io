@@ -40,6 +40,28 @@ export function validateDegrees(degrees: unknown): degrees is number {
   return typeof degrees === "number" && !isNaN(degrees) && degrees >= 0;
 }
 
+export function parseDegreesInput(raw: string): number | null {
+  const trimmed = raw.trim();
+  if (trimmed === "") return null;
+  const value = Number(trimmed);
+  return validateDegrees(value) ? value : null;
+}
+
+export function formatFormula(operations: RotationOperation[]): string {
+  if (operations.length === 0) return "0°";
+
+  const terms = operations.map((op) => {
+    const signed = op.direction === "cw" ? op.degrees : -op.degrees;
+    return signed >= 0 ? `+${signed}°` : `${signed}°`;
+  });
+
+  const total = calculateTotalAngle(operations);
+  const normalized = normalizeAngle(total);
+  const effective = normalized !== total ? ` = ${normalized}° efectivos` : ` = ${total}°`;
+
+  return `${terms.join(" ")}${effective}`;
+}
+
 export function interpolateAngle(from: number, to: number, t: number): number {
   const clamped = Math.max(0, Math.min(1, t));
   return from + (to - from) * clamped;
