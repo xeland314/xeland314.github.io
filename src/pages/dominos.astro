@@ -88,7 +88,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
           Fichas disponibles
         </label>
-        <div id="available-tiles" class="flex flex-wrap gap-2 mb-3 min-h-[40px] bg-white border border-[#d3e0e4] rounded-[3px] p-2.5"></div>
+        <div id="available-tiles" class="flex flex-wrap justify-center gap-2 mb-3 min-h-[40px] bg-white border border-[#d3e0e4] rounded-[3px] p-2.5"></div>
       </div>
 
       <div class="flex gap-2 mb-[22px]">
@@ -110,7 +110,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
           Cadena
         </label>
-        <div id="chain-tiles" class="flex flex-wrap gap-1 min-h-[80px] bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-3 items-center mb-3"></div>
+        <div id="chain-tiles" class="flex flex-wrap justify-center gap-1 min-h-[80px] bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-3 items-center mb-3"></div>
         <div id="chain-info" class="text-[11px] text-[#8b98a3] font-mono mb-2"></div>
         <div class="flex gap-2">
           <button
@@ -149,29 +149,29 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         const svg = renderTileSVG(tile);
         const label = tile.top === tile.bottom ? `Doble ${tile.top}` : `${tile.top}·${tile.bottom}`;
         return `
-          <button 
-            data-index="${i}" 
-            data-side="right"
-            class="btn-chain-right flex flex-col items-center gap-1 bg-white border border-[#d3e0e4] rounded-[3px] p-1.5 cursor-pointer hover:border-[#c4392b] hover:shadow-sm focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 transition-all"
-            title="${label} → derecha"
-          >
+          <div class="flex flex-col items-center gap-1 bg-white border border-[#d3e0e4] rounded-[3px] p-1.5">
             ${svg}
             <span class="text-[9px] text-[#8b98a3] font-mono">${label}</span>
-          </button>
-        `;
-      }).join("") + availableTiles.map((tile, i) => {
-        const svg = renderTileSVG(tile);
-        const label = tile.top === tile.bottom ? `Doble ${tile.top}` : `${tile.top}·${tile.bottom}`;
-        return `
-          <button 
-            data-index="${i}" 
-            data-side="left"
-            class="btn-chain-left flex flex-col items-center gap-1 bg-white border border-[#d3e0e4] rounded-[3px] p-1.5 cursor-pointer hover:border-[#6b7680] hover:shadow-sm focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 transition-all opacity-70"
-            title="${label} ← izquierda"
-          >
-            ${svg}
-            <span class="text-[9px] text-[#8b98a3] font-mono">↩ ${label}</span>
-          </button>
+            <div class="flex gap-1">
+              <button 
+                data-index="${i}" 
+                data-side="left"
+                class="btn-chain-left font-serif text-[10px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1.5 py-0.5 hover:border-[#6b7680] transition-all"
+                title="${label} ← izquierda"
+              >↩</button>
+              <button 
+                data-index="${i}" 
+                data-side="right"
+                class="btn-chain-right font-serif text-[10px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1.5 py-0.5 hover:border-[#c4392b] transition-all"
+                title="${label} → derecha"
+              >→</button>
+              <button 
+                data-index="${i}"
+                class="btn-delete-tile font-serif text-[10px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border border-[#d3e0e4] rounded px-1.5 py-0.5 hover:border-[#c4392b] transition-all"
+                title="Borrar ficha"
+              >✖</button>
+            </div>
+          </div>
         `;
       }).join("");
 
@@ -208,6 +208,14 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
             availableTiles.splice(idx, 1);
             renderAll();
           }
+        });
+      });
+
+      container.querySelectorAll(".btn-delete-tile").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
+          availableTiles.splice(idx, 1);
+          renderAll();
         });
       });
     }

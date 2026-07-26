@@ -3,7 +3,7 @@ import {
   createTile, isDouble, tileSum, flipTile, canChainToRight, canChainToLeft,
   canPlaceRight, canPlaceLeft, placeRight, placeLeft, chainScore, isClosedChain,
   buildFullSet, findMatchingTiles, scoreRemainingTiles, renderTileSVG,
-  TILE_DIMENSIONS, resetIdCounter,
+  TILE_DIMENSIONS, resetIdCounter, layoutTiles,
 } from './dominos';
 import type { PipCount, DominoTile } from './dominos';
 
@@ -288,5 +288,66 @@ describe('TILE_DIMENSIONS', () => {
     for (const dim of Object.values(TILE_DIMENSIONS)) {
       expect(dim.h / dim.w).toBe(2);
     }
+  });
+});
+
+describe('layoutTiles', () => {
+  it('returns empty array for empty input', () => {
+    expect(layoutTiles([], { mode: "grid", gap: 4 })).toEqual([]);
+  });
+
+  it('grid mode distributes tiles in columns', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4), createTile(5, 6)];
+    const result = layoutTiles(tiles, { mode: "grid", gap: 4, columns: 2 });
+    expect(result).toHaveLength(3);
+    expect(result[0]).toEqual({ tile: tiles[0], x: 0, y: 0 });
+    expect(result[1]).toEqual({ tile: tiles[1], x: 52, y: 0 });
+    expect(result[2]).toEqual({ tile: tiles[2], x: 0, y: 100 });
+  });
+
+  it('grid mode auto-calculates columns', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4), createTile(5, 6)];
+    const result = layoutTiles(tiles, { mode: "grid", gap: 4 });
+    expect(result).toHaveLength(3);
+    expect(result[0].x).toBe(0);
+    expect(result[0].y).toBe(0);
+  });
+
+  it('row mode places all tiles in a single row', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4)];
+    const result = layoutTiles(tiles, { mode: "row", gap: 4 });
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({ tile: tiles[0], x: 0, y: 0 });
+    expect(result[1]).toEqual({ tile: tiles[1], x: 52, y: 0 });
+  });
+
+  it('column mode places all tiles in a single column', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4)];
+    const result = layoutTiles(tiles, { mode: "column", gap: 4 });
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({ tile: tiles[0], x: 0, y: 0 });
+    expect(result[1]).toEqual({ tile: tiles[1], x: 0, y: 100 });
+  });
+
+  it('free mode returns tiles with zero coordinates', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4)];
+    const result = layoutTiles(tiles, { mode: "free", gap: 0 });
+    expect(result).toHaveLength(2);
+    expect(result[0].x).toBe(0);
+    expect(result[0].y).toBe(0);
+    expect(result[1].x).toBe(0);
+    expect(result[1].y).toBe(0);
+  });
+
+  it('handles horizontal tiles in row mode', () => {
+    const tiles = [createTile(1, 2, "horizontal"), createTile(3, 4, "horizontal")];
+    const result = layoutTiles(tiles, { mode: "row", gap: 4 });
+    expect(result[1].x).toBe(100);
+  });
+
+  it('handles horizontal tiles in column mode', () => {
+    const tiles = [createTile(1, 2, "horizontal"), createTile(3, 4, "horizontal")];
+    const result = layoutTiles(tiles, { mode: "column", gap: 4 });
+    expect(result[1].y).toBe(52);
   });
 });

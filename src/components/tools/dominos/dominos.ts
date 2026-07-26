@@ -149,34 +149,34 @@ export function scoreRemainingTiles(hand: DominoTile[]): number {
 const PIP_PATTERNS: Record<number, { x: number; y: number }[]> = {
   1: [{ x: 0.5, y: 0.5 }],
   2: [
-    { x: 0.25, y: 0.25 },
-    { x: 0.75, y: 0.75 },
+    { x: 0.3, y: 0.3 },
+    { x: 0.7, y: 0.7 },
   ],
   3: [
-    { x: 0.25, y: 0.25 },
+    { x: 0.3, y: 0.3 },
     { x: 0.5, y: 0.5 },
-    { x: 0.75, y: 0.75 },
+    { x: 0.7, y: 0.7 },
   ],
   4: [
-    { x: 0.25, y: 0.25 },
-    { x: 0.75, y: 0.25 },
-    { x: 0.25, y: 0.75 },
-    { x: 0.75, y: 0.75 },
+    { x: 0.3, y: 0.3 },
+    { x: 0.7, y: 0.3 },
+    { x: 0.3, y: 0.7 },
+    { x: 0.7, y: 0.7 },
   ],
   5: [
-    { x: 0.25, y: 0.25 },
-    { x: 0.75, y: 0.25 },
+    { x: 0.3, y: 0.3 },
+    { x: 0.7, y: 0.3 },
     { x: 0.5, y: 0.5 },
-    { x: 0.25, y: 0.75 },
-    { x: 0.75, y: 0.75 },
+    { x: 0.3, y: 0.7 },
+    { x: 0.7, y: 0.7 },
   ],
   6: [
-    { x: 0.25, y: 0.25 },
-    { x: 0.75, y: 0.25 },
-    { x: 0.25, y: 0.5 },
-    { x: 0.75, y: 0.5 },
-    { x: 0.25, y: 0.75 },
-    { x: 0.75, y: 0.75 },
+    { x: 0.3, y: 0.3 },
+    { x: 0.7, y: 0.3 },
+    { x: 0.3, y: 0.5 },
+    { x: 0.7, y: 0.5 },
+    { x: 0.3, y: 0.7 },
+    { x: 0.7, y: 0.7 },
   ],
 };
 
@@ -230,4 +230,65 @@ export function renderTileSVG(tile: DominoTile): string {
 export function renderTileInline(tile: DominoTile): string {
   const svg = renderTileSVG(tile);
   return svg;
+}
+
+export type LayoutMode = "grid" | "row" | "column" | "free";
+
+export interface LayoutConfig {
+  mode: LayoutMode;
+  gap: number;
+  columns?: number;
+}
+
+export interface PlacedTile {
+  tile: DominoTile;
+  x: number;
+  y: number;
+}
+
+export function layoutTiles(tiles: DominoTile[], config: LayoutConfig): PlacedTile[] {
+  if (tiles.length === 0) return [];
+
+  if (config.mode === "free") {
+    return tiles.map((tile) => ({
+      tile,
+      x: 0,
+      y: 0,
+    }));
+  }
+
+  const dim = TILE_DIMENSIONS[tiles[0].size];
+
+  if (config.mode === "row") {
+    let x = 0;
+    return tiles.map((tile) => {
+      const placed: PlacedTile = { tile, x, y: 0 };
+      const tileW = tile.orientation === "horizontal" ? dim.h : dim.w;
+      x += tileW + config.gap;
+      return placed;
+    });
+  }
+
+  if (config.mode === "column") {
+    let y = 0;
+    return tiles.map((tile) => {
+      const placed: PlacedTile = { tile, x: 0, y };
+      const tileH = tile.orientation === "horizontal" ? dim.w : dim.h;
+      y += tileH + config.gap;
+      return placed;
+    });
+  }
+
+  const cols = config.columns ?? Math.ceil(Math.sqrt(tiles.length));
+  return tiles.map((tile, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const tileW = tile.orientation === "horizontal" ? dim.h : dim.w;
+    const tileH = tile.orientation === "horizontal" ? dim.w : dim.h;
+    return {
+      tile,
+      x: col * (tileW + config.gap),
+      y: row * (tileH + config.gap),
+    };
+  });
 }
