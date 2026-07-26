@@ -4,6 +4,7 @@ import {
   canPlaceRight, canPlaceLeft, placeRight, placeLeft, chainScore, isClosedChain,
   buildFullSet, findMatchingTiles, scoreRemainingTiles, renderTileSVG,
   TILE_DIMENSIONS, resetIdCounter, layoutTiles, generatePattern,
+  getSubsets, renderLayoutHTML,
 } from './dominos';
 import type { PipCount, DominoTile } from './dominos';
 
@@ -488,5 +489,72 @@ describe('renderTileSVG hidden', () => {
     const svg = renderTileSVG(createTile(3, 5));
     expect(svg).toContain('<circle');
     expect(svg).not.toContain('?</text>');
+  });
+});
+
+describe('getSubsets', () => {
+  const tiles = [createTile(1, 2), createTile(3, 4), createTile(5, 6), createTile(0, 1)];
+
+  it('returns all tiles for completa mode', () => {
+    const result = getSubsets(tiles, { mode: "completa" });
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveLength(4);
+  });
+
+  it('returns filtered tiles for seleccion mode', () => {
+    const result = getSubsets(tiles, { mode: "seleccion", indices: [0, 2] });
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveLength(2);
+    expect(result[0][0].top).toBe(1);
+    expect(result[0][1].top).toBe(5);
+  });
+
+  it('returns chunks for segmentado mode', () => {
+    const result = getSubsets(tiles, { mode: "segmentado", segmentSize: 2 });
+    expect(result).toHaveLength(2);
+    expect(result[0]).toHaveLength(2);
+    expect(result[1]).toHaveLength(2);
+    expect(result[0][0].top).toBe(1);
+    expect(result[1][0].top).toBe(5);
+  });
+
+  it('handles uneven chunks', () => {
+    const result = getSubsets(tiles, { mode: "segmentado", segmentSize: 3 });
+    expect(result).toHaveLength(2);
+    expect(result[0]).toHaveLength(3);
+    expect(result[1]).toHaveLength(1);
+  });
+
+  it('returns all tiles when no indices provided in seleccion', () => {
+    const result = getSubsets(tiles, { mode: "seleccion" });
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveLength(4);
+  });
+
+  it('returns all tiles when no segmentSize in segmentado', () => {
+    const result = getSubsets(tiles, { mode: "segmentado" });
+    expect(result).toHaveLength(1);
+    expect(result[0]).toHaveLength(4);
+  });
+});
+
+describe('renderLayoutHTML', () => {
+  it('returns empty string for empty tiles', () => {
+    expect(renderLayoutHTML([], { mode: "grid", gap: 4 })).toBe("");
+  });
+
+  it('returns HTML string with grid layout', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4)];
+    const html = renderLayoutHTML(tiles, { mode: "grid", gap: 4, columns: 2 });
+    expect(html).toContain('<div');
+    expect(html).toContain('relative');
+    expect(html).toContain('position:absolute');
+    expect(html).toContain('<svg');
+  });
+
+  it('returns HTML with row layout', () => {
+    const tiles = [createTile(1, 2), createTile(3, 4)];
+    const html = renderLayoutHTML(tiles, { mode: "row", gap: 4 });
+    expect(html).toContain('position:absolute');
   });
 });

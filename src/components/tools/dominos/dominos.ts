@@ -227,6 +227,11 @@ export function renderTileInline(tile: DominoTile): string {
   return renderTileSVG(tile);
 }
 
+export function tileLabel(tile: DominoTile): string {
+  if (tile.isHidden) return "?";
+  return tile.top === tile.bottom ? `Doble ${tile.top}` : `${tile.top}·${tile.bottom}`;
+}
+
 export type LayoutMode = "grid" | "row" | "column" | "free";
 
 export interface LayoutConfig {
@@ -363,4 +368,39 @@ export function layoutTiles(tiles: DominoTile[], config: LayoutConfig): PlacedTi
       y: row * (tileH + config.gap),
     };
   });
+}
+
+export type PartialExportMode = "completa" | "seleccion" | "segmentado";
+
+export interface PartialExportConfig {
+  mode: PartialExportMode;
+  indices?: number[];
+  segmentSize?: number;
+}
+
+export function getSubsets(tiles: DominoTile[], config: PartialExportConfig): DominoTile[][] {
+  if (config.mode === "seleccion" && config.indices) {
+    return [tiles.filter((_, idx) => config.indices!.includes(idx))];
+  }
+  if (config.mode === "segmentado" && config.segmentSize && config.segmentSize > 0) {
+    const chunks: DominoTile[][] = [];
+    for (let i = 0; i < tiles.length; i += config.segmentSize) {
+      chunks.push(tiles.slice(i, i + config.segmentSize));
+    }
+    return chunks;
+  }
+  return [tiles];
+}
+
+export function renderLayoutHTML(tiles: DominoTile[], config: LayoutConfig): string {
+  if (tiles.length === 0) return "";
+  const placed = layoutTiles(tiles, config);
+  const maxX = placed.reduce((m, p) => Math.max(m, p.x), 0) + 48;
+  const maxY = placed.reduce((m, p) => Math.max(m, p.y), 0) + 96;
+  const tilesHtml = placed.map((p) => {
+    const svg = renderTileSVG(p.tile);
+    const label = tileLabel(p.tile);
+    return `<div style="position:absolute;left:${p.x}px;top:${p.y}px;" class="flex flex-col items-center">${svg}<span class="text-[9px] text-[#8b98a3] font-mono mt-0.5">${label}</span></div>`;
+  }).join("");
+  return `<div class="relative bg-white border border-[#e8edef] rounded-[3px] p-4" style="width:${maxX}px;height:${maxY}px;">${tilesHtml}</div>`;
 }
