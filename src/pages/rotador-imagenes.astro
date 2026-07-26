@@ -1,0 +1,236 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const siteTitle = "Rotador — Manipulador de rotación de imágenes";
+const siteDescription = "Carga una imagen y aplica múltiples operaciones de rotación concatenadas. Perfecto para visualizar giros complejos.";
+const siteKeywords = "rotación de imágenes, girar imagen, rotador, transformaciones CSS, ángulos";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/rotador";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <div 
+    class="min-h-screen py-10 px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
+    style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
+  >
+    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+      <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Manipulador de imágenes · rotación</p>
+      <h1 class="font-serif font-bold text-[28px] mb-1.5 text-[#33393e]">Rotador</h1>
+      <p class="text-[#6b7680] font-serif text-[14.5px] leading-relaxed mb-[26px] max-w-[56ch]">
+        Carga una imagen y aplica múltiples operaciones de rotación concatenadas. 
+        Cada operación se aplica sobre el resultado anterior, permitiendo giros complejos como 900° + 770°.
+      </p>
+
+      <div class="mb-[22px]">
+        <label for="input-image" class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Imagen
+        </label>
+        <input
+          type="file"
+          id="input-image"
+          accept="image/*"
+          class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-3 px-3.5 font-mono text-base tracking-[0.04em] text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        />
+      </div>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Operaciones de rotación
+        </label>
+        <div id="operations-list" class="flex flex-col gap-2 mb-3"></div>
+        <div class="flex gap-2 items-end">
+          <div class="flex-1">
+            <label for="rotation-degrees" class="block text-[11px] text-[#8b98a3] mb-1">Grados</label>
+            <input
+              type="number"
+              id="rotation-degrees"
+              min="0"
+              max="3600"
+              value="90"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            />
+          </div>
+          <div class="flex-1">
+            <label for="rotation-direction" class="block text-[11px] text-[#8b98a3] mb-1">Dirección</label>
+            <select
+              id="rotation-direction"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="cw">Horario</option>
+              <option value="ccw">Antihorario</option>
+            </select>
+          </div>
+          <button
+            id="btn-add-operation"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Agregar
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-[22px]">
+        <button
+          id="btn-apply"
+          class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Aplicar rotaciones
+        </button>
+        <button
+          id="btn-clear"
+          class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Limpiar todo
+        </button>
+      </div>
+
+      <div id="resultado" class="mt-[30px]"></div>
+    </div>
+  </div>
+
+  <script is:inline>
+    let operations = [];
+    let imageDataUrl = null;
+
+    function parseDirection(dir) {
+      return dir === "cw" ? "horario" : "antihorario";
+    }
+
+    function calculateTotalAngle() {
+      return operations.reduce((total, op) => {
+        return total + (op.direction === "cw" ? op.degrees : -op.degrees);
+      }, 0);
+    }
+
+    function renderOperations() {
+      const container = document.getElementById("operations-list");
+      if (operations.length === 0) {
+        container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">No hay operaciones. Agrega una arriba.</p>';
+        return;
+      }
+
+      container.innerHTML = operations.map((op, i) => `
+        <div class="flex items-center gap-2 py-2 px-2.5 bg-white border border-[#d3e0e4] rounded-[3px]">
+          <span class="font-serif italic text-[#8b98a3] text-xs w-[18px] shrink-0">${i + 1}</span>
+          <span class="text-sm text-[#33393e] flex-1">
+            <span class="font-bold">${op.degrees}°</span> ${parseDirection(op.direction)}
+          </span>
+          <button 
+            data-index="${i}" 
+            class="btn-remove-operation font-serif text-[11px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border-0 p-1"
+          >
+            ✕
+          </button>
+        </div>
+      `).join("");
+
+      container.querySelectorAll(".btn-remove-operation").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt(e.target.dataset.index);
+          operations.splice(idx, 1);
+          renderOperations();
+        });
+      });
+    }
+
+    function applyRotations() {
+      const container = document.getElementById("resultado");
+      
+      if (!imageDataUrl) {
+        container.innerHTML = '<p class="text-[#8b98a3] font-serif text-sm">Carga una imagen primero.</p>';
+        return;
+      }
+
+      if (operations.length === 0) {
+        container.innerHTML = '<p class="text-[#8b98a3] font-serif text-sm">Agrega al menos una operación de rotación.</p>';
+        return;
+      }
+
+      const totalAngle = calculateTotalAngle();
+      const normalizedAngle = ((totalAngle % 360) + 360) % 360;
+      
+      const stepsHtml = operations.map((op, i) => `
+        <div class="flex items-center gap-2 py-1">
+          <span class="text-[#8b98a3] text-xs">${i + 1}.</span>
+          <span class="text-sm">${op.degrees}° ${parseDirection(op.direction)}</span>
+          <span class="text-[#8b98a3] text-xs">→ acumulado: ${totalAngle - calculateTotalAngle().toFixed(0)}°</span>
+        </div>
+      `).join("");
+
+      container.innerHTML = `
+        <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-1.5">
+          <div class="flex items-baseline gap-2.5 mb-4">
+            <span class="text-[#c4392b] font-serif font-bold text-[13px] uppercase tracking-[0.08em]">Resultado</span>
+            <span class="text-[#33393e] font-serif text-sm">
+              Rotación total: <span class="font-bold">${totalAngle}°</span>
+              ${normalizedAngle !== 0 ? `(${normalizedAngle}° efectivos)` : ''}
+            </span>
+          </div>
+          
+          <div class="flex justify-center mb-4 p-6 bg-white border border-[#d3e0e4] rounded-[3px]">
+            <img 
+              src="${imageDataUrl}" 
+              alt="Imagen rotada" 
+              class="max-w-full max-h-[400px] object-contain transition-transform duration-300"
+              style="transform: rotate(${totalAngle}deg);"
+            />
+          </div>
+
+          <details class="mt-[22px] font-serif text-[13px]">
+            <summary class="cursor-pointer text-[#6b7680] tracking-[0.02em]">Ver pasos de rotación</summary>
+            <div class="mt-3 p-3 bg-white border border-[#d3e0e4] rounded-[3px]">
+              ${stepsHtml}
+            </div>
+          </details>
+        </div>
+      `;
+    }
+
+    document.getElementById("input-image").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          imageDataUrl = event.target.result;
+          document.getElementById("resultado").innerHTML = 
+            '<p class="text-[#6b7680] font-serif text-sm">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("btn-add-operation").addEventListener("click", () => {
+      const degrees = parseInt(document.getElementById("rotation-degrees").value);
+      const direction = document.getElementById("rotation-direction").value;
+      
+      if (isNaN(degrees) || degrees < 0) {
+        alert("Ingresa un número de grados válido (0 o mayor).");
+        return;
+      }
+
+      operations.push({ degrees, direction });
+      renderOperations();
+    });
+
+    document.getElementById("btn-apply").addEventListener("click", applyRotations);
+
+    document.getElementById("btn-clear").addEventListener("click", () => {
+      operations = [];
+      imageDataUrl = null;
+      document.getElementById("input-image").value = "";
+      renderOperations();
+      document.getElementById("resultado").innerHTML = "";
+    });
+
+    renderOperations();
+  </script>
+</BaseLayout>
