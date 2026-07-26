@@ -3,6 +3,25 @@ export interface RotationOperation {
   direction: "cw" | "ccw";
 }
 
+export interface AnimationStep {
+  fromAngle: number;
+  toAngle: number;
+  duration: number;
+  label: string;
+}
+
+export interface AnimationOptions {
+  stepDuration: number;
+  holdDuration: number;
+  fps: number;
+}
+
+export const DEFAULT_ANIMATION_OPTIONS: AnimationOptions = {
+  stepDuration: 1000,
+  holdDuration: 1000,
+  fps: 30,
+};
+
 export function parseDirection(dir: "cw" | "ccw"): string {
   return dir === "cw" ? "horario" : "antihorario";
 }
@@ -19,4 +38,74 @@ export function normalizeAngle(angle: number): number {
 
 export function validateDegrees(degrees: unknown): degrees is number {
   return typeof degrees === "number" && !isNaN(degrees) && degrees >= 0;
+}
+
+export function interpolateAngle(from: number, to: number, t: number): number {
+  const clamped = Math.max(0, Math.min(1, t));
+  return from + (to - from) * clamped;
+}
+
+export function buildAnimationSteps(
+  operations: RotationOperation[],
+  options: AnimationOptions = DEFAULT_ANIMATION_OPTIONS,
+): AnimationStep[] {
+  if (operations.length === 0) return [];
+
+  const steps: AnimationStep[] = [];
+  let prevAngle = 0;
+
+  for (let i = 0; i < operations.length; i++) {
+    const cumulative = calculateTotalAngle(operations.slice(0, i + 1));
+    const op = operations[i];
+    steps.push({
+      fromAngle: prevAngle,
+      toAngle: cumulative,
+      duration: options.stepDuration,
+      label: `Paso ${i + 1}: ${op.degrees}° ${parseDirection(op.direction)}`,
+    });
+    prevAngle = cumulative;
+  }
+
+  steps.push({
+    fromAngle: prevAngle,
+    toAngle: prevAngle,
+    duration: options.holdDuration,
+    label: "Resultado final",
+  });
+
+  return steps;
+}
+
+export function totalAnimationDuration(steps: AnimationStep[]): number {
+  return steps.reduce((sum, s) => sum + s.duration, 0);
+}
+
+export function resolveAngleAtTime(steps: AnimationStep[], elapsedMs: number): number {
+  let remaining = elapsedMs;
+
+  for (const step of steps) {
+    if (remaining <= step.duration) {
+      const t = remaining / step.duration;
+      return interpolateAngle(step.fromAngle, step.toAngle, t);
+    }
+    remaining -= step.duration;
+  }
+
+  return steps.length > 0 ? steps[steps.length - 1].toAngle : 0;
+}
+
+export function resolveStepAtTime(
+  steps: AnimationStep[],
+  elapsedMs: number,
+): AnimationStep | null {
+  let remaining = elapsedMs;
+
+  for (const step of steps) {
+    if (remaining <= step.duration) {
+      return step;
+    }
+    remaining -= step.duration;
+  }
+
+  return steps.length > 0 ? steps[steps.length - 1] : null;
 }
