@@ -1,0 +1,449 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const siteTitle = "Rotador — Manipulador de rotación de imágenes";
+const siteDescription = "Carga una imagen y aplica múltiples operaciones de rotación concatenadas. Perfecto para visualizar giros complejos.";
+const siteKeywords = "rotación de imágenes, girar imagen, rotador, transformaciones CSS, ángulos";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/rotador";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <div 
+    class="min-h-screen py-10 px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
+    style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
+  >
+    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+      <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Manipulador de imágenes · rotación</p>
+      <h1 class="font-serif font-bold text-[28px] mb-1.5 text-[#33393e]">Rotador</h1>
+      <p class="text-[#6b7680] font-serif text-[14.5px] leading-relaxed mb-[26px] max-w-[56ch]">
+        Carga una imagen y aplica múltiples operaciones de rotación concatenadas. 
+        Cada operación se aplica sobre el resultado anterior, permitiendo giros complejos como 900° + 770°.
+      </p>
+
+      <div class="mb-[22px]">
+        <label for="input-image" class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Imagen
+        </label>
+        <input
+          type="file"
+          id="input-image"
+          accept="image/*"
+          class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-3 px-3.5 font-mono text-base tracking-[0.04em] text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        />
+      </div>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Operaciones de rotación
+        </label>
+        <div id="operations-list" class="flex flex-col gap-2 mb-3"></div>
+        <div class="flex gap-2 items-end">
+          <div class="flex-1">
+            <label for="rotation-degrees" class="block text-[11px] text-[#8b98a3] mb-1">Grados</label>
+            <input
+              type="number"
+              id="rotation-degrees"
+              min="0"
+              max="3600"
+              value="90"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            />
+          </div>
+          <div class="flex-1">
+            <label for="rotation-direction" class="block text-[11px] text-[#8b98a3] mb-1">Dirección</label>
+            <select
+              id="rotation-direction"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="cw">Horario</option>
+              <option value="ccw">Antihorario</option>
+            </select>
+          </div>
+          <button
+            id="btn-add-operation"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Agregar
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mb-[22px]">
+        <button
+          id="btn-apply"
+          class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Aplicar rotaciones
+        </button>
+        <button
+          id="btn-export"
+          class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled
+        >
+          Exportar video
+        </button>
+        <button
+          id="btn-clear"
+          class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Limpiar todo
+        </button>
+      </div>
+
+      <div id="image-export-buttons" class="hidden flex gap-2 mb-[22px]">
+        <button
+          id="btn-download-png"
+          class="font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Descargar PNG
+        </button>
+        <button
+          id="btn-export-zip"
+          class="font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Exportar pasos (ZIP)
+        </button>
+      </div>
+
+      <div id="export-progress" class="hidden mb-[22px]">
+        <div class="flex items-center gap-3 mb-1.5">
+          <span class="text-[11px] tracking-[0.06em] uppercase text-[#6b7680]">Exportando video</span>
+          <span id="export-progress-text" class="text-[11px] text-[#8b98a3] font-mono">0%</span>
+        </div>
+        <div class="w-full h-1.5 bg-[#e8edef] rounded-full overflow-hidden">
+          <div id="export-progress-bar" class="h-full bg-[#c4392b] rounded-full transition-all duration-150" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div id="resultado" class="mt-[30px]"></div>
+
+      <canvas id="export-canvas" class="hidden"></canvas>
+    </div>
+  </div>
+
+  <script>
+    import { parseDirection, calculateTotalAngle, normalizeAngle, parseDegreesInput, buildAnimationSteps, formatFormula } from "../components/tools/rotador-imagenes/rotador";
+    import type { RotationOperation, AnimationStep } from "../components/tools/rotador-imagenes/rotador";
+    import { loadImage, exportVideo, exportStepAsPng, exportAllStepsAsZip } from "../components/tools/rotador-imagenes/canvas";
+
+    let operations: RotationOperation[] = [];
+    let imageDataUrl: string | null = null;
+    let currentExport: { cancel: () => void } | null = null;
+    let lastBuiltSteps: AnimationStep[] = [];
+    let editingIndex: number | null = null;
+
+    function renderOperations() {
+      const container = document.getElementById("operations-list");
+      if (!container) return;
+      if (operations.length === 0) {
+        container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">No hay operaciones. Agrega una arriba.</p>';
+        return;
+      }
+
+      container.innerHTML = operations.map((op, i) => `
+        <div class="flex items-center gap-2 py-2 px-2.5 bg-white border border-[#d3e0e4] rounded-[3px]">
+          <span class="font-serif italic text-[#8b98a3] text-xs w-[18px] shrink-0">${i + 1}</span>
+          <span class="text-sm text-[#33393e] flex-1">
+            <span class="font-bold">${op.degrees}°</span> ${parseDirection(op.direction)}
+          </span>
+          <button 
+            data-index="${i}" 
+            class="btn-move-up font-serif text-[11px] text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1${i === 0 ? ' opacity-30 pointer-events-none' : ''}"
+            title="Mover arriba"
+          >▲</button>
+          <button 
+            data-index="${i}" 
+            class="btn-move-down font-serif text-[11px] text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1${i === operations.length - 1 ? ' opacity-30 pointer-events-none' : ''}"
+            title="Mover abajo"
+          >▼</button>
+          <button 
+            data-index="${i}" 
+            class="btn-edit-operation font-serif text-[11px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1"
+            title="Editar"
+          >✎</button>
+          <button 
+            data-index="${i}" 
+            class="btn-remove-operation font-serif text-[11px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border-0 p-1"
+          >
+            ✕
+          </button>
+        </div>
+      `).join("");
+
+      container.querySelectorAll(".btn-move-up").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          if (idx > 0) {
+            [operations[idx - 1], operations[idx]] = [operations[idx], operations[idx - 1]];
+            renderOperations();
+          }
+        });
+      });
+
+      container.querySelectorAll(".btn-move-down").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          if (idx < operations.length - 1) {
+            [operations[idx], operations[idx + 1]] = [operations[idx + 1], operations[idx]];
+            renderOperations();
+          }
+        });
+      });
+
+      container.querySelectorAll(".btn-edit-operation").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          const op = operations[idx];
+          const degreesInput = document.getElementById("rotation-degrees") as HTMLInputElement;
+          const directionSelect = document.getElementById("rotation-direction") as HTMLSelectElement;
+          degreesInput.value = String(op.degrees);
+          directionSelect.value = op.direction;
+          editingIndex = idx;
+          const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
+          if (btnAdd) btnAdd.textContent = "Guardar";
+        });
+      });
+
+      container.querySelectorAll(".btn-remove-operation").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          if (editingIndex === idx) {
+            editingIndex = null;
+            const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
+            if (btnAdd) btnAdd.textContent = "Agregar";
+          } else if (editingIndex !== null && editingIndex > idx) {
+            editingIndex--;
+          }
+          operations.splice(idx, 1);
+          renderOperations();
+        });
+      });
+    }
+
+    function applyRotations() {
+      const container = document.getElementById("resultado");
+      if (!container) return;
+      
+      if (!imageDataUrl) {
+        container.innerHTML = '<p class="text-[#8b98a3] font-serif text-sm">Carga una imagen primero.</p>';
+        return;
+      }
+
+      if (operations.length === 0) {
+        container.innerHTML = '<p class="text-[#8b98a3] font-serif text-sm">Agrega al menos una operación de rotación.</p>';
+        return;
+      }
+
+      const totalAngle = calculateTotalAngle(operations);
+      const normalizedAngle = normalizeAngle(totalAngle);
+      const formula = formatFormula(operations);
+      
+      const allSteps = [{ label: "Original", angle: 0, operation: null }, ...operations.map((op, i) => ({
+        label: `Paso ${i + 1}`,
+        angle: calculateTotalAngle(operations.slice(0, i + 1)),
+        operation: op,
+      }))];
+
+      const stepsGridHtml = allSteps.map((step, i) => {
+        let formulaDetail = "";
+        if (step.operation) {
+          const cumulative = step.angle;
+          const signed = step.operation.direction === "cw" ? step.operation.degrees : -step.operation.degrees;
+          formulaDetail = `${signed >= 0 ? "+" : ""}${signed}° → acumulado: ${cumulative}°`;
+        }
+        return `
+        <div class="bg-white border border-[#d3e0e4] rounded-[3px] p-3 flex flex-col">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-serif font-bold text-[11px] text-[#c4392b] uppercase tracking-[0.06em]">${step.label}</span>
+            ${step.operation ? `<span class="text-[10px] text-[#8b98a3] font-mono">${step.operation.degrees}° ${parseDirection(step.operation.direction)}</span>` : ''}
+          </div>
+          <div class="flex-1 flex items-center justify-center p-2 bg-[#f8fafb] border border-[#e8edef] rounded-[2px] min-h-[120px]">
+            <img 
+              src="${imageDataUrl}" 
+              alt="${step.label}" 
+              class="max-w-full max-h-[150px] object-contain transition-transform duration-300"
+              style="transform: rotate(${step.angle}deg);"
+            />
+          </div>
+          <div class="mt-2 text-center">
+            ${formulaDetail
+              ? `<span class="font-mono text-[10px] text-[#8b98a3] block">${formulaDetail}</span>`
+              : ''}
+            <span class="font-mono text-[11px] text-[#6b7680]">${step.angle}°</span>
+          </div>
+        </div>
+      `}).join("");
+
+      container.innerHTML = `
+        <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-1.5">
+          <div class="flex items-baseline gap-2.5 mb-2">
+            <span class="text-[#c4392b] font-serif font-bold text-[13px] uppercase tracking-[0.08em]">Resultado</span>
+            <span class="text-[#33393e] font-serif text-sm">
+              Rotación total: <span class="font-bold">${totalAngle}°</span>
+              ${normalizedAngle !== totalAngle ? `(${normalizedAngle}° efectivos)` : ''}
+            </span>
+          </div>
+          <div class="mb-4 p-3 bg-[#f8fafb] border border-[#e8edef] rounded-[3px]">
+            <span class="text-[10px] tracking-[0.04em] uppercase text-[#8b98a3] font-mono block mb-1">Cálculo</span>
+            <code class="font-mono text-[13px] text-[#33393e]">${formula}</code>
+          </div>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
+            ${stepsGridHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById("input-image")?.addEventListener("change", (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          imageDataUrl = event.target?.result as string;
+          const resultado = document.getElementById("resultado");
+          if (resultado) {
+            resultado.innerHTML = 
+              '<p class="text-[#6b7680] font-serif text-sm">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("btn-add-operation")?.addEventListener("click", () => {
+      const degreesInput = document.getElementById("rotation-degrees") as HTMLInputElement;
+      const directionSelect = document.getElementById("rotation-direction") as HTMLSelectElement;
+      const degrees = parseDegreesInput(degreesInput.value);
+      const direction = directionSelect.value as "cw" | "ccw";
+      
+      if (degrees === null) {
+        alert("Ingresa un número de grados válido (0 o mayor).");
+        return;
+      }
+
+      if (editingIndex !== null) {
+        operations[editingIndex] = { degrees, direction };
+        editingIndex = null;
+        const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
+        if (btnAdd) btnAdd.textContent = "Agregar";
+      } else {
+        operations.push({ degrees, direction });
+      }
+      renderOperations();
+    });
+
+    document.getElementById("btn-apply")?.addEventListener("click", () => {
+      applyRotations();
+      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
+      const imageExportButtons = document.getElementById("image-export-buttons");
+      const canExport = !!imageDataUrl && operations.length > 0;
+      if (btnExport) btnExport.disabled = !canExport;
+      if (imageExportButtons) {
+        imageExportButtons.classList.toggle("hidden", !canExport);
+      }
+      if (canExport) {
+        lastBuiltSteps = buildAnimationSteps(operations);
+      }
+    });
+
+    document.getElementById("btn-export")?.addEventListener("click", async () => {
+      if (!imageDataUrl || operations.length === 0) return;
+      if (currentExport) {
+        currentExport.cancel();
+        currentExport = null;
+        return;
+      }
+
+      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
+      const progressContainer = document.getElementById("export-progress");
+      const progressText = document.getElementById("export-progress-text");
+      const progressBar = document.getElementById("export-progress-bar");
+
+      btnExport.textContent = "Cancelar";
+      progressContainer?.classList.remove("hidden");
+
+      const img = await loadImage(imageDataUrl);
+      const canvas = document.getElementById("export-canvas") as HTMLCanvasElement;
+
+      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+      const { promise, cancel } = exportVideo(
+        canvas,
+        img,
+        lastBuiltSteps,
+        { canvasWidth: size, canvasHeight: size, fps: 30, bgColor: "#ffffff" },
+        (p) => {
+          if (progressText) progressText.textContent = `${p}%`;
+          if (progressBar) progressBar.style.width = `${p}%`;
+        },
+      );
+
+      currentExport = { cancel };
+
+      await promise;
+      currentExport = null;
+      btnExport.textContent = "Exportar video";
+      progressContainer?.classList.add("hidden");
+      if (progressText) progressText.textContent = "0%";
+      if (progressBar) progressBar.style.width = "0%";
+    });
+
+    document.getElementById("btn-download-png")?.addEventListener("click", async () => {
+      if (!imageDataUrl || lastBuiltSteps.length === 0) return;
+      const img = await loadImage(imageDataUrl);
+      const finalStep = lastBuiltSteps[lastBuiltSteps.length - 1];
+      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+      await exportStepAsPng(img, finalStep, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff" });
+    });
+
+    document.getElementById("btn-export-zip")?.addEventListener("click", async () => {
+      if (!imageDataUrl || lastBuiltSteps.length === 0) return;
+      const btnZip = document.getElementById("btn-export-zip") as HTMLButtonElement;
+      btnZip.disabled = true;
+      btnZip.textContent = "Generando...";
+
+      const img = await loadImage(imageDataUrl);
+      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+      await exportAllStepsAsZip(img, lastBuiltSteps, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff" });
+
+      btnZip.disabled = false;
+      btnZip.textContent = "Exportar pasos (ZIP)";
+    });
+
+    document.getElementById("btn-clear")?.addEventListener("click", () => {
+      if (currentExport) {
+        currentExport.cancel();
+        currentExport = null;
+      }
+      operations = [];
+      imageDataUrl = null;
+      lastBuiltSteps = [];
+      editingIndex = null;
+      const inputImage = document.getElementById("input-image") as HTMLInputElement;
+      if (inputImage) inputImage.value = "";
+      const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
+      if (btnAdd) btnAdd.textContent = "Agregar";
+      renderOperations();
+      const resultado = document.getElementById("resultado");
+      if (resultado) resultado.innerHTML = "";
+      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
+      if (btnExport) btnExport.disabled = true;
+      const imageExportButtons = document.getElementById("image-export-buttons");
+      if (imageExportButtons) imageExportButtons.classList.add("hidden");
+      const progressContainer = document.getElementById("export-progress");
+      if (progressContainer) progressContainer.classList.add("hidden");
+    });
+
+    renderOperations();
+  </script>
+</BaseLayout>
