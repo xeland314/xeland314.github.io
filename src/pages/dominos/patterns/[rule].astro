@@ -1,0 +1,150 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { generatePattern } from "../../../components/tools/dominos/pattern";
+import { renderTileSVG } from "../../../components/tools/dominos/svg";
+import type { PatternRule, PipCount } from "../../../components/tools/dominos/types";
+
+export async function getStaticPaths() {
+  const rules = [
+    { id: "fraccion", name: "Fracción (Delta Independiente)", desc: "La mitad superior e inferior cambian con incrementos independientes. Es uno de los patrones más comunes en razonamiento numérico.", formula: "top(n+1) = (top(n) + Δt) mod 7 · bottom(n+1) = (bottom(n) + Δb) mod 7", example: "Δt=2, Δb=3: [1,2] → [3,5] → [5,1] → [0,4]" },
+    { id: "suma-constante", name: "Suma Constante", desc: "Ambas mitades se incrementan por el mismo delta en cada paso. Un delta negativo produce Resta Directa (decremento constante), patrón frecuente en pruebas.", formula: "top(n+1) = (top(n) + δ) mod 7 · bottom(n+1) = (bottom(n) + δ) mod 7", example: "δ=1: [0,0] → [1,1] → [2,2] · δ=-2: [5,5] → [3,3] → [1,1] (Resta Directa)" },
+    { id: "espejo", name: "Espejo (Inversión)", desc: "Cada ficha invierte la posición de sus mitades respecto a la anterior.", formula: "top(n+1) = bottom(n) · bottom(n+1) = top(n)", example: "[1,6] → [6,1] → [1,6] → [6,1]" },
+    { id: "encadenado-clasico", name: "Encadenado Clásico", desc: "El bottom de una ficha se convierte en el top de la siguiente, y el bottom avanza en +1.", formula: "top(n+1) = bottom(n) · bottom(n+1) = (bottom(n) + 1) mod 7", example: "[0,1] → [1,2] → [2,3] → [3,4]" },
+    { id: "operacion-interna", name: "Operación Interna", desc: "La suma total de puntos de la ficha avanza con un delta fijo. Los valores individuales se ajustan para cumplir la suma objetivo.", formula: "suma(n+1) = (suma(n) + δ) mod 7 · top avanza +1, bottom = (suma - top) mod 7", example: "δ=2: [0,2] → [1,3] → [2,4] → [3,5]" },
+    { id: "series-alternadas", name: "Series Alternadas", desc: "Dos patrones distintos se alternan entre fichas en posiciones pares e impares. Cubre Series Salteadas (cada 2+ fichas) y Repetición Periódica, comunes en bancos de preguntas.", formula: "Si i es par: top/bottom += Δa · Si i es impar: top/bottom += Δb", example: "Δa=1, Δb=-1: [1,1] → [2,2] → [1,1] → [2,2] · Δa=0, Δb=0: [3,4] → [3,4] → [3,4] (Repetición)" },
+    { id: "lectura-z", name: "Lectura Lineal en Z", desc: "Los puntos se leen de forma continua: el bottom de una ficha se convierte en el top de la siguiente, y el nuevo bottom avanza por delta.", formula: "top(n+1) = bottom(n) · bottom(n+1) = (bottom(n) + δ) mod 7", example: "δ=1: [1,2] → [2,3] → [3,4] → [4,5]" },
+    { id: "progresion-geometrica", name: "Progresión Geométrica", desc: "Los valores se multiplican por un factor constante bajo aritmética modular.", formula: "top(n+1) = (top(n) × f) mod 7 · bottom(n+1) = (bottom(n) × f) mod 7", example: "f=2: [1,2] → [2,4] → [4,1] → [1,2]" },
+    { id: "inversion-polar", name: "Inversión Polar (Complemento a 6)", desc: "Cada valor se reemplaza por su complemento aritmético respecto a 6.", formula: "top(n+1) = (6 - top(n)) mod 7 · bottom(n+1) = (6 - bottom(n)) mod 7", example: "[1,4] → [5,2] → [1,4] → [5,2]" },
+  ];
+
+  return rules.map((rule) => ({
+    params: { rule: rule.id },
+    props: { rule },
+  }));
+}
+
+const { rule } = Astro.props;
+
+const ruleConfig: Record<string, PatternRule> = {
+  fraccion: { type: "fraccion", topDelta: 2, bottomDelta: 3 },
+  "suma-constante": { type: "suma-constante", delta: 1 },
+  espejo: { type: "espejo" },
+  "encadenado-clasico": { type: "encadenado-clasico" },
+  "operacion-interna": { type: "operacion-interna", delta: 2 },
+  "series-alternadas": { type: "series-alternadas", deltaA: 1, deltaB: -1 },
+  "lectura-z": { type: "lectura-z", delta: 1 },
+  "progresion-geometrica": { type: "progresion-geometrica", factor: 2 },
+  "inversion-polar": { type: "inversion-polar" },
+};
+
+const sampleTiles = generatePattern({
+  rule: ruleConfig[rule.id] ?? { type: "fraccion", topDelta: 2, bottomDelta: 3 },
+  length: 5,
+  startTop: 1,
+  startBottom: 2,
+});
+
+const allRules = [
+  { id: "fraccion", name: "Fracción" },
+  { id: "suma-constante", name: "Suma Constante" },
+  { id: "espejo", name: "Espejo" },
+  { id: "encadenado-clasico", name: "Encadenado" },
+  { id: "operacion-interna", name: "Operación Interna" },
+  { id: "series-alternadas", name: "Series Alternadas" },
+  { id: "lectura-z", name: "Lectura Z" },
+  { id: "progresion-geometrica", name: "Progresión Geométrica" },
+  { id: "inversion-polar", name: "Inversión Polar" },
+];
+---
+
+<BaseLayout
+  title={`Patrón: ${rule.name} — Dominós Wiki`}
+  description={`Documentación del patrón ${rule.name} para generación de fichas de dominó.`}
+  keywords={`dominó, patrón, ${rule.name}`}
+  author="Christopher Alexander Villamarín Pila"
+  url={`https://xeland314.github.io/dominos/patterns/${rule.id}`}
+  image="https://xeland314.github.io/assets/images/logo_v3.png"
+  canonical={`https://xeland314.github.io/dominos/patterns/${rule.id}`}
+>
+  <div 
+    class="min-h-screen py-10 px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
+    style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
+  >
+    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+      <a href="/dominos/" class="text-xs text-[#c4392b] hover:underline mb-4 inline-block">← Volver al visualizador</a>
+
+      <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Mini Wiki · Patrones de Examen</p>
+      <h1 class="font-serif font-bold text-[28px] mb-3 text-[#33393e]">{rule.name}</h1>
+      <p class="text-[#6b7680] font-serif text-[15px] leading-relaxed mb-6">
+        {rule.desc}
+      </p>
+
+      <div class="bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-4 mb-6">
+        <p class="text-[11px] text-[#8b98a3] uppercase tracking-wider mb-2">Fórmula</p>
+        <code class="block font-mono text-sm text-[#33393e] bg-white border border-[#d3e0e4] rounded px-3 py-2">{rule.formula}</code>
+      </div>
+
+      <div class="bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-4 mb-6">
+        <p class="text-[11px] text-[#8b98a3] uppercase tracking-wider mb-2">Ejemplo</p>
+        <p class="font-mono text-sm text-[#33393e]">{rule.example}</p>
+      </div>
+
+      <h2 class="text-xs uppercase tracking-wider text-[#8b98a3] mb-3">Ejemplo visual generado</h2>
+      <div class="flex flex-wrap gap-3 bg-[#f8fafb] border border-[#e8edef] p-4 rounded mb-6 items-center justify-center">
+        {sampleTiles.map((tile, idx) => (
+          <div class="flex flex-col items-center gap-1">
+            <div set:html={renderTileSVG(tile)} />
+            <span class="text-[10px] text-[#8b98a3] font-mono">{idx + 1}</span>
+          </div>
+        ))}
+      </div>
+
+      <div class="border-t border-[#d3e0e4] pt-4 mb-6">
+        <h3 class="font-bold text-sm mb-2">Aplicación en pruebas de aptitud</h3>
+        <p class="text-xs text-[#6b7680] leading-relaxed">
+          Este patrón evalúa la capacidad de abstracción visual y cálculo modular base 7.
+          Identificar si la regla actúa por separado en cada sección o sobre el conjunto total
+          es clave para resolver los reactivos en tiempo límite.
+        </p>
+      </div>
+
+      {(rule.id === "suma-constante" || rule.id === "series-alternadas") && (
+        <div class="bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-4 mb-6">
+          <p class="text-[11px] text-[#8b98a3] uppercase tracking-wider mb-2">Casos de estudio absorbidos</p>
+          {rule.id === "suma-constante" && (
+            <div class="text-xs text-[#6b7680] leading-relaxed space-y-2">
+              <p><strong class="text-[#33393e]">Resta Directa:</strong> Usa un delta negativo (ej. <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">δ=-2</code>). La lógica es idéntica a Suma Constante pero decrementa en cada paso. Es uno de los patrones más frecuentes en exámenes de razonamiento.</p>
+              <p><strong class="text-[#33393e]">Ejemplo:</strong> [6,6] → [4,4] → [2,2] → [0,0] (delta = -2)</p>
+            </div>
+          )}
+          {rule.id === "series-alternadas" && (
+            <div class="text-xs text-[#6b7680] leading-relaxed space-y-2">
+              <p><strong class="text-[#33393e]">Series Salteadas (cada N fichas):</strong> Configura <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δa</code> y <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δb</code> para alternar entre dos sub-secuencias. Las fichas 1,3,5 siguen Δa y las 2,4,6 siguen Δb.</p>
+              <p><strong class="text-[#33393e]">Repetición Periódica:</strong> Si <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δa=Δb=0</code>, la secuencia repite el mismo valor indefinidamente. Si <code class="font-mono bg-white border border-[#d3e0e4] rounded px-1">Δa=1, Δb=0</code>, solo avanza cada segunda ficha.</p>
+              <p><strong class="text-[#33393e]">Ejemplo:</strong> Δa=2, Δb=0 → [1,1] → [3,3] → [3,3] → [5,5] → [5,5]</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div class="border-t border-[#d3e0e4] pt-4">
+        <h3 class="font-bold text-sm mb-3">Todos los patrones</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {allRules.map((r) => (
+            <a
+              href={`/dominos/patterns/${r.id}`}
+              class:list={[
+                "block text-xs font-mono py-2 px-3 rounded-[3px] border transition-all",
+                r.id === rule.id
+                  ? "bg-[#c4392b] text-white border-[#c4392b]"
+                  : "bg-white text-[#33393e] border-[#d3e0e4] hover:border-[#6b7680]",
+              ]}
+            >
+              {r.name}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

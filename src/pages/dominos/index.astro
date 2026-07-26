@@ -1,0 +1,676 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const siteTitle = "Dominos — Visualizador de fichas de dominó";
+const siteDescription =
+  "Visualiza y construye cadenas de dominó con SVG. Genera fichas estándar con puntos, prueba cadenas y exporta.";
+const siteKeywords =
+  "dominó, fichas, dominó visualización, cadena de dominó, SVG dominó";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/dominos";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <div
+    class="min-h-screen py-10 px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
+    style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
+  >
+    <div
+      class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]"
+    >
+      <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">
+        Juegos de mesa · dominó
+      </p>
+      <h1 class="font-serif font-bold text-[28px] mb-1.5 text-[#33393e]">
+        Dominós
+      </h1>
+      <p
+        class="text-[#6b7680] font-serif text-[14.5px] leading-relaxed mb-[26px] max-w-[56ch]"
+      >
+        Genera fichas de dominó con SVG puro. Selecciona valores, arma cadenas y
+        visualiza cómo encajan las piezas.
+      </p>
+
+      <!-- Generador (Secuencia / Matriz) -->
+      <details class="mb-[22px] group">
+        <summary
+          class="cursor-pointer select-none list-none flex items-center gap-2 text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2 hover:text-[#33393e] transition-colors"
+        >
+          <span
+            class="text-[10px] text-[#8b98a3] transition-transform group-open:rotate-90"
+            >▶</span
+          >
+          Generador
+        </summary>
+        <div class="pl-4">
+          <p
+            class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]"
+          >
+            Genera secuencias o cuadrículas de fichas según reglas matemáticas.
+            <a
+              href="/dominos/patterns/fraccion"
+              class="text-[#c4392b] hover:underline">Ver guía →</a
+            >
+          </p>
+
+          <div class="flex gap-1 mb-3">
+            <button
+              id="gen-mode-seq"
+              class="gen-mode-btn font-serif font-bold text-[11px] py-1.5 px-4 rounded-[3px] cursor-pointer transition-all bg-[#33393e] text-white border border-[#33393e]"
+              >Secuencia</button
+            >
+            <button
+              id="gen-mode-matrix"
+              class="gen-mode-btn font-serif font-bold text-[11px] py-1.5 px-4 rounded-[3px] cursor-pointer transition-all bg-white text-[#6b7680] border border-[#d3e0e4] hover:bg-[#f5f7f8]"
+              >Matriz</button
+            >
+          </div>
+
+          <!-- Parámetros comunes -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+            <div>
+              <label
+                for="gen-rule"
+                class="block text-[11px] text-[#8b98a3] mb-1">Regla</label
+              >
+              <select
+                id="gen-rule"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="fraccion">Fracción (delta independiente)</option>
+                <option value="suma-constante">Suma constante</option>
+                <option value="espejo">Espejo</option>
+                <option value="encadenado-clasico">Encadenado clásico</option>
+                <option value="operacion-interna">Operación interna</option>
+                <option value="series-alternadas">Series alternadas</option>
+                <option value="lectura-z">Lectura en Z</option>
+                <option value="progresion-geometrica"
+                  >Progresión geométrica</option
+                >
+                <option value="inversion-polar">Inversión polar</option>
+              </select>
+            </div>
+            <div id="param-fraccion-top">
+              <label
+                for="gen-top-delta"
+                class="block text-[11px] text-[#8b98a3] mb-1">Top Δ</label
+              >
+              <input
+                type="number"
+                id="gen-top-delta"
+                value="2"
+                min="-6"
+                max="6"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <div id="param-fraccion-bottom">
+              <label
+                for="gen-bottom-delta"
+                class="block text-[11px] text-[#8b98a3] mb-1">Bottom Δ</label
+              >
+              <input
+                type="number"
+                id="gen-bottom-delta"
+                value="3"
+                min="-6"
+                max="6"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <div id="param-delta" class="hidden">
+              <label
+                for="gen-delta"
+                class="block text-[11px] text-[#8b98a3] mb-1">Delta</label
+              >
+              <input
+                type="number"
+                id="gen-delta"
+                value="1"
+                min="-6"
+                max="6"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <div id="param-factor" class="hidden">
+              <label
+                for="gen-factor"
+                class="block text-[11px] text-[#8b98a3] mb-1">Factor</label
+              >
+              <input
+                type="number"
+                id="gen-factor"
+                value="2"
+                min="1"
+                max="6"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <div id="param-delta-a" class="hidden">
+              <label
+                for="gen-delta-a"
+                class="block text-[11px] text-[#8b98a3] mb-1"
+                >Delta A (pares)</label
+              >
+              <input
+                type="number"
+                id="gen-delta-a"
+                value="1"
+                min="-6"
+                max="6"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <div id="param-delta-b" class="hidden">
+              <label
+                for="gen-delta-b"
+                class="block text-[11px] text-[#8b98a3] mb-1"
+                >Delta B (impares)</label
+              >
+              <input
+                type="number"
+                id="gen-delta-b"
+                value="-1"
+                min="-6"
+                max="6"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+          </div>
+
+          <!-- Parámetros de secuencia (ocultos si modo matriz) -->
+          <div
+            id="gen-seq-params"
+            class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]"
+          >
+            <div>
+              <label
+                for="gen-start-top"
+                class="block text-[11px] text-[#8b98a3] mb-1">Inicio top</label
+              >
+              <select
+                id="gen-start-top"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="0">0</option>
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+            <div>
+              <label
+                for="gen-start-bottom"
+                class="block text-[11px] text-[#8b98a3] mb-1"
+                >Inicio bottom</label
+              >
+              <select
+                id="gen-start-bottom"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+            <div>
+              <label
+                for="gen-length"
+                class="block text-[11px] text-[#8b98a3] mb-1">Longitud</label
+              >
+              <input
+                type="number"
+                id="gen-length"
+                value="9"
+                min="1"
+                max="28"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <div>
+              <label
+                for="gen-hide"
+                class="block text-[11px] text-[#8b98a3] mb-1"
+                >Ocultar (índices)</label
+              >
+              <input
+                type="text"
+                id="gen-hide"
+                placeholder="ej: 7,8"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+          </div>
+
+          <!-- Parámetros de matriz (ocultos si modo secuencia) -->
+          <div id="gen-matrix-params" class="hidden">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+              <div>
+                <label
+                  for="gen-matrix-row-rule"
+                  class="block text-[11px] text-[#8b98a3] mb-1"
+                  >Regla de fila</label
+                >
+                <select
+                  id="gen-matrix-row-rule"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                >
+                  <option value="fraccion">Fracción</option>
+                  <option value="suma-constante" selected>Suma constante</option
+                  >
+                  <option value="espejo">Espejo</option>
+                  <option value="encadenado-clasico">Encadenado clásico</option>
+                  <option value="operacion-interna">Operación interna</option>
+                  <option value="series-alternadas">Series alternadas</option>
+                  <option value="lectura-z">Lectura en Z</option>
+                  <option value="progresion-geometrica"
+                    >Progresión geométrica</option
+                  >
+                  <option value="inversion-polar">Inversión polar</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="gen-matrix-col-rule"
+                  class="block text-[11px] text-[#8b98a3] mb-1"
+                  >Regla de columna</label
+                >
+                <select
+                  id="gen-matrix-col-rule"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                >
+                  <option value="fraccion">Fracción</option>
+                  <option value="suma-constante" selected>Suma constante</option
+                  >
+                  <option value="espejo">Espejo</option>
+                  <option value="encadenado-clasico">Encadenado clásico</option>
+                  <option value="operacion-interna">Operación interna</option>
+                  <option value="series-alternadas">Series alternadas</option>
+                  <option value="lectura-z">Lectura en Z</option>
+                  <option value="progresion-geometrica"
+                    >Progresión geométrica</option
+                  >
+                  <option value="inversion-polar">Inversión polar</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="gen-matrix-rows"
+                  class="block text-[11px] text-[#8b98a3] mb-1">Filas</label
+                >
+                <input
+                  type="number"
+                  id="gen-matrix-rows"
+                  value="4"
+                  min="1"
+                  max="10"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                />
+              </div>
+              <div>
+                <label
+                  for="gen-matrix-cols"
+                  class="block text-[11px] text-[#8b98a3] mb-1">Columnas</label
+                >
+                <input
+                  type="number"
+                  id="gen-matrix-cols"
+                  value="4"
+                  min="1"
+                  max="10"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+              <div>
+                <label
+                  for="gen-matrix-row-delta"
+                  class="block text-[11px] text-[#8b98a3] mb-1">Δ fila</label
+                >
+                <input
+                  type="number"
+                  id="gen-matrix-row-delta"
+                  value="1"
+                  min="-6"
+                  max="6"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                />
+              </div>
+              <div>
+                <label
+                  for="gen-matrix-col-delta"
+                  class="block text-[11px] text-[#8b98a3] mb-1">Δ columna</label
+                >
+                <input
+                  type="number"
+                  id="gen-matrix-col-delta"
+                  value="2"
+                  min="-6"
+                  max="6"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                />
+              </div>
+              <div>
+                <label
+                  for="gen-matrix-hidden-row"
+                  class="block text-[11px] text-[#8b98a3] mb-1"
+                  >Fila oculta</label
+                >
+                <input
+                  type="number"
+                  id="gen-matrix-hidden-row"
+                  value=""
+                  min="0"
+                  max="9"
+                  placeholder="—"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                />
+              </div>
+              <div>
+                <label
+                  for="gen-matrix-hidden-col"
+                  class="block text-[11px] text-[#8b98a3] mb-1"
+                  >Columna oculta</label
+                >
+                <input
+                  type="number"
+                  id="gen-matrix-hidden-col"
+                  value=""
+                  min="0"
+                  max="9"
+                  placeholder="—"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+              <div>
+                <label
+                  for="gen-matrix-start-top"
+                  class="block text-[11px] text-[#8b98a3] mb-1"
+                  >Inicio top</label
+                >
+                <select
+                  id="gen-matrix-start-top"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                >
+                  <option value="0" selected>0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="gen-matrix-start-bottom"
+                  class="block text-[11px] text-[#8b98a3] mb-1"
+                  >Inicio bottom</label
+                >
+                <select
+                  id="gen-matrix-start-bottom"
+                  class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+                >
+                  <option value="0" selected>0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button
+            id="btn-generate"
+            class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Generar
+          </button>
+        </div>
+      </details>
+
+      <!-- Secuencia -->
+      <details class="mb-[22px] group" open>
+        <summary
+          class="cursor-pointer select-none list-none flex items-center gap-2 text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2 hover:text-[#33393e] transition-colors"
+        >
+          <span
+            class="text-[10px] text-[#8b98a3] transition-transform group-open:rotate-90"
+            >▶</span
+          >
+          Secuencia
+        </summary>
+        <div class="pl-4">
+          <div class="flex gap-2 items-end mb-3">
+            <div>
+              <label
+                for="seq-layout"
+                class="block text-[11px] text-[#8b98a3] mb-1">Layout</label
+              >
+              <select
+                id="seq-layout"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="grid">Cuadrícula</option>
+                <option value="row">Fila</option>
+                <option value="column">Columna</option>
+                <option value="free">Libre</option>
+              </select>
+            </div>
+            <div id="seq-columns-wrap">
+              <label
+                for="seq-columns"
+                class="block text-[11px] text-[#8b98a3] mb-1">Columnas</label
+              >
+              <input
+                type="number"
+                id="seq-columns"
+                value="3"
+                min="1"
+                max="7"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <div>
+              <label for="seq-gap" class="block text-[11px] text-[#8b98a3] mb-1"
+                >Gap</label
+              >
+              <input
+                type="number"
+                id="seq-gap"
+                value="12"
+                min="0"
+                max="60"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              />
+            </div>
+            <button
+              id="btn-clear-sequence"
+              class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              Vaciar
+            </button>
+          </div>
+
+          <div class="flex gap-2 items-end mb-3">
+            <div class="flex-1">
+              <label for="seq-top" class="block text-[11px] text-[#8b98a3] mb-1"
+                >Top</label
+              >
+              <select
+                id="seq-top"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label
+                for="seq-bottom"
+                class="block text-[11px] text-[#8b98a3] mb-1">Bottom</label
+              >
+              <select
+                id="seq-bottom"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label
+                for="seq-size"
+                class="block text-[11px] text-[#8b98a3] mb-1">Tamaño</label
+              >
+              <select
+                id="seq-size"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="small">Pequeña</option>
+                <option value="medium" selected>Mediana</option>
+                <option value="large">Grande</option>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label
+                for="seq-orientation"
+                class="block text-[11px] text-[#8b98a3] mb-1">Orientación</label
+              >
+              <select
+                id="seq-orientation"
+                class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              >
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+              </select>
+            </div>
+            <button
+              id="btn-seq-add"
+              class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              Agregar
+            </button>
+          </div>
+
+          <div id="seq-operations" class="mb-3"></div>
+          <div
+            id="seq-preview"
+            class="bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-3"
+          >
+          </div>
+        </div>
+      </details>
+
+      <!-- Exportar -->
+      <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4">
+        <p
+          class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5"
+        >
+          Exportación
+        </p>
+        <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">
+          Exportar imágenes
+        </h2>
+        <p
+          class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]"
+        >
+          Exporta la secuencia como imagen PNG. Exporta todo, selecciona fichas
+          específicas o divide en segmentos para generar un ZIP.
+        </p>
+
+        <div class="flex gap-2 items-end mb-3">
+          <div>
+            <label
+              for="export-mode"
+              class="block text-[11px] text-[#8b98a3] mb-1">Modo</label
+            >
+            <select
+              id="export-mode"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="completa">Completa</option>
+              <option value="seleccion">Selección</option>
+              <option value="segmentado">Segmentado</option>
+            </select>
+          </div>
+          <div id="export-segment-wrap" class="hidden">
+            <label
+              for="export-segment-size"
+              class="block text-[11px] text-[#8b98a3] mb-1"
+              >Tamaño segmento</label
+            >
+            <input
+              type="number"
+              id="export-segment-size"
+              value="4"
+              min="1"
+              max="28"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            />
+          </div>
+          <button
+            id="btn-export"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Exportar
+          </button>
+        </div>
+
+        <div id="export-selection" class="hidden mb-3"></div>
+      </div>
+
+      <div id="resultado" class="mt-[30px]"></div>
+    </div>
+  </div>
+
+  <div
+    style="position:fixed;top:0;left:0;width:0;height:0;overflow:hidden;z-index:-1;"
+  >
+    <div id="export-ghost" style="background:white;width:max-content;"></div>
+  </div>
+
+  <script>
+    import { initStateManager } from "../../components/tools/dominos/ui/StateManager";
+    import { initDragHandlers } from "../../components/tools/dominos/ui/DragController";
+    import { initExportController } from "../../components/tools/dominos/ui/ExportController";
+
+    initDragHandlers();
+    initExportController();
+    initStateManager();
+  </script>
+</BaseLayout>
