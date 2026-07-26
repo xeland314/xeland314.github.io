@@ -1,0 +1,348 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const siteTitle = "Dominos — Visualizador de fichas de dominó";
+const siteDescription = "Visualiza y construye cadenas de dominó con SVG. Genera fichas estándar con puntos, prueba cadenas y exporta.";
+const siteKeywords = "dominó, fichas, dominó visualización, cadena de dominó, SVG dominó";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/dominos";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <div 
+    class="min-h-screen py-10 px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
+    style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
+  >
+    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+      <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Juegos de mesa · dominó</p>
+      <h1 class="font-serif font-bold text-[28px] mb-1.5 text-[#33393e]">Dominós</h1>
+      <p class="text-[#6b7680] font-serif text-[14.5px] leading-relaxed mb-[26px] max-w-[56ch]">
+        Genera fichas de dominó con SVG puro. Selecciona valores, arma cadenas y visualiza cómo encajan las piezas.
+      </p>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Crear ficha
+        </label>
+        <div class="flex gap-2 items-end">
+          <div class="flex-1">
+            <label for="top-pip" class="block text-[11px] text-[#8b98a3] mb-1">Mitad superior</label>
+            <select
+              id="top-pip"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="bottom-pip" class="block text-[11px] text-[#8b98a3] mb-1">Mitad inferior</label>
+            <select
+              id="bottom-pip"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5" selected>5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="tile-size" class="block text-[11px] text-[#8b98a3] mb-1">Tamaño</label>
+            <select
+              id="tile-size"
+              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            >
+              <option value="small">Pequeña</option>
+              <option value="medium" selected>Mediana</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+          <button
+            id="btn-add-tile"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Crear
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Fichas disponibles
+        </label>
+        <div id="available-tiles" class="flex flex-wrap justify-center gap-2 mb-3 min-h-[40px] bg-white border border-[#d3e0e4] rounded-[3px] p-2.5"></div>
+      </div>
+
+      <div class="flex gap-2 mb-[22px]">
+        <button
+          id="btn-generate-set"
+          class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Generar juego completo
+        </button>
+        <button
+          id="btn-shuffle"
+          class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Mezclar
+        </button>
+      </div>
+
+      <div class="mb-[22px]">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+          Cadena
+        </label>
+        <div id="chain-tiles" class="flex flex-wrap justify-center gap-1 min-h-[80px] bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-3 items-center mb-3"></div>
+        <div id="chain-info" class="text-[11px] text-[#8b98a3] font-mono mb-2"></div>
+        <div class="flex gap-2">
+          <button
+            id="btn-clear-chain"
+            class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Vaciar cadena
+          </button>
+        </div>
+      </div>
+
+      <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4 mb-[22px]">
+        <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Constructor</p>
+        <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">Secuencia</h2>
+        <p class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]">
+          Construye una secuencia de fichas manualmente o desde un patrón. El layout determina cómo se dibujan en el lienzo.
+        </p>
+
+        <div class="flex gap-2 items-end mb-3">
+          <div>
+            <label for="seq-layout" class="block text-[11px] text-[#8b98a3] mb-1">Layout</label>
+            <select id="seq-layout" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="grid">Cuadrícula</option>
+              <option value="row">Fila</option>
+              <option value="column">Columna</option>
+              <option value="free">Libre</option>
+            </select>
+          </div>
+          <div id="seq-columns-wrap">
+            <label for="seq-columns" class="block text-[11px] text-[#8b98a3] mb-1">Columnas</label>
+            <input type="number" id="seq-columns" value="3" min="1" max="7" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="seq-gap" class="block text-[11px] text-[#8b98a3] mb-1">Gap</label>
+            <input type="number" id="seq-gap" value="12" min="0" max="60" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <button
+            id="btn-clear-sequence"
+            class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Vaciar
+          </button>
+        </div>
+
+        <div class="flex gap-2 items-end mb-3">
+          <div class="flex-1">
+            <label for="seq-top" class="block text-[11px] text-[#8b98a3] mb-1">Top</label>
+            <select id="seq-top" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="seq-bottom" class="block text-[11px] text-[#8b98a3] mb-1">Bottom</label>
+            <select id="seq-bottom" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5" selected>5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="seq-size" class="block text-[11px] text-[#8b98a3] mb-1">Tamaño</label>
+            <select id="seq-size" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="small">Pequeña</option>
+              <option value="medium" selected>Mediana</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="seq-orientation" class="block text-[11px] text-[#8b98a3] mb-1">Orientación</label>
+            <select id="seq-orientation" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="vertical">Vertical</option>
+              <option value="horizontal">Horizontal</option>
+            </select>
+          </div>
+          <button
+            id="btn-seq-add"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Agregar
+          </button>
+        </div>
+
+        <div id="seq-operations" class="mb-3"></div>
+        <div id="seq-preview" class="bg-[#f8fafb] border border-[#e8edef] rounded-[3px] p-3"></div>
+      </div>
+
+      <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4 mb-[22px]">
+        <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Exportación</p>
+        <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">Exportar imágenes</h2>
+        <p class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]">
+          Exporta la secuencia como imagen PNG. Exporta todo, selecciona fichas específicas o divide en segmentos para generar un ZIP.
+        </p>
+
+        <div class="flex gap-2 items-end mb-3">
+          <div>
+            <label for="export-mode" class="block text-[11px] text-[#8b98a3] mb-1">Modo</label>
+            <select id="export-mode" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="completa">Completa</option>
+              <option value="seleccion">Selección</option>
+              <option value="segmentado">Segmentado</option>
+            </select>
+          </div>
+          <div id="export-segment-wrap" class="hidden">
+            <label for="export-segment-size" class="block text-[11px] text-[#8b98a3] mb-1">Tamaño segmento</label>
+            <input type="number" id="export-segment-size" value="4" min="1" max="28" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <button
+            id="btn-export"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          >
+            Exportar
+          </button>
+        </div>
+
+        <div id="export-selection" class="hidden mb-3"></div>
+      </div>
+
+      <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-4">
+        <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Patrones</p>
+        <h2 class="font-serif font-bold text-[20px] mb-1.5 text-[#33393e]">Generador de patrones</h2>
+        <p class="text-[#6b7680] font-serif text-[13px] leading-relaxed mb-[18px] max-w-[56ch]">
+          Genera secuencias de fichas según una regla matemática. Oculta fichas para crear problemas de examen.
+          <a href="/dominos/patterns/fraccion" class="text-[#c4392b] hover:underline">Ver guía de patrones →</a>
+        </p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="pattern-rule" class="block text-[11px] text-[#8b98a3] mb-1">Regla</label>
+            <select id="pattern-rule" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="fraccion">Fracción (delta independiente)</option>
+              <option value="suma-constante">Suma constante</option>
+              <option value="espejo">Espejo</option>
+              <option value="encadenado-clasico">Encadenado clásico</option>
+              <option value="operacion-interna">Operación interna</option>
+              <option value="series-alternadas">Series alternadas</option>
+              <option value="lectura-z">Lectura en Z</option>
+              <option value="progresion-geometrica">Progresión geométrica</option>
+              <option value="inversion-polar">Inversión polar</option>
+            </select>
+          </div>
+          <div id="param-fraccion-top">
+            <label for="pattern-top-delta" class="block text-[11px] text-[#8b98a3] mb-1">Top Δ</label>
+            <input type="number" id="pattern-top-delta" value="2" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div id="param-fraccion-bottom">
+            <label for="pattern-bottom-delta" class="block text-[11px] text-[#8b98a3] mb-1">Bottom Δ</label>
+            <input type="number" id="pattern-bottom-delta" value="3" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div id="param-delta" class="hidden">
+            <label for="pattern-delta" class="block text-[11px] text-[#8b98a3] mb-1">Delta</label>
+            <input type="number" id="pattern-delta" value="1" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div id="param-factor" class="hidden">
+            <label for="pattern-factor" class="block text-[11px] text-[#8b98a3] mb-1">Factor</label>
+            <input type="number" id="pattern-factor" value="2" min="1" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div id="param-delta-a" class="hidden">
+            <label for="pattern-delta-a" class="block text-[11px] text-[#8b98a3] mb-1">Delta A (pares)</label>
+            <input type="number" id="pattern-delta-a" value="1" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div id="param-delta-b" class="hidden">
+            <label for="pattern-delta-b" class="block text-[11px] text-[#8b98a3] mb-1">Delta B (impares)</label>
+            <input type="number" id="pattern-delta-b" value="-1" min="-6" max="6" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-[18px]">
+          <div>
+            <label for="pattern-start-top" class="block text-[11px] text-[#8b98a3] mb-1">Inicio top</label>
+            <select id="pattern-start-top" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div>
+            <label for="pattern-start-bottom" class="block text-[11px] text-[#8b98a3] mb-1">Inicio bottom</label>
+            <select id="pattern-start-bottom" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <div>
+            <label for="pattern-length" class="block text-[11px] text-[#8b98a3] mb-1">Longitud</label>
+            <input type="number" id="pattern-length" value="9" min="1" max="28" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+          <div>
+            <label for="pattern-hide" class="block text-[11px] text-[#8b98a3] mb-1">Ocultar (índices)</label>
+            <input type="text" id="pattern-hide" placeholder="ej: 7,8" class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1" />
+          </div>
+        </div>
+
+        <button
+          id="btn-generate-pattern"
+          class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+        >
+          Generar patrón en secuencia
+        </button>
+      </div>
+
+      <div id="resultado" class="mt-[30px]"></div>
+    </div>
+  </div>
+
+  <div id="export-ghost" style="position:fixed;top:-9999px;left:-9999px;width:max-content;background:white;"></div>
+
+  <script>
+    import { initStateManager } from "../../components/tools/dominos/ui/StateManager";
+    import { initDragHandlers } from "../../components/tools/dominos/ui/DragController";
+    import { initExportController } from "../../components/tools/dominos/ui/ExportController";
+
+    initDragHandlers();
+    initExportController();
+    initStateManager();
+  </script>
+</BaseLayout>
