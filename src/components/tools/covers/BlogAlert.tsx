@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogAlertProps {
   alertType: "info" | "warning" | "error" | "success";
@@ -67,9 +68,7 @@ export const BlogAlert: React.FC<BlogAlertProps> = ({
               {title}
             </h1>
             <div className={`h-2 w-48 ${a.text.replace('text', 'bg')} rounded-full mb-12 opacity-50`} />
-            <p className={`text-4xl font-bold ${s.text} leading-relaxed`}>
-              {description}
-            </p>
+            <BlogMarkdown content={description} theme={theme} prose="4xl" />
           </div>
 
           {/* Footer Brand */}

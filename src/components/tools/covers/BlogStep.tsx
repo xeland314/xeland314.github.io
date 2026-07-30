@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogStepProps {
   stepNumber: string;
@@ -93,11 +94,7 @@ export const BlogStep: React.FC<BlogStepProps> = ({
               <div
                 className={`absolute left-0 top-0 bottom-0 w-2 ${c.bg} rounded-full opacity-60`}
               />
-              <p
-                className={`text-4xl font-medium ${s.sub} leading-relaxed max-w-4xl`}
-              >
-                {description}
-              </p>
+              <BlogMarkdown content={description} theme={theme} prose="4xl" />
             </div>
           </div>
 

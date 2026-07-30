@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogQnAProps {
   question: string;
@@ -76,11 +77,9 @@ export const BlogQnA: React.FC<BlogQnAProps> = ({
                   {questionLabel}
                 </span>
               </div>
-              <h1
-                className={`text-6xl font-black ${s.text} tracking-tight leading-tight pt-4 drop-shadow-lg`}
-              >
-                {question}
-              </h1>
+              <div className="pt-4">
+                <BlogMarkdown content={question} theme={theme} prose="4xl" />
+              </div>
             </div>
 
             {/* Gradient Divider with glow */}
@@ -105,11 +104,7 @@ export const BlogQnA: React.FC<BlogQnAProps> = ({
               <div
                 className={`relative flex-1 pt-4 pl-8 border-l-4 ${c.bg} rounded-r-2xl ${s.bg || "bg-white/5"} py-6 pr-6 backdrop-blur-sm shadow-xl`}
               >
-                <p
-                  className={`text-4xl font-medium ${s.sub} leading-relaxed drop-shadow-sm`}
-                >
-                  {answer}
-                </p>
+                <BlogMarkdown content={answer} theme={theme} prose="3xl" />
               </div>
             </div>
           </div>

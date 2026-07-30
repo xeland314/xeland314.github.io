@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogHighlightProps {
   text: string;
@@ -74,9 +75,9 @@ export const BlogHighlight: React.FC<BlogHighlightProps> = ({
 
             {/* Quote Text */}
             <div className={`relative p-8 rounded-3xl ${showAvatar ? `${s.bg || "bg-white/5"} border border-white/5 backdrop-blur-md shadow-2xl mb-16 max-w-4xl` : ""}`}>
-              <p className={`text-${showAvatar ? "5xl" : "6xl"} font-bold italic ${s.text} leading-snug drop-shadow-lg text-center ${!showAvatar ? "mb-16 px-10" : ""}`}>
-                &ldquo;{text}&rdquo;
-              </p>
+              <div className={`text-${showAvatar ? "5xl" : "6xl"} font-bold italic ${s.text} leading-snug drop-shadow-lg text-center ${!showAvatar ? "mb-16 px-10" : ""}`}>
+                <BlogMarkdown content={text} theme={theme} prose={showAvatar ? "3xl" : "4xl"} />
+              </div>
             </div>
 
             {/* Divider (quote mode) */}

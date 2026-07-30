@@ -6,6 +6,7 @@ import {
   type TimelineEvent,
 } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogTimelineProps {
   title: string;
@@ -124,11 +125,7 @@ export const BlogTimeline: React.FC<BlogTimelineProps> = ({
                       >
                         {event.title}
                       </h2>
-                      <p
-                        className={`text-2xl font-bold ${s.sub} leading-relaxed`}
-                      >
-                        {event.description}
-                      </p>
+                      <BlogMarkdown content={event.description} theme={theme} prose="2xl" />
                     </div>
                   </div>
                 </div>

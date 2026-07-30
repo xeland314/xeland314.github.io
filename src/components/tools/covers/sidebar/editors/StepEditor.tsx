@@ -1,6 +1,6 @@
 import React from "react";
 import type { StepSlideData } from "../types";
-import { Input, Textarea } from "../FormField";
+import { Input, MarkdownTextarea } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const StepEditor: React.FC<EditorProps<StepSlideData>> = ({
@@ -18,7 +18,7 @@ export const StepEditor: React.FC<EditorProps<StepSlideData>> = ({
       value={slide.title}
       onChange={(v) => updateSlide(slide.id, { title: v })}
     />
-    <Textarea
+    <MarkdownTextarea
       label="Descripción"
       value={slide.description}
       onChange={(v) => updateSlide(slide.id, { description: v })}

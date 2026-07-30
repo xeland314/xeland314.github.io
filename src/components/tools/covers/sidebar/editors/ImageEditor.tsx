@@ -28,7 +28,7 @@ export const ImageEditor: React.FC<EditorProps<ImageSlideData>> = ({
       onChange={(v) => updateSlide(slide.id, { imageFit: v as any })}
     />
     <Textarea
-      label="Pie de foto"
+      label="Descripción (soporta Markdown)"
       value={slide.caption}
       onChange={(v) => updateSlide(slide.id, { caption: v })}
     />

@@ -1,6 +1,6 @@
 import React from "react";
 import type { HighlightSlideData } from "../types";
-import { Input, Textarea, Select, ImageUpload } from "../FormField";
+import { Input, MarkdownTextarea, Select, ImageUpload } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const HighlightEditor: React.FC<EditorProps<HighlightSlideData>> = ({
@@ -8,7 +8,7 @@ export const HighlightEditor: React.FC<EditorProps<HighlightSlideData>> = ({
   updateSlide,
 }) => (
   <div className="space-y-4">
-    <Textarea
+    <MarkdownTextarea
       label="Texto / Cita"
       value={slide.text}
       onChange={(v) => updateSlide(slide.id, { text: v })}

@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogImageProps {
   title: string;
@@ -160,11 +161,9 @@ export const BlogImage: React.FC<BlogImageProps> = ({
               <div
                 className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
               />
-              <p
-                className={`relative text-3xl font-medium ${s.sub} text-center max-w-4xl leading-relaxed px-8 py-6`}
-              >
-                {caption}
-              </p>
+              <div className="px-8 py-6">
+                <BlogMarkdown content={caption} theme={theme} prose="2xl" />
+              </div>
             </div>
           )}
 

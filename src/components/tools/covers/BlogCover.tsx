@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogCoverProps {
   title: string;
@@ -120,14 +121,12 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
               showImage ? (
                 <div className="relative mt-4">
                   <div className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`} />
-                  <p className={`relative text-3xl font-medium ${s.sub} max-w-3xl leading-snug tracking-tight shrink-0 px-6 py-4`}>
-                    {subtitle}
-                  </p>
+                  <div className="relative px-6 py-4">
+                    <BlogMarkdown content={subtitle} theme={theme} prose="2xl" />
+                  </div>
                 </div>
               ) : (
-                <h2 className={`text-4xl font-bold ${s.sub} max-w-3xl leading-snug tracking-tight`}>
-                  {subtitle}
-                </h2>
+                <BlogMarkdown content={subtitle} theme={theme} prose="3xl" />
               )
             )}
           </div>

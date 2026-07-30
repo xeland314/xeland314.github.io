@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogMythFactProps {
   title: string;
@@ -60,7 +61,7 @@ export const BlogMythFact: React.FC<BlogMythFactProps> = ({
                 Mito
               </h2>
               <div className="relative flex-1">
-                <p className={`text-3xl font-bold ${s.text} leading-relaxed`}>{myth}</p>
+                <BlogMarkdown content={myth} theme={theme} prose="2xl" />
               </div>
             </div>
 
@@ -75,7 +76,7 @@ export const BlogMythFact: React.FC<BlogMythFactProps> = ({
                 Realidad
               </h2>
               <div className="relative flex-1">
-                <p className={`text-3xl font-bold ${s.text} leading-relaxed`}>{fact}</p>
+                <BlogMarkdown content={fact} theme={theme} prose="2xl" />
               </div>
             </div>
           </div>

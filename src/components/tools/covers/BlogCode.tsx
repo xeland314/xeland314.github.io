@@ -2,11 +2,13 @@ import React from "react";
 import { Highlight, themes } from "prism-react-renderer";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogCodeProps {
   title: string;
   code: string;
   language: string;
+  description?: string;
   theme: ThemeConfig;
   previewWidth?: number;
   previewHeight?: number;
@@ -16,6 +18,7 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
   title,
   code,
   language,
+  description,
   theme,
   previewWidth = 1080,
   previewHeight = 1080,
@@ -63,7 +66,7 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
           </div>
 
           {/* Header with Premium Gradient Box */}
-          <div className="mb-12 relative group w-full max-w-4xl">
+          <div className="mb-8 relative group w-full max-w-4xl">
             <div
               className={`absolute inset-0 bg-gradient-to-r ${c.gradient} rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity`}
             />
@@ -79,7 +82,7 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
           </div>
 
           {/* Enhanced Code Window */}
-          <div className="w-full max-h-[650px] flex flex-col mb-12 relative group">
+          <div className="w-full max-h-[650px] flex flex-col mb-8 relative group">
             {/* Window glow effect */}
             <div
               className={`absolute inset-0 bg-gradient-to-tr ${c.gradient} opacity-20 blur-3xl rounded-[2.5rem] scale-95 group-hover:opacity-30 transition-opacity duration-500`}
@@ -166,6 +169,13 @@ export const BlogCode: React.FC<BlogCodeProps> = ({
               className={`absolute bottom-4 right-4 w-12 h-12 border-b-4 border-r-4 border-white/30 rounded-br-xl pointer-events-none`}
             />
           </div>
+
+          {/* Code Description */}
+          {description && (
+            <div className={`relative w-full max-w-4xl mb-8 px-4 py-5 rounded-2xl ${s.card || "bg-black/20"} border ${c.border}/20`}>
+              <BlogMarkdown content={description} theme={theme} prose="3xl" />
+            </div>
+          )}
 
           {/* Enhanced Footer Brand */}
           <div className="absolute bottom-12 left-0 right-0 px-20">

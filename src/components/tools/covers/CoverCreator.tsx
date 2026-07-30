@@ -180,7 +180,7 @@ export const CoverCreator = () => {
         newSlide = { id: newId, type: "comparison", title: "Comparativa", leftTitle: "Old", leftItems: ["Bad"], rightTitle: "New", rightItems: ["Good"] };
         break;
       case "code":
-        newSlide = { id: newId, type: "code", title: "Snippet", code: 'console.log("Hello World");', language: "javascript" };
+        newSlide = { id: newId, type: "code", title: "Snippet", code: 'console.log("Hello World");', language: "javascript", description: "" };
         break;
       case "image":
         newSlide = { id: newId, type: "image", title: "Imagen", imageUrl: "", caption: "Pie de foto...", imageFit: "contain" };

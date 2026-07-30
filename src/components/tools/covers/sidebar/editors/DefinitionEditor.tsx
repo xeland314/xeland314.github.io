@@ -1,6 +1,6 @@
 import React from "react";
 import type { DefinitionSlideData } from "../types";
-import { Input, Textarea } from "../FormField";
+import { Input, MarkdownTextarea } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const DefinitionEditor: React.FC<EditorProps<DefinitionSlideData>> = ({
@@ -18,7 +18,7 @@ export const DefinitionEditor: React.FC<EditorProps<DefinitionSlideData>> = ({
       value={slide.phonetic}
       onChange={(v) => updateSlide(slide.id, { phonetic: v })}
     />
-    <Textarea
+    <MarkdownTextarea
       label="Definición"
       value={slide.definition}
       onChange={(v) => updateSlide(slide.id, { definition: v })}

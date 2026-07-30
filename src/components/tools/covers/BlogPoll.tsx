@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogPollProps {
   question: string;
@@ -90,11 +91,7 @@ export const BlogPoll: React.FC<BlogPollProps> = ({
                     {String.fromCharCode(65 + index)}
                   </span>
 
-                  <p
-                    className={`text-4xl font-medium ${s.text} leading-relaxed`}
-                  >
-                    {option}
-                  </p>
+                  <BlogMarkdown content={option} theme={theme} prose="3xl" />
                 </div>
               ))}
             </div>

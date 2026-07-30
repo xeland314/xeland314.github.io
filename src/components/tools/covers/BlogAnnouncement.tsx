@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogAnnouncementProps {
   badge: string;
@@ -61,7 +62,9 @@ export const BlogAnnouncement: React.FC<BlogAnnouncementProps> = ({
             <div className={`h-2 w-40 rounded-full bg-gradient-to-r ${c.gradient} mb-10 opacity-80 shadow-lg`} />
 
             {/* Subtitle */}
-            <p className={`text-4xl font-bold ${s.sub} leading-relaxed max-w-3xl mb-12`}>{subtitle}</p>
+            <div className="max-w-3xl mb-12">
+              <BlogMarkdown content={subtitle} theme={theme} prose="3xl" />
+            </div>
 
             {/* Optional Image Mockup */}
             {imageUrl && (

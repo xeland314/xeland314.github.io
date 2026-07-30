@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogComparisonProps {
   title: string;
@@ -101,11 +102,7 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
                     <span
                       className={`mt-2 w-2.5 h-2.5 rounded-full ${c.bg} flex-shrink-0 shadow-lg group-hover/item:scale-125 transition-transform`}
                     />
-                    <span
-                      className={`text-2xl font-bold ${s.text} leading-snug`}
-                    >
-                      {item}
-                    </span>
+                    <BlogMarkdown content={item} theme={theme} prose="2xl" />
                   </li>
                 ))}
               </ul>
@@ -143,11 +140,7 @@ export const BlogComparison: React.FC<BlogComparisonProps> = ({
                     <span
                       className={`mt-2 w-2.5 h-2.5 rounded-full ${c.bg} flex-shrink-0 shadow-lg group-hover/item:scale-125 transition-transform`}
                     />
-                    <span
-                      className={`text-2xl font-bold ${s.text} leading-snug`}
-                    >
-                      {item}
-                    </span>
+                    <BlogMarkdown content={item} theme={theme} prose="2xl" />
                   </li>
                 ))}
               </ul>

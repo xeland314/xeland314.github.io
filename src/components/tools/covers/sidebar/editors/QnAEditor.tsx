@@ -1,6 +1,6 @@
 import React from "react";
 import type { QnASlideData } from "../types";
-import { Input, Textarea } from "../FormField";
+import { Input, MarkdownTextarea } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const QnAEditor: React.FC<EditorProps<QnASlideData>> = ({
@@ -66,12 +66,13 @@ export const QnAEditor: React.FC<EditorProps<QnASlideData>> = ({
         </div>
       </div>
     </div>
-    <Input
+    <MarkdownTextarea
       label="Pregunta"
       value={slide.question}
       onChange={(v) => updateSlide(slide.id, { question: v })}
+      rows={3}
     />
-    <Textarea
+    <MarkdownTextarea
       label="Respuesta"
       value={slide.answer}
       onChange={(v) => updateSlide(slide.id, { answer: v })}

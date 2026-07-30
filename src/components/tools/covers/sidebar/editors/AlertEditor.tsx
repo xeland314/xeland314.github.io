@@ -1,6 +1,6 @@
 import React from "react";
 import type { AlertSlideData } from "../types";
-import { Input, Textarea, Select } from "../FormField";
+import { Input, MarkdownTextarea, Select } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const AlertEditor: React.FC<EditorProps<AlertSlideData>> = ({
@@ -24,7 +24,7 @@ export const AlertEditor: React.FC<EditorProps<AlertSlideData>> = ({
       value={slide.title}
       onChange={(v) => updateSlide(slide.id, { title: v })}
     />
-    <Textarea
+    <MarkdownTextarea
       label="Descripción"
       value={slide.description}
       onChange={(v) => updateSlide(slide.id, { description: v })}

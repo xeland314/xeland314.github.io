@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogDefinitionProps {
   term: string;
@@ -103,11 +104,7 @@ export const BlogDefinition: React.FC<BlogDefinitionProps> = ({
               <div
                 className={`relative p-8 rounded-3xl ${s.bg} border border-white/5 backdrop-blur-sm`}
               >
-                <p
-                  className={`text-5xl font-bold ${s.sub} leading-tight tracking-tight`}
-                >
-                  {definition}
-                </p>
+                <BlogMarkdown content={definition} theme={theme} prose="3xl" />
               </div>
             </div>
           </div>

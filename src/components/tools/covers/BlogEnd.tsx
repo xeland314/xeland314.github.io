@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogEndProps {
   username?: string;
@@ -103,9 +104,9 @@ export const BlogEnd: React.FC<BlogEndProps> = ({
             {/* Description with better styling */}
             <div className={`relative mb-4 max-w-2xl`}>
               <div className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-3xl blur-xl`} />
-              <p className={`relative text-3xl ${s.sub} leading-relaxed text-center font-medium px-8 py-6`}>
-                {description}
-              </p>
+              <div className="relative px-8 py-6">
+                <BlogMarkdown content={description} theme={theme} prose="2xl" />
+              </div>
             </div>
 
             {/* Enhanced Action Buttons */}

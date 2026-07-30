@@ -1,6 +1,6 @@
 import React from "react";
 import type { TimelineSlideData, TimelineEvent } from "../types";
-import { Input, Textarea } from "../FormField";
+import { Input, MarkdownTextarea } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const TimelineEditor: React.FC<EditorProps<TimelineSlideData>> = ({
@@ -70,7 +70,7 @@ export const TimelineEditor: React.FC<EditorProps<TimelineSlideData>> = ({
                 />
               </div>
             </div>
-            <Textarea
+            <MarkdownTextarea
               label="Descripción"
               value={event.description}
               onChange={(v) => {

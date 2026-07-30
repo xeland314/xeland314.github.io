@@ -1,4 +1,25 @@
-import React from "react";
+import React, { useState, lazy, Suspense } from "react";
+import { BlogCodeBlock } from "../BlogCodeBlock";
+
+const ReactMarkdown = lazy(() => import("react-markdown"));
+
+const CodeBlock = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+  const isInline = !className;
+  if (isInline) {
+    return (
+      <code className="px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 font-mono text-[0.9em] text-blue-400">
+        {children}
+      </code>
+    );
+  }
+  const lang = (className || "").replace("language-", "");
+  const codeString = Array.isArray(children) ? String(children.join("")) : String(children || "");
+  return (
+    <div className="my-4">
+      <BlogCodeBlock code={codeString} language={lang || "text"} />
+    </div>
+  );
+};
 
 export interface EditorProps<T> {
   slide: T;
@@ -156,6 +177,59 @@ export const ListEditor = ({
     {items.map((_, idx) => renderItem(idx))}
   </div>
 );
+
+export const MarkdownTextarea = ({
+  label,
+  value,
+  onChange,
+  rows = 5,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+}) => {
+  const [showPreview, setShowPreview] = useState(false);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        {label && (
+          <label className="text-xs font-bold text-gray-500 uppercase block">
+            {label}
+          </label>
+        )}
+        <button
+          type="button"
+          onClick={() => setShowPreview(!showPreview)}
+          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg border transition-colors ${
+            showPreview
+              ? "bg-blue-500 text-white border-blue-500"
+              : "text-gray-400 border-gray-300 dark:border-gray-600 hover:border-blue-500"
+          }`}
+        >
+          {showPreview ? "Editar" : "Preview"}
+        </button>
+      </div>
+      {showPreview ? (
+        <div className="w-full min-h-[100px] bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 text-sm max-w-none">
+          <Suspense fallback={<div className="text-xs text-gray-400 italic">Cargando preview...</div>}>
+            <ReactMarkdown components={{ code: CodeBlock }}>
+              {value || "*Sin contenido*"}
+            </ReactMarkdown>
+          </Suspense>
+        </div>
+      ) : (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          rows={rows}
+          className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2 outline-none focus:border-blue-500 resize-y text-sm font-mono"
+        />
+      )}
+    </div>
+  );
+};
 
 export const DeleteButton = ({ onClick }: { onClick: () => void }) => (
   <button

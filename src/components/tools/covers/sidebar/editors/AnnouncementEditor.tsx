@@ -1,6 +1,6 @@
 import React from "react";
 import type { AnnouncementSlideData } from "../types";
-import { Input, Textarea, ImageUpload } from "../FormField";
+import { Input, MarkdownTextarea, ImageUpload } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const AnnouncementEditor: React.FC<EditorProps<AnnouncementSlideData>> = ({
@@ -18,7 +18,7 @@ export const AnnouncementEditor: React.FC<EditorProps<AnnouncementSlideData>> = 
       value={slide.title}
       onChange={(v) => updateSlide(slide.id, { title: v })}
     />
-    <Textarea
+    <MarkdownTextarea
       label="Subtítulo"
       value={slide.subtitle}
       onChange={(v) => updateSlide(slide.id, { subtitle: v })}

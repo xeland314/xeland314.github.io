@@ -1,6 +1,6 @@
 import React from "react";
 import type { CodeSlideData } from "../types";
-import { Input, Textarea } from "../FormField";
+import { Input, Textarea, MarkdownTextarea } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const CodeEditor: React.FC<EditorProps<CodeSlideData>> = ({
@@ -23,6 +23,12 @@ export const CodeEditor: React.FC<EditorProps<CodeSlideData>> = ({
       value={slide.code}
       onChange={(v) => updateSlide(slide.id, { code: v })}
       rows={8}
+    />
+    <MarkdownTextarea
+      label="Descripción (opcional)"
+      value={slide.description || ""}
+      onChange={(v) => updateSlide(slide.id, { description: v || undefined })}
+      rows={3}
     />
   </div>
 );

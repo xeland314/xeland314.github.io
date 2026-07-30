@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogChecklistProps {
   title: string;
@@ -64,9 +65,9 @@ export const BlogChecklist: React.FC<BlogChecklistProps> = ({
                     </svg>
                   )}
                 </div>
-                <span className={`text-4xl font-medium ${item.checked ? s.text : s.sub} leading-tight ${item.checked ? "" : "opacity-70"}`}>
-                  {item.text}
-                </span>
+                <div className={item.checked ? "" : "opacity-70"}>
+                  <BlogMarkdown content={item.text} theme={theme} prose="3xl" />
+                </div>
               </li>
             ))}
           </ul>

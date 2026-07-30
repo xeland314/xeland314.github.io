@@ -257,6 +257,7 @@ export interface CodeSlideData extends BaseSlideData {
   title: string;
   language: string;
   code: string;
+  description?: string;
 }
 
 export interface EndSlideData extends BaseSlideData {

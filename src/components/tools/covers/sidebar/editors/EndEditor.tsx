@@ -1,6 +1,6 @@
 import React from "react";
 import type { EndSlideData } from "../types";
-import { Input, Textarea } from "../FormField";
+import { Input, MarkdownTextarea } from "../FormField";
 import type { EditorProps } from "../FormField";
 
 export const EndEditor: React.FC<EditorProps<EndSlideData>> = ({
@@ -18,7 +18,7 @@ export const EndEditor: React.FC<EditorProps<EndSlideData>> = ({
       value={slide.secondText}
       onChange={(v) => updateSlide(slide.id, { secondText: v })}
     />
-    <Textarea
+    <MarkdownTextarea
       label="Descripción"
       value={slide.description}
       onChange={(v) => updateSlide(slide.id, { description: v })}

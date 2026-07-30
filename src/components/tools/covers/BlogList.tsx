@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogListProps {
   title: string;
@@ -100,9 +101,7 @@ export const BlogList: React.FC<BlogListProps> = ({
                 >
                   {getBullet(i)}
                 </span>
-                <span className={`text-4xl font-medium ${s.text} leading-tight`}>
-                  {item}
-                </span>
+                <BlogMarkdown content={item} theme={theme} prose="3xl" />
               </li>
             ))}
           </ul>

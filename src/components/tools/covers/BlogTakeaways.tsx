@@ -1,6 +1,7 @@
 import React from "react";
 import { ACCENT_COLORS, getThemeStyles, type ThemeConfig } from "./types";
 import { useCanvasScale } from "./useCanvasScale";
+import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogTakeawaysProps {
   title: string;
@@ -57,7 +58,9 @@ export const BlogTakeaways: React.FC<BlogTakeawaysProps> = ({
                   <div className={`relative flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br ${c.gradient} flex items-center justify-center shadow-lg`}>
                     <span className="text-2xl font-black text-white">{i + 1}</span>
                   </div>
-                  <p className={`relative text-2xl font-bold ${s.text} leading-snug pt-2`}>{item}</p>
+                  <div className="relative pt-2">
+                    <BlogMarkdown content={item} theme={theme} prose="2xl" />
+                  </div>
                 </div>
               ))}
             </div>
