@@ -157,8 +157,8 @@ describe('buildAnimationSteps', () => {
     const ops: RotationOperation[] = [{ degrees: 90, direction: 'cw' }];
     const steps = buildAnimationSteps(ops);
     expect(steps).toHaveLength(2);
-    expect(steps[0]).toEqual({ fromAngle: 0, toAngle: 90, duration: 2000, label: 'Paso 1: 90° horario' });
-    expect(steps[1]).toEqual({ fromAngle: 90, toAngle: 90, duration: 1500, label: 'Resultado final' });
+    expect(steps[0]).toMatchObject({ fromAngle: 0, toAngle: 90, duration: 2000, label: 'Paso 1: 90° horario' });
+    expect(steps[1]).toMatchObject({ fromAngle: 90, toAngle: 90, duration: 1500, label: 'Resultado final' });
   });
 
   it('should chain cumulative angles across steps', () => {
@@ -185,6 +185,50 @@ describe('buildAnimationSteps', () => {
     const steps = buildAnimationSteps(ops, { stepDuration: 2000, holdDuration: 500, fps: 60 });
     expect(steps[0].duration).toBe(2000);
     expect(steps[1].duration).toBe(500);
+  });
+
+  it('should tag steps with traceMode "cumulative" by default', () => {
+    const ops: RotationOperation[] = [{ degrees: 90, direction: 'cw' }];
+    const steps = buildAnimationSteps(ops);
+    expect(steps[0].traceMode).toBe('cumulative');
+    expect(steps[1].traceMode).toBe('cumulative');
+  });
+
+  it('should append direct scene when includeDirectScene is true', () => {
+    const ops: RotationOperation[] = [{ degrees: 450, direction: 'cw' }];
+    const steps = buildAnimationSteps(ops, undefined, true);
+    expect(steps).toHaveLength(4);
+    expect(steps[2].label).toBe('Resultado directo (efectivo)');
+    expect(steps[2].traceMode).toBe('direct');
+    expect(steps[2].fromAngle).toBe(0);
+    expect(steps[2].toAngle).toBe(90);
+    expect(steps[3].traceMode).toBe('direct');
+    expect(steps[3].toAngle).toBe(90);
+  });
+
+  it('should not append direct scene when includeDirectScene is false', () => {
+    const ops: RotationOperation[] = [{ degrees: 90, direction: 'cw' }];
+    const steps = buildAnimationSteps(ops, undefined, false);
+    expect(steps).toHaveLength(2);
+  });
+
+  it('should compute direct scene target as normalized effective angle', () => {
+    const ops: RotationOperation[] = [
+      { degrees: 900, direction: 'cw' },
+      { degrees: 770, direction: 'cw' },
+    ];
+    const steps = buildAnimationSteps(ops, undefined, true);
+    const direct = steps.find((s) => s.traceMode === 'direct' && s.fromAngle === 0);
+    expect(direct).toBeDefined();
+    expect(direct!.toAngle).toBe(230);
+  });
+
+  it('should handle ccw direct scene with negative normalized angle', () => {
+    const ops: RotationOperation[] = [{ degrees: 90, direction: 'ccw' }];
+    const steps = buildAnimationSteps(ops, undefined, true);
+    const direct = steps.find((s) => s.traceMode === 'direct' && s.fromAngle === 0);
+    expect(direct).toBeDefined();
+    expect(direct!.toAngle).toBe(270);
   });
 });
 

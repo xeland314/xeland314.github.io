@@ -78,6 +78,26 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         </div>
       </div>
 
+      <div class="mb-[22px] flex flex-col gap-2">
+        <label class="flex items-center gap-2 text-sm text-[#33393e] cursor-pointer">
+          <input
+            type="checkbox"
+            id="opt-trace"
+            class="accent-[#c4392b] w-4 h-4"
+          />
+          <span>Trazar arco de rotaciones (goniómetro con vueltas)</span>
+        </label>
+        <label class="flex items-center gap-2 text-sm text-[#33393e] cursor-pointer">
+          <input
+            type="checkbox"
+            id="opt-direct"
+            class="accent-[#c4392b] w-4 h-4"
+            checked
+          />
+          <span>Incluir resultado directo (ángulo efectivo) para contrastar</span>
+        </label>
+      </div>
+
       <div class="flex gap-2 mb-[22px]">
         <button
           id="btn-apply"
@@ -134,13 +154,15 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
   <script>
     import { parseDirection, calculateTotalAngle, normalizeAngle, parseDegreesInput, buildAnimationSteps, formatFormula } from "../components/tools/rotador-imagenes/rotador";
     import type { RotationOperation, AnimationStep } from "../components/tools/rotador-imagenes/rotador";
-    import { loadImage, exportVideo, exportStepAsPng, exportAllStepsAsZip } from "../components/tools/rotador-imagenes/canvas";
+    import { loadImage, exportVideo, exportStepAsPng, exportAllStepsAsZip, renderStepToCanvas } from "../components/tools/rotador-imagenes/canvas";
 
     let operations: RotationOperation[] = [];
     let imageDataUrl: string | null = null;
     let currentExport: { cancel: () => void } | null = null;
     let lastBuiltSteps: AnimationStep[] = [];
     let editingIndex: number | null = null;
+    let showTrace = false;
+    let includeDirectScene = true;
 
     function renderOperations() {
       const container = document.getElementById("operations-list");
@@ -301,9 +323,79 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
             ${stepsGridHtml}
           </div>
+
+          <div id="trace-preview" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4${showTrace ? "" : " hidden"}"></div>
         </div>
       `;
+
+      if (showTrace && imageDataUrl) {
+        renderTracePreview(totalAngle, normalizedAngle);
+      }
     }
+
+    async function renderTracePreview(totalAngle: number, normalizedAngle: number) {
+      const holder = document.getElementById("trace-preview");
+      if (!holder || !imageDataUrl) return;
+      try {
+        const img = await loadImage(imageDataUrl);
+        const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+        const commonOpts = { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff", trace: true, showTurns: true };
+
+        const cumulativeStep: AnimationStep = {
+          fromAngle: totalAngle,
+          toAngle: totalAngle,
+          duration: 0,
+          label: "Acumulado",
+          traceMode: "cumulative",
+        };
+        const directStep: AnimationStep = {
+          fromAngle: normalizedAngle,
+          toAngle: normalizedAngle,
+          duration: 0,
+          label: "Directo (efectivo)",
+          traceMode: "direct",
+        };
+
+        const cumCanvas = renderStepToCanvas(img, cumulativeStep, commonOpts);
+        cumCanvas.className = "w-full max-w-[360px] mx-auto bg-white border border-[#d3e0e4] rounded-[3px]";
+        const directCanvas = renderStepToCanvas(img, directStep, commonOpts);
+        directCanvas.className = "w-full max-w-[360px] mx-auto bg-white border border-[#d3e0e4] rounded-[3px]";
+
+        holder.innerHTML = "";
+        const cumCard = document.createElement("div");
+        cumCard.className = "flex flex-col gap-2";
+        cumCard.innerHTML = '<span class="font-serif font-bold text-[11px] text-[#c4392b] uppercase tracking-[0.06em]">Procedimiento acumulado</span>';
+        cumCard.appendChild(cumCanvas);
+
+        const directCard = document.createElement("div");
+        directCard.className = "flex flex-col gap-2";
+        directCard.innerHTML = '<span class="font-serif font-bold text-[11px] text-[#c4392b] uppercase tracking-[0.06em]">Procedimiento directo (efectivo)</span>';
+        directCard.appendChild(directCanvas);
+
+        holder.appendChild(cumCard);
+        if (includeDirectScene) holder.appendChild(directCard);
+      } catch (err) {
+        console.error("Error renderizando vista previa con trazado:", err);
+      }
+    }
+
+    document.getElementById("opt-trace")?.addEventListener("change", async (e) => {
+      showTrace = (e.target as HTMLInputElement).checked;
+      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
+      if (imageDataUrl && operations.length > 0 && !btnExport?.disabled) {
+        lastBuiltSteps = buildAnimationSteps(operations, undefined, includeDirectScene);
+        applyRotations();
+      }
+    });
+
+    document.getElementById("opt-direct")?.addEventListener("change", async (e) => {
+      includeDirectScene = (e.target as HTMLInputElement).checked;
+      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
+      if (imageDataUrl && operations.length > 0 && !btnExport?.disabled) {
+        lastBuiltSteps = buildAnimationSteps(operations, undefined, includeDirectScene);
+        applyRotations();
+      }
+    });
 
     document.getElementById("input-image")?.addEventListener("change", (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
@@ -353,7 +445,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         imageExportButtons.classList.toggle("hidden", !canExport);
       }
       if (canExport) {
-        lastBuiltSteps = buildAnimationSteps(operations);
+        lastBuiltSteps = buildAnimationSteps(operations, undefined, includeDirectScene);
       }
     });
 
@@ -381,7 +473,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         canvas,
         img,
         lastBuiltSteps,
-        { canvasWidth: size, canvasHeight: size, fps: 30, bgColor: "#ffffff" },
+        { canvasWidth: size, canvasHeight: size, fps: 30, bgColor: "#ffffff", trace: showTrace, showTurns: true },
         (p) => {
           if (progressText) progressText.textContent = `${p}%`;
           if (progressBar) progressBar.style.width = `${p}%`;
@@ -401,9 +493,11 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
     document.getElementById("btn-download-png")?.addEventListener("click", async () => {
       if (!imageDataUrl || lastBuiltSteps.length === 0) return;
       const img = await loadImage(imageDataUrl);
-      const finalStep = lastBuiltSteps[lastBuiltSteps.length - 1];
+      const finalStep =
+        lastBuiltSteps.find((s) => s.label === "Resultado final") ??
+        lastBuiltSteps[lastBuiltSteps.length - 1];
       const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
-      await exportStepAsPng(img, finalStep, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff" });
+      await exportStepAsPng(img, finalStep, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff", trace: showTrace, showTurns: true });
     });
 
     document.getElementById("btn-export-zip")?.addEventListener("click", async () => {
@@ -414,7 +508,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
 
       const img = await loadImage(imageDataUrl);
       const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
-      await exportAllStepsAsZip(img, lastBuiltSteps, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff" });
+      await exportAllStepsAsZip(img, lastBuiltSteps, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff", trace: showTrace, showTurns: true });
 
       btnZip.disabled = false;
       btnZip.textContent = "Exportar pasos (ZIP)";

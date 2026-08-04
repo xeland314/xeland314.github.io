@@ -3,11 +3,14 @@ export interface RotationOperation {
   direction: "cw" | "ccw";
 }
 
+export type TraceMode = "cumulative" | "direct";
+
 export interface AnimationStep {
   fromAngle: number;
   toAngle: number;
   duration: number;
   label: string;
+  traceMode?: TraceMode;
 }
 
 export interface AnimationOptions {
@@ -70,6 +73,7 @@ export function interpolateAngle(from: number, to: number, t: number): number {
 export function buildAnimationSteps(
   operations: RotationOperation[],
   options: AnimationOptions = DEFAULT_ANIMATION_OPTIONS,
+  includeDirectScene: boolean = false,
 ): AnimationStep[] {
   if (operations.length === 0) return [];
 
@@ -84,6 +88,7 @@ export function buildAnimationSteps(
       toAngle: cumulative,
       duration: options.stepDuration,
       label: `Paso ${i + 1}: ${op.degrees}° ${parseDirection(op.direction)}`,
+      traceMode: "cumulative",
     });
     prevAngle = cumulative;
   }
@@ -93,7 +98,27 @@ export function buildAnimationSteps(
     toAngle: prevAngle,
     duration: options.holdDuration,
     label: "Resultado final",
+    traceMode: "cumulative",
   });
+
+  if (includeDirectScene) {
+    const totalAngle = calculateTotalAngle(operations);
+    const normalized = normalizeAngle(totalAngle);
+    steps.push({
+      fromAngle: 0,
+      toAngle: normalized,
+      duration: options.stepDuration,
+      label: "Resultado directo (efectivo)",
+      traceMode: "direct",
+    });
+    steps.push({
+      fromAngle: normalized,
+      toAngle: normalized,
+      duration: options.holdDuration,
+      label: "Resultado directo (efectivo)",
+      traceMode: "direct",
+    });
+  }
 
   return steps;
 }

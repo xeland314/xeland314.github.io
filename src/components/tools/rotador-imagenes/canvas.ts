@@ -1,12 +1,14 @@
 import JSZip from "jszip";
 import { resolveAngleAtTime, resolveStepAtTime, totalAnimationDuration } from "./rotador";
-import type { AnimationStep } from "./rotador";
+import type { AnimationStep, TraceMode } from "./rotador";
 
 export interface CanvasExportOptions {
   canvasWidth: number;
   canvasHeight: number;
   fps: number;
   bgColor: string;
+  trace: boolean;
+  showTurns: boolean;
 }
 
 const DEFAULT_EXPORT_OPTIONS: CanvasExportOptions = {
@@ -14,7 +16,14 @@ const DEFAULT_EXPORT_OPTIONS: CanvasExportOptions = {
   canvasHeight: 720,
   fps: 30,
   bgColor: "#ffffff",
+  trace: false,
+  showTurns: true,
 };
+
+const TRACE_COLOR = "#c4392b";
+const TRACE_FULL_COLOR = "#c4392b";
+const TRACE_PARTIAL_COLOR = "#f0a05a";
+const GUIDE_COLOR = "rgba(195, 90, 40, 0.18)";
 
 export function drawRotatedImage(
   ctx: CanvasRenderingContext2D,
@@ -45,12 +54,115 @@ export function drawStepLabel(
   canvasW: number,
   canvasH: number,
 ) {
+  const scale = canvasW / 720;
+  const fontPx = Math.max(14, Math.round(20 * scale));
+  const margin = Math.round(16 * scale);
+  const bottomOffset = Math.round(40 * scale);
+
   ctx.save();
-  ctx.font = 'bold 14px "Fira Code", monospace';
+  ctx.font = `bold ${fontPx}px "Fira Code", monospace`;
   ctx.fillStyle = "#8b98a3";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(label, 16, canvasH - 32);
+  ctx.fillText(label, margin, canvasH - bottomOffset);
+  ctx.restore();
+}
+
+export function drawTraceLayer(
+  ctx: CanvasRenderingContext2D,
+  totalAngle: number,
+  canvasW: number,
+  canvasH: number,
+  traceMode: TraceMode = "cumulative",
+  showTurns: boolean = true,
+) {
+  const cx = canvasW / 2;
+  const cy = canvasH / 2;
+  const baseRadius = Math.min(canvasW, canvasH) * 0.38;
+  const ringStep = Math.max(4, Math.min(canvasW, canvasH) * 0.012);
+
+  const absAngle = Math.abs(totalAngle);
+  const fullTurns = Math.floor(absAngle / 360);
+  const remainder = absAngle - fullTurns * 360;
+  const sign = totalAngle >= 0 ? 1 : -1;
+
+  ctx.save();
+
+  const guideRadius = Math.max(
+    baseRadius + ringStep * 4,
+    baseRadius + ringStep * fullTurns + (remainder > 0 ? ringStep : 0),
+  );
+  ctx.strokeStyle = GUIDE_COLOR;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.arc(cx, cy, guideRadius, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  const drawArc = (radius: number, fromDeg: number, toDeg: number) => {
+    if (toDeg === fromDeg) return;
+    ctx.beginPath();
+    ctx.strokeStyle = TRACE_FULL_COLOR;
+    ctx.lineWidth = 2.5;
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      (fromDeg * Math.PI) / 180,
+      (toDeg * Math.PI) / 180,
+      toDeg < fromDeg,
+    );
+    ctx.stroke();
+  };
+
+  for (let t = 0; t < fullTurns; t++) {
+    drawArc(baseRadius + ringStep * t, 0, sign * 360);
+  }
+  if (remainder > 0) {
+    const partialRadius = baseRadius + ringStep * fullTurns;
+    ctx.beginPath();
+    ctx.strokeStyle = TRACE_PARTIAL_COLOR;
+    ctx.lineWidth = 3;
+    ctx.arc(
+      cx,
+      cy,
+      partialRadius,
+      0,
+      (remainder * sign * Math.PI) / 180,
+      sign < 0,
+    );
+    ctx.stroke();
+    const tipAngle = (remainder * sign * Math.PI) / 180;
+    ctx.fillStyle = TRACE_PARTIAL_COLOR;
+    ctx.beginPath();
+    ctx.arc(
+      cx + partialRadius * Math.cos(tipAngle),
+      cy + partialRadius * Math.sin(tipAngle),
+      3.5,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+  }
+
+  if (showTurns) {
+    const scale = canvasW / 720;
+    const fontPx = Math.max(12, Math.round(18 * scale));
+    const margin = Math.round(16 * scale);
+    const bottomOffset = Math.round(20 * scale);
+    const remainderText = remainder > 0 ? ` + ${Math.round(remainder)}°` : "";
+    const label =
+      traceMode === "direct"
+        ? `Efectivo: ${Math.round(absAngle)}°`
+        : `Vueltas: ${fullTurns}${remainderText}`;
+    ctx.font = `bold ${fontPx}px "Fira Code", monospace`;
+    ctx.fillStyle = TRACE_COLOR;
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
+    ctx.fillText(label, canvasW - margin, canvasH - bottomOffset);
+  }
+
   ctx.restore();
 }
 
@@ -81,6 +193,9 @@ export function startRotationAnimation(
 
     const currentStep = resolveStepAtTime(steps, elapsed);
     drawRotatedImage(ctx, img, currentAngle, opts.canvasWidth, opts.canvasHeight, opts.bgColor);
+    if (opts.trace) {
+      drawTraceLayer(ctx, currentAngle, opts.canvasWidth, opts.canvasHeight, currentStep?.traceMode, opts.showTurns);
+    }
     if (currentStep) {
       drawStepLabel(ctx, currentStep.label, opts.canvasWidth, opts.canvasHeight);
     }
@@ -164,6 +279,9 @@ export function exportVideo(
     const currentStep = resolveStepAtTime(steps, elapsed);
 
     drawRotatedImage(ctx, img, currentAngle, opts.canvasWidth, opts.canvasHeight, opts.bgColor);
+    if (opts.trace) {
+      drawTraceLayer(ctx, currentAngle, opts.canvasWidth, opts.canvasHeight, currentStep?.traceMode, opts.showTurns);
+    }
     if (currentStep) {
       drawStepLabel(ctx, currentStep.label, opts.canvasWidth, opts.canvasHeight);
     }
@@ -217,6 +335,9 @@ export function renderStepToCanvas(
   const ctx = canvas.getContext("2d")!;
 
   drawRotatedImage(ctx, img, step.toAngle, opts.canvasWidth, opts.canvasHeight, opts.bgColor);
+  if (opts.trace) {
+    drawTraceLayer(ctx, step.toAngle, opts.canvasWidth, opts.canvasHeight, step.traceMode, opts.showTurns);
+  }
   drawStepLabel(ctx, step.label, opts.canvasWidth, opts.canvasHeight);
 
   return canvas;
