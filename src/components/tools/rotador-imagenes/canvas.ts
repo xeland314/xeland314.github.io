@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { resolveAngleAtTime, resolveStepAtTime } from "./rotador";
+import { resolveAngleAtTime, resolveStepAtTime, totalAnimationDuration } from "./rotador";
 import type { AnimationStep } from "./rotador";
 
 export interface CanvasExportOptions {
