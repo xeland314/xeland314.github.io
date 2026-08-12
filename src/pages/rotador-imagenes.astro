@@ -19,10 +19,10 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
   canonical={siteUrl}
 >
   <div 
-    class="min-h-screen py-10 px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
+    class="min-h-screen py-8 sm:py-10 px-4 sm:px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
     style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
   >
-    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-5 sm:p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
       <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Manipulador de imágenes · rotación</p>
       <h1 class="font-serif font-bold text-[28px] mb-1.5 text-[#33393e]">Rotador</h1>
       <p class="text-[#6b7680] font-serif text-[14.5px] leading-relaxed mb-[26px] max-w-[56ch]">
@@ -31,15 +31,30 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       </p>
 
       <div class="mb-[22px]">
-        <label for="input-image" class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
+        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
           Imagen
         </label>
-        <input
-          type="file"
-          id="input-image"
-          accept="image/*"
-          class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-3 px-3.5 font-mono text-base tracking-[0.04em] text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
-        />
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <input
+            type="file"
+            id="input-image"
+            accept="image/*"
+            class="flex-1 min-w-0 bg-white border border-[#d3e0e4] rounded-[3px] py-3 px-3.5 font-mono text-base tracking-[0.04em] text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          />
+          <button
+            id="btn-camera"
+            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-3 px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 whitespace-nowrap"
+          >
+            Tomar foto
+          </button>
+        </div>
+        <div id="image-preview-wrap" class="hidden mt-2">
+          <img
+            id="image-preview"
+            alt="Vista previa de la imagen"
+            class="max-h-[140px] max-w-full object-contain border border-[#d3e0e4] rounded-[3px] bg-white p-1"
+          />
+        </div>
       </div>
 
       <div class="mb-[22px]">
@@ -47,8 +62,8 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
           Operaciones de rotación
         </label>
         <div id="operations-list" class="flex flex-col gap-2 mb-3"></div>
-        <div class="flex gap-2 items-end">
-          <div class="flex-1">
+        <div class="grid grid-cols-2 gap-2 items-end sm:flex sm:items-end">
+          <div class="flex-1 min-w-0">
             <label for="rotation-degrees" class="block text-[11px] text-[#8b98a3] mb-1">Grados</label>
             <input
               type="number"
@@ -59,7 +74,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
               class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <label for="rotation-direction" class="block text-[11px] text-[#8b98a3] mb-1">Dirección</label>
             <select
               id="rotation-direction"
@@ -71,7 +86,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
           </div>
           <button
             id="btn-add-operation"
-            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            class="col-span-2 sm:col-span-1 font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-3 sm:py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
           >
             Agregar
           </button>
@@ -98,38 +113,38 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         </label>
       </div>
 
-      <div class="flex gap-2 mb-[22px]">
+      <div class="flex flex-col sm:flex-row gap-2 mb-[22px]">
         <button
           id="btn-apply"
-          class="font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="flex-1 font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
         >
           Aplicar rotaciones
         </button>
         <button
           id="btn-export"
-          class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 disabled:opacity-40 disabled:cursor-not-allowed"
+          class="flex-1 font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 disabled:opacity-40 disabled:cursor-not-allowed"
           disabled
         >
           Exportar video
         </button>
         <button
           id="btn-clear"
-          class="font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="flex-1 font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
         >
           Limpiar todo
         </button>
       </div>
 
-      <div id="image-export-buttons" class="hidden flex gap-2 mb-[22px]">
+      <div id="image-export-buttons" class="hidden flex flex-col sm:flex-row gap-2 mb-[22px]">
         <button
           id="btn-download-png"
-          class="font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="flex-1 font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
         >
           Descargar PNG
         </button>
         <button
           id="btn-export-zip"
-          class="font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="flex-1 font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
         >
           Exportar pasos (ZIP)
         </button>
@@ -148,6 +163,41 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       <div id="resultado" class="mt-[30px]"></div>
 
       <canvas id="export-canvas" class="hidden"></canvas>
+    </div>
+
+    <div id="camera-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 sm:p-6 bg-black/70">
+      <div class="w-full max-w-[420px] bg-white border border-[#d3e0e4] rounded p-4 sm:p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-serif font-bold text-sm uppercase tracking-[0.06em] text-[#c4392b]">
+            Tomar foto
+          </span>
+          <button
+            id="btn-camera-close"
+            class="font-serif text-lg text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1 min-w-[36px] min-h-[36px] rounded-[3px]"
+            title="Cerrar"
+          >✕</button>
+        </div>
+        <div class="relative aspect-[3/4] bg-black rounded overflow-hidden">
+          <video id="camera-video" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover"></video>
+          <p id="camera-error" class="hidden absolute inset-0 flex items-center justify-center text-white font-serif text-sm px-6 text-center">
+            No se pudo acceder a la cámara.
+          </p>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <button
+            id="btn-camera-capture"
+            class="flex-1 font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-3 rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 min-h-[44px]"
+          >
+            Capturar
+          </button>
+          <button
+            id="btn-camera-cancel"
+            class="flex-1 font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-3 rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 min-h-[44px]"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -173,29 +223,29 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       }
 
       container.innerHTML = operations.map((op, i) => `
-        <div class="flex items-center gap-2 py-2 px-2.5 bg-white border border-[#d3e0e4] rounded-[3px]">
+        <div class="flex items-center gap-1.5 sm:gap-2 py-2 px-2.5 bg-white border border-[#d3e0e4] rounded-[3px]">
           <span class="font-serif italic text-[#8b98a3] text-xs w-[18px] shrink-0">${i + 1}</span>
-          <span class="text-sm text-[#33393e] flex-1">
+          <span class="text-sm text-[#33393e] flex-1 min-w-0">
             <span class="font-bold">${op.degrees}°</span> ${parseDirection(op.direction)}
           </span>
           <button 
             data-index="${i}" 
-            class="btn-move-up font-serif text-[11px] text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1${i === 0 ? ' opacity-30 pointer-events-none' : ''}"
+            class="btn-move-up font-serif text-sm text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]${i === 0 ? ' opacity-30 pointer-events-none' : ''}"
             title="Mover arriba"
           >▲</button>
           <button 
             data-index="${i}" 
-            class="btn-move-down font-serif text-[11px] text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1${i === operations.length - 1 ? ' opacity-30 pointer-events-none' : ''}"
+            class="btn-move-down font-serif text-sm text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]${i === operations.length - 1 ? ' opacity-30 pointer-events-none' : ''}"
             title="Mover abajo"
           >▼</button>
           <button 
             data-index="${i}" 
-            class="btn-edit-operation font-serif text-[11px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1"
+            class="btn-edit-operation font-serif text-[13px] sm:text-[11px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]"
             title="Editar"
           >✎</button>
           <button 
             data-index="${i}" 
-            class="btn-remove-operation font-serif text-[11px] text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border-0 p-1"
+            class="btn-remove-operation font-serif text-sm text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]"
           >
             ✕
           </button>
@@ -320,7 +370,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
             <code class="font-mono text-[13px] text-[#33393e]">${formula}</code>
           </div>
           
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
+          <div class="grid grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
             ${stepsGridHtml}
           </div>
 
@@ -397,17 +447,88 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       }
     });
 
+    let cameraStream: MediaStream | null = null;
+
+    function setImage(dataUrl: string) {
+      imageDataUrl = dataUrl;
+      const preview = document.getElementById("image-preview") as HTMLImageElement;
+      const previewWrap = document.getElementById("image-preview-wrap");
+      if (preview) preview.src = dataUrl;
+      if (previewWrap) previewWrap.classList.remove("hidden");
+      const resultado = document.getElementById("resultado");
+      if (resultado) {
+        resultado.innerHTML =
+          '<p class="text-[#6b7680] font-serif text-sm">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
+      }
+    }
+
+    function openCamera() {
+      const modal = document.getElementById("camera-modal");
+      const errorEl = document.getElementById("camera-error");
+      if (!modal || !navigator.mediaDevices?.getUserMedia) {
+        alert("La cámara no está disponible en este navegador. Usa la selección de archivos.");
+        return;
+      }
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      if (errorEl) errorEl.classList.add("hidden");
+
+      navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false })
+        .then((stream) => {
+          cameraStream = stream;
+          const video = document.getElementById("camera-video") as HTMLVideoElement;
+          video.srcObject = stream;
+          video.play().catch(() => {});
+        })
+        .catch((err) => {
+          console.error("Error accediendo a la cámara:", err);
+          if (errorEl) errorEl.classList.remove("hidden");
+        });
+    }
+
+    function closeCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop());
+        cameraStream = null;
+      }
+      const video = document.getElementById("camera-video") as HTMLVideoElement;
+      if (video.srcObject) {
+        (video.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
+        video.srcObject = null;
+      }
+      const modal = document.getElementById("camera-modal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById("camera-video") as HTMLVideoElement;
+      if (!video || video.videoWidth === 0) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+      setImage(dataUrl);
+      closeCamera();
+    }
+
+    document.getElementById("btn-camera")?.addEventListener("click", openCamera);
+    document.getElementById("btn-camera-capture")?.addEventListener("click", capturePhoto);
+    document.getElementById("btn-camera-cancel")?.addEventListener("click", closeCamera);
+    document.getElementById("btn-camera-close")?.addEventListener("click", closeCamera);
+
     document.getElementById("input-image")?.addEventListener("change", (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (event) => {
-          imageDataUrl = event.target?.result as string;
-          const resultado = document.getElementById("resultado");
-          if (resultado) {
-            resultado.innerHTML = 
-              '<p class="text-[#6b7680] font-serif text-sm">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
-          }
+          setImage(event.target?.result as string);
         };
         reader.readAsDataURL(file);
       }
@@ -523,8 +644,13 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       imageDataUrl = null;
       lastBuiltSteps = [];
       editingIndex = null;
+      closeCamera();
       const inputImage = document.getElementById("input-image") as HTMLInputElement;
       if (inputImage) inputImage.value = "";
+      const preview = document.getElementById("image-preview") as HTMLImageElement;
+      if (preview) preview.removeAttribute("src");
+      const previewWrap = document.getElementById("image-preview-wrap");
+      if (previewWrap) previewWrap.classList.add("hidden");
       const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
       if (btnAdd) btnAdd.textContent = "Agregar";
       renderOperations();
