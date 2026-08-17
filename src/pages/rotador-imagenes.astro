@@ -2,11 +2,14 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const siteTitle = "Rotador — Manipulador de rotación de imágenes";
-const siteDescription = "Carga una imagen y aplica múltiples operaciones de rotación concatenadas. Perfecto para visualizar giros complejos.";
-const siteKeywords = "rotación de imágenes, girar imagen, rotador, transformaciones CSS, ángulos";
+const siteDescription =
+  "Carga una imagen y aplica múltiples operaciones de rotación concatenadas. Perfecto para visualizar giros complejos.";
+const siteKeywords =
+  "rotación de imágenes, girar imagen, rotador, transformaciones CSS, ángulos";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
-const siteUrl = "https://xeland314.github.io/rotador";
+const siteUrl = "https://xeland314.github.io/rotador-imagenes";
 const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+const siteAppName = "Rotador de imágenes";
 ---
 
 <BaseLayout
@@ -17,68 +20,111 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
   url={siteUrl}
   image={siteImage}
   canonical={siteUrl}
+  applicationName={siteAppName}
 >
-  <div 
-    class="min-h-screen py-8 sm:py-10 px-4 sm:px-5 text-[#33393e] font-mono bg-[#eaf1f3]"
-    style="background-image: linear-gradient(#d3e0e4 1px, transparent 1px), linear-gradient(90deg, #d3e0e4 1px, transparent 1px); background-size: 100% 32px, 32px 100%;"
+  <div
+    class="min-h-screen py-8 sm:py-12 px-4 flex justify-center bg-gray-50 dark:bg-gray-950 transition-colors duration-300"
   >
-    <div class="max-w-[720px] mx-auto bg-white/55 border border-[#d3e0e4] rounded p-5 sm:p-8 sm:p-9 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
-      <p class="text-[11px] tracking-[0.16em] text-[#8b98a3] uppercase mb-1.5">Manipulador de imágenes · rotación</p>
-      <h1 class="font-serif font-bold text-[28px] mb-1.5 text-[#33393e]">Rotador</h1>
-      <p class="text-[#6b7680] font-serif text-[14.5px] leading-relaxed mb-[26px] max-w-[56ch]">
-        Carga una imagen y aplica múltiples operaciones de rotación concatenadas. 
-        Cada operación se aplica sobre el resultado anterior, permitiendo giros complejos como 900° + 770°.
-      </p>
+    <div
+      class="w-full max-w-4xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300"
+    >
+      <!-- Encabezado -->
+      <div class="mb-8 text-center sm:text-left">
+        <p
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-500 dark:text-blue-400 text-xs font-mono tracking-widest uppercase mb-4"
+        >
+          Manipulador de imágenes
+        </p>
+        <h1
+          class="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-3"
+        >
+          Rotador: Manipulador de imágenes
+        </h1>
+        <p
+          class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl"
+        >
+          Carga una imagen y aplica múltiples operaciones de rotación
+          concatenadas. Cada operación se aplica sobre el resultado anterior,
+          permitiendo giros complejos como 900° + 770°.
+        </p>
+      </div>
 
-      <div class="mb-[22px]">
-        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
-          Imagen
+      <!-- Sección: Carga de Imagen -->
+      <div class="mb-8">
+        <label
+          class="block text-xs font-bold tracking-widest uppercase text-gray-500 dark:text-gray-400 mb-3"
+        >
+          1. Selecciona tu imagen
         </label>
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
             type="file"
             id="input-image"
             accept="image/*"
-            class="flex-1 min-w-0 bg-white border border-[#d3e0e4] rounded-[3px] py-3 px-3.5 font-mono text-base tracking-[0.04em] text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            class="flex-1 w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-500/10 file:text-blue-600 dark:file:text-blue-400 hover:file:bg-blue-500/20"
           />
           <button
             id="btn-camera"
-            class="font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-3 px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 whitespace-nowrap"
+            class="px-5 py-3 rounded-xl border border-gray-300 dark:border-white/20 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-white dark:hover:text-white hover:bg-blue-500 transition-all duration-200 whitespace-nowrap active:scale-95"
           >
             Tomar foto
           </button>
         </div>
-        <div id="image-preview-wrap" class="hidden mt-2">
-          <img
-            id="image-preview"
-            alt="Vista previa de la imagen"
-            class="max-h-[140px] max-w-full object-contain border border-[#d3e0e4] rounded-[3px] bg-white p-1"
-          />
+
+        <div id="image-preview-wrap" class="hidden mt-4">
+          <div
+            class="p-2 bg-gray-50 dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700/50 rounded-2xl inline-block"
+          >
+            <img
+              id="image-preview"
+              alt="Vista previa de la imagen"
+              title="Vista previa de la imagen"
+              loading="lazy"
+              width="400"
+              height="400"
+              class="max-h-[160px] max-w-full object-contain rounded-xl"
+            />
+          </div>
         </div>
       </div>
 
-      <div class="mb-[22px]">
-        <label class="block text-xs tracking-[0.06em] uppercase text-[#6b7680] mb-2">
-          Operaciones de rotación
+      <!-- Sección: Operaciones -->
+      <div class="mb-8">
+        <label
+          class="block text-xs font-bold tracking-widest uppercase text-gray-500 dark:text-gray-400 mb-3"
+        >
+          2. Operaciones de rotación
         </label>
-        <div id="operations-list" class="flex flex-col gap-2 mb-3"></div>
-        <div class="grid grid-cols-2 gap-2 items-end sm:flex sm:items-end">
+
+        <div id="operations-list" class="flex flex-col gap-2 mb-4"></div>
+
+        <div
+          class="grid grid-cols-2 gap-3 items-end sm:flex sm:items-end bg-gray-50 dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700/50 rounded-2xl p-4"
+        >
           <div class="flex-1 min-w-0">
-            <label for="rotation-degrees" class="block text-[11px] text-[#8b98a3] mb-1">Grados</label>
+            <label
+              for="rotation-degrees"
+              class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium"
+              >Grados</label
+            >
             <input
               type="number"
               id="rotation-degrees"
               min="0"
               max="3600"
               value="90"
-              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              class="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
             />
           </div>
           <div class="flex-1 min-w-0">
-            <label for="rotation-direction" class="block text-[11px] text-[#8b98a3] mb-1">Dirección</label>
+            <label
+              for="rotation-direction"
+              class="block text-xs text-gray-500 dark:text-gray-400 mb-1.5 font-medium"
+              >Dirección</label
+            >
             <select
               id="rotation-direction"
-              class="w-full bg-white border border-[#d3e0e4] rounded-[3px] py-2 px-3 font-mono text-sm text-[#33393e] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+              class="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all appearance-none"
             >
               <option value="cw">Horario</option>
               <option value="ccw">Antihorario</option>
@@ -86,113 +132,205 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
           </div>
           <button
             id="btn-add-operation"
-            class="col-span-2 sm:col-span-1 font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-3 sm:py-[11px] px-[18px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+            class="col-span-2 sm:col-span-1 px-5 py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold transition-all duration-200 hover:bg-gray-800 dark:hover:bg-gray-200 hover:-translate-y-0.5 active:scale-95"
           >
             Agregar
           </button>
         </div>
       </div>
 
-      <div class="mb-[22px] flex flex-col gap-2">
-        <label class="flex items-center gap-2 text-sm text-[#33393e] cursor-pointer">
-          <input
-            type="checkbox"
-            id="opt-trace"
-            class="accent-[#c4392b] w-4 h-4"
-          />
-          <span>Trazar arco de rotaciones (goniómetro con vueltas)</span>
+      <!-- Opciones -->
+      <div
+        class="mb-8 flex flex-col gap-3 p-4 bg-gray-50 dark:bg-gray-800/30 border border-gray-200 dark:border-gray-700/50 rounded-2xl"
+      >
+        <label
+          class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300 cursor-pointer group"
+        >
+          <div class="relative flex items-center">
+            <input type="checkbox" id="opt-trace" class="peer sr-only" />
+            <div
+              class="w-5 h-5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-950 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-colors"
+            >
+            </div>
+            <svg
+              class="absolute w-3.5 h-3.5 left-[3px] top-[3px] text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
+              viewBox="0 0 14 14"
+              fill="none"
+              ><path
+                d="M3 7L6 10L11 3"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path></svg
+            >
+          </div>
+          <span
+            class="group-hover:text-gray-900 dark:group-hover:text-white transition-colors"
+            >Trazar arco de rotaciones (goniómetro con vueltas)</span
+          >
         </label>
-        <label class="flex items-center gap-2 text-sm text-[#33393e] cursor-pointer">
-          <input
-            type="checkbox"
-            id="opt-direct"
-            class="accent-[#c4392b] w-4 h-4"
-            checked
-          />
-          <span>Incluir resultado directo (ángulo efectivo) para contrastar</span>
+        <label
+          class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300 cursor-pointer group"
+        >
+          <div class="relative flex items-center">
+            <input
+              type="checkbox"
+              id="opt-direct"
+              class="peer sr-only"
+              checked
+            />
+            <div
+              class="w-5 h-5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-950 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-colors"
+            >
+            </div>
+            <svg
+              class="absolute w-3.5 h-3.5 left-[3px] top-[3px] text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
+              viewBox="0 0 14 14"
+              fill="none"
+              ><path
+                d="M3 7L6 10L11 3"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path></svg
+            >
+          </div>
+          <span
+            class="group-hover:text-gray-900 dark:group-hover:text-white transition-colors"
+            >Incluir resultado directo (ángulo efectivo)</span
+          >
         </label>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-2 mb-[22px]">
+      <!-- Botones de Acción (Jerarquía Mejorada) -->
+      <div class="flex flex-col sm:flex-row gap-3 mb-8">
         <button
           id="btn-apply"
-          class="flex-1 font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="w-full sm:flex-1 px-5 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 active:scale-95 order-1 sm:order-none"
         >
           Aplicar rotaciones
         </button>
         <button
           id="btn-export"
-          class="flex-1 font-serif font-bold text-sm bg-[#33393e] text-white border-0 py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#1f2428] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 disabled:opacity-40 disabled:cursor-not-allowed"
           disabled
+          class="w-full sm:flex-1 px-5 py-3.5 rounded-xl border border-gray-300 dark:border-white/20 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-white dark:hover:text-white hover:bg-blue-500 transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-inherit disabled:hover:border-gray-300 dark:disabled:hover:border-white/20 disabled:hover:-translate-y-0 disabled:active:scale-100 order-2 sm:order-none"
         >
           Exportar video
         </button>
         <button
           id="btn-clear"
-          class="flex-1 font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="w-full sm:flex-1 px-5 py-3.5 rounded-xl text-sm font-semibold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-200 active:scale-95 order-3 sm:order-none"
         >
           Limpiar todo
         </button>
       </div>
 
-      <div id="image-export-buttons" class="hidden flex flex-col sm:flex-row gap-2 mb-[22px]">
+      <!-- Botones de Exportación Secundaria -->
+      <div
+        id="image-export-buttons"
+        class="hidden flex-col sm:flex-row gap-3 mb-8"
+      >
         <button
           id="btn-download-png"
-          class="flex-1 font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="flex-1 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 active:scale-95 shadow-sm"
         >
-          Descargar PNG
+          Descargar PNG final
         </button>
         <button
           id="btn-export-zip"
-          class="flex-1 font-serif font-bold text-sm bg-white text-[#33393e] border border-[#d3e0e4] py-3 sm:py-[11px] px-[22px] rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1"
+          class="flex-1 px-5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 active:scale-95 shadow-sm"
         >
           Exportar pasos (ZIP)
         </button>
       </div>
 
-      <div id="export-progress" class="hidden mb-[22px]">
-        <div class="flex items-center gap-3 mb-1.5">
-          <span class="text-[11px] tracking-[0.06em] uppercase text-[#6b7680]">Exportando video</span>
-          <span id="export-progress-text" class="text-[11px] text-[#8b98a3] font-mono">0%</span>
+      <!-- Barra de Progreso -->
+      <div
+        id="export-progress"
+        class="hidden mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700/50"
+      >
+        <div class="flex justify-between items-center mb-2">
+          <span
+            class="text-xs font-bold tracking-widest uppercase text-blue-600 dark:text-blue-400"
+            >Exportando video</span
+          >
+          <span
+            id="export-progress-text"
+            class="text-xs font-mono text-gray-500 dark:text-gray-400">0%</span
+          >
         </div>
-        <div class="w-full h-1.5 bg-[#e8edef] rounded-full overflow-hidden">
-          <div id="export-progress-bar" class="h-full bg-[#c4392b] rounded-full transition-all duration-150" style="width: 0%"></div>
+        <div
+          class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+        >
+          <div
+            id="export-progress-bar"
+            class="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-150"
+            style="width: 0%"
+          >
+          </div>
         </div>
       </div>
 
-      <div id="resultado" class="mt-[30px]"></div>
+      <!-- Contenedor del Resultado -->
+      <div id="resultado" class="mt-8"></div>
 
       <canvas id="export-canvas" class="hidden"></canvas>
     </div>
 
-    <div id="camera-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 sm:p-6 bg-black/70">
-      <div class="w-full max-w-[420px] bg-white border border-[#d3e0e4] rounded p-4 sm:p-5 shadow-xl">
-        <div class="flex items-center justify-between mb-3">
-          <span class="font-serif font-bold text-sm uppercase tracking-[0.06em] text-[#c4392b]">
-            Tomar foto
+    <!-- Modal de Cámara -->
+    <div
+      id="camera-modal"
+      class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-gray-900/90 backdrop-blur-sm"
+    >
+      <div
+        class="w-full max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-2xl transform transition-all"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <span
+            class="font-bold text-sm uppercase tracking-widest text-gray-900 dark:text-white"
+          >
+            Capturar Imagen
           </span>
           <button
             id="btn-camera-close"
-            class="font-serif text-lg text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-1 min-w-[36px] min-h-[36px] rounded-[3px]"
-            title="Cerrar"
-          >✕</button>
+            class="text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg
+            >
+          </button>
         </div>
-        <div class="relative aspect-[3/4] bg-black rounded overflow-hidden">
-          <video id="camera-video" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover"></video>
-          <p id="camera-error" class="hidden absolute inset-0 flex items-center justify-center text-white font-serif text-sm px-6 text-center">
+        <div
+          class="relative aspect-[3/4] bg-black rounded-2xl overflow-hidden shadow-inner"
+        >
+          <video
+            id="camera-video"
+            autoplay
+            playsinline
+            muted
+            class="absolute inset-0 w-full h-full object-cover"></video>
+          <p
+            id="camera-error"
+            class="hidden absolute inset-0 items-center justify-center text-white text-sm px-6 text-center"
+          >
             No se pudo acceder a la cámara.
           </p>
         </div>
-        <div class="flex gap-2 mt-3">
+        <div class="flex gap-3 mt-4">
           <button
             id="btn-camera-capture"
-            class="flex-1 font-serif font-bold text-sm bg-[#c4392b] text-white border-0 py-3 rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#a32f23] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 min-h-[44px]"
+            class="flex-1 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all active:scale-95"
           >
             Capturar
           </button>
           <button
             id="btn-camera-cancel"
-            class="flex-1 font-serif font-bold text-sm bg-white text-[#6b7680] border border-[#d3e0e4] py-3 rounded-[3px] cursor-pointer tracking-[0.02em] hover:bg-[#f5f7f8] focus:outline-2 focus:outline-[#c4392b] focus:outline-offset-1 min-h-[44px]"
+            class="flex-1 px-5 py-3 rounded-xl border border-gray-300 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-95"
           >
             Cancelar
           </button>
@@ -202,9 +340,25 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
   </div>
 
   <script>
-    import { parseDirection, calculateTotalAngle, normalizeAngle, parseDegreesInput, buildAnimationSteps, formatFormula } from "../components/tools/rotador-imagenes/rotador";
-    import type { RotationOperation, AnimationStep } from "../components/tools/rotador-imagenes/rotador";
-    import { loadImage, exportVideo, exportStepAsPng, exportAllStepsAsZip, renderStepToCanvas } from "../components/tools/rotador-imagenes/canvas";
+    import {
+      parseDirection,
+      calculateTotalAngle,
+      normalizeAngle,
+      parseDegreesInput,
+      buildAnimationSteps,
+      formatFormula,
+    } from "../components/tools/rotador-imagenes/rotador";
+    import type {
+      RotationOperation,
+      AnimationStep,
+    } from "../components/tools/rotador-imagenes/rotador";
+    import {
+      loadImage,
+      exportVideo,
+      exportStepAsPng,
+      exportAllStepsAsZip,
+      renderStepToCanvas,
+    } from "../components/tools/rotador-imagenes/canvas";
 
     let operations: RotationOperation[] = [];
     let imageDataUrl: string | null = null;
@@ -218,80 +372,86 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       const container = document.getElementById("operations-list");
       if (!container) return;
       if (operations.length === 0) {
-        container.innerHTML = '<p class="text-[11.5px] text-[#8b98a3] font-serif italic">No hay operaciones. Agrega una arriba.</p>';
+        container.innerHTML =
+          '<p class="text-sm text-gray-400 dark:text-gray-500 italic py-2">No hay operaciones. Agrega una abajo.</p>';
         return;
       }
 
-      container.innerHTML = operations.map((op, i) => `
-        <div class="flex items-center gap-1.5 sm:gap-2 py-2 px-2.5 bg-white border border-[#d3e0e4] rounded-[3px]">
-          <span class="font-serif italic text-[#8b98a3] text-xs w-[18px] shrink-0">${i + 1}</span>
-          <span class="text-sm text-[#33393e] flex-1 min-w-0">
-            <span class="font-bold">${op.degrees}°</span> ${parseDirection(op.direction)}
+      container.innerHTML = operations
+        .map(
+          (op, i) => `
+        <div class="flex items-center gap-2 py-2 px-3 sm:px-4 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 rounded-xl group hover:border-blue-500/50 transition-all duration-300">
+          <span class="font-mono text-gray-400 dark:text-gray-500 text-xs w-5 shrink-0">${i + 1}</span>
+          <span class="text-sm text-gray-900 dark:text-white flex-1 min-w-0">
+            <span class="font-bold">${op.degrees}°</span> <span class="text-gray-500 dark:text-gray-400">${parseDirection(op.direction)}</span>
           </span>
-          <button 
-            data-index="${i}" 
-            class="btn-move-up font-serif text-sm text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]${i === 0 ? ' opacity-30 pointer-events-none' : ''}"
-            title="Mover arriba"
-          >▲</button>
-          <button 
-            data-index="${i}" 
-            class="btn-move-down font-serif text-sm text-[#8b98a3] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]${i === operations.length - 1 ? ' opacity-30 pointer-events-none' : ''}"
-            title="Mover abajo"
-          >▼</button>
-          <button 
-            data-index="${i}" 
-            class="btn-edit-operation font-serif text-[13px] sm:text-[11px] text-[#6b7680] hover:text-[#33393e] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]"
-            title="Editar"
-          >✎</button>
-          <button 
-            data-index="${i}" 
-            class="btn-remove-operation font-serif text-sm text-[#c4392b] hover:text-[#a32f23] cursor-pointer bg-transparent border-0 p-2 sm:p-1 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 rounded-[3px]"
-          >
-            ✕
-          </button>
+          <div class="flex items-center gap-1 opacity-100 sm:opacity-50 sm:group-hover:opacity-100 transition-opacity">
+            <button data-index="${i}" class="btn-move-up text-gray-400 hover:text-blue-500 p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors ${i === 0 ? "invisible" : ""}" title="Subir">▲</button>
+            <button data-index="${i}" class="btn-move-down text-gray-400 hover:text-blue-500 p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors ${i === operations.length - 1 ? "invisible" : ""}" title="Bajar">▼</button>
+            <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+            <button data-index="${i}" class="btn-edit-operation text-gray-400 hover:text-gray-900 dark:hover:text-white p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Editar">✎</button>
+            <button data-index="${i}" class="btn-remove-operation text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" title="Eliminar">✕</button>
+          </div>
         </div>
-      `).join("");
+      `,
+        )
+        .join("");
 
-      container.querySelectorAll(".btn-move-up").forEach(btn => {
+      // Reasignación de Event Listeners (se mantiene igual la lógica)
+      container.querySelectorAll(".btn-move-up").forEach((btn) => {
         btn.addEventListener("click", (e) => {
-          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
           if (idx > 0) {
-            [operations[idx - 1], operations[idx]] = [operations[idx], operations[idx - 1]];
+            [operations[idx - 1], operations[idx]] = [
+              operations[idx],
+              operations[idx - 1],
+            ];
             renderOperations();
           }
         });
       });
 
-      container.querySelectorAll(".btn-move-down").forEach(btn => {
+      container.querySelectorAll(".btn-move-down").forEach((btn) => {
         btn.addEventListener("click", (e) => {
-          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
           if (idx < operations.length - 1) {
-            [operations[idx], operations[idx + 1]] = [operations[idx + 1], operations[idx]];
+            [operations[idx], operations[idx + 1]] = [
+              operations[idx + 1],
+              operations[idx],
+            ];
             renderOperations();
           }
         });
       });
 
-      container.querySelectorAll(".btn-edit-operation").forEach(btn => {
+      container.querySelectorAll(".btn-edit-operation").forEach((btn) => {
         btn.addEventListener("click", (e) => {
-          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
           const op = operations[idx];
-          const degreesInput = document.getElementById("rotation-degrees") as HTMLInputElement;
-          const directionSelect = document.getElementById("rotation-direction") as HTMLSelectElement;
+          const degreesInput = document.getElementById(
+            "rotation-degrees",
+          ) as HTMLInputElement;
+          const directionSelect = document.getElementById(
+            "rotation-direction",
+          ) as HTMLSelectElement;
           degreesInput.value = String(op.degrees);
           directionSelect.value = op.direction;
           editingIndex = idx;
-          const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
+          const btnAdd = document.getElementById(
+            "btn-add-operation",
+          ) as HTMLButtonElement;
           if (btnAdd) btnAdd.textContent = "Guardar";
         });
       });
 
-      container.querySelectorAll(".btn-remove-operation").forEach(btn => {
+      container.querySelectorAll(".btn-remove-operation").forEach((btn) => {
         btn.addEventListener("click", (e) => {
-          const idx = parseInt((e.target as HTMLElement).dataset.index!);
+          const idx = parseInt((e.currentTarget as HTMLElement).dataset.index!);
           if (editingIndex === idx) {
             editingIndex = null;
-            const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
+            const btnAdd = document.getElementById(
+              "btn-add-operation",
+            ) as HTMLButtonElement;
             if (btnAdd) btnAdd.textContent = "Agregar";
           } else if (editingIndex !== null && editingIndex > idx) {
             editingIndex--;
@@ -302,79 +462,118 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       });
     }
 
-    function applyRotations() {
+function applyRotations() {
       const container = document.getElementById("resultado");
       if (!container) return;
-      
+
       if (!imageDataUrl) {
-        container.innerHTML = '<p class="text-[#8b98a3] font-serif text-sm">Carga una imagen primero.</p>';
+        container.innerHTML =
+          '<p class="text-gray-500 dark:text-gray-400 text-sm">Carga una imagen primero.</p>';
         return;
       }
 
       if (operations.length === 0) {
-        container.innerHTML = '<p class="text-[#8b98a3] font-serif text-sm">Agrega al menos una operación de rotación.</p>';
+        container.innerHTML =
+          '<p class="text-gray-500 dark:text-gray-400 text-sm">Agrega al menos una operación de rotación.</p>';
         return;
       }
 
       const totalAngle = calculateTotalAngle(operations);
       const normalizedAngle = normalizeAngle(totalAngle);
       const formula = formatFormula(operations);
-      
-      const allSteps = [{ label: "Original", angle: 0, operation: null }, ...operations.map((op, i) => ({
-        label: `Paso ${i + 1}`,
-        angle: calculateTotalAngle(operations.slice(0, i + 1)),
-        operation: op,
-      }))];
 
-      const stepsGridHtml = allSteps.map((step, i) => {
-        let formulaDetail = "";
-        if (step.operation) {
-          const cumulative = step.angle;
-          const signed = step.operation.direction === "cw" ? step.operation.degrees : -step.operation.degrees;
-          formulaDetail = `${signed >= 0 ? "+" : ""}${signed}° → acumulado: ${cumulative}°`;
-        }
-        return `
-        <div class="bg-white border border-[#d3e0e4] rounded-[3px] p-3 flex flex-col">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="font-serif font-bold text-[11px] text-[#c4392b] uppercase tracking-[0.06em]">${step.label}</span>
-            ${step.operation ? `<span class="text-[10px] text-[#8b98a3] font-mono">${step.operation.degrees}° ${parseDirection(step.operation.direction)}</span>` : ''}
+      const allSteps = [
+        { label: "Original", angle: 0, operation: null },
+        ...operations.map((op, i) => ({
+          label: `Paso ${i + 1}`,
+          angle: calculateTotalAngle(operations.slice(0, i + 1)),
+          operation: op,
+        })),
+      ];
+
+      // Tarjetas del paso a paso (ahora sin clases de scroll horizontal)
+      const stepsGridHtml = allSteps
+        .map((step, i) => {
+          let formulaDetail = "";
+          if (step.operation) {
+            const cumulative = step.angle;
+            const signed =
+              step.operation.direction === "cw"
+                ? step.operation.degrees
+                : -step.operation.degrees;
+            formulaDetail = `<span class="${signed >= 0 ? "text-blue-500" : "text-orange-500"} font-bold">${signed >= 0 ? "+" : ""}${signed}°</span> → acum: ${cumulative}°`;
+          }
+          return `
+        <div class="bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 rounded-2xl p-4 flex flex-col group hover:border-blue-500/50 transition-all duration-300 shadow-sm w-full">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-bold text-xs text-gray-900 dark:text-white uppercase tracking-widest">${step.label}</span>
+            ${step.operation ? `<span class="text-[10px] bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-md font-mono">${step.operation.degrees}° ${parseDirection(step.operation.direction)}</span>` : ""}
           </div>
-          <div class="flex-1 flex items-center justify-center p-2 bg-[#f8fafb] border border-[#e8edef] rounded-[2px] min-h-[120px]">
+          <div class="flex-1 flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 rounded-xl min-h-[140px] overflow-hidden">
             <img 
               src="${imageDataUrl}" 
-              alt="${step.label}" 
-              class="max-w-full max-h-[150px] object-contain transition-transform duration-300"
+              alt="${step.label}"
+              title="${step.label}"
+              loading="lazy"
+              width="400"
+              height="400"
+              class="max-w-full max-h-[140px] object-contain transition-transform duration-500 group-hover:scale-105"
               style="transform: rotate(${step.angle}deg);"
             />
           </div>
-          <div class="mt-2 text-center">
-            ${formulaDetail
-              ? `<span class="font-mono text-[10px] text-[#8b98a3] block">${formulaDetail}</span>`
-              : ''}
-            <span class="font-mono text-[11px] text-[#6b7680]">${step.angle}°</span>
+          <div class="mt-3 text-center">
+            ${
+              formulaDetail
+                ? `<span class="font-mono text-[11px] text-gray-500 dark:text-gray-400 block mb-1">${formulaDetail}</span>`
+                : '<span class="font-mono text-[11px] text-gray-400 block mb-1">Punto de partida</span>'
+            }
+            <span class="font-mono text-sm font-bold text-gray-900 dark:text-white">${step.angle}°</span>
           </div>
         </div>
-      `}).join("");
+      `;
+        })
+        .join("");
 
       container.innerHTML = `
-        <div class="border-t border-dashed border-[#d3e0e4] pt-5 mt-1.5">
-          <div class="flex items-baseline gap-2.5 mb-2">
-            <span class="text-[#c4392b] font-serif font-bold text-[13px] uppercase tracking-[0.08em]">Resultado</span>
-            <span class="text-[#33393e] font-serif text-sm">
-              Rotación total: <span class="font-bold">${totalAngle}°</span>
-              ${normalizedAngle !== totalAngle ? `(${normalizedAngle}° efectivos)` : ''}
-            </span>
-          </div>
-          <div class="mb-4 p-3 bg-[#f8fafb] border border-[#e8edef] rounded-[3px]">
-            <span class="text-[10px] tracking-[0.04em] uppercase text-[#8b98a3] font-mono block mb-1">Cálculo</span>
-            <code class="font-mono text-[13px] text-[#33393e]">${formula}</code>
+        <div class="border-t border-gray-200 dark:border-gray-800 pt-8">
+          
+          <!-- Resultado Final siempre visible arriba -->
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+            <div>
+              <span class="inline-block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-widest mb-2">Resultado Final</span>
+              <h2 class="text-2xl text-gray-900 dark:text-white font-light">
+                Rotación total: <span class="font-bold">${totalAngle}°</span>
+                ${normalizedAngle !== totalAngle ? `<span class="text-lg text-gray-500 dark:text-gray-400 ml-1">(${normalizedAngle}° efectivos)</span>` : ""}
+              </h2>
+            </div>
+            <div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700/50 w-full md:w-auto">
+              <span class="text-[10px] tracking-widest uppercase text-gray-500 dark:text-gray-400 block mb-1">Ecuación</span>
+              <code class="font-mono text-sm text-gray-900 dark:text-white break-all">${formula}</code>
+            </div>
           </div>
           
-          <div class="grid grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
-            ${stepsGridHtml}
-          </div>
+          <!-- Contenedor nativo details/summary para el paso a paso -->
+          <details class="group mb-6">
+            <summary class="flex items-center justify-between cursor-pointer list-none p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-blue-500/50 transition-all duration-200 [&::-webkit-details-marker]:hidden">
+              <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 group-open:rotate-90 transition-transform duration-200">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+                <span class="font-bold text-sm text-gray-900 dark:text-white uppercase tracking-widest">
+                  Ver desglose paso a paso
+                </span>
+              </div>
+              <span class="text-xs font-mono text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 px-2 py-1 rounded-md border border-gray-200 dark:border-gray-700">
+                ${allSteps.length} pasos
+              </span>
+            </summary>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+              ${stepsGridHtml}
+            </div>
+          </details>
 
-          <div id="trace-preview" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4${showTrace ? "" : " hidden"}"></div>
+          <div id="trace-preview" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 ${showTrace ? "" : " hidden"}"></div>
         </div>
       `;
 
@@ -383,13 +582,22 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       }
     }
 
-    async function renderTracePreview(totalAngle: number, normalizedAngle: number) {
+    async function renderTracePreview(
+      totalAngle: number,
+      normalizedAngle: number,
+    ) {
       const holder = document.getElementById("trace-preview");
       if (!holder || !imageDataUrl) return;
       try {
         const img = await loadImage(imageDataUrl);
         const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
-        const commonOpts = { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff", trace: true, showTurns: true };
+        const commonOpts = {
+          canvasWidth: size,
+          canvasHeight: size,
+          bgColor: "#ffffff",
+          trace: true,
+          showTurns: true,
+        };
 
         const cumulativeStep: AnimationStep = {
           fromAngle: totalAngle,
@@ -407,19 +615,23 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
         };
 
         const cumCanvas = renderStepToCanvas(img, cumulativeStep, commonOpts);
-        cumCanvas.className = "w-full max-w-[360px] mx-auto bg-white border border-[#d3e0e4] rounded-[3px]";
+        cumCanvas.className =
+          "w-full aspect-square object-contain bg-white rounded-2xl border border-gray-200 shadow-sm";
         const directCanvas = renderStepToCanvas(img, directStep, commonOpts);
-        directCanvas.className = "w-full max-w-[360px] mx-auto bg-white border border-[#d3e0e4] rounded-[3px]";
+        directCanvas.className =
+          "w-full aspect-square object-contain bg-white rounded-2xl border border-gray-200 shadow-sm";
 
         holder.innerHTML = "";
         const cumCard = document.createElement("div");
-        cumCard.className = "flex flex-col gap-2";
-        cumCard.innerHTML = '<span class="font-serif font-bold text-[11px] text-[#c4392b] uppercase tracking-[0.06em]">Procedimiento acumulado</span>';
+        cumCard.className = "flex flex-col gap-3";
+        cumCard.innerHTML =
+          '<span class="font-bold text-xs text-gray-500 dark:text-gray-400 uppercase tracking-widest text-center">Trazo acumulado</span>';
         cumCard.appendChild(cumCanvas);
 
         const directCard = document.createElement("div");
-        directCard.className = "flex flex-col gap-2";
-        directCard.innerHTML = '<span class="font-serif font-bold text-[11px] text-[#c4392b] uppercase tracking-[0.06em]">Procedimiento directo (efectivo)</span>';
+        directCard.className = "flex flex-col gap-3";
+        directCard.innerHTML =
+          '<span class="font-bold text-xs text-gray-500 dark:text-gray-400 uppercase tracking-widest text-center">Trazo directo (efectivo)</span>';
         directCard.appendChild(directCanvas);
 
         holder.appendChild(cumCard);
@@ -429,36 +641,54 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       }
     }
 
-    document.getElementById("opt-trace")?.addEventListener("change", async (e) => {
-      showTrace = (e.target as HTMLInputElement).checked;
-      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
-      if (imageDataUrl && operations.length > 0 && !btnExport?.disabled) {
-        lastBuiltSteps = buildAnimationSteps(operations, undefined, includeDirectScene);
-        applyRotations();
-      }
-    });
+    document
+      .getElementById("opt-trace")
+      ?.addEventListener("change", async (e) => {
+        showTrace = (e.target as HTMLInputElement).checked;
+        const btnExport = document.getElementById(
+          "btn-export",
+        ) as HTMLButtonElement;
+        if (imageDataUrl && operations.length > 0 && !btnExport?.disabled) {
+          lastBuiltSteps = buildAnimationSteps(
+            operations,
+            undefined,
+            includeDirectScene,
+          );
+          applyRotations();
+        }
+      });
 
-    document.getElementById("opt-direct")?.addEventListener("change", async (e) => {
-      includeDirectScene = (e.target as HTMLInputElement).checked;
-      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
-      if (imageDataUrl && operations.length > 0 && !btnExport?.disabled) {
-        lastBuiltSteps = buildAnimationSteps(operations, undefined, includeDirectScene);
-        applyRotations();
-      }
-    });
+    document
+      .getElementById("opt-direct")
+      ?.addEventListener("change", async (e) => {
+        includeDirectScene = (e.target as HTMLInputElement).checked;
+        const btnExport = document.getElementById(
+          "btn-export",
+        ) as HTMLButtonElement;
+        if (imageDataUrl && operations.length > 0 && !btnExport?.disabled) {
+          lastBuiltSteps = buildAnimationSteps(
+            operations,
+            undefined,
+            includeDirectScene,
+          );
+          applyRotations();
+        }
+      });
 
     let cameraStream: MediaStream | null = null;
 
     function setImage(dataUrl: string) {
       imageDataUrl = dataUrl;
-      const preview = document.getElementById("image-preview") as HTMLImageElement;
+      const preview = document.getElementById(
+        "image-preview",
+      ) as HTMLImageElement;
       const previewWrap = document.getElementById("image-preview-wrap");
       if (preview) preview.src = dataUrl;
       if (previewWrap) previewWrap.classList.remove("hidden");
       const resultado = document.getElementById("resultado");
       if (resultado) {
         resultado.innerHTML =
-          '<p class="text-[#6b7680] font-serif text-sm">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
+          '<p class="text-gray-500 dark:text-gray-400 text-sm mt-4">Imagen cargada. Agrega operaciones y haz clic en "Aplicar rotaciones".</p>';
       }
     }
 
@@ -466,7 +696,9 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       const modal = document.getElementById("camera-modal");
       const errorEl = document.getElementById("camera-error");
       if (!modal || !navigator.mediaDevices?.getUserMedia) {
-        alert("La cámara no está disponible en este navegador. Usa la selección de archivos.");
+        alert(
+          "La cámara no está disponible en este navegador. Usa la selección de archivos.",
+        );
         return;
       }
       modal.classList.remove("hidden");
@@ -474,10 +706,19 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       if (errorEl) errorEl.classList.add("hidden");
 
       navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false })
+        .getUserMedia({
+          video: {
+            facingMode: "environment",
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
+          audio: false,
+        })
         .then((stream) => {
           cameraStream = stream;
-          const video = document.getElementById("camera-video") as HTMLVideoElement;
+          const video = document.getElementById(
+            "camera-video",
+          ) as HTMLVideoElement;
           video.srcObject = stream;
           video.play().catch(() => {});
         })
@@ -518,10 +759,18 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       closeCamera();
     }
 
-    document.getElementById("btn-camera")?.addEventListener("click", openCamera);
-    document.getElementById("btn-camera-capture")?.addEventListener("click", capturePhoto);
-    document.getElementById("btn-camera-cancel")?.addEventListener("click", closeCamera);
-    document.getElementById("btn-camera-close")?.addEventListener("click", closeCamera);
+    document
+      .getElementById("btn-camera")
+      ?.addEventListener("click", openCamera);
+    document
+      .getElementById("btn-camera-capture")
+      ?.addEventListener("click", capturePhoto);
+    document
+      .getElementById("btn-camera-cancel")
+      ?.addEventListener("click", closeCamera);
+    document
+      .getElementById("btn-camera-close")
+      ?.addEventListener("click", closeCamera);
 
     document.getElementById("input-image")?.addEventListener("change", (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
@@ -534,106 +783,156 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       }
     });
 
-    document.getElementById("btn-add-operation")?.addEventListener("click", () => {
-      const degreesInput = document.getElementById("rotation-degrees") as HTMLInputElement;
-      const directionSelect = document.getElementById("rotation-direction") as HTMLSelectElement;
-      const degrees = parseDegreesInput(degreesInput.value);
-      const direction = directionSelect.value as "cw" | "ccw";
-      
-      if (degrees === null) {
-        alert("Ingresa un número de grados válido (0 o mayor).");
-        return;
-      }
+    document
+      .getElementById("btn-add-operation")
+      ?.addEventListener("click", () => {
+        const degreesInput = document.getElementById(
+          "rotation-degrees",
+        ) as HTMLInputElement;
+        const directionSelect = document.getElementById(
+          "rotation-direction",
+        ) as HTMLSelectElement;
+        const degrees = parseDegreesInput(degreesInput.value);
+        const direction = directionSelect.value as "cw" | "ccw";
 
-      if (editingIndex !== null) {
-        operations[editingIndex] = { degrees, direction };
-        editingIndex = null;
-        const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
-        if (btnAdd) btnAdd.textContent = "Agregar";
-      } else {
-        operations.push({ degrees, direction });
-      }
-      renderOperations();
-    });
+        if (degrees === null) {
+          alert("Ingresa un número de grados válido (0 o mayor).");
+          return;
+        }
+
+        if (editingIndex !== null) {
+          operations[editingIndex] = { degrees, direction };
+          editingIndex = null;
+          const btnAdd = document.getElementById(
+            "btn-add-operation",
+          ) as HTMLButtonElement;
+          if (btnAdd) btnAdd.textContent = "Agregar";
+        } else {
+          operations.push({ degrees, direction });
+        }
+        renderOperations();
+      });
 
     document.getElementById("btn-apply")?.addEventListener("click", () => {
       applyRotations();
-      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
-      const imageExportButtons = document.getElementById("image-export-buttons");
+      const btnExport = document.getElementById(
+        "btn-export",
+      ) as HTMLButtonElement;
+      const imageExportButtons = document.getElementById(
+        "image-export-buttons",
+      );
       const canExport = !!imageDataUrl && operations.length > 0;
       if (btnExport) btnExport.disabled = !canExport;
       if (imageExportButtons) {
         imageExportButtons.classList.toggle("hidden", !canExport);
+        imageExportButtons.classList.toggle("flex", canExport);
       }
       if (canExport) {
-        lastBuiltSteps = buildAnimationSteps(operations, undefined, includeDirectScene);
+        lastBuiltSteps = buildAnimationSteps(
+          operations,
+          undefined,
+          includeDirectScene,
+        );
       }
     });
 
-    document.getElementById("btn-export")?.addEventListener("click", async () => {
-      if (!imageDataUrl || operations.length === 0) return;
-      if (currentExport) {
-        currentExport.cancel();
+    document
+      .getElementById("btn-export")
+      ?.addEventListener("click", async () => {
+        if (!imageDataUrl || operations.length === 0) return;
+        if (currentExport) {
+          currentExport.cancel();
+          currentExport = null;
+          return;
+        }
+
+        const btnExport = document.getElementById(
+          "btn-export",
+        ) as HTMLButtonElement;
+        const progressContainer = document.getElementById("export-progress");
+        const progressText = document.getElementById("export-progress-text");
+        const progressBar = document.getElementById("export-progress-bar");
+
+        btnExport.textContent = "Cancelar exportación";
+        btnExport.classList.add("border-red-500", "text-red-500");
+        progressContainer?.classList.remove("hidden");
+
+        const img = await loadImage(imageDataUrl);
+        const canvas = document.getElementById(
+          "export-canvas",
+        ) as HTMLCanvasElement;
+
+        const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+        const { promise, cancel } = exportVideo(
+          canvas,
+          img,
+          lastBuiltSteps,
+          {
+            canvasWidth: size,
+            canvasHeight: size,
+            fps: 30,
+            bgColor: "#ffffff",
+            trace: showTrace,
+            showTurns: true,
+          },
+          (p) => {
+            if (progressText) progressText.textContent = `${p}%`;
+            if (progressBar) progressBar.style.width = `${p}%`;
+          },
+        );
+
+        currentExport = { cancel };
+
+        await promise;
         currentExport = null;
-        return;
-      }
+        btnExport.textContent = "Exportar video";
+        btnExport.classList.remove("border-red-500", "text-red-500");
+        progressContainer?.classList.add("hidden");
+        if (progressText) progressText.textContent = "0%";
+        if (progressBar) progressBar.style.width = "0%";
+      });
 
-      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
-      const progressContainer = document.getElementById("export-progress");
-      const progressText = document.getElementById("export-progress-text");
-      const progressBar = document.getElementById("export-progress-bar");
+    document
+      .getElementById("btn-download-png")
+      ?.addEventListener("click", async () => {
+        if (!imageDataUrl || lastBuiltSteps.length === 0) return;
+        const img = await loadImage(imageDataUrl);
+        const finalStep =
+          lastBuiltSteps.find((s) => s.label === "Resultado final") ??
+          lastBuiltSteps[lastBuiltSteps.length - 1];
+        const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+        await exportStepAsPng(img, finalStep, {
+          canvasWidth: size,
+          canvasHeight: size,
+          bgColor: "#ffffff",
+          trace: showTrace,
+          showTurns: true,
+        });
+      });
 
-      btnExport.textContent = "Cancelar";
-      progressContainer?.classList.remove("hidden");
+    document
+      .getElementById("btn-export-zip")
+      ?.addEventListener("click", async () => {
+        if (!imageDataUrl || lastBuiltSteps.length === 0) return;
+        const btnZip = document.getElementById(
+          "btn-export-zip",
+        ) as HTMLButtonElement;
+        btnZip.disabled = true;
+        btnZip.textContent = "Generando ZIP...";
 
-      const img = await loadImage(imageDataUrl);
-      const canvas = document.getElementById("export-canvas") as HTMLCanvasElement;
+        const img = await loadImage(imageDataUrl);
+        const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+        await exportAllStepsAsZip(img, lastBuiltSteps, {
+          canvasWidth: size,
+          canvasHeight: size,
+          bgColor: "#ffffff",
+          trace: showTrace,
+          showTurns: true,
+        });
 
-      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
-      const { promise, cancel } = exportVideo(
-        canvas,
-        img,
-        lastBuiltSteps,
-        { canvasWidth: size, canvasHeight: size, fps: 30, bgColor: "#ffffff", trace: showTrace, showTurns: true },
-        (p) => {
-          if (progressText) progressText.textContent = `${p}%`;
-          if (progressBar) progressBar.style.width = `${p}%`;
-        },
-      );
-
-      currentExport = { cancel };
-
-      await promise;
-      currentExport = null;
-      btnExport.textContent = "Exportar video";
-      progressContainer?.classList.add("hidden");
-      if (progressText) progressText.textContent = "0%";
-      if (progressBar) progressBar.style.width = "0%";
-    });
-
-    document.getElementById("btn-download-png")?.addEventListener("click", async () => {
-      if (!imageDataUrl || lastBuiltSteps.length === 0) return;
-      const img = await loadImage(imageDataUrl);
-      const finalStep =
-        lastBuiltSteps.find((s) => s.label === "Resultado final") ??
-        lastBuiltSteps[lastBuiltSteps.length - 1];
-      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
-      await exportStepAsPng(img, finalStep, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff", trace: showTrace, showTurns: true });
-    });
-
-    document.getElementById("btn-export-zip")?.addEventListener("click", async () => {
-      if (!imageDataUrl || lastBuiltSteps.length === 0) return;
-      const btnZip = document.getElementById("btn-export-zip") as HTMLButtonElement;
-      btnZip.disabled = true;
-      btnZip.textContent = "Generando...";
-
-      const img = await loadImage(imageDataUrl);
-      const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
-      await exportAllStepsAsZip(img, lastBuiltSteps, { canvasWidth: size, canvasHeight: size, bgColor: "#ffffff", trace: showTrace, showTurns: true });
-
-      btnZip.disabled = false;
-      btnZip.textContent = "Exportar pasos (ZIP)";
-    });
+        btnZip.disabled = false;
+        btnZip.textContent = "Exportar pasos (ZIP)";
+      });
 
     document.getElementById("btn-clear")?.addEventListener("click", () => {
       if (currentExport) {
@@ -645,21 +944,38 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
       lastBuiltSteps = [];
       editingIndex = null;
       closeCamera();
-      const inputImage = document.getElementById("input-image") as HTMLInputElement;
+      const inputImage = document.getElementById(
+        "input-image",
+      ) as HTMLInputElement;
       if (inputImage) inputImage.value = "";
-      const preview = document.getElementById("image-preview") as HTMLImageElement;
+      const preview = document.getElementById(
+        "image-preview",
+      ) as HTMLImageElement;
       if (preview) preview.removeAttribute("src");
       const previewWrap = document.getElementById("image-preview-wrap");
       if (previewWrap) previewWrap.classList.add("hidden");
-      const btnAdd = document.getElementById("btn-add-operation") as HTMLButtonElement;
+      const btnAdd = document.getElementById(
+        "btn-add-operation",
+      ) as HTMLButtonElement;
       if (btnAdd) btnAdd.textContent = "Agregar";
       renderOperations();
       const resultado = document.getElementById("resultado");
       if (resultado) resultado.innerHTML = "";
-      const btnExport = document.getElementById("btn-export") as HTMLButtonElement;
-      if (btnExport) btnExport.disabled = true;
-      const imageExportButtons = document.getElementById("image-export-buttons");
-      if (imageExportButtons) imageExportButtons.classList.add("hidden");
+      const btnExport = document.getElementById(
+        "btn-export",
+      ) as HTMLButtonElement;
+      if (btnExport) {
+        btnExport.disabled = true;
+        btnExport.textContent = "Exportar video";
+        btnExport.classList.remove("border-red-500", "text-red-500");
+      }
+      const imageExportButtons = document.getElementById(
+        "image-export-buttons",
+      );
+      if (imageExportButtons) {
+        imageExportButtons.classList.add("hidden");
+        imageExportButtons.classList.remove("flex");
+      }
       const progressContainer = document.getElementById("export-progress");
       if (progressContainer) progressContainer.classList.add("hidden");
     });
