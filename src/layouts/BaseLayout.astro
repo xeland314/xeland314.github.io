@@ -39,6 +39,11 @@ const {
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)" />
+    <link rel="apple-touch-icon" href="/assets/images/icon-192x192.png" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
@@ -73,6 +78,17 @@ const {
     {canonical && <link rel="canonical" href={canonical} />}
 
     <script is:inline src="/coi-serviceworker.js"></script>
+
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('PWA ServiceWorker registrado exitosamente.', reg.scope))
+            .catch(err => console.log('Error al registrar PWA ServiceWorker:', err));
+        });
+      }
+    </script>
+
     <script is:inline>
       const theme = (() => {
         if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {

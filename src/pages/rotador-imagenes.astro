@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import RotadorFooter from '../components/tools/rotador-imagenes/RotadorFooter.astro';
 
 const siteTitle = "Rotador — Manipulador de rotación de imágenes";
 const siteDescription =
@@ -23,7 +24,7 @@ const siteAppName = "Rotador de imágenes";
   applicationName={siteAppName}
 >
   <div
-    class="min-h-screen py-8 sm:py-12 px-4 flex justify-center bg-gray-50 dark:bg-gray-950 transition-colors duration-300"
+    class="min-h-screen py-8 sm:py-12 px-4 flex flex-col justify-center items-center bg-gray-50 dark:bg-gray-950 transition-colors duration-300"
   >
     <div
       class="w-full max-w-4xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300"
@@ -33,12 +34,12 @@ const siteAppName = "Rotador de imágenes";
         <p
           class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-500 dark:text-blue-400 text-xs font-mono tracking-widest uppercase mb-4"
         >
-          Manipulador de imágenes
+          Herramienta de imágenes
         </p>
         <h1
           class="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-3"
         >
-          Rotador: Manipulador de imágenes
+          Rotador de Imágenes Multi-Giro
         </h1>
         <p
           class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl"
@@ -337,6 +338,7 @@ const siteAppName = "Rotador de imágenes";
         </div>
       </div>
     </div>
+    <RotadorFooter />
   </div>
 
   <script>
