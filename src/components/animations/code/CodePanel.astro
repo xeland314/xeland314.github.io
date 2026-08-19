@@ -1,0 +1,19 @@
+---
+import "./code.css";
+
+interface Props {
+  file?: string;
+}
+
+const { file = "main.py" } = Astro.props;
+---
+
+<div class="anim-code-panel">
+  <div class="anim-code-topbar">
+    <span class="anim-dotc" style="background:#ff5f57"></span>
+    <span class="anim-dotc" style="background:#febc2e"></span>
+    <span class="anim-dotc" style="background:#28c840"></span>
+    <span class="anim-file anim-font-mono">{file}</span>
+  </div>
+  <div class="anim-code-body" id="codeBody"></div>
+</div>

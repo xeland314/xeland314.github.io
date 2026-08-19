@@ -1,0 +1,115 @@
+@import "../index.css";
+
+.anim-code-panel {
+  background: var(--anim-panel);
+  border: 1px solid var(--anim-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.anim-code-topbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: var(--anim-panel-2);
+  border-bottom: 1px solid var(--anim-line);
+}
+
+.anim-code-topbar .anim-dotc {
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+}
+
+.anim-file {
+  margin-left: 4px;
+  font-size: 9px;
+  color: var(--anim-muted);
+}
+
+.anim-code-body {
+  padding: 8px 0;
+}
+
+.anim-code-line {
+  display: flex;
+  align-items: center;
+  padding: 3px 10px 3px 6px;
+  border-left: 2px solid transparent;
+  font-family: var(--anim-font-mono);
+  font-size: 10.5px;
+  line-height: 16px;
+  color: var(--anim-ink);
+  white-space: pre;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    opacity 0.18s ease;
+  opacity: 0.62;
+}
+
+.anim-code-line .anim-ln {
+  width: 14px;
+  flex: none;
+  color: #39424c;
+  margin-right: 8px;
+  text-align: right;
+  font-size: 9.5px;
+}
+
+.anim-code-line.anim-scan {
+  background: rgba(255, 255, 255, 0.035);
+  border-left-color: #3a4450;
+  opacity: 1;
+}
+
+.anim-code-line.anim-active {
+  background: var(--anim-signal-dim);
+  border-left-color: var(--anim-signal);
+  opacity: 1;
+}
+
+.anim-code-line.anim-matched[data-drink="gaseosa"] {
+  background: var(--anim-gaseosa-dim);
+  border-left-color: var(--anim-gaseosa);
+  opacity: 1;
+}
+
+.anim-code-line.anim-matched[data-drink="agua"] {
+  background: var(--anim-agua-dim);
+  border-left-color: var(--anim-agua);
+  opacity: 1;
+}
+
+.anim-code-line.anim-matched[data-drink="limonada"] {
+  background: var(--anim-limonada-dim);
+  border-left-color: var(--anim-limonada);
+  opacity: 1;
+}
+
+.anim-console {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--anim-font-mono);
+  font-size: 10px;
+  color: #7ee08a;
+  min-height: 14px;
+}
+
+.anim-caret {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background: #7ee08a;
+  opacity: 0.85;
+  animation: anim-blink 1s steps(1) infinite;
+}
+
+@keyframes anim-blink {
+  50% {
+    opacity: 0;
+  }
+}

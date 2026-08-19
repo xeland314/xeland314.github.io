@@ -1,0 +1,35 @@
+---
+import "./controls.css";
+import type { DrinkConfig } from "../types";
+
+interface Props {
+  drinks: DrinkConfig[];
+}
+
+const { drinks } = Astro.props;
+---
+
+<div id="controls" class="flex flex-col items-center gap-3 w-[400px]">
+  <div class="flex gap-2 w-full">
+    {
+      drinks.map((d) => (
+        <button class={`ctrl-btn ${d.id} flex-1`} data-run={d.id}>
+          {d.icon} {d.label}
+        </button>
+      ))
+    }
+  </div>
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn ghost flex-1" id="autoBtn">▶ Reproducir demo automática</button>
+  </div>
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn primary flex-1" id="exportBtn">
+      ⬇ Exportar video nativo (1080x1920 @ 60fps)
+    </button>
+  </div>
+  <div
+    class="font-mono text-center"
+    id="statusText"
+    style="font-size:10.5px;color:#5f6c7a;min-height:14px;"
+  ></div>
+</div>

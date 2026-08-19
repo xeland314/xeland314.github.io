@@ -1,0 +1,31 @@
+---
+import "./vending.css";
+import type { DrinkConfig } from "../types";
+
+interface Props {
+  drinks: DrinkConfig[];
+  can?: string;
+}
+
+const { drinks, can = "🥤" } = Astro.props;
+---
+
+<div class="anim-machine">
+  <div class="anim-machine-header anim-font-mono">SELECCIONA TU BEBIDA</div>
+  <div class="anim-slots">
+    {
+      drinks.map((d) => (
+        <div class="anim-slot" data-drink={d.id}>
+          <div class="anim-glass">{d.icon}</div>
+          <div class="anim-lbl anim-font-mono">{d.label}</div>
+          <div class="anim-dot"></div>
+        </div>
+      ))
+    }
+  </div>
+  <div class="anim-chute">
+    <div class="anim-tray"></div>
+    <div class="anim-can" id="canEl">{can}</div>
+    <div class="anim-out-label anim-font-mono" id="chuteLabel">bandeja de salida</div>
+  </div>
+</div>

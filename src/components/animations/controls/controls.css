@@ -1,0 +1,55 @@
+@import "../index.css";
+
+.ctrl-btn {
+  font-family: var(--anim-font-body);
+  font-weight: 600;
+  font-size: 12.5px;
+  border-radius: 10px;
+  padding: 9px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #141b22;
+  color: #dfe6ec;
+  transition:
+    transform 0.12s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s;
+  cursor: pointer;
+}
+
+.ctrl-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ctrl-btn:active {
+  transform: translateY(0);
+}
+
+.ctrl-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ctrl-btn.gaseosa {
+  border-color: rgba(161, 161, 170, 0.4);
+}
+
+.ctrl-btn.agua {
+  border-color: rgba(63, 208, 224, 0.4);
+}
+
+.ctrl-btn.limonada {
+  border-color: rgba(250, 204, 21, 0.4);
+}
+
+.ctrl-btn.primary {
+  background: linear-gradient(180deg, #171f27, #10161c);
+  border-color: rgba(124, 251, 76, 0.4);
+  color: #c8ffb0;
+}
+
+.ctrl-btn.ghost {
+  background: transparent;
+}

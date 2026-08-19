@@ -1,0 +1,117 @@
+:root {
+  --anim-bg-deep: #060a0f;
+  --anim-panel: #0d131b;
+  --anim-panel-2: #11181f;
+  --anim-line: #1c2530;
+  --anim-ink: #e7edf3;
+  --anim-muted: #5f6c7a;
+  --anim-signal: #7cfb4c;
+  --anim-signal-dim: rgba(124, 251, 76, 0.14);
+
+  --anim-gaseosa: #a1a1aa;
+  --anim-gaseosa-dim: rgba(161, 161, 170, 0.16);
+  --anim-agua: #3fd0e0;
+  --anim-agua-dim: rgba(63, 208, 224, 0.16);
+  --anim-limonada: #facc15;
+  --anim-limonada-dim: rgba(250, 204, 21, 0.16);
+
+  --anim-kw: #c792ea;
+  --anim-str: #8fd14f;
+  --anim-fn: #6cb8ff;
+  --anim-num: #f2c94c;
+
+  --anim-font-display: "Space Grotesk", sans-serif;
+  --anim-font-mono: "JetBrains Mono", monospace;
+  --anim-font-body: "Inter", sans-serif;
+}
+
+.anim-font-display {
+  font-family: var(--anim-font-display);
+}
+
+.anim-font-mono {
+  font-family: var(--anim-font-mono);
+}
+
+.anim-tok-kw {
+  color: var(--anim-kw);
+}
+
+.anim-tok-str {
+  color: var(--anim-str);
+}
+
+.anim-tok-fn {
+  color: var(--anim-fn);
+}
+
+.anim-tok-var {
+  color: var(--anim-ink);
+}
+
+.anim-tok-mut {
+  color: var(--anim-muted);
+}
+
+.anim-tok-num {
+  color: var(--anim-num);
+}
+
+/* ---- stage ---- */
+.anim-stage-outer {
+  width: fit-content;
+  border-radius: 30px;
+  padding: 3px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.anim-stage {
+  width: 405px;
+  height: 720px;
+  border-radius: 28px;
+  background:
+    radial-gradient(120% 90% at 15% 0%, #0e2a1c 0%, transparent 55%),
+    radial-gradient(90% 70% at 100% 10%, #1a1120 0%, transparent 50%),
+    var(--anim-bg-deep);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.anim-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 26px 26px;
+  pointer-events: none;
+}
+
+.anim-eyebrow {
+  font-family: var(--anim-font-mono);
+  letter-spacing: 0.18em;
+  font-size: 10px;
+  color: var(--anim-signal);
+}
+
+.anim-title {
+  font-family: var(--anim-font-display);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.05;
+  color: #fff;
+  margin-top: 4px;
+}
+
+.anim-watermark {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  font-size: 11px;
+  color: var(--anim-muted);
+  opacity: 0.8;
+  z-index: 10;
+}

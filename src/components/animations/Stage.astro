@@ -1,0 +1,22 @@
+---
+import "./index.css";
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  watermark?: string;
+}
+
+const { eyebrow = "", title = "", watermark = "@xeland314" } = Astro.props;
+---
+
+<div id="stageOuter" class="anim-stage-outer">
+  <div id="stage" class="anim-stage">
+    <div class="pt-12 px-6">
+      <div class="anim-eyebrow"><slot name="eyebrow">{eyebrow}</slot></div>
+      <h1 class="anim-title"><slot name="title">{title}</slot></h1>
+    </div>
+    <slot />
+    <div class="anim-watermark anim-font-mono">{watermark}</div>
+  </div>
+</div>

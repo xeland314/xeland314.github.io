@@ -38,9 +38,16 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         // Guardar en caché dinámicamente lo que el usuario va visitando
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
-        });
+        try {
+          if (networkResponse && networkResponse.ok) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => cache.put(event.request, clone))
+              .catch(() => {});
+          }
+        } catch (err) {
+          // Ignorar fallos al clonar/cachear (por ejemplo, cuerpos ya consumidos)
+        }
         return networkResponse;
       }).catch(() => {
         // Si no hay internet y no está en caché

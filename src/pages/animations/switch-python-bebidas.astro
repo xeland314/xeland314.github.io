@@ -1,0 +1,72 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Stage from "../../components/animations/Stage.astro";
+import VendingMachine from "../../components/animations/vending/VendingMachine.astro";
+import CodePanel from "../../components/animations/code/CodePanel.astro";
+import ConsoleLine from "../../components/animations/code/ConsoleLine.astro";
+import ControlButtons from "../../components/animations/controls/ControlButtons.astro";
+import { DRINKS, META } from "../../components/animations/code/codeLines";
+import type { DrinkConfig } from "../../components/animations/types";
+
+const vendingDrinks: DrinkConfig[] = DRINKS.map((id) => ({
+  id,
+  icon: META[id].can,
+  label: `"${META[id].str}"`,
+}));
+
+const controlDrinks: DrinkConfig[] = DRINKS.map((id) => ({
+  id,
+  icon: META[id].can,
+  label: META[id].name.split(" ")[0],
+}));
+
+const siteTitle = "match/case en Python · Máquina expendedora";
+const siteDescription =
+  "Animación narrada sobre el match/case (switch) en Python usando una máquina expendedora de bebidas.";
+const siteKeywords =
+  "python, match, case, switch, animación, video, máquina expendedora, programación";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/animations/switch-python-bebidas";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    />
+  </Fragment>
+
+  <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
+    <Stage eyebrow="PYTHON · MATCH-CASE">
+      <Fragment slot="title">Así funciona el<br />switch en Python</Fragment>
+      <div class="mt-8">
+        <VendingMachine drinks={vendingDrinks} can="🥤" />
+      </div>
+      <div class="mx-5 mt-8">
+        <CodePanel file="expendedora.py" />
+      </div>
+      <div class="mx-5 mt-6 mb-5 flex-1 min-h-0">
+        <ConsoleLine />
+      </div>
+    </Stage>
+
+    <ControlButtons drinks={controlDrinks} />
+  </main>
+</BaseLayout>
+
+<script>
+  import { initAnimation } from "../../components/animations/switch-python/controller";
+  initAnimation();
+</script>
