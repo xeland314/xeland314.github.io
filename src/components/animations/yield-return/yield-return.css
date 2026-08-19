@@ -1,0 +1,130 @@
+@import "../index.css";
+
+:root {
+  --anim-warn: #ff5f57;
+  --anim-warn-dim: rgba(255, 95, 87, 0.16);
+}
+
+/* ---- mode toggle buttons ---- */
+.anim-yr-active-warn {
+  border-color: var(--anim-warn);
+  background: rgba(255, 95, 87, 0.15);
+  color: #ffa39e;
+}
+
+.anim-yr-active-yield {
+  border-color: var(--anim-signal);
+  background: var(--anim-signal-dim);
+  color: #c8ffb0;
+}
+
+/* ---- code line: warn highlight (return mode) ---- */
+.anim-code-line.anim-warn-line {
+  background: var(--anim-warn-dim);
+  border-left-color: var(--anim-warn);
+  opacity: 1;
+}
+
+/* ---- code panel badge ---- */
+.anim-yr-badge {
+  font-family: var(--anim-font-mono);
+  font-size: 8.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #a1a1aa;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---- RAM gauge ---- */
+.anim-ram-box {
+  background: var(--anim-panel);
+  border: 1px solid var(--anim-line);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.anim-ram-used {
+  font-family: var(--anim-font-mono);
+  font-size: 9.5px;
+  color: var(--anim-muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.anim-ram-slots {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.anim-ram-slot {
+  width: 42px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px dashed #262f38;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--anim-font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  transition: all 0.25s ease;
+}
+
+.anim-ram-slot.anim-filled-warn {
+  border-style: solid;
+  border-color: var(--anim-warn);
+  background: rgba(255, 95, 87, 0.2);
+  box-shadow: 0 0 12px rgba(255, 95, 87, 0.3);
+  color: #ff8e88;
+}
+
+.anim-ram-slot.anim-filled-yield {
+  border-style: solid;
+  border-color: var(--anim-signal);
+  background: var(--anim-signal-dim);
+  box-shadow: 0 0 12px rgba(124, 251, 76, 0.3);
+  color: var(--anim-signal);
+}
+
+/* ---- console ---- */
+.anim-yr-console-label {
+  font-family: var(--anim-font-mono);
+  font-size: 9px;
+  color: var(--anim-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.anim-yr-console {
+  font-family: var(--anim-font-mono);
+  font-size: 10px;
+  color: #7ee08a;
+  background: #04070a;
+  border: 1px solid #1a232d;
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 74px;
+  display: flex;
+  flex-direction: column;
+}
+
+.anim-yr-console .anim-yr-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.anim-yr-console .anim-caret {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background: #7ee08a;
+  opacity: 0.85;
+  animation: anim-blink 1s steps(1) infinite;
+  margin-left: 2px;
+}

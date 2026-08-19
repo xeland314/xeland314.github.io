@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Stage from "../../components/animations/Stage.astro";
+import CodePanel from "../../components/animations/code/CodePanel.astro";
+import RamBox from "../../components/animations/yield-return/RamBox.astro";
+import YieldConsole from "../../components/animations/yield-return/YieldConsole.astro";
+import ControlsYield from "../../components/animations/yield-return/ControlsYield.astro";
+
+const siteTitle = "Python · return vs yield (Generadores)";
+const siteDescription =
+  "Animación narrada comparando return vs yield en Python: cómo return acumula toda la lista en RAM (O(N)) y yield genera cada valor 1 a 1 (O(1)).";
+const siteKeywords =
+  "python, return, yield, generadores, generador, memoria, RAM, O(1), O(N), animación, video";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/animations/python-return-vs-yield";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    />
+  </Fragment>
+
+  <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
+    <Stage eyebrow="PYTHON · RENDIMIENTO & MEMORIA">
+      <Fragment slot="title">
+        Diferencia entre
+        <span class="text-[#ff5f57]">return</span> y
+        <span class="text-[#7CFB4C]">yield</span>
+      </Fragment>
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 px-6 pb-8">
+        <CodePanel file="modo_return.py">
+          <Fragment slot="badge">
+            <span id="statusBadge" class="anim-yr-badge">ESPERANDO</span>
+          </Fragment>
+        </CodePanel>
+        <RamBox />
+        <YieldConsole />
+      </div>
+    </Stage>
+
+    <ControlsYield />
+  </main>
+</BaseLayout>
+
+<script>
+  import { initYieldAnimation } from "../../components/animations/yield-return/controller";
+  initYieldAnimation();
+</script>
