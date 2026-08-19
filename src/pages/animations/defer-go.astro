@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Stage from "../../components/animations/Stage.astro";
+import DeferStack from "../../components/animations/go-defer/DeferStack.astro";
+import CodePanel from "../../components/animations/code/CodePanel.astro";
+import ConsoleOut from "../../components/animations/go-defer/ConsoleOut.astro";
+import ControlsGo from "../../components/animations/go-defer/Controls.astro";
+
+const siteTitle = "defer en Go · Pila LIFO";
+const siteDescription =
+  "Animación narrada sobre defer en Go: cómo se agendan en una pila y se ejecutan en orden LIFO (último en entrar, primero en salir) al retornar.";
+const siteKeywords =
+  "go, golang, defer, LIFO, pila, animación, video, programación";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/animations/defer-go";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    />
+  </Fragment>
+
+  <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
+    <Stage eyebrow="GO · DEFER (LIFO)">
+      <Fragment slot="title">Así funciona<br />defer en Go</Fragment>
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 px-7 pb-10">
+        <DeferStack />
+        <div class="anim-godefer-code">
+          <CodePanel file="pedido.go" />
+        </div>
+        <ConsoleOut />
+      </div>
+    </Stage>
+
+    <ControlsGo />
+  </main>
+</BaseLayout>
+
+<script>
+  import { initDeferAnimation } from "../../components/animations/go-defer/controller";
+  initDeferAnimation();
+</script>

@@ -1,0 +1,23 @@
+---
+import "./go-defer.css";
+import "../controls/controls.css";
+import ResolutionSelect from "../controls/ResolutionSelect.astro";
+---
+
+<div id="controls" class="flex flex-col items-center gap-3 w-[400px]">
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn flex-1" id="playBtn">▶ Reproducir demo</button>
+    <button class="ctrl-btn ghost" id="resetBtn">↺ Reiniciar</button>
+  </div>
+  <ResolutionSelect />
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn primary flex-1" id="exportBtn">
+      ⬇ Exportar video
+    </button>
+  </div>
+  <div
+    class="font-mono text-center"
+    id="statusText"
+    style="font-size:10.5px;color:#5f6c7a;min-height:14px;"
+  ></div>
+</div>

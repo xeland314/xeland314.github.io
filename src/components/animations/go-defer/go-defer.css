@@ -1,0 +1,211 @@
+@import "../index.css";
+
+:root {
+  --anim-defer-db: #4dd9e8;
+  --anim-defer-db-dim: rgba(77, 217, 232, 0.16);
+  --anim-defer-lock: #ff9736;
+  --anim-defer-lock-dim: rgba(255, 151, 54, 0.16);
+  --anim-defer-log: #c792ea;
+  --anim-defer-log-dim: rgba(199, 146, 234, 0.18);
+}
+
+/* ---- defer stack widget ---- */
+.anim-stack-widget {
+  width: 230px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #1b2129, #12171d);
+  border: 1px solid #2a323c;
+  border-radius: 16px;
+  box-shadow:
+    0 18px 30px -14px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 8px;
+}
+
+.anim-stack-header {
+  font-family: var(--anim-font-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: #9aa7b4;
+  text-align: center;
+  padding-bottom: 6px;
+}
+
+.anim-stack-tower {
+  height: 92px;
+  border-radius: 9px;
+  background: #0a0d10;
+  border: 1px solid #232b33;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  padding: 6px;
+  gap: 5px;
+  overflow: hidden;
+}
+
+.anim-defer-item {
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: var(--anim-font-mono);
+  font-size: 8.5px;
+  color: var(--anim-ink);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a323c;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(6px) scale(0.94);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    background 0.28s ease,
+    border-color 0.28s ease;
+  flex: none;
+}
+
+.anim-defer-item .anim-tag {
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  flex: none;
+}
+
+.anim-defer-item.anim-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.anim-defer-item.anim-pop-active {
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 0 0 1px currentColor,
+    0 0 14px -2px currentColor;
+}
+
+.anim-defer-item.anim-pop-out {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.92);
+}
+
+.anim-defer-item[data-item="db"] {
+  color: var(--anim-defer-db);
+}
+
+.anim-defer-item[data-item="lock"] {
+  color: var(--anim-defer-lock);
+}
+
+.anim-defer-item[data-item="log"] {
+  color: var(--anim-defer-log);
+}
+
+.anim-defer-item[data-item="db"] .anim-tag {
+  background: var(--anim-defer-db);
+}
+
+.anim-defer-item[data-item="lock"] .anim-tag {
+  background: var(--anim-defer-lock);
+}
+
+.anim-defer-item[data-item="log"] .anim-tag {
+  background: var(--anim-defer-log);
+}
+
+.anim-defer-item .anim-lbl {
+  color: var(--anim-ink);
+}
+
+.anim-stack-phase {
+  margin-top: 6px;
+  text-align: center;
+  font-family: var(--anim-font-mono);
+  font-size: 8.5px;
+  color: var(--anim-muted);
+  min-height: 12px;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
+}
+
+.anim-stack-phase.anim-live {
+  color: var(--anim-signal);
+}
+
+/* ---- code panel: per-item states ---- */
+.anim-godefer-code .anim-code-line.anim-queued {
+  opacity: 1;
+}
+
+.anim-godefer-code .anim-code-line.anim-queued[data-item="db"] {
+  background: rgba(77, 217, 232, 0.07);
+  border-left-color: rgba(77, 217, 232, 0.5);
+}
+
+.anim-godefer-code .anim-code-line.anim-queued[data-item="lock"] {
+  background: rgba(255, 151, 54, 0.07);
+  border-left-color: rgba(255, 151, 54, 0.5);
+}
+
+.anim-godefer-code .anim-code-line.anim-queued[data-item="log"] {
+  background: rgba(199, 146, 234, 0.08);
+  border-left-color: rgba(199, 146, 234, 0.5);
+}
+
+.anim-godefer-code .anim-code-line.anim-firing {
+  opacity: 1;
+}
+
+.anim-godefer-code .anim-code-line.anim-firing[data-item="db"] {
+  background: var(--anim-defer-db-dim);
+  border-left-color: var(--anim-defer-db);
+}
+
+.anim-godefer-code .anim-code-line.anim-firing[data-item="lock"] {
+  background: var(--anim-defer-lock-dim);
+  border-left-color: var(--anim-defer-lock);
+}
+
+.anim-godefer-code .anim-code-line.anim-firing[data-item="log"] {
+  background: var(--anim-defer-log-dim);
+  border-left-color: var(--anim-defer-log);
+}
+
+/* ---- multiline console ---- */
+.anim-godefer-console {
+  font-family: var(--anim-font-mono);
+  font-size: 9px;
+  color: #7ee08a;
+  height: 52px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.anim-godefer-console .anim-row {
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.anim-godefer-console .anim-row.anim-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.anim-godefer-console .anim-caret {
+  display: inline-block;
+  width: 6px;
+  height: 11px;
+  background: #7ee08a;
+  opacity: 0.85;
+  animation: anim-blink 1s steps(1) infinite;
+  margin-left: 2px;
+}
