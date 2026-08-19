@@ -13,7 +13,8 @@ const { file = "main.py" } = Astro.props;
     <span class="anim-dotc" style="background:#ff5f57"></span>
     <span class="anim-dotc" style="background:#febc2e"></span>
     <span class="anim-dotc" style="background:#28c840"></span>
-    <span class="anim-file anim-font-mono">{file}</span>
+    <span class="anim-file anim-font-mono" id="fileName">{file}</span>
+    <span class="ml-auto"><slot name="badge" /></span>
   </div>
   <div class="anim-code-body" id="codeBody"></div>
 </div>

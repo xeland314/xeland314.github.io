@@ -115,3 +115,17 @@
   opacity: 0.8;
   z-index: 10;
 }
+
+/* ---- stage variants ---- */
+.anim-stage--4-5 {
+  width: 400px;
+  height: 500px;
+}
+
+.anim-stage--4-5 > div:first-child {
+  padding-top: 20px;
+}
+
+.anim-stage--4-5 .anim-title {
+  font-size: 21px;
+}

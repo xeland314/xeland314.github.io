@@ -5,13 +5,22 @@ interface Props {
   eyebrow?: string;
   title?: string;
   watermark?: string;
+  variant?: "9-16" | "4-5";
 }
 
-const { eyebrow = "", title = "", watermark = "@xeland314" } = Astro.props;
+const {
+  eyebrow = "",
+  title = "",
+  watermark = "@xeland314",
+  variant = "9-16",
+} = Astro.props;
+
+const stageClass =
+  variant === "4-5" ? "anim-stage anim-stage--4-5" : "anim-stage";
 ---
 
 <div id="stageOuter" class="anim-stage-outer">
-  <div id="stage" class="anim-stage">
+  <div id="stage" class={stageClass}>
     <div class="pt-12 px-6">
       <div class="anim-eyebrow"><slot name="eyebrow">{eyebrow}</slot></div>
       <h1 class="anim-title"><slot name="title">{title}</slot></h1>
