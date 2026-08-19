@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   buildDecoratorLines,
+  decoratorTimingTotal,
   DECORATOR_FILE,
   DECORATOR_TIMING,
 } from "./sequence";
@@ -37,6 +38,10 @@ describe("DECORATOR_TIMING", () => {
     for (const ms of Object.values(DECORATOR_TIMING)) {
       expect(ms).toBeGreaterThan(0);
     }
+  });
+
+  it("makes the whole sequence last at least 10 seconds", () => {
+    expect(decoratorTimingTotal()).toBeGreaterThanOrEqual(10000);
   });
 });
 

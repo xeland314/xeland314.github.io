@@ -184,8 +184,12 @@ export function initDecoratorAnimation(): void {
     innerPhase.className = "anim-dec-inner-status anim-dec-inner-status--live";
     setStatus("EJECUTANDO ORIGINAL", COLOR.inner);
     consolePrint("⚡ [procesar_datos] Trabajo pesado...", COLOR.inner);
+    bar.style.width = "30%";
+    await sleep(Math.round(DECORATOR_TIMING.duringPause / 3));
+    bar.style.width = "70%";
+    await sleep(Math.round(DECORATOR_TIMING.duringPause / 3));
     bar.style.width = "100%";
-    await sleep(DECORATOR_TIMING.duringPause);
+    await sleep(Math.round(DECORATOR_TIMING.duringPause / 3));
 
     // 3. Salir al wrapper (DESPUÉS)
     setHighlight(5, "wrapper");

@@ -1,11 +1,15 @@
 export const DECORATOR_TIMING = {
-  startPause: 150,
-  invokePause: 500,
-  beforePause: 800,
-  duringPause: 900,
-  afterPause: 600,
-  donePause: 600,
+  startPause: 300,
+  invokePause: 1400,
+  beforePause: 2000,
+  duringPause: 2800,
+  afterPause: 2200,
+  donePause: 1600,
 } as const;
+
+export function decoratorTimingTotal(): number {
+  return Object.values(DECORATOR_TIMING).reduce((acc, ms) => acc + ms, 0);
+}
 
 export const DECORATOR_FILE = "decoradores.py";
 
