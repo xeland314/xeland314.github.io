@@ -2,6 +2,7 @@ import { DRINKS, META, buildCodeLines, renderAssignLine, type Drink } from "../c
 import type { HighlightState } from "./sequence";
 import { resolveSequence } from "./sequence";
 import { recordStageToVideo } from "../VideoRecorder";
+import { getVideoFormat, wireResolutionSelect } from "../exportOptions";
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
@@ -42,9 +43,18 @@ export function initAnimation(): void {
 
   const autoBtn = document.getElementById("autoBtn") as HTMLButtonElement | null;
   const exportBtn = document.getElementById("exportBtn") as HTMLButtonElement | null;
+  const resSelect = document.getElementById("resSelect") as HTMLSelectElement | null;
   const runBtns = Array.from(
     document.querySelectorAll<HTMLButtonElement>("[data-run]"),
   );
+
+  function updateExportLabel(): void {
+    if (!exportBtn) return;
+    const fmt = getVideoFormat();
+    exportBtn.textContent = `⬇ Exportar video (${fmt.width}×${fmt.height})`;
+  }
+  resSelect && wireResolutionSelect(resSelect, updateExportLabel);
+  updateExportLabel();
 
   function buildLines(): void {
     body.innerHTML = "";
@@ -176,8 +186,8 @@ export function initAnimation(): void {
     if (busy) return;
     stopAuto();
     setBusy(true);
-    status.textContent =
-      "Renderizando 1080x1920 a 60fps... El navegador puede ralentizarse.";
+    const fmt = getVideoFormat();
+    status.textContent = `Renderizando ${fmt.width}×${fmt.height} a ${fmt.fps}fps... El navegador puede ralentizarse.`;
 
     const scene = async () => {
       clearLineStates();
@@ -192,12 +202,12 @@ export function initAnimation(): void {
 
     try {
       await recordStageToVideo(stage, scene, {
-        width: 1080,
-        height: 1920,
-        fps: 60,
-        fileName: "switch-python-bebidas-1080.webm",
+        width: fmt.width,
+        height: fmt.height,
+        fps: fmt.fps,
+        fileName: `switch-python-bebidas-${fmt.width}x${fmt.height}.webm`,
       });
-      status.textContent = "Video descargado ✓ (1080x1920, 60fps)";
+      status.textContent = `Video descargado ✓ (${fmt.width}×${fmt.height})`;
     } catch (err) {
       console.error("Error exportando video:", err);
       status.textContent = "Error exportando el video.";

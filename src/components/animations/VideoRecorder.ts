@@ -85,7 +85,12 @@ export async function recordStageToVideo(
     });
     context.imageSmoothingEnabled = true;
     context.imageSmoothingQuality = "high";
-    context.drawImage(shot, 0, 0, W, H);
+    context.fillStyle = backgroundColor;
+    context.fillRect(0, 0, W, H);
+    const fit = Math.min(W / shot.width, H / shot.height);
+    const dw = Math.round(shot.width * fit);
+    const dh = Math.round(shot.height * fit);
+    context.drawImage(shot, Math.round((W - dw) / 2), Math.round((H - dh) / 2), dw, dh);
     shot.width = 0;
     shot.height = 0;
   }

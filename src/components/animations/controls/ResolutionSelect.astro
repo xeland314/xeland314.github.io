@@ -1,0 +1,14 @@
+---
+import "./controls.css";
+import { VIDEO_FORMATS } from "../exportOptions";
+---
+
+<div class="flex gap-2 w-full">
+  <select
+    id="resSelect"
+    class="ctrl-select anim-font-mono"
+    aria-label="Resolución de exportación"
+  >
+    {VIDEO_FORMATS.map((f) => <option value={f.id}>{f.label}</option>)}
+  </select>
+</div>

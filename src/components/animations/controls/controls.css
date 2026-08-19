@@ -53,3 +53,21 @@
 .ctrl-btn.ghost {
   background: transparent;
 }
+
+.ctrl-select {
+  font-family: var(--anim-font-mono);
+  font-size: 11px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #141b22;
+  color: #dfe6ec;
+  cursor: pointer;
+}
+
+.ctrl-select:focus-visible,
+.ctrl-btn:focus-visible {
+  outline: 2px solid rgba(124, 251, 76, 0.5);
+  outline-offset: 1px;
+}

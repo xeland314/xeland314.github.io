@@ -1,5 +1,6 @@
 ---
 import "./controls.css";
+import ResolutionSelect from "./ResolutionSelect.astro";
 import type { DrinkConfig } from "../types";
 
 interface Props {
@@ -22,9 +23,10 @@ const { drinks } = Astro.props;
   <div class="flex gap-2 w-full">
     <button class="ctrl-btn ghost flex-1" id="autoBtn">▶ Reproducir demo automática</button>
   </div>
+  <ResolutionSelect />
   <div class="flex gap-2 w-full">
     <button class="ctrl-btn primary flex-1" id="exportBtn">
-      ⬇ Exportar video nativo (1080x1920 @ 60fps)
+      ⬇ Exportar video
     </button>
   </div>
   <div
