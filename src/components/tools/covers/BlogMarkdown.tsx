@@ -86,7 +86,8 @@ export const BlogMarkdown: React.FC<BlogMarkdownProps> = ({
           ol: ({ children }) => (
             <ol className="space-y-2 mb-4 last:mb-0">{children}</ol>
           ),
-          li: ({ children, checked }) => {
+          li: ({ children, ...props }) => {
+            const checked = (props as any).checked;
             const isTask = typeof checked === "boolean";
             if (isTask) {
               return (

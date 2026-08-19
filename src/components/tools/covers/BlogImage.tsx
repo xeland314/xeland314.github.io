@@ -162,7 +162,7 @@ export const BlogImage: React.FC<BlogImageProps> = ({
                 className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
               />
               <div className="px-8 py-6">
-                <BlogMarkdown content={caption} theme={theme} prose="2xl" />
+                <BlogMarkdown content={caption} theme={theme} prose="4xl" />
               </div>
             </div>
           )}

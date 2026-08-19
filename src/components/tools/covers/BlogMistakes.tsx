@@ -37,10 +37,10 @@ export const BlogMistakes: React.FC<BlogMistakesProps> = ({
       language={language as any}
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
-        <pre className={`${className} overflow-hidden text-xl`} style={{ ...style, background: "transparent" }}>
+        <pre className={`${className} overflow-hidden text-3xl`} style={{ ...style, background: "transparent" }}>
           {tokens.map((line, i) => (
             <div key={i} {...getLineProps({ line, key: i })} className="hover:bg-white/5 transition-colors rounded px-2 -mx-2">
-              <span className="opacity-30 mr-4 w-6 inline-block text-right select-none text-lg">{i + 1}</span>
+              <span className="opacity-30 mr-4 w-6 inline-block text-right select-none text-xl">{i + 1}</span>
               {line.map((token, key) => (
                 <span key={key} {...getTokenProps({ token, key })} />
               ))}
@@ -90,7 +90,7 @@ export const BlogMistakes: React.FC<BlogMistakesProps> = ({
                   <div className="w-3 h-3 rounded-full bg-yellow-500" />
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                 </div>
-                <span className={`ml-3 px-3 py-1 rounded-lg text-sm font-mono ${c.textAccent} ${c.bg}/20 border ${c.border}/30`}>{language}</span>
+                <span className={`ml-3 px-3 py-1 rounded-lg text-md font-mono ${c.textAccent} ${c.bg}/20 border ${c.border}/30`}>{language}</span>
               </div>
               <div className="p-6 bg-black/20 max-h-[250px] overflow-hidden">
                 {renderCodeBlock(badCode, true)}
@@ -113,7 +113,7 @@ export const BlogMistakes: React.FC<BlogMistakesProps> = ({
                   <div className="w-3 h-3 rounded-full bg-yellow-500" />
                   <div className="w-3 h-3 rounded-full bg-green-500" />
                 </div>
-                <span className={`ml-3 px-3 py-1 rounded-lg text-sm font-mono ${c.textAccent} ${c.bg}/20 border ${c.border}/30`}>{language}</span>
+                <span className={`ml-3 px-3 py-1 rounded-lg text-md font-mono ${c.textAccent} ${c.bg}/20 border ${c.border}/30`}>{language}</span>
               </div>
               <div className="p-6 bg-black/20 max-h-[250px] overflow-hidden">
                 {renderCodeBlock(goodCode, false)}
@@ -124,7 +124,7 @@ export const BlogMistakes: React.FC<BlogMistakesProps> = ({
           {/* Footer Brand */}
           <div className="absolute bottom-12 left-0 right-0 px-20">
             <div className={`flex items-center justify-between py-4 px-8 rounded-2xl ${s.bg || "bg-black/20"} border border-white/10 backdrop-blur-md shadow-lg max-w-4xl mx-auto`}>
-              <span className={`${s.footer} font-mono text-xl tracking-[0.2em] font-bold uppercase`}>{theme.username}</span>
+              <span className={`${s.footer} font-mono text-xl tracking-[0.2em] font-bold`}>{theme.username}</span>
               <div className="flex items-center gap-4">
                 <div className="flex gap-2">
                   <div className={`w-3 h-3 rounded-full ${c.bg} animate-pulse`} />

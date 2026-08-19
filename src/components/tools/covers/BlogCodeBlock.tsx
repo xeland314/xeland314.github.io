@@ -70,7 +70,7 @@ export const BlogCodeBlock: React.FC<BlogCodeBlockProps> = ({
             <button
               type="button"
               onClick={() => setWrap(!wrap)}
-              className={`ml-auto flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
+              className={`ml-auto flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm font-mono font-bold transition-colors ${
                 wrap
                   ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                   : "text-white/40 hover:text-white/70 hover:bg-white/5"

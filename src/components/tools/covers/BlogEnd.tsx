@@ -104,8 +104,8 @@ export const BlogEnd: React.FC<BlogEndProps> = ({
             {/* Description with better styling */}
             <div className={`relative mb-4 max-w-2xl`}>
               <div className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-3xl blur-xl`} />
-              <div className="relative px-8 py-6">
-                <BlogMarkdown content={description} theme={theme} prose="2xl" />
+              <div className="relative px-8 py-6 text-center">
+                <BlogMarkdown content={description} theme={theme} prose="4xl" />
               </div>
             </div>
 
