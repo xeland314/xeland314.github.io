@@ -1,0 +1,25 @@
+---
+import "./decorator.css";
+---
+
+<div class="anim-dec-outer" id="outerBox">
+  <div class="anim-dec-head">
+    <span class="anim-dec-label anim-dec-label--wrapper">📦 WRAPPER (Caja Exterior)</span>
+    <span class="anim-dec-phase" id="phaseBefore">1. ANTES</span>
+  </div>
+
+  <div class="anim-dec-inner" id="innerBox">
+    <div class="anim-dec-inner-head">
+      <span class="anim-dec-label anim-dec-label--inner">⚡ procesar_datos()</span>
+      <span class="anim-dec-inner-status" id="phaseInner">Función original</span>
+    </div>
+    <div class="anim-dec-progress">
+      <div class="anim-dec-progress-fill" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="anim-dec-foot">
+    <span class="anim-dec-phase" id="phaseAfter">2. DESPUÉS</span>
+    <span class="anim-dec-timer" id="timerText">Δt = 0.00s</span>
+  </div>
+</div>
