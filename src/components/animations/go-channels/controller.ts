@@ -1,6 +1,13 @@
 import { recordStageToVideo } from "../VideoRecorder";
 import { getVideoFormat, wireResolutionSelect } from "../exportOptions";
 import {
+  createAudioSession,
+  getAudioStream,
+  playSfx,
+  unlockAudio,
+  SFX,
+} from "../audio/sfx";
+import {
   buildChannelLines,
   buildDemoPlan,
   CHANNEL_CAPACITY,
@@ -227,6 +234,7 @@ export function initChannelsAnimation(): void {
       if (buffer.length < CHANNEL_CAPACITY) {
         const value = item ?? `📦#${itemCounter++}`;
         buffer.push(value);
+        playSfx(SFX.send);
         setLineActive(3, "send");
         setProducer("active", value);
         setStatus(`ENVÍO EXITOSO (${buffer.length}/${CHANNEL_CAPACITY})`, COLOR.send);
@@ -239,6 +247,7 @@ export function initChannelsAnimation(): void {
       } else {
         setLineActive(3, "blocked");
         setProducer("blocked");
+        playSfx(SFX.blocked);
         setStatus(`G1 BLOQUEADO (CANAL LLENO ${buffer.length}/${CHANNEL_CAPACITY})`, COLOR.warn);
         consolePrint(`⚠️ [G1 Productor] ch <- BLOQUEADO (Buffer ${buffer.length}/${CHANNEL_CAPACITY} lleno)`, COLOR.warn);
         await sleep(CHANNEL_TIMING.blockPause);
@@ -249,6 +258,7 @@ export function initChannelsAnimation(): void {
     } else {
       if (buffer.length > 0) {
         const value = buffer.shift()!;
+        playSfx(SFX.recv);
         setLineActive(5, "recv");
         setConsumer("active", value);
         setStatus(`LECTURA EXITOSA (${buffer.length}/${CHANNEL_CAPACITY})`, COLOR.recv);
@@ -261,6 +271,7 @@ export function initChannelsAnimation(): void {
       } else {
         setLineActive(5, "blocked");
         setConsumer("blocked");
+        playSfx(SFX.blocked);
         setStatus(`G2 BLOQUEADO (CANAL VACÍO 0/${CHANNEL_CAPACITY})`, COLOR.warn);
         consolePrint(`⚠️ [G2 Consumidor] <-ch BLOQUEADO (Buffer 0/${CHANNEL_CAPACITY} vacío)`, COLOR.warn);
         await sleep(CHANNEL_TIMING.blockPause);
@@ -309,6 +320,7 @@ export function initChannelsAnimation(): void {
   }
 
   btnSend?.addEventListener("click", async () => {
+    await unlockAudio();
     if (busy) return;
     busy = true;
     btnSend.disabled = true;
@@ -321,6 +333,7 @@ export function initChannelsAnimation(): void {
   });
 
   btnRecv?.addEventListener("click", async () => {
+    await unlockAudio();
     if (busy) return;
     busy = true;
     btnRecv.disabled = true;
@@ -336,6 +349,8 @@ export function initChannelsAnimation(): void {
     if (busy) return;
     busy = true;
     setControlsDisabled(true);
+    createAudioSession();
+    await unlockAudio();
     try {
       await playDemo();
     } finally {
@@ -353,6 +368,8 @@ export function initChannelsAnimation(): void {
     if (busy) return;
     busy = true;
     setControlsDisabled(true);
+    createAudioSession();
+    await unlockAudio();
 
     const fmt = getVideoFormat();
     status.textContent = `Renderizando ${fmt.width}×${fmt.height} a ${fmt.fps}fps... El navegador puede ralentizarse.`;
@@ -368,6 +385,7 @@ export function initChannelsAnimation(): void {
         height: fmt.height,
         fps: fmt.fps,
         fileName: `go-channels-${fmt.width}x${fmt.height}.webm`,
+        audioStream: getAudioStream() ?? undefined,
       });
       status.textContent = `Video descargado ✓ (${fmt.width}×${fmt.height})`;
     } catch (err) {

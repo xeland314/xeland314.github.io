@@ -13,6 +13,7 @@ export interface RecordStageOptions {
   fileName: string;
   backgroundColor?: string;
   bitsPerSecond?: number;
+  audioStream?: MediaStream;
 }
 
 function sleep(ms: number): Promise<void> {
@@ -102,7 +103,11 @@ export async function recordStageToVideo(
     canvas.remove();
     throw new Error(`No se pudo capturar la escena del video: ${String(err)}`);
   }
-  const stream = canvas.captureStream(fps);
+  const videoTracks = canvas.captureStream(fps).getTracks();
+  const audioTracks = options.audioStream
+    ? options.audioStream.getTracks()
+    : [];
+  const stream = new MediaStream([...videoTracks, ...audioTracks]);
   const recorder = new MediaRecorder(stream, {
     mimeType: pickMimeType(),
     videoBitsPerSecond: bitsPerSecond,
