@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Stage from "../../components/animations/Stage.astro";
+import CodePanel from "../../components/animations/code/CodePanel.astro";
+import ChannelBox from "../../components/animations/go-channels/ChannelBox.astro";
+import ConsoleOut from "../../components/animations/go-channels/ConsoleOut.astro";
+import ControlsChannels from "../../components/animations/go-channels/ControlsChannels.astro";
+
+const siteTitle = "Go · Buffered Channel (Goroutines & Concurrencia)";
+const siteDescription =
+  "Animación narrada de un canal bufferizado en Go (cap 2): el productor G1 envía items y el consumidor G2 los recibe, mostrando los bloqueos por canal lleno y vacío.";
+const siteKeywords =
+  "go, golang, goroutine, channel, buffered channel, concurrencia, productor, consumidor, animación, video";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/animations/go-channels";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    />
+  </Fragment>
+
+  <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
+    <Stage eyebrow="GO · CONCURRENCIA & CHANNELS">
+      <Fragment slot="title">
+        Línea de producción con<br />
+        <span class="text-[#00ADD8]">Buffered Channel</span>
+      </Fragment>
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-4 px-6 pb-8">
+        <CodePanel file="concurrencia.go">
+          <Fragment slot="badge">
+            <span id="statusBadge" class="anim-ch-badge">ESPERANDO</span>
+          </Fragment>
+        </CodePanel>
+        <ChannelBox />
+        <ConsoleOut />
+      </div>
+    </Stage>
+
+    <ControlsChannels />
+  </main>
+</BaseLayout>
+
+<script>
+  import { initChannelsAnimation } from "../../components/animations/go-channels/controller";
+  initChannelsAnimation();
+</script>

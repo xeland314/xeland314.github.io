@@ -1,0 +1,35 @@
+---
+import "./channels.css";
+---
+
+<div class="anim-ch-conveyor">
+  <div class="anim-ch-actor" id="boxProd">
+    <div class="anim-ch-actor-id">
+      <span class="anim-ch-emoji">🐹</span>
+      <div>
+        <div class="anim-ch-actor-name">G1: Productor</div>
+        <div class="anim-ch-sub" id="prodSub">go producir(ch)</div>
+      </div>
+    </div>
+    <span class="anim-ch-tag" id="tagProd">READY</span>
+  </div>
+
+  <div class="anim-ch-mailbox" id="mailbox">
+    <span class="anim-ch-mail-label">ch (cap: 2)</span>
+    <div class="flex gap-2">
+      <div class="anim-ch-slot" id="slot0">-</div>
+      <div class="anim-ch-slot" id="slot1">-</div>
+    </div>
+  </div>
+
+  <div class="anim-ch-actor" id="boxCons">
+    <div class="anim-ch-actor-id">
+      <span class="anim-ch-emoji">⚙️</span>
+      <div>
+        <div class="anim-ch-actor-name">G2: Consumidor</div>
+        <div class="anim-ch-sub" id="consSub">item := &lt;-ch</div>
+      </div>
+    </div>
+    <span class="anim-ch-tag" id="tagCons">READY</span>
+  </div>
+</div>
