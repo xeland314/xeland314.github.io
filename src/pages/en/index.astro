@@ -8,6 +8,7 @@ import BentoLanguages from "../../components/bentos/BentoLanguages.astro";
 import BentoEducation from "../../components/bentos/BentoEducation.astro";
 import BentoExperience from "../../components/bentos/BentoExperience.astro";
 import BentoVideos from "../../components/bentos/BentoVideos.astro";
+import BentoAnimations from "../../components/bentos/BentoAnimations.astro";
 import BentoCertificates from "../../components/bentos/BentoCertificates.astro";
 import BentoProjects from "../../components/bentos/BentoProjects.astro";
 import BentoTechStack from "../../components/bentos/BentoTechStack.astro";
@@ -147,7 +148,10 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
             <BentoDevTools lang={lang} />
           </div>
         </div>
-      </section>
+        <div class="lg:col-span-12">
+          <BentoAnimations lang={lang} />
+        </div>
+    </section>
 
       {/* 5. Contacto y Servicios */}
       <section aria-label="Contact and services" id="contact">

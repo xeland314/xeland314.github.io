@@ -1,0 +1,79 @@
+---
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+import { ANIMATIONS } from "./animations-data";
+
+const { lang = "es" } = Astro.props;
+
+const texts: Record<string, { heading: string; label: string }> = {
+  es: { heading: "Animaciones", label: "Animaciones de código" },
+  en: { heading: "Animations", label: "Code animations" },
+};
+
+const T = texts[lang];
+const langKey = lang as keyof (typeof ANIMATIONS)[number]["title"];
+---
+
+<section
+  aria-labelledby="animations-heading"
+  class="h-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
+>
+  <BentoInternalHeader
+    title={T.heading}
+    subtitle={T.label}
+    count={ANIMATIONS.length}
+    href="/animations"
+    lang={lang}
+    id="animations-heading"
+  />
+
+  <ul
+    role="list"
+    aria-label={T.label}
+    class="grid grid-cols-2 sm:grid-cols-3 gap-3 px-5"
+  >
+    {
+      ANIMATIONS.map((anim) => (
+        <li>
+          <a
+            href={`/animations/${anim.slug}`}
+            aria-label={`${anim.title[langKey]} — ${anim.description[langKey]}`}
+            class="group flex flex-col items-start gap-2 p-4 rounded-xl bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <div
+              aria-hidden="true"
+              class={`w-12 h-12 rounded-2xl bg-gradient-to-br ${anim.gradient} flex items-center justify-center shadow-sm`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <Fragment set:html={anim.icon} />
+              </svg>
+            </div>
+
+            <div class="text-left">
+              <p class="text-[11px] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                {anim.title[langKey]}
+              </p>
+              <p class="text-[9px] text-gray-400 dark:text-gray-500 leading-snug mt-0.5">
+                {anim.description[langKey]}
+              </p>
+              <span class="inline-block mt-1.5 text-[8.5px] font-mono font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+                {anim.badge[langKey]}
+              </span>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
