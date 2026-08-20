@@ -1,0 +1,20 @@
+---
+import "./with.css";
+---
+
+<div class="anim-with-card">
+  <div class="flex justify-between items-center mb-2">
+    <span class="anim-with-resource-label">RECURSO: BASE DE DATOS</span>
+    <span id="doorTag" class="anim-with-tag closed">🔒 CERRADO</span>
+  </div>
+  <div class="anim-with-door" id="vaultDoor">
+    <div class="flex items-center gap-3">
+      <div id="doorIcon" class="text-2xl">🔒</div>
+      <div>
+        <div id="doorTitle" class="anim-with-door-title">Conexión Inactiva</div>
+        <div id="doorSub" class="anim-with-door-sub">Puerto 5432 · Standby</div>
+      </div>
+    </div>
+    <div id="statusPulse" class="anim-with-pulse"></div>
+  </div>
+</div>
