@@ -74,4 +74,15 @@ export const ANIMATIONS: AnimationCard[] = [
     gradient: "from-green-500 to-emerald-600",
     icon: `<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>`,
   },
+  {
+    slug: "git-merge-rebase",
+    title: { es: "Git · Merge vs Rebase", en: "Git · Merge vs Rebase" },
+    description: {
+      es: "Fusión con commit M1 vs historial lineal",
+      en: "Merge commit M1 vs linear history",
+    },
+    badge: { es: "Git", en: "Git" },
+    gradient: "from-purple-500 to-orange-500",
+    icon: `<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>`,
+  },
 ];

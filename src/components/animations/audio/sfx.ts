@@ -96,4 +96,16 @@ export const SFX = {
     0.38, 0.01, 145, 0.008, 0.12, 0.22, 0, 0.75, 0, 0, 0, 0, 0, 0.35, 0, 0, 0,
     0.8, 0, 0,
   ],
+
+  // Fusion (merge): acorde ascendente que resuelve
+  merge: [
+    0.45, 0.05, 440, 0.01, 0.1, 0.4, 2, 0.3, 200, 0, 0, 0, 0, 0, -40, 0, 0, 0.8,
+    0, 0,
+  ],
+
+  // Replantado (rebase): deslizamiento descendente y reasentado
+  rebase: [
+    0.42, 0.05, 520, 0.02, 0.12, 0.4, 2, -0.6, -300, 0, 0, 0, 0, 0, 50, 0, 0, 0.8,
+    0, 0,
+  ],
 } as const;

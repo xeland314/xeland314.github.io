@@ -1,0 +1,106 @@
+---
+import "./git.css";
+---
+
+<div class="anim-git-card flex flex-col gap-2">
+  <div class="flex justify-between items-center px-1">
+    <span class="anim-git-legend-label">ÁRBOLES DE COMMITS</span>
+    <div class="flex gap-2 anim-git-legend-label">
+      <span class="flex items-center gap-1 text-[#3b82f6]">
+        <span class="w-2 h-2 rounded-full bg-[#3b82f6]"></span>
+        main
+      </span>
+      <span class="flex items-center gap-1 text-[#a855f7]" id="legendBranch">
+        <span class="w-2 h-2 rounded-full bg-[#a855f7]"></span>
+        feature
+      </span>
+    </div>
+  </div>
+
+  <svg id="gitSvg" viewBox="0 0 355 150" class="anim-git-svg">
+    <path
+      id="pathMain"
+      d="M 35 50 L 115 50 L 195 50"
+      fill="none"
+      stroke="#3b82f6"
+      stroke-width="3"
+      stroke-linecap="round"
+    ></path>
+
+    <path
+      id="pathFeature"
+      d="M 115 50 C 145 50, 145 110, 175 110 L 255 110"
+      fill="none"
+      stroke="#a855f7"
+      stroke-dasharray="0"
+      stroke-width="3"
+      stroke-linecap="round"
+    ></path>
+
+    <path
+      id="pathMerge"
+      d="M 255 110 C 285 110, 285 50, 315 50"
+      fill="none"
+      stroke="#a855f7"
+      stroke-width="3"
+      stroke-dasharray="4 4"
+      opacity="0"
+    ></path>
+
+    <g id="nodeC1" class="commit-node" transform="translate(35, 50)">
+      <circle r="12" fill="#0d131b" stroke="#3b82f6" stroke-width="3"></circle>
+      <text y="4" font-family="JetBrains Mono" font-size="9" fill="#e7edf3" text-anchor="middle" font-weight="bold"
+        >C1</text
+      >
+    </g>
+
+    <g id="nodeC2" class="commit-node" transform="translate(115, 50)">
+      <circle r="12" fill="#0d131b" stroke="#3b82f6" stroke-width="3"></circle>
+      <text y="4" font-family="JetBrains Mono" font-size="9" fill="#e7edf3" text-anchor="middle" font-weight="bold"
+        >C2</text
+      >
+    </g>
+
+    <g id="nodeC3" class="commit-node" transform="translate(195, 50)">
+      <circle r="12" fill="#0d131b" stroke="#3b82f6" stroke-width="3"></circle>
+      <text y="4" font-family="JetBrains Mono" font-size="9" fill="#e7edf3" text-anchor="middle" font-weight="bold"
+        >C3</text
+      >
+    </g>
+
+    <g id="nodeMerge" class="commit-node" transform="translate(315, 50)" opacity="0">
+      <circle r="12" fill="#11181f" stroke="#a855f7" stroke-width="3"></circle>
+      <text y="4" font-family="JetBrains Mono" font-size="9" fill="#a855f7" text-anchor="middle" font-weight="bold"
+        >M1</text
+      >
+    </g>
+
+    <g id="nodeF1" class="commit-node" transform="translate(175, 110)">
+      <circle r="12" fill="#0d131b" stroke="#a855f7" stroke-width="3"></circle>
+      <text y="4" id="textF1" font-family="JetBrains Mono" font-size="9" fill="#e7edf3" text-anchor="middle" font-weight="bold"
+        >F1</text
+      >
+    </g>
+
+    <g id="nodeF2" class="commit-node" transform="translate(255, 110)">
+      <circle r="12" fill="#0d131b" stroke="#a855f7" stroke-width="3"></circle>
+      <text y="4" id="textF2" font-family="JetBrains Mono" font-size="9" fill="#e7edf3" text-anchor="middle" font-weight="bold"
+        >F2</text
+      >
+    </g>
+
+    <g id="tagMain" class="commit-node" transform="translate(195, 22)">
+      <rect x="-18" y="-8" width="36" height="14" rx="4" fill="#3b82f6" opacity="0.9"></rect>
+      <text y="2" font-family="JetBrains Mono" font-size="8" fill="#ffffff" text-anchor="middle" font-weight="bold"
+        >main</text
+      >
+    </g>
+
+    <g id="tagFeature" class="commit-node" transform="translate(255, 134)">
+      <rect x="-22" y="-8" width="44" height="14" rx="4" fill="#a855f7" opacity="0.9"></rect>
+      <text y="2" id="textTagFeature" font-family="JetBrains Mono" font-size="8" fill="#ffffff" text-anchor="middle" font-weight="bold"
+        >feature</text
+      >
+    </g>
+  </svg>
+</div>
