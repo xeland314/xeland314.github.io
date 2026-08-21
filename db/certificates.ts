@@ -1,5 +1,27 @@
 export const certificates = [
   {
+    logo: "/images/anthropic.svg",
+    title: "Claude Code in Action",
+    issuer: "Anthropic",
+    issueDate: "Mayo de 2026",
+    date: "2026-05-01",
+    credentialId: "zv8qvnncyawj",
+    credentialUrl: "https://verify.skilljar.com/c/zv8qvnncyawj",
+    skills: ["Claude"],
+    isFeatured: true,
+  },
+  {
+    logo: "/images/anthropic.svg",
+    title: "Claude 101",
+    issuer: "Anthropic",
+    issueDate: "Mayo de 2026",
+    date: "2026-05-01",
+    credentialId: "3b93vazmux2t",
+    credentialUrl: "https://verify.skilljar.com/c/3b93vazmux2t",
+    skills: ["Claude", "Claude Skills"],
+    isFeatured: true,
+  },
+  {
     logo: "/images/efset.svg",
     title: "EF SET Certificado de Inglés C1 Avanzado",
     issuer: "EF SET",
