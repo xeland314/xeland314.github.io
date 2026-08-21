@@ -1,5 +1,5 @@
 ---
-import { db, MyCertificates, asc, eq } from "astro:db";
+import { db, MyCertificates, desc, asc, eq } from "astro:db";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CertificatesCard from "../../../components/certificates/CertificatesCard.astro";
 
@@ -34,9 +34,9 @@ const allCertificates = await db
     .from(MyCertificates)
     .where(eq(MyCertificates.lang, "es"))
     .orderBy(
-        asc(MyCertificates.date),
-        MyCertificates.isFeatured,
-        MyCertificates.title,
+        desc(MyCertificates.date),
+        desc(MyCertificates.isFeatured),
+        asc(MyCertificates.title),
     );
 ---
 

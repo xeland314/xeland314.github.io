@@ -11,11 +11,13 @@ const texts = {
     logo_alt: "Logo de",
     issued: "Emitido:",
     view_credential: "Ver Credencial",
+    featured: "Destacado",
   },
   en: {
     logo_alt: "Logo of",
     issued: "Issued:",
     view_credential: "View Credential",
+    featured: "Featured",
   },
 };
 
@@ -76,6 +78,26 @@ const T = texts[lang];
             >
               {cert.issueDate}
             </time>
+            {
+              cert.isFeatured && (
+                <>
+                  <span class="hidden sm:inline text-gray-300 dark:text-gray-700">
+                    •
+                  </span>
+                  <span class="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    <svg
+                      class="w-3.5 h-3.5"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 2l2.9 6.26 6.6.57-5 4.36 1.5 6.45L12 16.9 5.99 19.64l1.5-6.45-5-4.36 6.61-.57L12 2z" />
+                    </svg>
+                    {T.featured}
+                  </span>
+                </>
+              )
+            }
           </div>
         </div>
 

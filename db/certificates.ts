@@ -19,7 +19,7 @@ export const certificates = [
     credentialId: "3b93vazmux2t",
     credentialUrl: "https://verify.skilljar.com/c/3b93vazmux2t",
     skills: ["Claude", "Claude Skills"],
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     logo: "/images/efset.svg",
