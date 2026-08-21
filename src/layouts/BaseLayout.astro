@@ -2,6 +2,7 @@
 import "/src/styles/global.css";
 
 import { ClientRouter } from "astro:transitions";
+import Header from "../components/common/Header.astro";
 
 interface Props {
   title: string;
@@ -15,6 +16,7 @@ interface Props {
   robots?: string;
   canonical?: string;
   lang?: string;
+  showHeader?: boolean;
 }
 
 const {
@@ -29,6 +31,7 @@ const {
   robots = "index, follow",
   canonical,
   lang = "es",
+  showHeader = true,
 } = Astro.props;
 ---
 
@@ -122,6 +125,7 @@ const {
   </head>
   <body class="font-inter bg-white text-black dark:bg-gray-800 dark:text-white">
     <div class="mx-auto pt-0">
+      {showHeader && <Header />}
       <slot />
       <script is:inline src="/scripts/smoothScrollWithOffset.js"></script>
     </div>
