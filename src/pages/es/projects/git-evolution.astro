@@ -1,0 +1,117 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "Git Evolution - Evolución de Código por Lenguaje";
+const description =
+  "CLI en Python que analiza la historia de cualquier repositorio Git y genera un reporte HTML interactivo con Plotly mostrando la evolución de líneas de código por extensión a lo largo del tiempo.";
+const keywords =
+  "git, python, uv, plotly, pyinstaller, chain of responsibility, visualización, code evolution, cli";
+const author = "Christopher Villamarín";
+const applicationName = "git-evolution";
+const url = "https://xeland314.github.io/es/projects/git-evolution/";
+const image = "/images/catsplash/admin_panel.jpg";
+const imageAlt = "Reporte de evolución de código generado por git-evolution";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/git-evolution/";
+
+const features = [
+  {
+    title: "Pipeline Chain of Responsibility",
+    desc: "Cinco pasos encadenados (Fetch → Parse → Accumulate → Plot → Render) que enriquecen un contexto compartido, fáciles de extender con nuevos handlers.",
+  },
+  {
+    title: "Zero-Config con uv (PEP 723)",
+    desc: "Metadatos inline en el script permiten que uv resuelva Python y plotly al vuelo con `uv run main.py`, sin venvs ni instalación global.",
+  },
+  {
+    title: "Rendimiento sin Regex",
+    desc: "El parseo de `git log --numstat` usa escaneo estricto de strings línea a línea para minimizar el costo de CPU en historiales largos.",
+  },
+  {
+    title: "Binario Standalone",
+    desc: "`build.sh` orquesta PyInstaller en modo onefile con uv: un ejecutable autosuficiente que incrusta el template HTML y no requiere Python.",
+  },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      Git <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">Evolution</span>
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Visualiza cómo evolucionó tu código por lenguaje a lo largo del tiempo: un comando, un HTML interactivo listo para compartir.
+    </p>
+  </header>
+
+  <section class="mb-12">
+    <div class="rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 bg-[#11151c]">
+      <iframe
+        src="/git-evolution.html"
+        title="Demo en vivo: evolución de este portafolio generada por git-evolution"
+        class="w-full h-[560px]"
+        loading="lazy"
+      ></iframe>
+    </div>
+    <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+      Demo real: reporte generado ejecutando <code class="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">uv run main.py</code> dentro de este propio portafolio.
+      <a href="/git-evolution.html" target="_blank" class="text-orange-500 hover:underline font-bold">Abrir pantalla completa →</a>
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Características Principales</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-orange-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              {feature.title}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {feature.desc}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">¿Cómo funciona?</h2>
+    <div class="p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+      <ol class="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+        <li class="flex gap-3"><span class="font-mono font-bold text-orange-500">1.</span><span><b>Fetch:</b> ejecuta `git log --numstat`, `git rev-parse` y `git rev-list` para capturar historial, nombre del repo y total de commits.</span></li>
+        <li class="flex gap-3"><span class="font-mono font-bold text-orange-500">2.</span><span><b>Parse:</b> escanea el log línea a línea acumulando líneas añadidas/eliminadas por extensión y fecha.</span></li>
+        <li class="flex gap-3"><span class="font-mono font-bold text-orange-500">3.</span><span><b>Accumulate:</b> convierte los deltas diarios en series acumulativas por extensión.</span></li>
+        <li class="flex gap-3"><span class="font-mono font-bold text-orange-500">4.</span><span><b>Plot:</b> construye la figura Plotly oscura con rango de fechas explícito, evitando que el autorange colapse en repos pequeños.</span></li>
+        <li class="flex gap-3"><span class="font-mono font-bold text-orange-500">5.</span><span><b>Render:</b> inyecta figura y metadatos en template.html produciendo git-evolution.html autónomo.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-orange-600/5 to-amber-500/5 border border-orange-500/10">
+    <h2 class="text-3xl font-bold mb-6">Explora el Código</h2>
+    <p class="mb-8 text-lg text-gray-600 dark:text-gray-400">Revisa la arquitectura completa del pipeline en el repositorio oficial.</p>
+    <a
+      href="https://github.com/xeland314/git-evolution"
+      target="_blank"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold transition-all transform hover:-translate-y-1 shadow-lg shadow-orange-600/20"
+    >
+      Ver en GitHub
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+    </a>
+  </section>
+</ProjectLayout>

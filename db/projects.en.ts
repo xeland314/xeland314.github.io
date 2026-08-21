@@ -288,4 +288,31 @@ export const projectDataEN = [
     isFeatured: true,
     lang: "en",
   },
+  {
+    title: "Git Evolution - Code Evolution by Language",
+    slug: "en/projects/git-evolution",
+    description:
+      "Python CLI that analyzes any Git repository's history and generates an interactive Plotly HTML report: stacked areas of cumulative lines of code per file extension over time. Built as a Chain of Responsibility pipeline with strict non-regex scanning, an explicitly computed X axis range that keeps tiny repos readable, and standalone packaging via PyInstaller. Environments resolve themselves with uv inline script metadata (PEP 723). The linked demo was generated from this very portfolio's history.",
+    shortDescription:
+      "Turn Git history into an interactive per-language evolution chart with a single uv command.",
+    githubLink: "https://github.com/xeland314/git-evolution",
+    demoLink: "https://xeland314.github.io/git-evolution.html",
+    tags: ["Python", "uv", "Plotly", "PyInstaller", "Chain of Responsibility", "CLI"],
+    image: undefined,
+    isFeatured: true,
+    lang: "en",
+  },
+  {
+    title: "Mouse Visual - Animated Pixel Art in C with Raylib",
+    slug: "en/projects/mouse-visual",
+    description:
+      "Animated pixel-art mouse drawing written in pure C with Raylib. Ships a Makefile for Linux and cross-compilation to Windows with MinGW, a script that downloads and builds raylib automatically, and constants defined with #define in alphabetical order as a code-discipline exercise.",
+    shortDescription:
+      "Animated pixel art in C with Raylib: one Makefile builds for both Linux and Windows via MinGW.",
+    githubLink: "https://github.com/xeland314/mouse_visual",
+    tags: ["C", "Raylib", "Makefile", "MinGW", "Pixel Art", "Low-Level"],
+    image: undefined,
+    isVisible: true,
+    lang: "en",
+  },
 ];

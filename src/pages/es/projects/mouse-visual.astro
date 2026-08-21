@@ -1,0 +1,124 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "Mouse Visual - Pixel Art Animado en C con Raylib";
+const description =
+  "Dibujo animado estilo pixel art de un mouse escrito en C puro con Raylib, con Makefile para Linux y compilación cruzada a Windows usando MinGW.";
+const keywords =
+  "c, raylib, pixel art, makefile, mingw, cross compile, low level, game dev";
+const author = "Christopher Villamarín";
+const applicationName = "Mouse Visual";
+const url = "https://xeland314.github.io/es/projects/mouse-visual/";
+const image = "/images/catsplash/admin_panel.jpg";
+const imageAlt = "Demostración animada de Mouse Visual";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/mouse-visual/";
+
+const features = [
+  {
+    title: "C Puro con Raylib",
+    desc: "Renderizado 2D con la API minimalista de Raylib: sin motores ni frameworks, solo la biblioteca estática y X11/OpenGL.",
+  },
+  {
+    title: "Un Makefile, Dos Plataformas",
+    desc: "`make` produce el binario Linux enlazando libraylib.a; `make windows` cruza a mouse_app.exe con x86_64-w64-mingw32-gcc sin heredar flags de X11.",
+  },
+  {
+    title: "Setup Automático de Dependencias",
+    desc: "`download_raylib.sh` descarga, compila e instala raylib para Linux y para Windows (MinGW) antes del primer build.",
+  },
+  {
+    title: "Disciplina de Estilo",
+    desc: "Constantes definidas con #define en orden alfabético y variables intermedias antes de cada llamada a Raylib como convención deliberada.",
+  },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      Mouse <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-600">Visual</span>
+    </h1>
+    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      Un mouse estilo pixel art dibujado cuadro a cuadro en C puro con Raylib. Ejercicio de gráficos 2D de bajo nivel.
+    </p>
+  </header>
+
+  <section class="mb-12">
+    <div class="rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 bg-black">
+      <video
+        src="/images/mouse-visual/test_optimized.mp4"
+        autoplay
+        loop
+        muted
+        playsinline
+        class="w-full"
+        aria-label="Grabación de Mouse Visual en ejecución"
+      ></video>
+    </div>
+    <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+      Grabación real del programa en ejecución ·
+      <a href="/images/mouse-visual/test.gif" target="_blank" class="text-pink-500 hover:underline font-bold">ver GIF original →</a>
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Características Principales</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="group p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-pink-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">
+              {feature.title}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {feature.desc}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Compilación</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="p-6 rounded-2xl bg-[#0d1117] border border-gray-700 shadow-sm">
+        <p class="text-xs font-mono uppercase tracking-wider text-gray-400 mb-3">Linux</p>
+        <pre class="text-sm text-emerald-300 overflow-x-auto"><code>./download_raylib.sh
+make
+./mouse_app</code></pre>
+      </div>
+      <div class="p-6 rounded-2xl bg-[#0d1117] border border-gray-700 shadow-sm">
+        <p class="text-xs font-mono uppercase tracking-wider text-gray-400 mb-3">Windows (cross compile)</p>
+        <pre class="text-sm text-emerald-300 overflow-x-auto"><code>make windows
+# -> mouse_app.exe via MinGW</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-pink-600/5 to-rose-500/5 border border-pink-500/10">
+    <h2 class="text-3xl font-bold mb-6">Explora el Código</h2>
+    <p class="mb-8 text-lg text-gray-600 dark:text-gray-400">Revisa el código fuente completo y el Makefile multiplataforma en GitHub.</p>
+    <a
+      href="https://github.com/xeland314/mouse_visual"
+      target="_blank"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold transition-all transform hover:-translate-y-1 shadow-lg shadow-pink-600/20"
+    >
+      Ver en GitHub
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+    </a>
+  </section>
+</ProjectLayout>
