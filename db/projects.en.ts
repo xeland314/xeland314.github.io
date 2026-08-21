@@ -274,4 +274,18 @@ export const projectDataEN = [
     lang: "en",
     isVisible: false,
   },
+  {
+    title: "Catsplash - Wi-Fi Captive Portal for Linux",
+    slug: "en/projects/catsplash",
+    description:
+      "Lightweight captive portal written in Go to manage Internet access on temporary Linux Wi-Fi networks. It blocks traffic with iptables until terms are accepted, manages clients and sessions in SQLite with time and inactivity expiration, and ships a network-namespaces testing lab with 100 concurrent clients, gosec-enabled CI/CD, and documented Ecuadorian LOPDP data-protection compliance (explicit consent, ARCO+ rights and DPIA).",
+    shortDescription:
+      "Go captive portal for Linux: dynamic iptables firewall, SQLite sessions, namespace-based testing and data-protection compliance.",
+    githubLink: "https://github.com/xeland314/catsplash",
+    demoLink: "https://xeland314.github.io/catsplash-docs/en/",
+    tags: ["Go", "SQLite", "iptables", "Linux", "Networking", "Data Protection", "Testing"],
+    image: "/images/catsplash/admin_panel.jpg",
+    isFeatured: true,
+    lang: "en",
+  },
 ];

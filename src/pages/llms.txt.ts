@@ -17,6 +17,7 @@ export const GET: APIRoute = async () => {
   const devSlugs = [
     'code-to-video',
     'code-to-img',
+    'catsplash',
   ];
 
   const getProjects = (slugs: string[]) =>

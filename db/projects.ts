@@ -254,4 +254,17 @@ export const projectData = [
     image: undefined,
     isVisible: false,
   },
+  {
+    title: "Catsplash - Portal Cautivo Wi-Fi para Linux",
+    slug: "catsplash",
+    description:
+      "Portal cautivo ligero escrito en Go para gestionar el acceso a Internet en redes Wi-Fi temporales sobre Linux. Bloquea el tráfico con iptables hasta aceptar los términos, gestiona sesiones y clientes en SQLite con expiración por tiempo e inactividad, e incluye un laboratorio de pruebas con network namespaces de 100 clientes concurrentes, CI/CD con gosec y validación documentada de la LOPDP (consentimiento explícito, derechos ARCO+ y DPIA).",
+    shortDescription:
+      "Portal cautivo en Go para Linux: firewall dinámico con iptables, sesiones en SQLite, testing con namespaces y cumplimiento LOPDP.",
+    githubLink: "https://github.com/xeland314/catsplash",
+    demoLink: "https://xeland314.github.io/catsplash-docs/",
+    tags: ["Go", "SQLite", "iptables", "Linux", "Networking", "LOPDP", "Testing"],
+    image: "/images/catsplash/admin_panel.jpg",
+    isFeatured: true,
+  },
 ];
