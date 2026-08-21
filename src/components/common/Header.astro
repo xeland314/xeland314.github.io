@@ -15,7 +15,6 @@ const t =
         posts: "Posts",
         blogs: "Blogs",
         certificates: "Certificates",
-        services: "Services",
         animations: "Animations",
         miniApps: "Mini Apps",
         videos: "Videos",
@@ -28,7 +27,6 @@ const t =
         posts: "Posts",
         blogs: "Blogs",
         certificates: "Certificados",
-        services: "Servicios",
         animations: "Animaciones",
         miniApps: "Mini Apps",
         videos: "Videos",
@@ -48,9 +46,6 @@ const links: NavLink[] = [
   { href: `${sectionBase}/posts`, label: t.posts, prefix: true },
   { href: `${sectionBase}/blogs`, label: t.blogs, prefix: true },
   { href: `${sectionBase}/certificates`, label: t.certificates, prefix: true },
-  ...(lang === "es"
-    ? [{ href: `${sectionBase}/services`, label: t.services, prefix: true }]
-    : []),
   { href: "/animations", label: t.animations, prefix: true },
   { href: "/mini-apps", label: t.miniApps, prefix: true },
   { href: "/videos", label: t.videos, prefix: true },
@@ -193,39 +188,7 @@ const isActive = (link: NavLink) => {
 </style>
 
 <script>
-  const header = document.getElementById("main-header");
-  const toggleButton = document.getElementById("menu-toggle");
-  const menuPanel = document.getElementById("site-menu");
-  const iconOpen = document.getElementById("icon-open");
-  const iconClose = document.getElementById("icon-close");
+  import { initSiteMenu } from "../../hooks/siteMenu";
 
-  const isOpen = () => header?.dataset.menuOpen === "true";
-
-  const setOpen = (open: boolean) => {
-    if (!header || !toggleButton || !iconOpen || !iconClose) return;
-    header.dataset.menuOpen = String(open);
-    toggleButton.setAttribute("aria-expanded", String(open));
-    iconOpen.classList.toggle("hidden", open);
-    iconClose.classList.toggle("hidden", !open);
-  };
-
-  toggleButton?.addEventListener("click", (event) => {
-    event.stopPropagation();
-    setOpen(!isOpen());
-  });
-
-  document.addEventListener("click", (event) => {
-    if (!isOpen()) return;
-    const target = event.target as Node;
-    if (menuPanel?.contains(target) || toggleButton?.contains(target)) return;
-    setOpen(false);
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && isOpen()) setOpen(false);
-  });
-
-  menuPanel?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => setOpen(false));
-  });
+  initSiteMenu();
 </script>
