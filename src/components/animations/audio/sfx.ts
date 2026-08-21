@@ -2,8 +2,10 @@ import { ZZFX } from "zzfx";
 
 export type SfxParams = readonly number[];
 
-let session: { ctx: AudioContext; master: MediaStreamAudioDestinationNode } | null =
-  null;
+let session: {
+  ctx: AudioContext;
+  master: MediaStreamAudioDestinationNode;
+} | null = null;
 
 export function createAudioSession(): {
   ctx: AudioContext;
@@ -53,11 +55,45 @@ export function playSfx(
 }
 
 export const SFX = {
-  send: [0.5, 0.05, 620, 0.01, 0.1, 0.3, 2, 0.4, -300, 0, 0, 0, 0, 0, 60, 0, 0, 0.7, 0, 0],
-  recv: [0.5, 0.05, 900, 0.01, 0.06, 0.25, 2, -0.4, 500, 0, 0, 0, 0, 0, -80, 0, 0, 0.9, 0, 0],
-  blocked: [0.45, 0, 160, 0.02, 0.12, 0.28, 0, 1, 0, 0, 0, 0, 0, 0.4, 0, 0, 0, 1, 0, 0],
-  click: [0.3, 0.1, 700, 0.01, 0.02, 0.06, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.8, 0, 0],
-  open: [0.4, 0.05, 520, 0.01, 0.08, 0.25, 2, 0.6, 260, 0, 0, 0, 0, 0, -60, 0, 0, 0.8, 0, 0],
-  close: [0.4, 0.05, 380, 0.01, 0.06, 0.3, 2, -0.5, -180, 0, 0, 0, 0, 0, 40, 0, 0, 0.8, 0, 0],
-  error: [0.5, 0, 140, 0.02, 0.1, 0.35, 0, 1, 0, 0, 0, 0, 0, 0.5, 0, 0, 0, 1, 0, 0],
+  // Envío: subida rápida, ligera y tecnológica
+  send: [
+    0.35, 0.04, 520, 0.005, 0.08, 0.18, 2, 0.35, 180, 0, 0, 0, 0, 0, 40, 0, 0,
+    0.65, 0, 0,
+  ],
+
+  // Recepción: más agudo y agradable que send
+  recv: [
+    0.38, 0.04, 760, 0.005, 0.09, 0.22, 2, 0.45, 260, 0, 0, 0, 0, 0, -50, 0, 0,
+    0.7, 0, 0,
+  ],
+
+  // Bloqueado: golpe corto, grave y seco
+  blocked: [
+    0.32, 0.01, 180, 0.005, 0.09, 0.16, 0, 0.8, -80, 0, 0, 0, 0, 0.25, 0, 0, 0,
+    0.75, 0, 0,
+  ],
+
+  // Click: muy corto para poder repetirse muchas veces
+  click: [
+    0.22, 0.02, 680, 0.002, 0.015, 0.045, 2, 0.7, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0.6, 0, 0,
+  ],
+
+  // Apertura: pequeño "pop" ascendente
+  open: [
+    0.32, 0.035, 440, 0.005, 0.09, 0.2, 2, 0.5, 220, 0, 0, 0, 0, 0, -40, 0, 0,
+    0.7, 0, 0,
+  ],
+
+  // Cierre: movimiento descendente
+  close: [
+    0.32, 0.035, 500, 0.005, 0.08, 0.2, 2, -0.5, -220, 0, 0, 0, 0, 0, 40, 0, 0,
+    0.7, 0, 0,
+  ],
+
+  // Error: dos componentes: grave + textura ligeramente áspera
+  error: [
+    0.38, 0.01, 145, 0.008, 0.12, 0.22, 0, 0.75, 0, 0, 0, 0, 0, 0.35, 0, 0, 0,
+    0.8, 0, 0,
+  ],
 } as const;
