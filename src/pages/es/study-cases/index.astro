@@ -1,0 +1,75 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { STUDY_CASES } from "../../../components/study-cases/study-cases-data";
+
+const pageTitle = "Casos de Estudio | Christopher Villamarín";
+const pageDescription =
+  "Casos de estudio reales: sitios en producción para negocios locales de Quito. Construcción desde cero y mejora de sitios existentes.";
+const pageKeywords =
+  "casos de estudio, desarrollo web, quito, seo local, negocios locales, portafolio";
+const pageAuthor = "Christopher Villamarín";
+const pageUrl = "https://xeland314.github.io/es/study-cases/";
+const pageImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+const pageCanonical = pageUrl;
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  url={pageUrl}
+  image={pageImage}
+  canonical={pageCanonical}
+  lang="es"
+>
+  <main
+    class="py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen"
+  >
+    <section class="max-w-4xl mx-auto px-6">
+      <a
+        href="/"
+        class="text-blue-600 dark:text-blue-400 hover:underline block mb-6"
+      >
+        ← Volver al inicio
+      </a>
+
+      <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tighter">
+        Casos de <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">Estudio</span>
+      </h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-2xl">
+        Sitios reales, en producción, para negocios reales de Quito. Dos maneras de trabajar:
+        construir desde cero y diagnosticar lo que ya existe.
+      </p>
+
+      <div class="grid grid-cols-1 gap-6">
+        {
+          STUDY_CASES.map((studyCase) => (
+            <a
+              href={`/es/study-cases/${studyCase.slug}`}
+              class="group block p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-cyan-500/40 hover:shadow-xl transition-all duration-300"
+            >
+              <div class="flex flex-wrap items-center gap-3 mb-3">
+                <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-white px-2.5 py-1 rounded-md bg-gradient-to-r from-cyan-500 to-blue-600">
+                  {studyCase.year}
+                </span>
+                <span class="text-xs font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {studyCase.role.es}
+                </span>
+              </div>
+              <h2 class="text-2xl font-bold mb-2 group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors">
+                {studyCase.client}
+              </h2>
+              <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {studyCase.summary.es}
+              </p>
+              <span class="inline-block mt-4 text-sm font-bold text-cyan-600 dark:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                Leer caso de estudio →
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</BaseLayout>
