@@ -23,7 +23,7 @@ const texts: Record<
 > = {
   es: {
     name: "Christopher Villamarín",
-    role: "Desarrollador",
+    role: "Desarrollador ",
     specialty: "Backend",
     exp: "+3 años de experiencia",
     available: "Disponible para proyectos",
@@ -40,7 +40,7 @@ const texts: Record<
   },
   en: {
     name: "Christopher Villamarín",
-    role: "Backend",
+    role: "Backend ",
     specialty: "Developer",
     exp: "+3 years of experience",
     available: "Available for projects",
@@ -48,7 +48,7 @@ const texts: Record<
     tagline_phrases: [
       "that turn visits into customers.",
       "that Google indexes and AI assistants recommend.",
-      "from scratch — or by rescuing what already exists.",
+      " from scratch — or by rescuing what already exists.",
     ],
     cta_primary: "View projects",
     cta_secondary: "Contact",
@@ -155,6 +155,7 @@ const T = texts[lang];
           <span class="dark:text-white text-gray-900 font-semibold"
             >{T.role}</span
           >
+          {" "}
           {T.specialty}
         </p>
         {/* Handle / badge */}
@@ -199,6 +200,7 @@ const T = texts[lang];
         aria-label={`${T.tagline_prefix} ${T.tagline_phrases[0]}`}
       >
         <span>{T.tagline_prefix}</span>
+        {" "}
         <span
           id="hero-rotator"
           class="font-semibold text-blue-500 dark:text-blue-400 after:content-['|'] after:ml-0.5 after:animate-pulse"
