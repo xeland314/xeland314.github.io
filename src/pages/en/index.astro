@@ -15,6 +15,7 @@ import BentoTechStack from "../../components/bentos/BentoTechStack.astro";
 import BentoPostGallery from "../../components/bentos/BentoPostGallery.astro";
 import BentoServices from "../../components/bentos/BentoServices.astro";
 import BentoDevTools from "../../components/bentos/BentoDevTools.astro";
+import BentoCaseStudy from "../../components/bentos/BentoCaseStudy.astro";
 import BentoBlog from "../../components/bentos/BentoBlog.astro";
 import ContactForm from "../../components/contact/ContactForm";
 import Footer from "../../components/common/Footer.astro";
@@ -118,6 +119,11 @@ const siteImage = "https://xeland314.github.io/images/preview-en.jpg";
             <BentoProjects projects={featuredProjects} lang={lang} />
           </div>
         </div>
+      </section>
+
+      {/* 2.5 Featured case study (social proof + service pitch) */}
+      <section aria-label="Featured case study">
+        <BentoCaseStudy lang={lang} />
       </section>
 
       {/* 3. Publicaciones Recientes */}

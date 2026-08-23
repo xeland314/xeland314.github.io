@@ -25,6 +25,7 @@ export interface StudyCase {
   heroImage?: { src: string; width: number; height: number; alt: LocalizedText };
   resultsIntro?: LocalizedText;
   evidence?: EvidenceItem[];
+  nextSteps?: LocalizedText[];
 }
 
 export const STUDY_CASES: StudyCase[] = [
@@ -86,6 +87,20 @@ export const STUDY_CASES: StudyCase[] = [
       es: "Capturas reales tomadas en julio de 2026, unos meses después del lanzamiento.",
       en: "Real screenshots taken in July 2026, a few months after launch.",
     },
+    nextSteps: [
+      {
+        es: "Recolección activa de reseñas: pedirle al cliente su reseña de Google al entregarle el vehículo. Eso ya no es programación sino operación del negocio, y es la pieza con más impacto a corto plazo.",
+        en: "Active review collection: asking the customer for a Google review when handing back their car. That is no longer programming but business operations, and it is the piece with the most short-term impact.",
+      },
+      {
+        es: "Perfil de empresa de Google más vivo: subir fotos reales de trabajos recientes con regularidad para mantener el perfil fresco y reforzar el posicionamiento local.",
+        en: "A livelier Google Business Profile: regularly uploading real photos of recent jobs to keep the profile fresh and reinforce local ranking.",
+      },
+      {
+        es: "Fotografía propia para el sitio: reemplazar imágenes genéricas por fotos reales del equipo trabajando, apenas el negocio pueda producirlas.",
+        en: "Original photography for the site: replacing generic imagery with real photos of the team at work, as soon as the business can produce them.",
+      },
+    ],
     evidence: [
       {
         src: "/case-studies/talleres-serviauto/google-first-place.webp",
