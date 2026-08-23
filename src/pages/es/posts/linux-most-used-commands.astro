@@ -26,62 +26,74 @@ const slides: SlideData[] = [
   {
     id: "kr28zhqlp",
     type: "markdown",
-    content: "## ¿Cómo hice esto?\n\nCon Python analicé mi zsh_history, que sería el historial de comandos cuando los ejecutó en la terminal. Luego, agrupé los comandos por familias y los resumí en un gráfico de anillo solar. Si es que alguna vez viste estadística, te debe sonar un diagrama de tallo y hoja que fue la primera idea que se me ocurrió para poder crear este gráfico."
+    content: "## ¿Cómo hice esto?\n\nCon Python analicé mi zsh_history, que sería el historial de comandos cuando los ejecutó en la terminal. Luego, agrupé los comandos por familias y los resumí en un gráfico de anillo solar. Si es que alguna vez viste estadística, te debe sonar un diagrama de tallo y hoja que fue la primera idea que se me ocurrió para poder crear este gráfico.",
+    fontScale: 1.5
   },
   {
     id: "2",
     type: "markdown",
-    content: "## 1.git — 10.65%, 2362 veces\n\n`git commit`, `git status`, `git add`, `git push`... etc. El control de versiones es siempre lo más importante a diario como programador. Inevitablemente queda como el comando que más he usado."
+    content: "## 1.git — 10.65%, 2362 veces\n\n`git commit`, `git status`, `git add`, `git push`... etc. El control de versiones es siempre lo más importante a diario como programador. Inevitablemente queda como el comando que más he usado.",
+    fontScale: 1.5
   },
   {
     id: "5dk5vpu4p",
     type: "markdown",
-    content: "## 2.sudo — 9.14%, 2027 veces\n\nLo más habitual ha sido instalar paquetes con `apt` y a lo mucho ver qué procesos se ejecutan con `systemctl`. Luego está la parte de editar archivos de configuración, pero nada más. Esto es algo engañoso porque por sí solo sudo nunca se ejecuta solo sino acompañado de algún otro comando."
+    content: "## 2.sudo — 9.14%, 2027 veces\n\nLo más habitual ha sido instalar paquetes con `apt` y a lo mucho ver qué procesos se ejecutan con `systemctl`. Luego está la parte de editar archivos de configuración, pero nada más. Esto es algo engañoso porque por sí solo sudo nunca se ejecuta solo sino acompañado de algún otro comando.",
+    fontScale: 1.5
   },
   {
     id: "qvcgch09l",
     type: "markdown",
-    content: "## 3.cd — 6.12%, 1359 veces\n\nSupongo que no hay más explicación dado que es la única forma de navegar entre carpetas en la terminal, salvo que uses ranger o mc. Y junto con ls suele ser de los comandos que se listan en las guías de comandos que debes saber en Linux."
+    content: "## 3.cd — 6.12%, 1359 veces\n\nSupongo que no hay más explicación dado que es la única forma de navegar entre carpetas en la terminal, salvo que uses ranger o mc. Y junto con ls suele ser de los comandos que se listan en las guías de comandos que debes saber en Linux.",
+    fontScale: 1.5
   },
   {
     id: "74ld59qs7",
     type: "markdown",
-    content: "## 4.ls — 5.44%, 1207 veces\n\nAl navegar entre carpetas, lo importante también es ver qué archivos tienes en esa carpeta, así que..."
+    content: "## 4.ls — 5.44%, 1207 veces\n\nAl navegar entre carpetas, lo importante también es ver qué archivos tienes en esa carpeta, así que...",
+    fontScale: 1.5
   },
   {
     id: "d329a95dz",
     type: "markdown",
-    content: "## 5.npm — 3.97%, 881 veces\n\nYa voy a cambiar a pnpm, no se preocupen. Como parte de lo que hago son aplicaciones web; es lo más común para manejar las dependencias del frontend. Sí, no uso Javascript o Typescript para el backend, solo para el frontend."
+    content: "## 5.npm — 3.97%, 881 veces\n\nYa voy a cambiar a pnpm, no se preocupen. Como parte de lo que hago son aplicaciones web; es lo más común para manejar las dependencias del frontend. Sí, no uso Javascript o Typescript para el backend, solo para el frontend.",
+    fontScale: 1.5
   },
   {
     id: "ylqn3coem",
     type: "markdown",
-    content: "## 6.uv — 3.52%, 780 veces\n\n¿Qué es uv? Yo sé que esa debe ser tu primera pregunta. En el lado del backend, suelo usar bastante Python como lenguaje de programación. Aquí entra uv: la herramienta para inicializar mis proyectos, gestionar paquetes y usar diferentes versiones de Python solo con un comando."
+    content: "## 6.uv — 3.52%, 780 veces\n\n¿Qué es uv? Yo sé que esa debe ser tu primera pregunta. En el lado del backend, suelo usar bastante Python como lenguaje de programación. Aquí entra uv: la herramienta para inicializar mis proyectos, gestionar paquetes y usar diferentes versiones de Python solo con un comando.",
+    fontScale: 1.5
   },
   {
     id: "gpkijzukp",
     type: "markdown",
-    content: "## 7.go — 2.66%, 591 veces\n\nEn el backend, también suelo usar Golang (`go`) para algún side project o trabajo pequeño que solo requiera un binario sin tanta configuración. Yo sé que cuando se habla de go se suele mencionar cosas como las goroutines, pero mi caso no es tanto por poseer esas características, sino para tener una alternativa a la hora de crear un backend pequeño."
+    content: "## 7.go — 2.66%, 591 veces\n\nEn el backend, también suelo usar Golang (`go`) para algún side project o trabajo pequeño que solo requiera un binario sin tanta configuración. Yo sé que cuando se habla de go se suele mencionar cosas como las goroutines, pero mi caso no es tanto por poseer esas características, sino para tener una alternativa a la hora de crear un backend pequeño.",
+    fontScale: 1.5
   },
   {
     id: "s9emq7txe",
     type: "markdown",
-    content: "## 8.make — 1.87%, 414 veces\n\nMuchas aplicaciones en Linux suelen instalarse con `make && make build`, al menos este ha sido mi caso para cosas súper específicas. Además, aparte de usar scripts en bash, creo que es más fácil tener un Makefile para ejecutar comandos recurrentes en algunos proyectos."
+    content: "## 8.make — 1.87%, 414 veces\n\nMuchas aplicaciones en Linux suelen instalarse con `make && make build`, al menos este ha sido mi caso para cosas súper específicas. Además, aparte de usar scripts en bash, creo que es más fácil tener un Makefile para ejecutar comandos recurrentes en algunos proyectos.",
+    fontScale: 1.5
   },
   {
     id: "e5wy0t8n1",
     type: "markdown",
-    content: "## 9.nvim — 1.64%, 363 veces\n\nSí sé salir de nvim así que la razón no es porque haya tenido que abrirlo varias veces y no haya podido salir. La mayor parte del tiempo suelo revisar el código usando nvim, gracias a lazyvim. Y, observando las estadísticas, lo he usado incluso más que Visual Studio Code o zed en conjunto. Por último, consume pocos recursos. Es bastante práctico."
+    content: "## 9.nvim — 1.64%, 363 veces\n\nSí sé salir de nvim así que la razón no es porque haya tenido que abrirlo varias veces y no haya podido salir. La mayor parte del tiempo suelo revisar el código usando nvim, gracias a lazyvim. Y, observando las estadísticas, lo he usado incluso más que Visual Studio Code o zed en conjunto. Por último, consume pocos recursos. Es bastante práctico.",
+    fontScale: 1.5
   },
   {
     id: "vsj0bh9x2",
     type: "markdown",
-    content: "## 10.curl — 1.37%, 303 veces\n\nPara descargar algo de internet, es más sencillo que wget. Incluso al llamar a alguna API vía terminal es bastante intuitivo."
+    content: "## 10.curl — 1.37%, 303 veces\n\nPara descargar algo de internet, es más sencillo que wget. Incluso al llamar a alguna API vía terminal es bastante intuitivo.",
+    fontScale: 1.5
   },
   {
     id: "mh3t7jwch",
     type: "markdown",
-    content: "## Conclusión\n\nAl final, salvo que seas programador, difícilmente vas a ejecutar muchos de los comandos que viste aquí. Así que no te sientas abrumado por usar Linux si eres nuevo, a lo mucho `cd`, `ls` y `sudo apt install/update/upgrade` si tu distro viene de Debian o `sudo pacman` si es derivada de Arch."
+    content: "## Conclusión\n\nAl final, salvo que seas programador, difícilmente vas a ejecutar muchos de los comandos que viste aquí. Así que no te sientas abrumado por usar Linux si eres nuevo, a lo mucho `cd`, `ls` y `sudo apt install/update/upgrade` si tu distro viene de Debian o `sudo pacman` si es derivada de Arch.",
+    fontScale: 1.5
   },
   {
     id: "3",
