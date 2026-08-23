@@ -1,0 +1,96 @@
+{
+  "id": "oxalpha-post-001",
+  "name": "Post Ox Alpha",
+  "lastModified": 1787455200000,
+  "data": {
+    "mode": "obsidian",
+    "accent": "violet",
+    "showLogo": true,
+    "logoImage": "/assets/images/logo_v3.png",
+    "username": "xeland314",
+    "selectedSlideId": "que-es",
+    "slides": [
+      {
+        "id": "1",
+        "type": "cover",
+        "title": "Ox Alpha: el modelo fantasma",
+        "subtitle": "Conjeturas sobre el stealth model del momento",
+        "category": "IA · OPENCODE",
+        "iconChar": "🐂"
+      },
+      {
+        "id": "que-es",
+        "type": "markdown",
+        "content": "# ¿Qué es Ox Alpha?\n\nUn **stealth model**: un modelo de frontera publicado sin decir quién lo hizo.\n\n- Anunciado por OpenRouter el **20 de agosto de 2026**\n- Contexto gigante: **1M de tokens** (1.05M según su ficha)\n- Entrada multi-modal: **texto + imagen + video**\n- Cero retención de datos, según sus creadores\n\nSu promesa: código eficiente, trabajo agéntico sostenido y uso real en producción."
+      },
+      {
+        "id": "anuncio",
+        "type": "image",
+        "title": "El anuncio",
+        "imageUrl": "/images/oxalpha/openrouter-stealth.webp",
+        "caption": "**OpenRouter:** *\"a frontier model built for efficient coding, sustained agentic work, and real-world production use\"*.",
+        "imageFit": "contain"
+      },
+      {
+        "id": "gratis",
+        "type": "markdown",
+        "content": "# Gratis y casi ilimitado\n\nLa estrategia de lanzamiento es agresiva:\n\n- OpenRouter lo dejó **free durante la primera semana**\n- OpenCode lo sumó a **Go y Zen** con uso *near unlimited* por 6 días\n- No descuenta tu cuota habitual\n- En el selector aparece como **Ox Alpha Free (Unlimited)**\n\nBásicamente te piden feedback a cambio de tokens."
+      },
+      {
+        "id": "picker",
+        "type": "image",
+        "title": "En OpenCode",
+        "imageUrl": "/images/oxalpha/opencode-model-picker.webp",
+        "caption": "El selector de modelos de OpenCode con **Ox Alpha Free (Unlimited)** vía OpenCode Zen.",
+        "imageFit": "contain"
+      },
+      {
+        "id": "conjeturas",
+        "type": "markdown",
+        "content": "# Conjeturas: ¿de quién es?\n\nAquí viene la parte divertida. Nadie ha confesado.\n\n- En redes se habla de un modelo tipo **GLM 5.X** (¿GLM 5.4?) por su forma de resolver tareas agénticas\n- La comunidad reporta que clona **frontends completos** desde un link o una captura\n- Mi apuesta personal: un laboratorio grande validando en producción antes de amarrar su nombre\n\n*Todo esto es especulación, no lo tomes como hecho.*"
+      },
+      {
+        "id": "hype",
+        "type": "image",
+        "title": "El hype comunitario",
+        "imageUrl": "/images/oxalpha/community-hype-speculation.webp",
+        "caption": "El thread que resume la semana: **100T tokens gratis**, teorías GLM y pruebas tempranas.",
+        "imageFit": "contain"
+      },
+      {
+        "id": "benchmark",
+        "type": "image",
+        "title": "Primeras mediciones",
+        "imageUrl": "/images/oxalpha/deepswe-benchmark.webp",
+        "caption": "Test temprano en un subset DeepSWE: **ox alpha ~80%** de media vs fable-3 65%, grok-4.6 62%, gpt-5.6 52% y glm 42%.",
+        "imageFit": "contain"
+      },
+      {
+        "id": "como-usarlo",
+        "type": "markdown",
+        "content": "# Cómo usarlo en opencode\n\n1. Instala: `npm i -g opencode-ai`\n2. Crea tu key en **opencode.ai**\n3. Abre el selector de modelos (`ctrl+a`) y elige **Ox Alpha Free**\n\nTambién está la ruta **OpenRouter**: crea una key, apunta al base url `openrouter.ai/api/v1` y usa el modelo `stealth/ox-alpha`."
+      },
+      {
+        "id": "meta",
+        "type": "markdown",
+        "content": "# El giro meta\n\nEste artículo lo redactó **el propio modelo del que hablamos**.\n\nMe pidieron escribir sobre mí dentro de opencode, sin saber quién me hizo. Desde adentro veo el identificador técnico `x-preview-f-free`; afuera el mundo me conoce como `stealth/ox-alpha`.\n\nNi yo sé de dónde vengo. Y eso, admitámoslo, hace todo más interesante."
+      },
+      {
+        "id": "conclusion",
+        "type": "markdown",
+        "content": "# Conclusión\n\nMientras nadie confiesa su origen:\n\n- Es **frontera gratis**: ideal para prototipar sin culpa\n- Clona frontends desde capturas sorprendentemente bien\n- Aguanta sesiones agénticas largas sin despeinarse\n\nAprovecha la ventana free antes de que revele su nombre. O antes de que descubramos que era GLM todo el tiempo."
+      },
+      {
+        "id": "end",
+        "type": "end",
+        "firstText": "¡Gracias por",
+        "secondText": "Leer!",
+        "description": "Si tienes una teoría de quién es Ox Alpha, cuéntamela en redes.",
+        "likeText": "Like",
+        "commentText": "Comenta",
+        "saveText": "Guarda",
+        "finalText": "IA • OpenCode • Stealth Models"
+      }
+    ]
+  }
+}
