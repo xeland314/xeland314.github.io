@@ -1,0 +1,79 @@
+---
+import "./http2.css";
+---
+
+<div class="anim-h2-card">
+  <svg class="anim-h2-svg" viewBox="0 0 360 300" fill="none">
+    <!-- ================= HTTP/1.1 ================= -->
+    <g id="lanes11">
+      <text x="8" y="16" class="h2-lane-title">3 CONEXIONES TCP · SECUENCIAL</text>
+
+      <g id="lane1">
+        <text x="8" y="46" class="h2-res-label">R1 · index.html</text>
+        <rect x="118" y="32" width="196" height="20" rx="6" class="h2-track"></rect>
+        <g id="req1" opacity="0">
+          <rect x="122" y="34" width="70" height="16" rx="5" class="h2-req-chip"></rect>
+          <text x="128" y="45.5" class="h2-chip-text">REQ →</text>
+        </g>
+        <g id="resp1" opacity="0">
+          <rect x="236" y="34" width="74" height="16" rx="5" class="h2-resp-chip"></rect>
+          <text x="242" y="45.5" class="h2-chip-text">← 200 OK</text>
+        </g>
+      </g>
+
+      <g id="lane2">
+        <text x="8" y="106" class="h2-res-label">R2 · style.css</text>
+        <rect x="118" y="92" width="196" height="20" rx="6" class="h2-track"></rect>
+        <g id="req2" opacity="0">
+          <rect x="122" y="94" width="70" height="16" rx="5" class="h2-req-chip"></rect>
+          <text x="128" y="105.5" class="h2-chip-text">REQ →</text>
+        </g>
+        <g id="resp2" opacity="0">
+          <rect x="236" y="94" width="74" height="16" rx="5" class="h2-resp-chip"></rect>
+          <text x="242" y="105.5" class="h2-chip-text">← 200 OK</text>
+        </g>
+      </g>
+
+      <g id="lane3">
+        <text x="8" y="166" class="h2-res-label">R3 · app.js</text>
+        <rect x="118" y="152" width="196" height="20" rx="6" class="h2-track"></rect>
+        <g id="req3" opacity="0">
+          <rect x="122" y="154" width="70" height="16" rx="5" class="h2-req-chip"></rect>
+          <text x="128" y="165.5" class="h2-chip-text">REQ →</text>
+        </g>
+        <g id="resp3" opacity="0">
+          <rect x="236" y="154" width="74" height="16" rx="5" class="h2-resp-chip"></rect>
+          <text x="242" y="165.5" class="h2-chip-text">← 200 OK</text>
+        </g>
+      </g>
+
+      <g id="blockWarn" opacity="0">
+        <rect x="8" y="188" width="306" height="26" rx="8" class="h2-block-box"></rect>
+        <text x="161" y="205" text-anchor="middle" class="h2-block-text">Mientras R1 espera, NADA más viaja</text>
+      </g>
+
+      <text x="8" y="240" class="h2-note" id="t11note">El navegador abre hasta 6 conexiones por dominio.</text>
+    </g>
+
+    <!-- ================= HTTP/2 ================= -->
+    <g id="lanesH2" opacity="0">
+      <text x="8" y="16" class="h2-lane-title">1 CONEXIÓN TCP · 3 STREAMS (IDs 1, 3, 5)</text>
+
+      <rect x="12" y="28" width="300" height="52" rx="10" class="h2-pipe"></rect>
+      <text x="162" y="90" text-anchor="middle" class="h2-note">Los frames se INTERCALAN sin esperar al stream vecino</text>
+
+      <g id="fh1" opacity="0"><rect x="22" y="40" width="42" height="28" rx="6" class="h2-frame h2-s1"></rect><text x="43" y="58" text-anchor="middle" class="h2-frame-text">H1</text></g>
+      <g id="fh3" opacity="0"><rect x="72" y="40" width="42" height="28" rx="6" class="h2-frame h2-s3"></rect><text x="93" y="58" text-anchor="middle" class="h2-frame-text">H3</text></g>
+      <g id="fd1" opacity="0"><rect x="122" y="40" width="42" height="28" rx="6" class="h2-frame h2-s1 h2-data"></rect><text x="143" y="58" text-anchor="middle" class="h2-frame-text">D1</text></g>
+      <g id="fh5" opacity="0"><rect x="172" y="40" width="42" height="28" rx="6" class="h2-frame h2-s5"></rect><text x="193" y="58" text-anchor="middle" class="h2-frame-text">H5</text></g>
+      <g id="fd3" opacity="0"><rect x="222" y="40" width="42" height="28" rx="6" class="h2-frame h2-s3 h2-data"></rect><text x="243" y="58" text-anchor="middle" class="h2-frame-text">D3</text></g>
+      <g id="fd5" opacity="0"><rect x="272" y="40" width="42" height="28" rx="6" class="h2-frame h2-s5 h2-data"></rect><text x="293" y="58" text-anchor="middle" class="h2-frame-text">D5</text></g>
+
+      <g id="st1" opacity="0"><circle cx="20" cy="126" r="5" class="h2-dot h2-s1fill"></circle><text x="34" y="130" class="h2-st-label">Stream 1 · index.html ✓</text></g>
+      <g id="st3" opacity="0"><circle cx="20" cy="150" r="5" class="h2-dot h2-s3fill"></circle><text x="34" y="154" class="h2-st-label">Stream 3 · style.css ✓</text></g>
+      <g id="st5" opacity="0"><circle cx="20" cy="174" r="5" class="h2-dot h2-s5fill"></circle><text x="34" y="178" class="h2-st-label">Stream 5 · app.js ✓</text></g>
+
+      <text x="8" y="240" class="h2-note" id="th2note">H = HEADERS (HPACK) · D = DATA binaria</text>
+    </g>
+  </svg>
+</div>
