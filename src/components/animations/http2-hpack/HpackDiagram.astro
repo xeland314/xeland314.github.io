@@ -1,0 +1,67 @@
+---
+import "./hpack.css";
+---
+
+<div class="anim-hpack-card">
+  <svg class="anim-hpack-svg" viewBox="0 0 360 300" fill="none">
+    <!-- ================= REQUEST 1 (headers literales) ================= -->
+    <text x="8" y="14" class="hp-section-title">REQUEST 1 · TEXTO LITERAL (+ HUFFMAN)</text>
+
+    <g id="r_method">
+      <rect x="8" y="22" width="160" height="20" rx="5" class="hp-box"></rect>
+      <text x="14" y="36" class="hp-static-text">:method: GET</text>
+    </g>
+    <g id="r_path" opacity="0.35">
+      <rect x="8" y="48" width="160" height="20" rx="5" class="hp-row"></rect>
+      <text x="14" y="62" class="hp-row-text">:path: /api/users</text>
+    </g>
+    <g id="r_ua" opacity="0.35">
+      <rect x="8" y="74" width="160" height="20" rx="5" class="hp-row"></rect>
+      <text x="14" y="88" class="hp-row-text">user-agent: Mozilla/5.0</text>
+    </g>
+    <g id="r_acc" opacity="0.35">
+      <rect x="8" y="100" width="160" height="20" rx="5" class="hp-row"></rect>
+      <text x="14" y="114" class="hp-row-text">accept: application/json</text>
+    </g>
+
+    <!-- ================= STATIC TABLE ================= -->
+    <g>
+      <rect x="188" y="18" width="164" height="66" rx="8" class="hp-box"></rect>
+      <text x="196" y="32" class="hp-section-title">TABLA ESTÁTICA (61)</text>
+      <text x="196" y="47" class="hp-static-text">[1] :authority</text>
+      <text x="196" y="60" class="hp-static-text">[2] :method GET</text>
+      <text x="196" y="73" class="hp-static-text">[3] :method POST</text>
+    </g>
+
+    <!-- ================= DYNAMIC TABLE ================= -->
+    <g>
+      <rect x="188" y="92" width="164" height="86" rx="8" class="hp-box"></rect>
+      <text x="196" y="106" class="hp-section-title">TABLA DINÁMICA (sesión)</text>
+      <g id="d62" opacity="0"><text x="200" y="122" class="hp-dyn-idx">#62</text><text x="228" y="122" class="hp-row-text">:path: /api/users</text></g>
+      <g id="d63" opacity="0"><text x="200" y="140" class="hp-dyn-idx">#63</text><text x="228" y="140" class="hp-row-text">user-agent: Moz/5.0</text></g>
+      <g id="d64" opacity="0"><text x="200" y="158" class="hp-dyn-idx">#64</text><text x="228" y="158" class="hp-row-text">accept: application/json</text></g>
+    </g>
+
+    <!-- ================= REQUEST 2 (índices) ================= -->
+    <text x="8" y="146" class="hp-section-title">REQUEST 2 · SOLO ÍNDICES</text>
+    <g id="chipReq2" opacity="0.25">
+      <g id="c_m"><rect x="8" y="154" width="40" height="22" rx="6" class="hp-chip"></rect><text x="28" y="169" text-anchor="middle" class="hp-chip-text">[2]</text></g>
+      <g id="c_p"><rect x="54" y="154" width="44" height="22" rx="6" class="hp-chip"></rect><text x="76" y="169" text-anchor="middle" class="hp-chip-text">#62</text></g>
+      <g id="c_u"><rect x="104" y="154" width="44" height="22" rx="6" class="hp-chip"></rect><text x="126" y="169" text-anchor="middle" class="hp-chip-text">#63</text></g>
+      <g id="c_a"><rect x="154" y="154" width="44" height="22" rx="6" class="hp-chip"></rect><text x="176" y="169" text-anchor="middle" class="hp-chip-text">#64</text></g>
+    </g>
+
+    <!-- ================= SAVINGS BAR ================= -->
+    <g>
+      <text x="8" y="204" class="hp-bar-label">bytes en el aire por petición repetida</text>
+      <rect x="8" y="212" width="344" height="16" rx="5" class="hp-bar-track"></rect>
+      <rect id="barFull" x="10" y="214" width="340" height="12" rx="4" class="hp-bar-full"></rect>
+
+      <rect x="8" y="238" width="344" height="16" rx="5" class="hp-bar-track"></rect>
+      <rect id="barCompact" x="10" y="240" width="0" height="12" rx="4" class="hp-bar-compact"></rect>
+      <text id="barCompactLabel" x="58" y="250" class="hp-bar-label" opacity="0">request 2 · 24 B</text>
+
+      <text id="savingsText" x="182" y="282" text-anchor="middle" class="hp-savings" opacity="0">−81% de bytes en cada request repetida</text>
+    </g>
+  </svg>
+</div>

@@ -1,0 +1,154 @@
+@import "../index.css";
+
+.anim-hpack-card {
+  background: var(--anim-panel);
+  border: 1px solid var(--anim-line);
+  border-radius: 14px;
+  padding: 10px;
+  position: relative;
+}
+
+.anim-hpack-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--anim-font-mono);
+}
+
+.hp-section-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  fill: var(--anim-muted);
+}
+
+.hp-box {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke: var(--anim-line);
+}
+
+.hp-row {
+  fill: rgba(168, 85, 247, 0.12);
+  stroke: rgba(168, 85, 247, 0.45);
+}
+
+.hp-row-text {
+  font-size: 9.5px;
+  font-weight: 600;
+  fill: #e9d5ff;
+}
+
+.hp-static-text {
+  font-size: 9.5px;
+  font-weight: 600;
+  fill: #7dd3fc;
+}
+
+.hp-dyn-idx {
+  font-size: 9.5px;
+  font-weight: 800;
+  fill: var(--anim-signal);
+}
+
+.hp-chip {
+  fill: rgba(124, 251, 76, 0.14);
+  stroke: rgba(124, 251, 76, 0.55);
+}
+
+.hp-chip-text {
+  font-size: 11px;
+  font-weight: 800;
+  fill: #c8ffb0;
+}
+
+.hp-bar-track {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: var(--anim-line);
+}
+
+.hp-bar-full {
+  fill: rgba(248, 113, 113, 0.55);
+}
+
+.hp-bar-compact {
+  fill: rgba(124, 251, 76, 0.6);
+}
+
+.hp-bar-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  fill: var(--anim-muted);
+}
+
+.hp-savings {
+  font-size: 13px;
+  font-weight: 800;
+  fill: var(--anim-signal);
+}
+
+/* ---- console ---- */
+.anim-hp-console-label {
+  font-family: var(--anim-font-mono);
+  font-size: 9px;
+  color: var(--anim-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.anim-hp-console {
+  font-family: var(--anim-font-mono);
+  font-size: 10px;
+  color: #7ee08a;
+  background: #04070a;
+  border: 1px solid #1a232d;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-height: 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.anim-hp-console .anim-row {
+  line-height: 14px;
+}
+
+.anim-hp-prompt {
+  color: #4b5563;
+}
+
+@keyframes anim-hp-blink {
+  0%, 49% { opacity: 0.85; }
+  50%, 100% { opacity: 0; }
+}
+
+.anim-hp-caret {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background: #7ee08a;
+  animation: anim-hp-blink 1s steps(1) infinite;
+}
+
+/* ---- mode button + active line + badge ---- */
+.ctrl-btn.primary2 {
+  border-color: rgba(168, 85, 247, 0.45);
+  color: #e9d5ff;
+}
+
+.anim-code-line.anim-hp-line-active {
+  background: rgba(168, 85, 247, 0.12);
+  border-left-color: #a855f7;
+  opacity: 1;
+}
+
+.anim-hp-badge {
+  font-family: var(--anim-font-mono);
+  font-size: 8.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #a1a1aa;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
