@@ -83,7 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const selectedSlide = slides.find((s) => s.id === selectedSlideId);
 
   return (
-    <div className="w-full lg:w-96 lg:h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden rounded-3xl">
+    <div className="w-full h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden rounded-3xl">
       {/* Fixed header with export buttons */}
       <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 p-3">
         <ExportActions

@@ -499,34 +499,37 @@ export const CoverCreator = () => {
   return (
     <div className="h-full flex flex-col lg:flex-row gap-4 p-1 lg:overflow-hidden">
       <div className="w-full lg:w-96 flex flex-col gap-3 lg:h-full lg:flex-shrink-0">
-        <Sidebar
-          mode={mode}
-          setMode={setMode}
-          accent={accent}
-          setAccent={setAccent}
-          showLogo={showLogo}
-          setShowLogo={setShowLogo}
-          logoImage={logoImage}
-          setLogoImage={setLogoImage}
-          username={username}
-          setUsername={setUsername}
-          previewMode={previewMode}
-          setPreviewMode={setPreviewMode}
-          slides={slides}
-          selectedSlideId={selectedSlideId}
-          setSelectedSlideId={setSelectedSlideId}
-          updateSlide={updateSlide}
-          addSlide={addSlide}
-          removeSlide={removeSlide}
-          moveSlide={moveSlide}
-          duplicateSlide={duplicateSlide}
-          exportFormat={exportFormat}
-          setExportFormat={setExportFormat}
-          exportQuality={exportQuality}
-          setExportQuality={setExportQuality}
-          onExportAll={handleExportAll}
-          onExportCurrent={handleExportCurrent}
-        />
+        {/* El sidebar cede espacio: los proyectos siempre visibles al expandirse */}
+        <div className="flex-1 min-h-0">
+          <Sidebar
+            mode={mode}
+            setMode={setMode}
+            accent={accent}
+            setAccent={setAccent}
+            showLogo={showLogo}
+            setShowLogo={setShowLogo}
+            logoImage={logoImage}
+            setLogoImage={setLogoImage}
+            username={username}
+            setUsername={setUsername}
+            previewMode={previewMode}
+            setPreviewMode={setPreviewMode}
+            slides={slides}
+            selectedSlideId={selectedSlideId}
+            setSelectedSlideId={setSelectedSlideId}
+            updateSlide={updateSlide}
+            addSlide={addSlide}
+            removeSlide={removeSlide}
+            moveSlide={moveSlide}
+            duplicateSlide={duplicateSlide}
+            exportFormat={exportFormat}
+            setExportFormat={setExportFormat}
+            exportQuality={exportQuality}
+            setExportQuality={setExportQuality}
+            onExportAll={handleExportAll}
+            onExportCurrent={handleExportCurrent}
+          />
+        </div>
         {/* Proyectos: colapsado, al fondo y fuera del camino de edición */}
         <details className="flex-shrink-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-3xl overflow-hidden group">
           <summary className="flex items-center gap-2 px-4 py-2.5 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
@@ -544,7 +547,7 @@ export const CoverCreator = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div className="p-4 max-h-64 overflow-y-auto">
+          <div className="p-4">
             <ProjectManager
               projects={projects}
               currentProjectId={currentProjectId}

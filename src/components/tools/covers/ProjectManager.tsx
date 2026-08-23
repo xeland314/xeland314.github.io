@@ -81,7 +81,7 @@ export const ProjectManager: React.FC<ProjectManagerProps> = ({
       {isMenuOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)} />
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+          <div className="relative z-50 mt-2 bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-inner overflow-hidden animate-in fade-in slide-in-from-top-2">
             
             <div className="p-4 border-b border-gray-100 dark:border-gray-800 space-y-3">
               <div className="flex gap-2">
