@@ -69,6 +69,7 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
             <a
               href={`/animations/${anim.slug}`}
               aria-label={`${anim.title.es} — ${anim.description.es}`}
+              data-animation-card
               class="group relative flex flex-col gap-4 p-6 rounded-3xl border border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.06] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
             >
               <span
@@ -124,6 +125,47 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
           ))
         }
       </div>
+
+      <div class="mt-10 flex justify-center">
+        <button
+          id="toggle-more-animations"
+          type="button"
+          class="hidden px-6 py-3 rounded-2xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.09] hover:border-cyan-400/40 text-sm font-bold text-cyan-300 transition-all active:scale-95"
+        >
+          Ver más animaciones
+        </button>
+      </div>
     </div>
   </main>
 </BaseLayout>
+
+<script>
+  const MAX_VISIBLE = 6;
+  const cards = document.querySelectorAll<HTMLElement>("[data-animation-card]");
+  const toggleBtn = document.getElementById(
+    "toggle-more-animations"
+  ) as HTMLButtonElement | null;
+
+  if (cards.length > MAX_VISIBLE && toggleBtn) {
+    let expanded = false;
+
+    const applyVisibility = () => {
+      cards.forEach((card, i) => {
+        card.style.display = expanded || i < MAX_VISIBLE ? "" : "none";
+      });
+      toggleBtn.textContent = expanded
+        ? "Ver menos"
+        : `Ver más animaciones (${cards.length - MAX_VISIBLE})`;
+    };
+
+    applyVisibility();
+    toggleBtn.classList.remove("hidden");
+    toggleBtn.addEventListener("click", () => {
+      expanded = !expanded;
+      applyVisibility();
+      if (!expanded) {
+        toggleBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+  }
+</script>

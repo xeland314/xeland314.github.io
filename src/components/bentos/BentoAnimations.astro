@@ -4,13 +4,18 @@ import { ANIMATIONS } from "./animations-data";
 
 const { lang = "es" } = Astro.props;
 
-const texts: Record<string, { heading: string; label: string }> = {
-  es: { heading: "Animaciones", label: "Animaciones de código" },
-  en: { heading: "Animations", label: "Code animations" },
+const texts: Record<string, { heading: string; label: string; viewMore: string }> = {
+  es: { heading: "Animaciones", label: "Animaciones de código", viewMore: "Ver más animaciones" },
+  en: { heading: "Animations", label: "Code animations", viewMore: "See more animations" },
 };
 
 const T = texts[lang];
 const langKey = lang as keyof (typeof ANIMATIONS)[number]["title"];
+
+// Máximo 6 tarjetas en el bento; el resto detrás del enlace "Ver más"
+const MAX_VISIBLE = 6;
+const visibleAnimations = ANIMATIONS.slice(0, MAX_VISIBLE);
+const hiddenCount = Math.max(ANIMATIONS.length - MAX_VISIBLE, 0);
 ---
 
 <section
@@ -32,7 +37,7 @@ const langKey = lang as keyof (typeof ANIMATIONS)[number]["title"];
     class="grid grid-cols-2 sm:grid-cols-3 gap-3 px-5"
   >
     {
-      ANIMATIONS.map((anim) => (
+      visibleAnimations.map((anim) => (
         <li>
           <a
             href={`/animations/${anim.slug}`}
@@ -74,6 +79,47 @@ const langKey = lang as keyof (typeof ANIMATIONS)[number]["title"];
           </a>
         </li>
       ))
+    }
+    {
+      hiddenCount > 0 && (
+        <li>
+          <a
+            href="/animations"
+            aria-label={T.viewMore}
+            class="group flex flex-col items-start justify-center gap-2 p-4 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <div
+              aria-hidden="true"
+              class="w-12 h-12 rounded-2xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center shadow-sm group-hover:bg-blue-600 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-gray-500 dark:text-gray-400 group-hover:text-white transition-colors"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M12 5v14"></path><path d="M5 12h14"></path>
+              </svg>
+            </div>
+            <div class="text-left">
+              <p class="text-[11px] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                {T.viewMore}
+              </p>
+              <p class="text-[9px] text-gray-400 dark:text-gray-500 leading-snug mt-0.5 font-mono">
+                +{hiddenCount}
+              </p>
+            </div>
+          </a>
+        </li>
+      )
     }
   </ul>
 </section>
