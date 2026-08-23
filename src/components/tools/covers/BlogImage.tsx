@@ -159,20 +159,19 @@ export const BlogImage: React.FC<BlogImageProps> = ({
 
           {/* Caption with enhanced presentation */}
           {caption && (
-            <div className="relative w-full max-w-4xl">
+            <div className="relative w-full max-w-4xl mt-auto mb-14">
               <div
-                className={`absolute bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
+                className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
               />
               <div
-                className="px-8 py-2"
+                className="px-8 py-6"
                 style={{
                   transform: `scale(${fontScale})`,
-                  transformOrigin: "center center",
+                  transformOrigin: "top left",
+                  width: `${Math.min(100 / fontScale, 100)}%`,
                 }}
               >
-                <div style={{ width: `${Math.min(100 / fontScale, 100)}%` }}>
-                  <BlogMarkdown content={caption} theme={theme} prose="4xl" />
-                </div>
+                <BlogMarkdown content={caption} theme={theme} prose="4xl" />
               </div>
             </div>
           )}
