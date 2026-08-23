@@ -86,7 +86,7 @@ export const BlogImage: React.FC<BlogImageProps> = ({
           </div>
 
           {/* Enhanced Image Container */}
-          <div className="w-full flex items-center justify-center mb-10 relative group">
+          <div className="w-full flex items-center justify-center mb-0 relative group">
             {/* Image glow effect */}
             <div
               className={`absolute inset-0 bg-gradient-to-tr ${c.gradient} opacity-20 blur-3xl rounded-[2rem] scale-95 group-hover:opacity-30 transition-opacity duration-500`}

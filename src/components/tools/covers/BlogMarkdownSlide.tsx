@@ -56,33 +56,31 @@ export const BlogMarkdownSlide: React.FC<BlogMarkdownSlideProps> = ({
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]" />
           </div>
 
-          {/* Contenido escalable (título degradado + cuerpo markdown) */}
-          <div
-            className="relative z-10 flex-1 min-h-0 w-full flex flex-col justify-center"
-            style={{
-              transform: `scale(${fontScale})`,
-              transformOrigin: "center center",
-            }}
-          >
-            <div
-              className="w-full max-w-4xl mx-auto"
-              style={{ width: `${Math.min(100 / fontScale, 100)}%` }}
-            >
-              {heading && (
-                <div className="mb-10 relative group shrink-0">
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-r ${c.gradient} rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity`}
-                  />
-                  <div
-                    className={`relative px-10 py-5 rounded-3xl bg-gradient-to-tr ${c.gradient} shadow-2xl`}
-                  >
-                    <h1 className={`text-7xl font-black tracking-tight text-white drop-shadow-lg`}>
-                      {heading}
-                    </h1>
-                  </div>
+          {/* Título fijo en la parte superior (sin escala) */}
+          <div className="relative z-10 w-full max-w-4xl mx-auto shrink-0">
+            {heading && (
+              <div className="mb-10 relative group">
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${c.gradient} rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity`}
+                />
+                <div
+                  className={`relative px-10 py-5 rounded-3xl bg-gradient-to-tr ${c.gradient} shadow-2xl`}
+                >
+                  <h1 className={`text-7xl font-black tracking-tight text-white drop-shadow-lg`}>
+                    {heading}
+                  </h1>
                 </div>
-              )}
+              </div>
+            )}
 
+            {/* Cuerpo escalable, fluye desde arriba */}
+            <div
+              style={{
+                transform: `scale(${fontScale})`,
+                transformOrigin: "top left",
+                width: `${Math.min(100 / fontScale, 100)}%`,
+              }}
+            >
               <BlogMarkdown content={body} theme={theme} prose={prose} />
             </div>
           </div>
