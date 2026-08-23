@@ -1,0 +1,117 @@
+@import "../index.css";
+
+:root {
+  --um-on: #7cfb4c;
+  --um-mask: #ff5f57;
+}
+
+.anim-um-card {
+  background: var(--anim-panel);
+  border: 1px solid var(--anim-line);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.anim-um-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--anim-font-mono);
+}
+
+.um-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  fill: var(--anim-muted);
+}
+
+.um-rowlabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  fill: var(--anim-ink);
+}
+
+.um-octal {
+  font-size: 12px;
+  font-weight: 800;
+  fill: #fff;
+}
+
+.um-cell {
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+.um-cell.on { fill: rgba(124, 251, 76, 0.75); stroke: var(--um-on); }
+.um-cell.maskon { fill: rgba(255, 95, 87, 0.65); stroke: var(--um-mask); }
+.um-cell.off { fill: rgba(255, 255, 255, 0.05); stroke: var(--anim-line); }
+
+.um-op {
+  font-size: 11px;
+  font-weight: 800;
+  fill: #c084fc;
+}
+
+.um-note {
+  font-size: 9px;
+  font-weight: 600;
+  fill: #5f6c7a;
+}
+
+/* ---- code line + buttons + badge ---- */
+.anim-code-line.anim-um-line-active {
+  background: rgba(192, 132, 252, 0.12);
+  border-left-color: #c084fc;
+  opacity: 1;
+}
+
+.ctrl-btn.um022 { border-color: rgba(124, 251, 76, 0.45); color: #c8ffb0; }
+.ctrl-btn.um077 { border-color: rgba(255, 95, 87, 0.45); color: #fecaca; }
+
+.anim-um-badge {
+  font-family: var(--anim-font-mono);
+  font-size: 8.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #a1a1aa;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---- console ---- */
+.anim-um-console-label {
+  font-family: var(--anim-font-mono);
+  font-size: 9px;
+  color: var(--anim-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.anim-um-console {
+  font-family: var(--anim-font-mono);
+  font-size: 10px;
+  color: #7ee08a;
+  background: #04070a;
+  border: 1px solid #1a232d;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-height: 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.anim-um-console .anim-row { line-height: 14px; }
+
+@keyframes anim-um-blink {
+  0%, 49% { opacity: 0.85; }
+  50%, 100% { opacity: 0; }
+}
+
+.anim-um-caret {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background: #7ee08a;
+  animation: anim-um-blink 1s steps(1) infinite;
+}
