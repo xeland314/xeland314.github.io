@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { STUDY_CASES } from "../../../components/study-cases/study-cases-data";
 
@@ -18,7 +19,7 @@ const pageKeywords =
   "case study, web development, local seo, quito, local business";
 const pageAuthor = "Christopher Villamarín";
 const pageUrl = `https://xeland314.github.io/en/study-cases/${studyCase.slug}/`;
-const pageImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+const pageImage = `https://xeland314.github.io${studyCase.heroImage?.src ?? "/assets/images/logo_v3.png"}`;
 const pageCanonical = pageUrl;
 ---
 
@@ -59,6 +60,23 @@ const pageCanonical = pageUrl;
           {studyCase.summary.en}
         </p>
       </header>
+
+      {
+        studyCase.heroImage && (
+          <figure class="mb-10">
+            <Image
+              src={studyCase.heroImage.src}
+              width={studyCase.heroImage.width}
+              height={studyCase.heroImage.height}
+              alt={studyCase.heroImage.alt[lang]}
+              class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg"
+              loading="eager"
+              fetchpriority="high"
+              decoding="sync"
+            />
+          </figure>
+        )
+      }
 
       <section class="mb-8 p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
         <h2 class="text-xs font-mono font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-3">
@@ -104,6 +122,37 @@ const pageCanonical = pageUrl;
           }
         </ul>
       </section>
+
+      {
+        studyCase.evidence && (
+          <section class="mb-8 p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+            <h2 class="text-xs font-mono font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-3">
+              Results
+            </h2>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+              {studyCase.resultsIntro?.en}
+            </p>
+            <div class="grid gap-6 sm:grid-cols-2">
+              {studyCase.evidence.map((item) => (
+                <figure class="m-0">
+                  <Image
+                    src={item.src}
+                    width={item.width}
+                    height={item.height}
+                    alt={item.alt[lang]}
+                    class="w-full rounded-xl border border-gray-200 dark:border-gray-700"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <figcaption class="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-snug">
+                    {item.caption[lang]}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
+        )
+      }
 
       <section class="mb-8 p-8 rounded-2xl bg-gradient-to-br from-cyan-600/5 to-blue-500/5 border border-cyan-500/10">
         <h2 class="text-xs font-mono font-bold uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-3">

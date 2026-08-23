@@ -1,14 +1,30 @@
+export interface LocalizedText {
+  es: string;
+  en: string;
+}
+
+export interface EvidenceItem {
+  src: string;
+  width: number;
+  height: number;
+  alt: LocalizedText;
+  caption: LocalizedText;
+}
+
 export interface StudyCase {
   slug: string;
   client: string;
-  role: { es: string; en: string };
+  role: LocalizedText;
   year: string;
   liveUrl: string;
-  summary: { es: string; en: string };
-  context: { es: string; en: string };
-  problem: { es: string; en: string };
+  summary: LocalizedText;
+  context: LocalizedText;
+  problem: LocalizedText;
   work: { es: string[]; en: string[] };
-  note: { es: string; en: string };
+  note: LocalizedText;
+  heroImage?: { src: string; width: number; height: number; alt: LocalizedText };
+  resultsIntro?: LocalizedText;
+  evidence?: EvidenceItem[];
 }
 
 export const STUDY_CASES: StudyCase[] = [
@@ -54,9 +70,128 @@ export const STUDY_CASES: StudyCase[] = [
       ],
     },
     note: {
-      es: "El sitio está preparado tanto para búsqueda tradicional como para asistentes de IA: contenido claro, estructura semántica y respuestas directas a preguntas reales.",
-      en: "The site is prepared for both traditional search and AI assistants: clear content, semantic structure and direct answers to real questions.",
+      es: "Resultados verificables desde julio de 2026: primer resultado orgánico en Google, Bing y Brave Search para la búsqueda de marca, presencia en las respuestas de IA de los tres buscadores con los datos correctos del negocio, y 100/100 en accesibilidad, recomendaciones y SEO según PageSpeed Insights.",
+      en: "Verifiable results since July 2026: first organic result on Google, Bing and Brave Search for the brand query, featured in all three engines' AI answers with accurate business details, and 100/100 in accessibility, best practices and SEO according to PageSpeed Insights.",
     },
+    heroImage: {
+      src: "/case-studies/talleres-serviauto/hero.webp",
+      width: 1600,
+      height: 840,
+      alt: {
+        es: "Sitio web de Talleres Servi Auto construido desde cero",
+        en: "The Talleres Servi Auto website built from scratch",
+      },
+    },
+    resultsIntro: {
+      es: "Capturas reales tomadas en julio de 2026, unos meses después del lanzamiento.",
+      en: "Real screenshots taken in July 2026, a few months after launch.",
+    },
+    evidence: [
+      {
+        src: "/case-studies/talleres-serviauto/google-first-place.webp",
+        width: 1200,
+        height: 647,
+        alt: {
+          es: "Búsqueda 'talleres serviauto' en Google con el sitio como primer resultado",
+          en: "Google search for 'talleres serviauto' with the site as the first result",
+        },
+        caption: {
+          es: "Primer resultado orgánico en Google, por encima de Facebook e Instagram del propio negocio.",
+          en: "First organic result on Google, above the business's own Facebook and Instagram.",
+        },
+      },
+      {
+        src: "/case-studies/talleres-serviauto/google-ai.webp",
+        width: 1200,
+        height: 647,
+        alt: {
+          es: "Modo IA de Google citando al taller como primera alternativa al sur de Quito",
+          en: "Google AI Mode citing the shop as the first alternative in South Quito",
+        },
+        caption: {
+          es: "El Modo IA de Google lo cita como la primera alternativa al sur de Quito, con dirección, teléfono y horarios correctos.",
+          en: "Google AI Mode cites it as the first option in South Quito, with the right address, phone and hours.",
+        },
+      },
+      {
+        src: "/case-studies/talleres-serviauto/bing-first-place.webp",
+        width: 1200,
+        height: 648,
+        alt: {
+          es: "Panel de negocio destacado en Bing con mapa y fotos del taller",
+          en: "Featured business panel on Bing with map and shop photos",
+        },
+        caption: {
+          es: "Panel de negocio destacado en Bing: mapa, fotos reales del taller y botones de contacto directo.",
+          en: "Featured business panel on Bing: map, real photos of the shop and direct contact buttons.",
+        },
+      },
+      {
+        src: "/case-studies/talleres-serviauto/bing-ai.webp",
+        width: 1200,
+        height: 645,
+        alt: {
+          es: "Respuesta generada con IA en Bing describiendo servicios y contacto del taller",
+          en: "AI-generated answer on Bing describing the shop's services and contact info",
+        },
+        caption: {
+          es: "La respuesta generada con IA de Bing describe al taller con su ubicación y horarios exactos.",
+          en: "Bing's AI-generated answer describes the shop with its exact location and hours.",
+        },
+      },
+      {
+        src: "/case-studies/talleres-serviauto/brave-first-place.webp",
+        width: 1200,
+        height: 632,
+        alt: {
+          es: "Búsqueda en Brave Search desde Quito con el sitio como primer resultado",
+          en: "Brave Search from Quito with the site as the first result",
+        },
+        caption: {
+          es: "Primer resultado en Brave Search buscando desde Quito, junto a la ficha de mapa del taller.",
+          en: "First result on Brave Search when searching from Quito, next to the shop's map listing.",
+        },
+      },
+      {
+        src: "/case-studies/talleres-serviauto/brave-ai.webp",
+        width: 1200,
+        height: 634,
+        alt: {
+          es: "Respuesta de IA de Brave presentando el taller con su trayectoria y sitio web",
+          en: "Brave AI answer presenting the shop with its trajectory and website link",
+        },
+        caption: {
+          es: "Respuesta de IA de Brave con nombre, trayectoria de 25 años y enlace directo al sitio.",
+          en: "Brave's AI answer with the name, 25-year trajectory and a direct link to the site.",
+        },
+      },
+      {
+        src: "/case-studies/talleres-serviauto/pagespeed-mobile.webp",
+        width: 1600,
+        height: 840,
+        alt: {
+          es: "PageSpeed Insights en móviles: 96 de rendimiento y 100 en accesibilidad, recomendaciones y SEO",
+          en: "PageSpeed Insights on mobile: 96 performance and 100 in accessibility, best practices and SEO",
+        },
+        caption: {
+          es: "PageSpeed en móviles: 96 de rendimiento y 100 en accesibilidad, recomendaciones y SEO.",
+          en: "Mobile PageSpeed: 96 performance and 100 in accessibility, best practices and SEO.",
+        },
+      },
+      {
+        src: "/case-studies/talleres-serviauto/pagespeed-desktop.webp",
+        width: 1600,
+        height: 840,
+        alt: {
+          es: "PageSpeed Insights en escritorio: 100 en las cuatro métricas y 3/3 en navegación con agentes",
+          en: "Desktop PageSpeed Insights: 100 across all four metrics and 3/3 agent navigation",
+        },
+        caption: {
+          es: "En escritorio, 100 en las cuatro métricas —y navegación por agentes de IA 3/3—.",
+          en: "On desktop, 100 across all four metrics —plus 3/3 AI agent navigation—.",
+        },
+      },
+    ],
   },
   {
     slug: "eventos-mw",
