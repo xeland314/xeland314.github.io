@@ -1,25 +1,9 @@
 import React from "react";
-import { type SlideData, type ThemeConfig } from "./types";
+import { type SlideData, type ThemeConfig, getThemeBgColor } from "./types";
 import { BlogCover } from "./BlogCover";
-import { BlogStep } from "./BlogStep";
-import { BlogComparison } from "./BlogComparison";
-import { BlogCode } from "./BlogCode";
-import { BlogEnd } from "./BlogEnd";
+import { BlogMarkdownSlide } from "./BlogMarkdownSlide";
 import { BlogImage } from "./BlogImage";
-import { BlogAlert } from "./BlogAlert";
-import { BlogMetric } from "./BlogMetric";
-import { BlogList } from "./BlogList";
-import { BlogHighlight } from "./BlogHighlight";
-import { BlogTimeline } from "./BlogTimeline";
-import { BlogQnA } from "./BlogQnA";
-import { BlogProsCons } from "./BlogProsCons";
-import { BlogDefinition } from "./BlogDefinition";
-import { BlogMythFact } from "./BlogMythFact";
-import { BlogChecklist } from "./BlogChecklist";
-import { BlogTechStack } from "./BlogTechStack";
-import { BlogMistakes } from "./BlogMistakes";
-import { BlogTakeaways } from "./BlogTakeaways";
-import { BlogAnnouncement } from "./BlogAnnouncement";
+import { BlogEnd } from "./BlogEnd";
 import { toJpeg } from "html-to-image";
 import JSZip from "jszip";
 
@@ -51,13 +35,13 @@ export const BlogPostPresentation: React.FC<BlogPostPresentationProps> = ({
       // Temporarily set scale to 1 for clean capture
       canvas.style.transform = "scale(1)";
       
-      const dataUrl = await toJpeg(canvas, { 
-        pixelRatio: 1, 
+      const dataUrl = await toJpeg(canvas, {
+        pixelRatio: 1,
         width: 1080,
         height: 1350,
         quality: 1,
         cacheBust: true,
-        backgroundColor: "#ffffff",
+        backgroundColor: getThemeBgColor(theme.mode),
       });
 
       canvas.style.transform = originalTransform;
@@ -75,28 +59,12 @@ export const BlogPostPresentation: React.FC<BlogPostPresentationProps> = ({
   };
 
   const renderSlide = (slide: SlideData) => {
-    const props = { ...slide, theme };
+    const props = { ...slide, theme, previewWidth: 1080, previewHeight: 1350 };
     switch (slide.type) {
       case "cover": return <BlogCover {...(props as any)} />;
-      case "step": return <BlogStep {...(props as any)} />;
-      case "comparison": return <BlogComparison {...(props as any)} />;
-      case "code": return <BlogCode {...(props as any)} />;
-      case "end": return <BlogEnd {...(props as any)} />;
+      case "markdown": return <BlogMarkdownSlide {...(props as any)} />;
       case "image": return <BlogImage {...(props as any)} />;
-      case "alert": return <BlogAlert {...(props as any)} />;
-      case "metric": return <BlogMetric {...(props as any)} />;
-      case "list": return <BlogList {...(props as any)} />;
-      case "highlight": return <BlogHighlight {...(props as any)} />;
-      case "timeline": return <BlogTimeline {...(props as any)} />;
-      case "qna": return <BlogQnA {...(props as any)} />;
-      case "pros-cons": return <BlogProsCons {...(props as any)} />;
-      case "definition": return <BlogDefinition {...(props as any)} />;
-      case "myth-fact": return <BlogMythFact {...(props as any)} />;
-      case "checklist": return <BlogChecklist {...(props as any)} />;
-      case "tech-stack": return <BlogTechStack {...(props as any)} />;
-      case "mistakes": return <BlogMistakes {...(props as any)} />;
-      case "takeaways": return <BlogTakeaways {...(props as any)} />;
-      case "announcement": return <BlogAnnouncement {...(props as any)} />;
+      case "end": return <BlogEnd {...(props as any)} />;
     }
   };
 

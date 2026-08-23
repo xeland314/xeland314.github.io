@@ -3,7 +3,7 @@ import { BlogCodeBlock } from "../BlogCodeBlock";
 
 const ReactMarkdown = lazy(() => import("react-markdown"));
 
-const CodeBlock = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+const CodeBlock = ({ children, className }: { children?: React.ReactNode; className?: string; node?: unknown }) => {
   const isInline = !className;
   if (isInline) {
     return (

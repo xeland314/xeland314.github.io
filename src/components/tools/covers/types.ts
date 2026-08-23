@@ -198,28 +198,7 @@ export const getThemeBgColor = (mode: ThemeMode): string => {
   return THEME_BG_COLORS[mode] || "#0f172a";
 };
 
-export type SlideType =
-  | "cover"
-  | "step"
-  | "comparison"
-  | "code"
-  | "end"
-  | "image"
-  | "alert"
-  | "metric"
-  | "list"
-  | "highlight"
-  | "timeline"
-  | "qna"
-  | "poll"
-  | "pros-cons"
-  | "definition"
-  | "myth-fact"
-  | "checklist"
-  | "tech-stack"
-  | "mistakes"
-  | "takeaways"
-  | "announcement";
+export type SlideType = "cover" | "markdown" | "image" | "end";
 
 export interface BaseSlideData {
   id: string;
@@ -236,28 +215,17 @@ export interface CoverSlideData extends BaseSlideData {
   imageFit?: "contain" | "cover";
 }
 
-export interface StepSlideData extends BaseSlideData {
-  type: "step";
-  stepNumber: string;
-  title: string;
-  description: string;
+export interface MarkdownSlideData extends BaseSlideData {
+  type: "markdown";
+  content: string;
 }
 
-export interface ComparisonSlideData extends BaseSlideData {
-  type: "comparison";
+export interface ImageSlideData extends BaseSlideData {
+  type: "image";
   title: string;
-  leftTitle: string;
-  rightTitle: string;
-  leftItems: string[];
-  rightItems: string[];
-}
-
-export interface CodeSlideData extends BaseSlideData {
-  type: "code";
-  title: string;
-  language: string;
-  code: string;
-  description?: string;
+  imageUrl: string;
+  caption: string;
+  imageFit: "contain" | "cover";
 }
 
 export interface EndSlideData extends BaseSlideData {
@@ -271,151 +239,11 @@ export interface EndSlideData extends BaseSlideData {
   finalText: string;
 }
 
-export interface ImageSlideData extends BaseSlideData {
-  type: "image";
-  title: string;
-  imageUrl: string;
-  caption: string;
-  imageFit: "contain" | "cover";
-}
-
-export interface AlertSlideData extends BaseSlideData {
-  type: "alert";
-  title: string;
-  description: string;
-  alertType: "info" | "warning" | "error" | "success";
-}
-
-export interface MetricSlideData extends BaseSlideData {
-  type: "metric";
-  value: string;
-  label: string;
-  trend: string | "up" | "down" | "flat";
-}
-
-export interface ListSlideData extends BaseSlideData {
-  type: "list";
-  title: string;
-  bulletType: "bullet" | "numbered";
-  items: string[];
-}
-
-export interface HighlightSlideData extends BaseSlideData {
-  type: "highlight";
-  text: string;
-  author: string;
-  authorTitle?: string;
-  avatarUrl?: string;
-  rating?: number;
-}
-
-export interface TimelineEvent {
-  date: string;
-  title: string;
-  description: string;
-}
-
-export interface TimelineSlideData extends BaseSlideData {
-  type: "timeline";
-  title: string;
-  events: TimelineEvent[];
-}
-
-export interface QnASlideData extends BaseSlideData {
-  type: "qna";
-  question: string;
-  answer: string;
-  questionLabel: string;
-  answerLabel: string;
-}
-
-export interface ProsConsSlideData extends BaseSlideData {
-  type: "pros-cons";
-  title: string;
-  pros: string[];
-  cons: string[];
-}
-
-export interface DefinitionSlideData extends BaseSlideData {
-  type: "definition";
-  term: string;
-  phonetic: string;
-  definition: string;
-}
-
-export interface PollSlideData extends BaseSlideData {
-  type: "poll";
-  question: string;
-  options: string[];
-  questionLabel: string;
-}
-
-export interface MythFactSlideData extends BaseSlideData {
-  type: "myth-fact";
-  title: string;
-  myth: string;
-  fact: string;
-}
-
-export interface ChecklistSlideData extends BaseSlideData {
-  type: "checklist";
-  title: string;
-  items: { text: string; checked: boolean }[];
-}
-
-export interface TechStackSlideData extends BaseSlideData {
-  type: "tech-stack";
-  title: string;
-  items: { name: string; icon: string }[];
-  cols: number;
-}
-
-export interface MistakesSlideData extends BaseSlideData {
-  type: "mistakes";
-  title: string;
-  badCode: string;
-  goodCode: string;
-  badLabel: string;
-  goodLabel: string;
-  language: string;
-}
-
-export interface TakeawaysSlideData extends BaseSlideData {
-  type: "takeaways";
-  title: string;
-  items: string[];
-}
-
-export interface AnnouncementSlideData extends BaseSlideData {
-  type: "announcement";
-  badge: string;
-  title: string;
-  subtitle: string;
-  imageUrl?: string;
-}
-
 export type SlideData =
   | CoverSlideData
-  | StepSlideData
-  | ComparisonSlideData
-  | CodeSlideData
-  | EndSlideData
+  | MarkdownSlideData
   | ImageSlideData
-  | AlertSlideData
-  | MetricSlideData
-  | ListSlideData
-  | HighlightSlideData
-  | TimelineSlideData
-  | QnASlideData
-  | PollSlideData
-  | ProsConsSlideData
-  | DefinitionSlideData
-  | MythFactSlideData
-  | ChecklistSlideData
-  | TechStackSlideData
-  | MistakesSlideData
-  | TakeawaysSlideData
-  | AnnouncementSlideData;
+  | EndSlideData;
 
 export const ACCENT_COLORS = {
   blue: {

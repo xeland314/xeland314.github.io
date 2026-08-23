@@ -4,29 +4,13 @@ import JSZip from "jszip";
 import { Sidebar } from "./Sidebar";
 import type { ExportFormat } from "./sidebar/ExportActions";
 import { BlogCover } from "./BlogCover";
-import { BlogStep } from "./BlogStep";
-import { BlogComparison } from "./BlogComparison";
-import { BlogCode } from "./BlogCode";
-import { BlogEnd } from "./BlogEnd";
+import { BlogMarkdownSlide } from "./BlogMarkdownSlide";
 import { BlogImage } from "./BlogImage";
-import { BlogAlert } from "./BlogAlert";
-import { BlogMetric } from "./BlogMetric";
-import { BlogList } from "./BlogList";
-import { BlogHighlight } from "./BlogHighlight";
-import { BlogTimeline } from "./BlogTimeline";
-import { BlogQnA } from "./BlogQnA";
-import { BlogPoll } from "./BlogPoll";
-import { BlogProsCons } from "./BlogProsCons";
-import { BlogDefinition } from "./BlogDefinition";
-import { BlogMythFact } from "./BlogMythFact";
-import { BlogChecklist } from "./BlogChecklist";
-import { BlogTechStack } from "./BlogTechStack";
-import { BlogMistakes } from "./BlogMistakes";
-import { BlogTakeaways } from "./BlogTakeaways";
-import { BlogAnnouncement } from "./BlogAnnouncement";
+import { BlogEnd } from "./BlogEnd";
 import { ProjectManager, type Project } from "./ProjectManager";
 import { type ThemeMode, type AccentColor, type SlideData, type SlideType, getThemeBgColor } from "./types";
 import { db } from "./db";
+import { migrateSlides } from "./migrate";
 
 const STORAGE_KEY = "cover-creator-state";
 const PROJECTS_KEY = "cover-creator-projects";
@@ -50,10 +34,8 @@ const INITIAL_SLIDES: SlideData[] = [
   },
   {
     id: "2",
-    type: "step",
-    stepNumber: "01",
-    title: "El Elemento <svg>",
-    description: "Es el contenedor principal que define el sistema de coordenadas y el espacio de dibujo.",
+    type: "markdown",
+    content: "## El elemento raíz\n\nTodo gráfico SVG vive dentro de un elemento `<svg>` que define el **sistema de coordenadas** y el espacio de dibujo.\n\n```svg\n<svg viewBox=\"0 0 100 100\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" />\n</svg>\n```\n\n- El `viewBox` mapea unidades internas al tamaño renderizado\n- Sin `width/height`, el SVG llena su contenedor",
   },
   {
     id: "3",
@@ -119,7 +101,12 @@ export const CoverCreator = () => {
       }
 
       if (savedProjects) {
-        setProjects(savedProjects);
+        setProjects(
+          savedProjects.map((p) => ({
+            ...p,
+            data: { ...p.data, slides: migrateSlides(p.data?.slides) },
+          }))
+        );
       }
 
       if (savedState) {
@@ -130,7 +117,7 @@ export const CoverCreator = () => {
           setShowLogo(showLogo);
           setLogoImage(logoImage);
           setUsername(username);
-          setSlides(slides);
+          setSlides(migrateSlides(slides));
           setSelectedSlideId(selectedSlideId);
           setCurrentProjectId(savedId || "default");
         } catch (e) {
@@ -173,69 +160,18 @@ export const CoverCreator = () => {
       case "cover":
         newSlide = { id: newId, type: "cover", title: "Nuevo Título", subtitle: "Nuevo Subtítulo", category: "TECH", iconChar: "🚀" };
         break;
-      case "step":
-        newSlide = { id: newId, type: "step", stepNumber: "01", title: "Nuevo Paso", description: "Descripción del paso..." };
-        break;
-      case "comparison":
-        newSlide = { id: newId, type: "comparison", title: "Comparativa", leftTitle: "Old", leftItems: ["Bad"], rightTitle: "New", rightItems: ["Good"] };
-        break;
-      case "code":
-        newSlide = { id: newId, type: "code", title: "Snippet", code: 'console.log("Hello World");', language: "javascript", description: "" };
+      case "markdown":
+        newSlide = { id: newId, type: "markdown", content: "## Nuevo contenido\n\nEscribe aquí tu **markdown**..." };
         break;
       case "image":
         newSlide = { id: newId, type: "image", title: "Imagen", imageUrl: "", caption: "Pie de foto...", imageFit: "contain" };
         break;
-      case "alert":
-        newSlide = { id: newId, type: "alert", alertType: "info", title: "Atención", description: "Este es un mensaje importante..." };
-        break;
-      case "metric":
-        newSlide = { id: newId, type: "metric", value: "100%", label: "Métrica", trend: "+10% vs ayer" };
-        break;
-      case "list":
-        newSlide = { id: newId, type: "list", title: "Resumen", items: ["Item 1", "Item 2"], bulletType: "bullet" };
-        break;
-      case "highlight":
-        newSlide = { id: newId, type: "highlight", text: "La mejor forma de predecir el futuro es creándolo.", author: "Peter Drucker" };
-        break;
-      case "timeline":
-        newSlide = { id: newId, type: "timeline", title: "Mi Ruta", events: [{ date: "2024", title: "Inicio", description: "Comenzando mi viaje..." }] };
-        break;
-      case "qna":
-        newSlide = { id: newId, type: "qna", question: "¿Pregunta frecuente?", answer: "Esta es una respuesta detallada...", questionLabel: "Q", answerLabel: "A" };
-        break;
-      case "poll":
-        newSlide = { id: newId, type: "poll", question: "¿Cuál es tu color favorito?", options: ["Rojo", "Azul", "Verde"], questionLabel: "P" };
-        break;
-      case "pros-cons":
-        newSlide = { id: newId, type: "pros-cons", title: "¿Vale la pena?", pros: ["Velocidad"], cons: ["Aprendizaje"] };
-        break;
-      case "definition":
-        newSlide = { id: newId, type: "definition", term: "Término", phonetic: "/pronunciación/", definition: "Significado del término..." };
-        break;
-      case "myth-fact":
-        newSlide = { id: newId, type: "myth-fact", title: "Mito vs Realidad", myth: "El mito común...", fact: "La realidad es..." };
-        break;
-      case "checklist":
-        newSlide = { id: newId, type: "checklist", title: "Checklist", items: [{ text: "Paso 1", checked: true }, { text: "Paso 2", checked: false }] };
-        break;
-      case "tech-stack":
-        newSlide = { id: newId, type: "tech-stack", title: "Mi Stack", items: [{ name: "React", icon: "⚛️" }, { name: "TypeScript", icon: "📘" }, { name: "Node.js", icon: "🟢" }], cols: 3 };
-        break;
-      case "mistakes":
-        newSlide = { id: newId, type: "mistakes", title: "Errores Comunes", badCode: '// Mal\nvar x = 1;', goodCode: '// Bien\nconst x = 1;', badLabel: "Mal", goodLabel: "Bien", language: "javascript" };
-        break;
-      case "takeaways":
-        newSlide = { id: newId, type: "takeaways", title: "Puntos Clave", items: ["Punto 1", "Punto 2", "Punto 3"] };
-        break;
-      case "announcement":
-        newSlide = { id: newId, type: "announcement", badge: "NUEVO", title: "Anuncio", subtitle: "Descripción del anuncio..." };
-        break;
       case "end":
-        newSlide = { 
-          id: newId, 
-          type: "end", 
-          firstText: "Thanks for", 
-          secondText: "Reading!", 
+        newSlide = {
+          id: newId,
+          type: "end",
+          firstText: "Thanks for",
+          secondText: "Reading!",
           description: "Gracias por leer...",
           likeText: "Like",
           commentText: "Comment",
@@ -525,26 +461,9 @@ export const CoverCreator = () => {
 
     switch (slide.type) {
       case "cover": return <BlogCover {...slideProps as any} />;
-      case "step": return <BlogStep {...slideProps as any} />;
-      case "comparison": return <BlogComparison {...slideProps as any} />;
-      case "code": return <BlogCode {...slideProps as any} />;
-      case "end": return <BlogEnd {...slideProps as any} />;
+      case "markdown": return <BlogMarkdownSlide {...slideProps as any} />;
       case "image": return <BlogImage {...slideProps as any} />;
-      case "alert": return <BlogAlert {...slideProps as any} />;
-      case "metric": return <BlogMetric {...slideProps as any} />;
-      case "list": return <BlogList {...slideProps as any} />;
-      case "highlight": return <BlogHighlight {...slideProps as any} />;
-      case "timeline": return <BlogTimeline {...slideProps as any} />;
-      case "qna": return <BlogQnA {...slideProps as any} />;
-      case "poll": return <BlogPoll {...slideProps as any} />;
-      case "pros-cons": return <BlogProsCons {...slideProps as any} />;
-      case "definition": return <BlogDefinition {...slideProps as any} />;
-      case "myth-fact": return <BlogMythFact {...slideProps as any} />;
-      case "checklist": return <BlogChecklist {...slideProps as any} />;
-      case "tech-stack": return <BlogTechStack {...slideProps as any} />;
-      case "mistakes": return <BlogMistakes {...slideProps as any} />;
-      case "takeaways": return <BlogTakeaways {...slideProps as any} />;
-      case "announcement": return <BlogAnnouncement {...slideProps as any} />;
+      case "end": return <BlogEnd {...slideProps as any} />;
       default: return <div className="w-full h-full flex items-center justify-center text-gray-400">Tipo no soportado: {(slide as any).type}</div>;
     }
   };
