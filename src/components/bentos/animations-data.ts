@@ -107,4 +107,59 @@ export const ANIMATIONS: AnimationCard[] = [
     gradient: "from-violet-500 to-fuchsia-500",
     icon: `<path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>`,
   },
+  {
+    slug: "tcp-udp-handshake",
+    title: { es: "Redes · TCP vs UDP", en: "Networks · TCP vs UDP" },
+    description: {
+      es: "Handshake SYN/SYN-ACK/ACK vs fire & forget",
+      en: "SYN/SYN-ACK/ACK handshake vs fire & forget",
+    },
+    badge: { es: "Redes", en: "Networks" },
+    gradient: "from-cyan-500 to-orange-500",
+    icon: `<circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>`,
+  },
+  {
+    slug: "sigterm-vs-sigkill",
+    title: { es: "Linux · SIGTERM vs SIGKILL", en: "Linux · SIGTERM vs SIGKILL" },
+    description: {
+      es: "Limpieza antes de salir vs aniquilación del kernel",
+      en: "Cleanup before exit vs kernel annihilation",
+    },
+    badge: { es: "Linux", en: "Linux" },
+    gradient: "from-red-500 to-sky-500",
+    icon: `<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>`,
+  },
+  {
+    slug: "symlink-vs-hardlink",
+    title: { es: "Linux · Symlink vs Hard Link", en: "Linux · Symlink vs Hard Link" },
+    description: {
+      es: "Ruta que se rompe vs nombre directo al inodo",
+      en: "Broken path vs direct inode name",
+    },
+    badge: { es: "Linux", en: "Linux" },
+    gradient: "from-teal-500 to-emerald-500",
+    icon: `<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>`,
+  },
+  {
+    slug: "fds-redirection",
+    title: { es: "Linux · File Descriptors", en: "Linux · File Descriptors" },
+    description: {
+      es: "Reconexión de fds con >, >> y 2>&1",
+      en: "Reconnecting fds with >, >> and 2>&1",
+    },
+    badge: { es: "Linux", en: "Linux" },
+    gradient: "from-orange-500 to-amber-600",
+    icon: `<path d="M3 5v14"/><path d="m9 12 5 5 5-5"/><path d="M14 17V7"/><path d="M3 12h6"/>`,
+  },
+  {
+    slug: "umask-permissions",
+    title: { es: "Linux · umask (Permisos)", en: "Linux · umask (Permissions)" },
+    description: {
+      es: "AND NOT bit a bit sobre 666/777 por defecto",
+      en: "Bitwise AND NOT over default 666/777",
+    },
+    badge: { es: "Linux", en: "Linux" },
+    gradient: "from-purple-500 to-pink-500",
+    icon: `<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`,
+  },
 ];
