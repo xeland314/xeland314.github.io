@@ -85,4 +85,26 @@ export const ANIMATIONS: AnimationCard[] = [
     gradient: "from-purple-500 to-orange-500",
     icon: `<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>`,
   },
+  {
+    slug: "http2-multiplexing",
+    title: { es: "HTTP/2 · Multiplexación", en: "HTTP/2 · Multiplexing" },
+    description: {
+      es: "Frames intercalados vs head-of-line blocking",
+      en: "Interleaved frames vs head-of-line blocking",
+    },
+    badge: { es: "Redes", en: "Networks" },
+    gradient: "from-sky-500 to-cyan-400",
+    icon: `<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12h10"/><path d="M7 8h4"/><path d="M13 16h4"/>`,
+  },
+  {
+    slug: "http2-hpack",
+    title: { es: "HTTP/2 · HPACK", en: "HTTP/2 · HPACK" },
+    description: {
+      es: "Tablas estática/dinámica + Huffman para headers",
+      en: "Static/dynamic tables + Huffman for headers",
+    },
+    badge: { es: "Redes", en: "Networks" },
+    gradient: "from-violet-500 to-fuchsia-500",
+    icon: `<path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>`,
+  },
 ];
