@@ -122,11 +122,11 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
                 <div className="relative mt-4">
                   <div className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`} />
                   <div className="relative px-6 py-4">
-                    <BlogMarkdown content={subtitle} theme={theme} prose="2xl" />
+                    <BlogMarkdown content={subtitle} theme={theme} prose="4xl" />
                   </div>
                 </div>
               ) : (
-                <BlogMarkdown content={subtitle} theme={theme} prose="3xl" />
+                <BlogMarkdown content={subtitle} theme={theme} prose="4xl" />
               )
             )}
           </div>
@@ -135,7 +135,7 @@ export const BlogCover: React.FC<BlogCoverProps> = ({
           <div className="absolute bottom-12 left-0 right-0 px-20">
             <div className={`flex items-center justify-between py-4 px-8 rounded-2xl ${s.bg || "bg-black/20"} border border-white/10 backdrop-blur-md shadow-lg max-w-4xl mx-auto`}>
               <div className="flex items-center gap-4">
-                <span className={`${s.footer} font-mono ${showImage ? "text-xl" : "text-3xl"} tracking-[0.2em] font-bold ${showImage ? "uppercase" : ""}`}>
+                <span className={`${s.footer} font-mono ${showImage ? "text-xl" : "text-3xl"} tracking-[0.2em] font-bold`}>
                   {theme.username}
                 </span>
               </div>

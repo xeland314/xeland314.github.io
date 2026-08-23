@@ -159,7 +159,7 @@ export const BlogImage: React.FC<BlogImageProps> = ({
 
           {/* Caption with enhanced presentation */}
           {caption && (
-            <div className="relative w-full max-w-4xl mt-auto mb-14">
+            <div className="relative w-full max-w-4xl mb-14">
               <div
                 className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
               />
@@ -183,7 +183,7 @@ export const BlogImage: React.FC<BlogImageProps> = ({
             >
               <div className="flex items-center gap-4">
                 <span
-                  className={`${s.footer} font-mono text-xl tracking-[0.2em] font-bold uppercase`}
+                  className={`${s.footer} font-mono text-3xl tracking-[0.2em] font-bold`}
                 >
                   {theme.username}
                 </span>
@@ -206,7 +206,7 @@ export const BlogImage: React.FC<BlogImageProps> = ({
                     <img
                       src={theme.logoImage}
                       alt="Logo"
-                      className="w-10 h-10 rounded-lg object-cover border border-white/20"
+                      className="w-20 h-20 rounded-lg object-cover border border-white/20"
                     />
                   </div>
                 )}
