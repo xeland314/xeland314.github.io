@@ -1,0 +1,63 @@
+---
+import "./links.css";
+---
+
+<div class="anim-lnk-card">
+  <svg class="anim-lnk-svg" viewBox="0 0 360 262" fill="none">
+    <text x="8" y="14" class="lnk-title">ENTRADAS DE DIRECTORIO → INODO</text>
+
+    <!-- directory entries -->
+    <g id="rOrig" class="lnk-row">
+      <rect x="8" y="24" width="128" height="28" rx="6" class="lnk-box"></rect>
+      <text x="14" y="36" class="lnk-name">📄 archivo.txt</text>
+      <text x="14" y="47" class="lnk-sub">nombre original</text>
+    </g>
+    <g id="rHard" class="lnk-row">
+      <rect x="8" y="60" width="128" height="28" rx="6" class="lnk-box"></rect>
+      <text x="14" y="72" class="lnk-name">🔗 duro.hlk</text>
+      <text x="14" y="83" class="lnk-sub">hard link · otro nombre</text>
+    </g>
+    <g id="rSym" class="lnk-row">
+      <rect x="8" y="96" width="128" height="28" rx="6" class="lnk-box"></rect>
+      <text x="14" y="108" class="lnk-name">🔗 sim.link</text>
+      <text x="14" y="119" class="lnk-sub">symlink · apunta a ruta</text>
+    </g>
+
+    <!-- arrows -->
+    <path id="aOrig" d="M 136 38 C 152 38, 156 52, 168 58" class="lnk-arrow hard" opacity="1"></path>
+    <path id="aHard" d="M 136 74 L 168 74" class="lnk-arrow hard"></path>
+    <path id="aSym" d="M 136 110 C 150 110, 148 66, 138 56" class="lnk-arrow sym"></path>
+
+    <!-- inode -->
+    <rect x="170" y="46" width="96" height="58" rx="9" class="lnk-inode"></rect>
+    <text x="218" y="62" text-anchor="middle" class="lnk-inode-title">INODO</text>
+    <text x="218" y="80" text-anchor="middle" class="lnk-inode-num">#4821</text>
+
+    <!-- nlink chip -->
+    <rect x="170" y="112" width="96" height="20" rx="7" class="lnk-nlink-chip" id="nlinkChip"></rect>
+    <text id="nlinkText" x="218" y="126" text-anchor="middle" class="lnk-nlink-text">enlaces: 2</text>
+
+    <!-- inode → data -->
+    <path d="M 266 75 L 292 75" class="lnk-arrow data"></path>
+
+    <!-- data block -->
+    <rect x="294" y="50" width="60" height="50" rx="9" class="lnk-data"></rect>
+    <text x="324" y="70" text-anchor="middle" class="lnk-data-text">datos</text>
+    <text x="324" y="86" text-anchor="middle" class="lnk-data-text">"Hola"</text>
+
+    <!-- symlink broken chip -->
+    <g id="symX" opacity="0">
+      <circle cx="146" cy="84" r="11" fill="rgba(255,95,87,0.15)" stroke="#ff5f57"></circle>
+      <text x="146" y="88.5" text-anchor="middle" style="font-size:12px;font-weight:800;fill:#ff5f57">✗</text>
+      <text x="162" y="150" style="font-size:9px;font-weight:700;fill:#ff5f57">ruta rota</text>
+    </g>
+
+    <!-- terminal results -->
+    <text id="catFail" x="8" y="176" class="lnk-term fail" opacity="0">$ cat sim.link → No such file or directory</text>
+    <text id="catHard" x="8" y="200" class="lnk-term ok" opacity="0">$ cat duro.hlk → Hola ✓ (mismo inodo #4821)</text>
+
+    <text id="moralText" x="8" y="240" style="font-size:9.5px;font-weight:600;fill:#5f6c7a" opacity="0"
+      >El inodo vive mientras exista al menos un hard link.</text
+    >
+  </svg>
+</div>
