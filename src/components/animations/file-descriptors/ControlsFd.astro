@@ -1,0 +1,31 @@
+---
+import "../controls/controls.css";
+import "./fds.css";
+import ResolutionSelect from "../controls/ResolutionSelect.astro";
+---
+
+<div id="controls" class="flex flex-col items-center gap-3 w-[400px]">
+  <div class="grid grid-cols-2 gap-2 w-full">
+    <button class="ctrl-btn fds" id="btnDefault">1. Por defecto</button>
+    <button class="ctrl-btn" id="btnGt">2. cmd &gt; out.txt</button>
+    <button class="ctrl-btn" id="btnGtgt">3. cmd &gt;&gt; out.txt</button>
+    <button class="ctrl-btn" id="btnBoth">4. cmd 2&gt;&amp;1</button>
+  </div>
+  <button class="ctrl-btn primary w-full" id="btnPlay">
+    ▶ Demo completa (4 estados)
+  </button>
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn ghost flex-1" id="resetBtn">↺ Reiniciar</button>
+    <ResolutionSelect />
+  </div>
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn primary flex-1" id="exportBtn">
+      ⬇ Exportar video
+    </button>
+  </div>
+  <div
+    class="font-mono text-center"
+    id="statusText"
+    style="font-size:10.5px;color:#5f6c7a;min-height:14px;"
+  ></div>
+</div>

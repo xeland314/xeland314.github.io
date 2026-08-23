@@ -1,0 +1,51 @@
+---
+import "./fds.css";
+---
+
+<div class="anim-fd-card">
+  <svg class="anim-fd-svg" viewBox="0 0 360 250" fill="none">
+    <text x="8" y="14" class="fd-title">DESCRIPTORES: 0 stdin · 1 stdout · 2 stderr</text>
+
+    <!-- keyboard (stdin source) -->
+    <rect x="8" y="30" width="86" height="26" rx="6" class="fd-box"></rect>
+    <text x="16" y="47" class="fd-label">⌨ teclado</text>
+    <path d="M 51 56 C 51 70, 60 76, 72 84" class="fd-arrow stdin"></path>
+
+    <!-- process -->
+    <rect x="40" y="88" width="112" height="74" rx="10" class="fd-proc"></rect>
+    <text x="96" y="118" text-anchor="middle" class="fd-label">PROCESO</text>
+    <text x="96" y="134" text-anchor="middle" class="fd-sub">tabla de fds propia</text>
+
+    <!-- ports -->
+    <text x="156" y="106" class="fd-port p1">[1]</text>
+    <text x="156" y="126" class="fd-port p2">[2]</text>
+
+    <!-- terminal target -->
+    <g id="tScreen">
+      <rect x="252" y="84" width="100" height="30" rx="6" class="fd-box"></rect>
+      <text x="260" y="103" class="fd-label">🖥 terminal</text>
+    </g>
+
+    <!-- file target -->
+    <g id="tFile">
+      <rect id="fileBox" x="252" y="146" width="100" height="44" rx="6" class="fd-file"></rect>
+      <text x="260" y="164" class="fd-label">📄 out.txt</text>
+      <text id="appendMark" x="342" y="164" style="font-size:13px;font-weight:800;fill:#fdba74" opacity="0">+</text>
+      <text id="modeText" x="260" y="181" class="fd-mode-text" opacity="0">vacía · listo</text>
+    </g>
+
+    <!-- arrows -->
+    <path id="aOutScreen" d="M 152 102 C 190 102, 214 96, 250 97" class="fd-arrow out"></path>
+    <path id="aErrScreen" d="M 152 122 C 190 124, 214 116, 250 110" class="fd-arrow err"></path>
+    <path id="aOutFile" d="M 152 102 C 200 104, 220 150, 250 160" class="fd-arrow toFile" opacity="0"></path>
+    <path id="aErrFile" d="M 152 122 C 196 130, 218 158, 250 170" class="fd-arrow toFile" opacity="0"></path>
+
+    <!-- note -->
+    <text id="noteText" x="8" y="206" style="font-size:9.5px;font-weight:600;fill:#5f6c7a"
+      >La shell reconecta los fds ANTES de ejecutar el programa.</text
+    >
+    <text id="stateText" x="8" y="232" style="font-size:11px;font-weight:800;fill:#e7edf3"
+      >estado: por defecto</text
+    >
+  </svg>
+</div>
