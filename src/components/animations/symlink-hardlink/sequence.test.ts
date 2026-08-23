@@ -13,10 +13,10 @@ describe("buildLinkLines", () => {
 
   it("creates a hard link and a symlink", () => {
     const html = LINK_CODE.map((l) => l.html).join("\n");
-    expect(html).toContain("ln&nbsp;&nbsp;archivo.txt");
+    expect(html).toContain("$ ln</span>&nbsp;&nbsp;archivo.txt");
+    expect(html).toContain("duro.hlk");
     expect(html).toContain("ln -s");
-    expect(html).toContain("# mismo inodo");
-    expect(html).toContain("# ruta → nombre".replace("→", "→"));
+    expect(html).toContain("sim.link");
   });
 });
 
