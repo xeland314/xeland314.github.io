@@ -8,6 +8,7 @@ interface BlogImageProps {
   imageUrl: string;
   caption: string;
   imageFit: "contain" | "cover";
+  fontScale?: number;
   theme: ThemeConfig;
   previewWidth?: number;
   previewHeight?: number;
@@ -18,6 +19,7 @@ export const BlogImage: React.FC<BlogImageProps> = ({
   imageUrl,
   caption,
   imageFit = "contain",
+  fontScale = 1,
   theme,
   previewWidth = 1080,
   previewHeight = 1080,
@@ -161,8 +163,16 @@ export const BlogImage: React.FC<BlogImageProps> = ({
               <div
                 className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
               />
-              <div className="px-8 py-6">
-                <BlogMarkdown content={caption} theme={theme} prose="4xl" />
+              <div
+                className="px-8 py-6"
+                style={{
+                  transform: `scale(${fontScale})`,
+                  transformOrigin: "center center",
+                }}
+              >
+                <div style={{ width: `${Math.min(100 / fontScale, 100)}%` }}>
+                  <BlogMarkdown content={caption} theme={theme} prose="4xl" />
+                </div>
               </div>
             </div>
           )}

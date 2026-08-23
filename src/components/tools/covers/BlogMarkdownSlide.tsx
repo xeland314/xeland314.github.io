@@ -5,6 +5,7 @@ import { BlogMarkdown } from "./BlogMarkdown";
 
 interface BlogMarkdownSlideProps {
   content: string;
+  fontScale?: number;
   theme: ThemeConfig;
   previewWidth?: number;
   previewHeight?: number;
@@ -22,6 +23,7 @@ const splitLeadingHeading = (content: string): [string, string] => {
 
 export const BlogMarkdownSlide: React.FC<BlogMarkdownSlideProps> = ({
   content,
+  fontScale = 1,
   theme,
   previewWidth = 1080,
   previewHeight = 1080,
@@ -31,7 +33,7 @@ export const BlogMarkdownSlide: React.FC<BlogMarkdownSlideProps> = ({
   const s = getThemeStyles(theme.mode);
 
   const [heading, body] = splitLeadingHeading(content || "");
-  const prose = previewHeight >= 1920 ? "3xl" : "2xl";
+  const prose = previewHeight >= 1920 ? "4xl" : "3xl";
 
   return (
     <div className="flex items-center justify-center overflow-hidden font-sans w-full h-full">
@@ -54,25 +56,35 @@ export const BlogMarkdownSlide: React.FC<BlogMarkdownSlideProps> = ({
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]" />
           </div>
 
-          {/* Header con gradiente (solo si el markdown abre con # o ##) */}
-          {heading && (
-            <div className="mb-10 relative group w-full max-w-4xl shrink-0">
-              <div
-                className={`absolute inset-0 bg-gradient-to-r ${c.gradient} rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity`}
-              />
-              <div
-                className={`relative px-10 py-5 rounded-3xl bg-gradient-to-tr ${c.gradient} shadow-2xl transform hover:scale-[1.01] transition-transform duration-300`}
-              >
-                <h1 className={`text-7xl font-black tracking-tight text-white drop-shadow-lg`}>
-                  {heading}
-                </h1>
-              </div>
-            </div>
-          )}
+          {/* Contenido escalable (título degradado + cuerpo markdown) */}
+          <div
+            className="relative z-10 flex-1 min-h-0 w-full flex flex-col justify-center"
+            style={{
+              transform: `scale(${fontScale})`,
+              transformOrigin: "center center",
+            }}
+          >
+            <div
+              className="w-full max-w-4xl mx-auto"
+              style={{ width: `${Math.min(100 / fontScale, 100)}%` }}
+            >
+              {heading && (
+                <div className="mb-10 relative group shrink-0">
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${c.gradient} rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity`}
+                  />
+                  <div
+                    className={`relative px-10 py-5 rounded-3xl bg-gradient-to-tr ${c.gradient} shadow-2xl`}
+                  >
+                    <h1 className={`text-7xl font-black tracking-tight text-white drop-shadow-lg`}>
+                      {heading}
+                    </h1>
+                  </div>
+                </div>
+              )}
 
-          {/* Cuerpo markdown */}
-          <div className="relative z-10 flex-1 w-full max-w-4xl flex flex-col justify-center min-h-0">
-            <BlogMarkdown content={body} theme={theme} prose={prose} />
+              <BlogMarkdown content={body} theme={theme} prose={prose} />
+            </div>
           </div>
 
           {/* Footer Brand */}

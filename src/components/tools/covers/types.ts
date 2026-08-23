@@ -218,6 +218,8 @@ export interface CoverSlideData extends BaseSlideData {
 export interface MarkdownSlideData extends BaseSlideData {
   type: "markdown";
   content: string;
+  /** Escala tipográfica estilo slides.c (-s). 1 = tamaño base */
+  fontScale?: number;
 }
 
 export interface ImageSlideData extends BaseSlideData {
@@ -226,6 +228,8 @@ export interface ImageSlideData extends BaseSlideData {
   imageUrl: string;
   caption: string;
   imageFit: "contain" | "cover";
+  /** Escala tipográfica del caption */
+  fontScale?: number;
 }
 
 export interface EndSlideData extends BaseSlideData {
