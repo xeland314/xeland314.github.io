@@ -4,7 +4,7 @@ export const UMASK_TIMING = {
   introPause: 1600,
   defLight: 1300,
   maskShow: 1300,
-  groupStep: 1050,
+  groupStep: 1100,
   dirCompute: 1400,
   maskSwap: 1500,
   secondStep: 850,
