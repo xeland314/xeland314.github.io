@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Stage from "../../components/animations/Stage.astro";
+import CodePanel from "../../components/animations/code/CodePanel.astro";
+import NetworkCard from "../../components/animations/tcp-udp/NetworkCard.astro";
+import ConsoleOut from "../../components/animations/tcp-udp/ConsoleOut.astro";
+import ControlsNet from "../../components/animations/tcp-udp/ControlsNet.astro";
+
+const siteTitle = "Redes · TCP 3-Way Handshake vs UDP";
+const siteDescription =
+  "Animación de redes: TCP sincroniza estados con SYN, SYN-ACK y ACK antes de transmitir, mientras UDP dispara datagramas sin conexión y pierde paquetes sin retransmitirlos.";
+const siteKeywords =
+  "tcp, udp, three way handshake, syn, syn-ack, ack, datagramas, sockets, capa de transporte, animación, video";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/animations/tcp-udp-handshake";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    />
+  </Fragment>
+
+  <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
+    <Stage eyebrow="REDES · CAPA DE TRANSPORTE">
+      <Fragment slot="title">
+        <span class="text-[#3fd0e0]">TCP</span> (handshake) vs<br />
+        <span class="text-[#ff9736]">UDP</span> (fire &amp; forget)
+      </Fragment>
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-3 px-6 pb-8">
+        <CodePanel file="tcp_socket.c">
+          <Fragment slot="badge">
+            <span id="statusBadge" class="anim-net-badge">ESPERANDO</span>
+          </Fragment>
+        </CodePanel>
+        <NetworkCard />
+        <ConsoleOut />
+      </div>
+    </Stage>
+
+    <ControlsNet />
+  </main>
+</BaseLayout>
+
+<script>
+  import { initNetAnimation } from "../../components/animations/tcp-udp/controller";
+  initNetAnimation();
+</script>

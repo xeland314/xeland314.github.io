@@ -1,0 +1,36 @@
+---
+import "./tcpudp.css";
+---
+
+<div class="anim-net-card">
+  <div class="anim-net-nodes">
+    <div class="flex flex-col items-center">
+      <div id="clientNode" class="anim-net-node">💻</div>
+      <span class="anim-net-label">Cliente</span>
+      <span id="clientState" class="anim-net-state">CLOSED</span>
+    </div>
+
+    <div class="anim-net-pipes">
+      <div class="anim-net-pipe"></div>
+      <div class="anim-net-pipe"></div>
+    </div>
+
+    <div class="flex flex-col items-center">
+      <div id="serverNode" class="anim-net-node">🖥️</div>
+      <span class="anim-net-label">Servidor</span>
+      <span id="serverState" class="anim-net-state">LISTEN</span>
+    </div>
+  </div>
+
+  <div
+    id="packetArea"
+    class="absolute inset-0 pointer-events-none overflow-hidden"
+  ></div>
+
+  <div class="anim-net-footer">
+    <span style="color:#5f6c7a">Garantías:</span>
+    <span id="guaranteeText" style="color:#22d3ee;font-weight:600"
+      >Orden, ACK &amp; Retransmisión</span
+    >
+  </div>
+</div>
