@@ -216,54 +216,79 @@ export const CoverCreator = () => {
     setSlides(newSlides);
   };
 
-  // Keyboard shortcuts
+  // Navegación estilo slides.c: siguiente/anterior relativo a la slide seleccionada
+  const goToSlide = (index: number) => {
+    if (index < 0 || index >= slides.length) return;
+    setSelectedSlideId(slides[index].id);
+  };
+
+  const goNext = () => goToSlide(slides.findIndex((s) => s.id === selectedSlideId) + 1);
+  const goPrev = () => goToSlide(slides.findIndex((s) => s.id === selectedSlideId) - 1);
+
+  // Keyboard shortcuts (estilo slides.c)
   useEffect(() => {
     if (!isLoaded) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts when typing in inputs
-      const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT") {
-        return;
-      }
+    const isTyping = (el: EventTarget | null) => {
+      const t = el as HTMLElement | null;
+      return (
+        !!t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.tagName === "SELECT" ||
+          t.isContentEditable)
+      );
+    };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
       // Ctrl+D: Duplicate slide
-      if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
         e.preventDefault();
         duplicateSlide(selectedSlideId);
         return;
       }
 
-      // Delete/Backspace: Remove slide
-      if (e.key === "Delete" || e.key === "Backspace") {
-        e.preventDefault();
-        removeSlide(selectedSlideId);
-        return;
-      }
+      if (isTyping(e.target)) return;
 
-      // ArrowUp: Select previous slide
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        const currentIndex = slides.findIndex(s => s.id === selectedSlideId);
-        if (currentIndex > 0) {
-          setSelectedSlideId(slides[currentIndex - 1].id);
-        }
-        return;
-      }
-
-      // ArrowDown: Select next slide
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        const currentIndex = slides.findIndex(s => s.id === selectedSlideId);
-        if (currentIndex < slides.length - 1) {
-          setSelectedSlideId(slides[currentIndex + 1].id);
-        }
-        return;
+      switch (e.key) {
+        // Navegación
+        case "ArrowDown":
+        case "PageDown":
+          e.preventDefault();
+          goNext();
+          break;
+        case "ArrowUp":
+        case "PageUp":
+        case "Backspace": // slides.c: Backspace = anterior (Delete elimina, no Backspace)
+          e.preventDefault();
+          goPrev();
+          break;
+        case "Home":
+          e.preventDefault();
+          goToSlide(0);
+          break;
+        case "End":
+          e.preventDefault();
+          goToSlide(slides.length - 1);
+          break;
+        case " ":
+        case "Enter":
+          // Solo con el foco en el body, para no robar el clic a botones/enlaces
+          if ((e.target as HTMLElement)?.tagName === "BODY") {
+            e.preventDefault();
+            goNext();
+          }
+          break;
+        // Eliminar slide (solo Delete; Backspace navega hacia atrás)
+        case "Delete":
+          e.preventDefault();
+          removeSlide(selectedSlideId);
+          break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLoaded, selectedSlideId, slides, duplicateSlide, removeSlide, setSelectedSlideId]);
+  }, [isLoaded, selectedSlideId, slides]);
 
   const handleSaveProject = (name: string) => {
     const newProject: Project = {
@@ -469,21 +494,11 @@ export const CoverCreator = () => {
   };
 
   const selectedSlide = slides.find((s) => s.id === selectedSlideId) || slides[0];
+  const selectedIndex = slides.indexOf(selectedSlide);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-10 p-4 min-h-screen">
-      <div className="w-full lg:w-96 flex flex-col">
-        <ProjectManager
-          projects={projects}
-          currentProjectId={currentProjectId}
-          onSave={handleSaveProject}
-          onLoad={handleLoadProject}
-          onDelete={handleDeleteProject}
-          onNew={handleNewProject}
-          onExport={handleExportProject}
-          onImport={handleImportProject}
-          onDuplicate={handleDuplicateProject}
-        />
+    <div className="h-full flex flex-col lg:flex-row gap-4 p-1 lg:overflow-hidden">
+      <div className="w-full lg:w-96 flex flex-col gap-3 lg:h-full lg:flex-shrink-0">
         <Sidebar
           mode={mode}
           setMode={setMode}
@@ -512,11 +527,43 @@ export const CoverCreator = () => {
           onExportAll={handleExportAll}
           onExportCurrent={handleExportCurrent}
         />
+        {/* Proyectos: colapsado, al fondo y fuera del camino de edición */}
+        <details className="flex-shrink-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-3xl overflow-hidden group">
+          <summary className="flex items-center gap-2 px-4 py-2.5 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <span className="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0"></span>
+            <h3 className="text-sm font-bold flex-1">
+              Proyectos{" "}
+              <span className="text-xs text-gray-400 font-mono">({projects.length})</span>
+            </h3>
+            <svg
+              className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div className="p-4 max-h-64 overflow-y-auto">
+            <ProjectManager
+              projects={projects}
+              currentProjectId={currentProjectId}
+              onSave={handleSaveProject}
+              onLoad={handleLoadProject}
+              onDelete={handleDeleteProject}
+              onNew={handleNewProject}
+              onExport={handleExportProject}
+              onImport={handleImportProject}
+              onDuplicate={handleDuplicateProject}
+            />
+          </div>
+        </details>
       </div>
-        <div className="flex-1 flex flex-col items-center justify-start py-10 overflow-auto bg-gray-50 dark:bg-gray-950 rounded-[3rem] border border-gray-200 dark:border-gray-800">
+
+      <div className="flex-1 flex flex-col items-center justify-start py-6 lg:overflow-y-auto bg-gray-50 dark:bg-gray-950 rounded-[3rem] border border-gray-200 dark:border-gray-800">
         <div className="w-full max-w-5xl flex flex-col items-center px-4">
           <div className="w-full flex justify-end mb-4">
-             <button 
+             <button
                onClick={handleReset}
                className="text-xs font-bold text-red-500 hover:text-red-600 uppercase tracking-widest bg-red-50 dark:bg-red-950/30 px-3 py-1 rounded-lg border border-red-100 dark:border-red-900/50 transition-colors"
              >
@@ -535,21 +582,43 @@ export const CoverCreator = () => {
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white dark:bg-gray-800 px-6 py-3 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-             <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">
-               Previsualizando {slides.indexOf(selectedSlide) + 1} de {slides.length}
+          {/* Pager + estado */}
+          <div className="my-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 bg-white dark:bg-gray-800 px-5 py-2.5 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 sticky bottom-4 z-10">
+             <div className="flex items-center gap-1.5">
+               <button
+                 type="button"
+                 onClick={goPrev}
+                 disabled={selectedIndex <= 0}
+                 aria-label="Diapositiva anterior (↑)"
+                 className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold disabled:opacity-30 enabled:hover:bg-blue-600 enabled:hover:text-white transition-colors"
+               >
+                 ◀
+               </button>
+               <span className="text-sm font-mono font-bold text-slate-700 dark:text-slate-200 w-16 text-center tabular-nums">
+                 {selectedIndex + 1} / {slides.length}
+               </span>
+               <button
+                 type="button"
+                 onClick={goNext}
+                 disabled={selectedIndex >= slides.length - 1}
+                 aria-label="Siguiente diapositiva (↓ o Espacio)"
+                 className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold disabled:opacity-30 enabled:hover:bg-blue-600 enabled:hover:text-white transition-colors"
+               >
+                 ▶
+               </button>
+             </div>
+             <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700" />
+             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+               {previewSettings.label} · {previewSettings.width}×{previewSettings.height}
              </span>
-             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-               Vista: {previewSettings.label} — {previewSettings.width}×{previewSettings.height}
-             </span>
-             <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700 mx-2" />
+             <div className="h-4 w-[1px] bg-gray-200 dark:bg-gray-700" />
              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-1">
                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                Autoguardado
              </span>
           </div>
         </div>
-        </div>
+      </div>
     </div>
   );
 };

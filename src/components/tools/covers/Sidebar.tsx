@@ -35,6 +35,23 @@ interface SidebarProps {
   onExportCurrent: () => void;
 }
 
+const SectionHeader = ({
+  dot,
+  title,
+  count,
+}: {
+  dot: string;
+  title: React.ReactNode;
+  count?: React.ReactNode;
+}) => (
+  <summary className="flex items-center gap-2 px-4 py-2.5 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+    <span className={`w-2 h-2 rounded-full ${dot} flex-shrink-0`}></span>
+    <h3 className="text-sm font-bold flex-1">{title}</h3>
+    {count}
+    <ChevronIcon />
+  </summary>
+);
+
 export const Sidebar: React.FC<SidebarProps> = ({
   mode,
   setMode,
@@ -66,9 +83,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const selectedSlide = slides.find((s) => s.id === selectedSlideId);
 
   return (
-    <div className="w-full lg:w-96 h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden">
+    <div className="w-full lg:w-96 lg:h-full flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden rounded-3xl">
       {/* Fixed header with export buttons */}
-      <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 p-4 space-y-3">
+      <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 p-3">
         <ExportActions
           onExportCurrent={onExportCurrent}
           onExportAll={onExportAll}
@@ -79,15 +96,55 @@ export const Sidebar: React.FC<SidebarProps> = ({
         />
       </div>
 
-      {/* Scrollable content */}
+      {/* Scrollable middle: slide list + editor always visible primero */}
       <div className="flex-1 overflow-y-auto min-h-0">
         <details open className="group">
-          <summary className="flex items-center gap-2 px-4 py-3 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 sticky top-0 bg-white dark:bg-gray-800 z-10">
-            <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></span>
-            <h3 className="text-sm font-bold flex-1">Configuración Global</h3>
-            <ChevronIcon />
-          </summary>
-          <div className="p-4 space-y-4">
+          <SectionHeader
+            dot="bg-emerald-500"
+            title="Diapositivas"
+            count={
+              <span className="text-xs text-gray-400 font-mono">{slides.length}</span>
+            }
+          />
+          <div className="p-3 space-y-1.5">
+            <SlideAdder addSlide={addSlide} />
+            <SlideList
+              slides={slides}
+              selectedSlideId={selectedSlideId}
+              setSelectedSlideId={setSelectedSlideId}
+              addSlide={addSlide}
+              removeSlide={removeSlide}
+              moveSlide={moveSlide}
+              duplicateSlide={duplicateSlide}
+            />
+          </div>
+        </details>
+
+        {selectedSlide && (
+          <details open className="group border-t border-gray-100 dark:border-gray-700/50">
+            <SectionHeader
+              dot="bg-orange-500"
+              title={
+                <>
+                  Editando{" "}
+                  <span className="capitalize text-blue-600 dark:text-blue-400">
+                    {selectedSlide.type}
+                  </span>
+                </>
+              }
+            />
+            <div className="p-4 space-y-4">
+              <SlideEditor slide={selectedSlide} updateSlide={updateSlide} />
+            </div>
+          </details>
+        )}
+      </div>
+
+      {/* Bottom: configuración menos frecuente, colapsada */}
+      <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 max-h-72 overflow-y-auto">
+        <details className="group">
+          <SectionHeader dot="bg-blue-500" title="Diseño global" />
+          <div className="px-4 pb-4 space-y-4">
             <GlobalSettings
               mode={mode}
               setMode={setMode}
@@ -104,40 +161,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             />
           </div>
         </details>
-
-        <details open className="group">
-          <summary className="flex items-center gap-2 px-4 py-3 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 sticky top-0 bg-white dark:bg-gray-800 z-10">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
-            <h3 className="text-sm font-bold flex-1">Diapositivas</h3>
-            <span className="text-xs text-gray-400 font-mono">{slides.length}</span>
-            <ChevronIcon />
-          </summary>
-          <div className="p-4 space-y-3">
-            <SlideAdder addSlide={addSlide} />
-            <SlideList
-              slides={slides}
-              selectedSlideId={selectedSlideId}
-              setSelectedSlideId={setSelectedSlideId}
-              addSlide={addSlide}
-              removeSlide={removeSlide}
-              moveSlide={moveSlide}
-              duplicateSlide={duplicateSlide}
-            />
-          </div>
-        </details>
-
-        {selectedSlide && (
-          <details open className="group">
-            <summary className="flex items-center gap-2 px-4 py-3 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 sticky top-0 bg-white dark:bg-gray-800 z-10">
-              <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0"></span>
-              <h3 className="text-sm font-bold flex-1">Editar: {selectedSlide.type}</h3>
-              <ChevronIcon />
-            </summary>
-            <div className="p-4 space-y-4">
-              <SlideEditor slide={selectedSlide} updateSlide={updateSlide} />
-            </div>
-          </details>
-        )}
       </div>
     </div>
   );

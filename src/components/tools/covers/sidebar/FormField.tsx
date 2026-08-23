@@ -240,3 +240,44 @@ export const DeleteButton = ({ onClick }: { onClick: () => void }) => (
     ✕
   </button>
 );
+
+export const SliderField = ({
+  label,
+  value,
+  onChange,
+  min = 0.75,
+  max = 2,
+  step = 0.05,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+}) => (
+  <div>
+    <div className="flex items-center justify-between mb-1">
+      {label && (
+        <label className="text-xs font-bold text-gray-500 uppercase block">
+          {label}
+        </label>
+      )}
+      <span className="text-xs font-mono font-bold text-blue-500">
+        ×{value.toFixed(2)}
+      </span>
+    </div>
+    <input
+      type="range"
+      dir="ltr"
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      onChange={(e) => onChange(parseFloat(e.target.value))}
+      onDoubleClick={() => onChange(1)}
+      className="w-full accent-blue-600 cursor-pointer"
+      aria-label={label}
+    />
+  </div>
+);

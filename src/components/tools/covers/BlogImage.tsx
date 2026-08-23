@@ -161,10 +161,10 @@ export const BlogImage: React.FC<BlogImageProps> = ({
           {caption && (
             <div className="relative w-full max-w-4xl">
               <div
-                className={`absolute -inset-4 bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
+                className={`absolute bg-gradient-to-r ${c.gradient} opacity-5 rounded-2xl blur-xl`}
               />
               <div
-                className="px-8 py-6"
+                className="px-8 py-2"
                 style={{
                   transform: `scale(${fontScale})`,
                   transformOrigin: "center center",

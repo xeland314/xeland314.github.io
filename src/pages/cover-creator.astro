@@ -20,20 +20,22 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
   image={image}
   canonical={url}
 >
-  <main class="min-h-screen bg-gray-50 dark:bg-gray-950">
-    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-8">
-      <header class="mb-8">
-        <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-flex items-center gap-2 font-bold transition-all hover:-translate-x-1">
+  <main class="min-h-screen lg:h-screen lg:overflow-hidden bg-gray-50 dark:bg-gray-950">
+    <div class="h-full max-w-[110rem] mx-auto py-4 px-4 sm:px-6 flex flex-col">
+      <header class="mb-3 flex-shrink-0 flex flex-wrap items-center gap-x-5 gap-y-1">
+        <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-2 font-bold transition-all hover:-translate-x-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-          Volver al inicio
+          Inicio
         </a>
-        <h1 class="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+        <h1 class="text-2xl font-black text-gray-900 dark:text-white tracking-tighter">
           Cover Creator
         </h1>
-        <p class="text-gray-600 dark:text-gray-400">Diseña portadas personalizadas para tus artículos con esta herramienta fácil de usar.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 hidden md:block">↑↓ navegar · Espacio avanzar · Ctrl+D duplicar · Supr eliminar · doble clic en slider = ×1</p>
       </header>
 
-      <CoverCreator client:only="react" />
+      <div class="flex-1 min-h-0">
+        <CoverCreator client:only="react" />
+      </div>
 
     </div>
   </main>
