@@ -1,0 +1,221 @@
+@import "../index.css";
+
+:root {
+  --sig-ok: #7cfb4c;
+  --sig-warn: #ff5f57;
+  --sig-sky: #3fd0e0;
+}
+
+.anim-sig-card {
+  background: var(--anim-panel);
+  border: 1px solid var(--anim-line);
+  border-radius: 14px;
+  padding: 12px;
+  position: relative;
+  min-height: 235px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.anim-sig-toprow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 10;
+}
+
+.anim-sig-term {
+  font-family: var(--anim-font-mono);
+  font-size: 9.5px;
+  color: #d1d5db;
+  background: #04070a;
+  border: 1px solid #1a232d;
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.anim-sig-kernel {
+  font-family: var(--anim-font-mono);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+  border: 1px dashed rgba(251, 191, 36, 0.5);
+  background: rgba(251, 191, 36, 0.08);
+  border-radius: 999px;
+  padding: 7px 12px;
+  margin-top: 8px;
+}
+
+.anim-sig-appwrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.anim-sig-app {
+  width: 64px;
+  height: 44px;
+  border-radius: 10px;
+  background: #111827;
+  border: 1px solid #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--anim-font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: #d1d5db;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease;
+}
+
+.anim-sig-app.running { border-color: var(--sig-sky); }
+.anim-sig-app.closing { border-color: var(--sig-ok); box-shadow: 0 0 16px rgba(124, 251, 76, 0.2); }
+.anim-sig-app.dead { border-color: var(--sig-warn); box-shadow: 0 0 16px rgba(255, 95, 87, 0.28); }
+
+.anim-sig-state {
+  font-family: var(--anim-font-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #a1a1aa;
+}
+
+/* ---- flying signal chip ---- */
+.anim-sig-chip {
+  position: absolute;
+  top: 58px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-family: var(--anim-font-mono);
+  font-size: 9.5px;
+  font-weight: 800;
+  z-index: 20;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.anim-sig-chip.term {
+  background: rgba(63, 208, 224, 0.14);
+  border: 1px solid var(--sig-sky);
+  color: var(--sig-sky);
+}
+
+.anim-sig-chip.kill {
+  background: rgba(255, 95, 87, 0.16);
+  border: 1px solid var(--sig-warn);
+  color: var(--sig-warn);
+}
+
+/* ---- cleanup checklist ---- */
+.anim-sig-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10;
+}
+
+.anim-sig-task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--anim-font-mono);
+  font-size: 10px;
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--anim-line);
+  border-radius: 8px;
+  padding: 5px 9px;
+  opacity: 0.45;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.anim-sig-task.active { opacity: 1; border-color: rgba(63, 208, 224, 0.5); }
+.anim-sig-task.done { opacity: 1; border-color: rgba(124, 251, 76, 0.45); color: #c8ffb0; }
+.anim-sig-task.missed { opacity: 1; border-color: rgba(255, 95, 87, 0.5); color: #fecaca; text-decoration: line-through; }
+
+.anim-sig-dot { font-weight: 800; width: 14px; text-align: center; }
+.anim-sig-task.done .sig-dot-val { color: var(--sig-ok); }
+.anim-sig-task.missed .sig-dot-val { color: var(--sig-warn); }
+
+/* ---- footer ---- */
+.anim-sig-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: var(--anim-font-mono);
+  font-size: 9.5px;
+  margin-top: auto;
+}
+
+/* ---- code line + buttons + badge ---- */
+.anim-code-line.anim-sig-line-term {
+  background: rgba(63, 208, 224, 0.12);
+  border-left-color: var(--sig-sky);
+  opacity: 1;
+}
+
+.anim-code-line.anim-sig-line-kill {
+  background: rgba(255, 95, 87, 0.12);
+  border-left-color: var(--sig-warn);
+  opacity: 1;
+}
+
+.ctrl-btn.sigterm { border-color: rgba(63, 208, 224, 0.45); color: #b3f3fc; }
+.ctrl-btn.sigkill { border-color: rgba(255, 95, 87, 0.45); color: #fecaca; }
+
+.anim-sig-badge {
+  font-family: var(--anim-font-mono);
+  font-size: 8.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #a1a1aa;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ---- console ---- */
+.anim-sig-console-label {
+  font-family: var(--anim-font-mono);
+  font-size: 9px;
+  color: var(--anim-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.anim-sig-console {
+  font-family: var(--anim-font-mono);
+  font-size: 10px;
+  color: #7ee08a;
+  background: #04070a;
+  border: 1px solid #1a232d;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-height: 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.anim-sig-console .anim-row { line-height: 14px; }
+
+@keyframes anim-sig-blink {
+  0%, 49% { opacity: 0.85; }
+  50%, 100% { opacity: 0; }
+}
+
+.anim-sig-caret {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background: #7ee08a;
+  animation: anim-sig-blink 1s steps(1) infinite;
+}

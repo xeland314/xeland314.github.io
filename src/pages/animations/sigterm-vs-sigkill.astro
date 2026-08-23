@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Stage from "../../components/animations/Stage.astro";
+import CodePanel from "../../components/animations/code/CodePanel.astro";
+import SigCard from "../../components/animations/sigterm-sigkill/SigCard.astro";
+import ConsoleOut from "../../components/animations/sigterm-sigkill/ConsoleOut.astro";
+import ControlsSig from "../../components/animations/sigterm-sigkill/ControlsSig.astro";
+
+const siteTitle = "Linux · SIGTERM vs SIGKILL (Señales)";
+const siteDescription =
+  "Animación de señales UNIX: SIGTERM (15) permite al proceso ejecutar su rutina de limpieza antes de salir, mientras SIGKILL (9) es aniquilación inmediata por el kernel sin posibilidad de handler.";
+const siteKeywords =
+  "sigterm, sigkill, señales unix, kill -9, kernel, cleanup, exit status, linux, animación, video";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/animations/sigterm-vs-sigkill";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    />
+  </Fragment>
+
+  <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
+    <Stage eyebrow="LINUX · SEÑALES">
+      <Fragment slot="title">
+        <span class="text-[#3fd0e0]">SIGTERM</span> pide permiso,<br />
+        <span class="text-[#ff5f57]">SIGKILL</span> no pregunta
+      </Fragment>
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-3 px-6 pb-8">
+        <CodePanel file="trap_sigterm.py">
+          <Fragment slot="badge">
+            <span id="statusBadge" class="anim-sig-badge">ESPERANDO</span>
+          </Fragment>
+        </CodePanel>
+        <SigCard />
+        <ConsoleOut />
+      </div>
+    </Stage>
+
+    <ControlsSig />
+  </main>
+</BaseLayout>
+
+<script>
+  import { initSigAnimation } from "../../components/animations/sigterm-sigkill/controller";
+  initSigAnimation();
+</script>

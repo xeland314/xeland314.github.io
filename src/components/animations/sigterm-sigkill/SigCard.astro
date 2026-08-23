@@ -1,0 +1,33 @@
+---
+import "./sigs.css";
+---
+
+<div class="anim-sig-card">
+  <div class="anim-sig-toprow">
+    <div class="anim-sig-term" id="cmdText">$ kill -TERM 4242</div>
+    <div class="anim-sig-kernel">KERNEL</div>
+    <div class="anim-sig-appwrap">
+      <div id="appBox" class="anim-sig-app running">srv :8080</div>
+      <span id="appState" class="anim-sig-state">RUNNING</span>
+    </div>
+  </div>
+
+  <div id="flyArea" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+  <div class="anim-sig-tasks" id="taskList">
+    <div class="anim-sig-task" id="task1"
+      ><span class="anim-sig-dot sig-dot-val" id="dot1">•</span>cerrar sockets</div
+    >
+    <div class="anim-sig-task" id="task2"
+      ><span class="anim-sig-dot sig-dot-val" id="dot2">•</span>vaciar buffers</div
+    >
+    <div class="anim-sig-task" id="task3"
+      ><span class="anim-sig-dot sig-dot-val" id="dot3">•</span>cerrar archivos</div
+    >
+  </div>
+
+  <div class="anim-sig-footer">
+    <span style="color:#5f6c7a">exit status</span>
+    <span id="exitBadge" style="color:#a1a1aa;font-weight:700">—</span>
+  </div>
+</div>
