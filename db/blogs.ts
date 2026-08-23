@@ -38,4 +38,13 @@ export const blogData = [
     isPublished: true,
     pubDate: new Date("2026-04-14"),
   },
+  {
+    title: "Tablas de Cayley: el álgebra de grupos, en código Python",
+    description:
+      "Verifica que las permutaciones pares de {1,2,3,4} forman el grupo A₄ construyendo su tabla de Cayley y exportándola a Excel.",
+    url: "/es/blogs/tablas-de-cayley",
+    lang: "es",
+    isPublished: true,
+    pubDate: new Date("2026-08-23"),
+  },
 ];

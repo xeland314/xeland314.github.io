@@ -1,0 +1,376 @@
+---
+import CodeBlock from "../../../components/common/CodeBlock.tsx";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
+
+// --- METADATA ---
+const pageTitle = "Cayley Tables: Group Algebra in Python Code";
+const pageDescription =
+  "How to verify that the even permutations of {1,2,3,4} form the group A₄ by building its Cayley table with Python and exporting it to Excel.";
+const pageKeywords = [
+  "Cayley table",
+  "group theory",
+  "alternating group",
+  "A4",
+  "permutations",
+  "python",
+  "latin square",
+  "postfix notation",
+  "Christopher Villamarín",
+  "xeland314",
+].join(", ");
+
+const pageSlug = "cayley-tables";
+const pageAuthor = "Christopher Villamarín";
+const applicationName = "Christopher Villamarín's Blog";
+const pageUrl = `https://xeland314.github.io/en/blogs/${pageSlug}`;
+const pageImageAlt = "Blog preview";
+const pageRobots = "index, follow";
+const pageCanonical = pageUrl;
+const pubDate = new Date("2026-08-23T00:00:00");
+---
+
+<BlogLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  author={pageAuthor}
+  applicationName={applicationName}
+  url={pageUrl}
+  imageAlt={pageImageAlt}
+  robots={pageRobots}
+  canonical={pageCanonical}
+  pubDate={pubDate}
+>
+  <section id="introduction">
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      How do you know whether a set with an operation forms a group? The axioms
+      (closure, associativity, identity, inverses) can be checked by hand when
+      the set is small, but manual verification is slow and error-prone. The
+      compact answer fits in a table: the <b>Cayley table</b>, the
+      "multiplication table" of the group.
+    </p>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      This is the script I used to verify the alternating group{" "}
+      <b>A₄</b> — the 12 even permutations of{" "}
+      {"{1, 2, 3, 4}"} — using nothing but Python dicts, tuples and sets.
+      Along the way it covers switching from right-to-left permutation
+      composition (the <i>f ∘ g = f(g(x))</i> convention) to the course's
+      convention: σ first, then τ.
+    </p>
+  </section>
+
+  <section id="what-is">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      What is a Cayley table?
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      A Cayley table shows <b>every possible result</b> of combining two
+      elements of the group:
+    </p>
+    <ul class="mb-4 list-disc pl-8 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      <li>Rows and columns are the elements of the group.</li>
+      <li>
+        Cell <code>(i, j)</code> holds the result of{" "}
+        <code>row ∘ column</code>.
+      </li>
+      <li>
+        If the set is a group, <b>no element repeats</b> within any row or any
+        column.
+      </li>
+    </ul>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      That last property has a name of its own: it is a{" "}
+      <b>Latin square</b>. Every element appears exactly once per row and once
+      per column, and it is exactly what the script verifies at the end.
+    </p>
+  </section>
+
+  <section id="group-a4">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      The group A₄: 12 permutations of 4 elements
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Each permutation is represented as the <b>tuple of destinations</b> of
+      the numbers 1, 2, 3 and 4. For instance,{" "}
+      <code>(2 3 4)</code> means 1→1, 2→3, 3→4, 4→2, so it is written{" "}
+      <code>(1, 3, 4, 2)</code>.
+    </p>
+    <CodeBlock
+      client:visible
+      language="python"
+      code={`elementos = {
+    "ι":     (1, 2, 3, 4),  # identity (1)(2)(3)(4)
+    "α":     (1, 3, 4, 2),  # (2 3 4)
+    "α²":    (1, 4, 2, 3),  # (2 4 3)
+    "β":     (2, 1, 4, 3),  # (1 2)(3 4)
+    "γ":     (4, 3, 2, 1),  # (1 4)(2 3)
+    "βγ":    (3, 4, 1, 2),  # (1 3)(2 4)
+    "αβ":    (3, 1, 2, 4),  # (1 3 2)
+    "αγ":    (2, 4, 3, 1),  # (1 2 4)
+    "αβγ":   (4, 2, 1, 3),  # (1 4 3)
+    "α²β":   (4, 1, 3, 2),  # (1 4 2)
+    "α²γ":   (3, 2, 4, 1),  # (1 3 4)
+    "α²βγ":  (2, 3, 1, 4),  # (1 2 3)
+}
+
+# Inverse dictionary: look up the name from the resulting tuple
+nombre_elemento = {valor: nombre for nombre, valor in elementos.items()}`}
+    />
+  </section>
+
+  <section id="composition">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Composition: postfix notation (σ first, then τ)
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Here lies the conceptual core of this post. I originally composed with
+      the classic convention <i>f ∘ g = f(g(x))</i>: the rightmost factor acts
+      first. But the course uses the order of application, so the product is
+      defined as{" "}
+      <b>(σ ∘ τ)(x) = τ(σ(x))</b>: apply σ first, then τ.
+    </p>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      The formal name of this convention is{" "}
+      <b>right operator notation</b>: instead of writing σ(x) you write xσ,
+      and the product evaluates as x ↦ (xσ)τ. It appears in classic texts such
+      as Wielandt's <i>Finite Permutation Groups</i>; it is also known as
+      diagrammatic order. The fun part: switching conventions touched exactly{" "}
+      <b>one line</b> of code.
+    </p>
+    <CodeBlock
+      client:visible
+      language="python"
+      code={`# Before  (right → left): f(g(x))
+def componer(f, g):
+    return tuple(f[g[i-1] - 1] for i in (1, 2, 3, 4))
+
+# After   (left → right): g(f(x))
+def componer(f, g):
+    return tuple(g[f[i-1] - 1] for i in (1, 2, 3, 4))`}
+    />
+    <p class="mt-4 mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      The logic of the second version: for each position <code>i</code>,
+      first <code>f[i-1]</code> tells where <code>f</code> sends the number
+      <code>i</code>, and that result becomes the index into <code>g</code>.
+    </p>
+  </section>
+
+  <section id="example">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Concrete example: α ∘ α = α²
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      Following the chain element by element with α = (1, 3, 4, 2):
+    </p>
+    <div class="mb-4 overflow-x-auto">
+      <table class="w-full max-w-md text-center text-base border-collapse">
+        <thead>
+          <tr class="text-gray-900 dark:text-gray-100">
+            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">x</th>
+            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">α(x)</th>
+            <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">α(α(x))</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-800 dark:text-gray-200">
+          <tr><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">1</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">1</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">1</td></tr>
+          <tr><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">2</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">3</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">4</td></tr>
+          <tr><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">3</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">4</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">2</td></tr>
+          <tr><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">4</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">2</td><td class="border border-gray-300 dark:border-gray-600 px-4 py-1.5">3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      The result <code>(1, 4, 2, 3)</code> is exactly{" "}
+      <b>α²</b> = (2 4 3): 2 goes to 3 under the first α, then 3 goes to 4
+      under the second one. ✓
+    </p>
+  </section>
+
+  <section id="generation">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Building the full table: 12 × 12 = 144 compositions
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      With the convention settled, the table is just two nested loops. If any
+      composition produced something outside A₄, the inverse dictionary would
+      raise a <code>KeyError</code>: closure gets verified for free.
+    </p>
+    <CodeBlock
+      client:visible
+      language="python"
+      code={`nombres_ordenados = list(elementos.keys())
+tabla_pitagorica = []
+
+for fila_nombre in nombres_ordenados:
+    fila_resultados = []
+    f = elementos[fila_nombre]
+    for col_nombre in nombres_ordenados:
+        g = elementos[col_nombre]
+        resultado_tupla = componer(f, g)
+
+        # Closure property: if the result is not one of the 12
+        # elements, this line raises KeyError.
+        resultado_nombre = nombre_elemento[resultado_tupla]
+        fila_resultados.append(resultado_nombre)
+
+    tabla_pitagorica.append(fila_resultados)`}
+    />
+  </section>
+
+  <section id="verification">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Automatic verification: is it really a group?
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      The Latin square property is checked by turning every row and column
+      into a <code>set</code>: if it has 12 elements, there are no repeats.
+    </p>
+    <CodeBlock
+      client:visible
+      language="python"
+      code={`errores = 0
+
+# Check rows
+for i, fila in enumerate(tabla_pitagorica):
+    if len(set(fila)) != 12:
+        print(f"ERROR in row {nombres_ordenados[i]}: repeated entries.")
+        errores += 1
+
+# Check columns
+for j in range(12):
+    columna = [tabla_pitagorica[i][j] for i in range(12)]
+    if len(set(columna)) != 12:
+        print(f"ERROR in column {nombres_ordenados[j]}: repeated entries.")
+        errores += 1
+
+if errores == 0:
+    print("✅ PERFECT LATIN SQUARE: closure holds, no repeats.")`}
+    />
+  </section>
+
+  <section id="traceability">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Traceability: printing every composition in cycle notation
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      To hand in the assignment you must show <i>how</i> each cell was
+      composed, not just the result. This function converts any tuple into
+      cycle notation while omitting fixed points:{" "}
+      <code>(1, 3, 4, 2)</code> → <code>(2 3 4)</code>.
+    </p>
+    <CodeBlock
+      client:visible
+      language="python"
+      code={`def perm_a_ciclos(perm):
+    visitado = [False] * 4
+    ciclos = []
+    for i in range(4):
+        if not visitado[i] and perm[i] != i + 1:
+            ciclo = []
+            j = i
+            while not visitado[j]:
+                visitado[j] = True
+                ciclo.append(j + 1)
+                j = perm[j] - 1
+            ciclos.append(" ".join(str(x) for x in ciclo))
+    return "(" + ")(".join(ciclos) + ")" if ciclos else "(1)"
+
+def imprimir_composicion(f_nombre, g_nombre):
+    resultado = componer(elementos[f_nombre], elementos[g_nombre])
+    return (
+        f"{f_nombre} ∘ {g_nombre}: "
+        f"{perm_a_ciclos(elementos[f_nombre])} "
+        f"{perm_a_ciclos(elementos[g_nombre])} = "
+        f"{perm_a_ciclos(resultado)} => "
+        f"{nombre_elemento[resultado]}"
+    )
+
+# α ∘ α: (2 3 4) (2 3 4) = (2 4 3) => α²`}
+    />
+  </section>
+
+  <section id="excel">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Exporting to Excel: pandas + openpyxl
+    </h2>
+    <p class="mb-4 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      The final deliverable was an Excel file with two sheets: the 12×12 table
+      and the 144 detailed, numbered compositions.
+    </p>
+    <CodeBlock
+      client:visible
+      language="python"
+      code={`import pandas as pd
+
+df_tabla = pd.DataFrame(
+    tabla_pitagorica,
+    index=nombres_ordenados,
+    columns=nombres_ordenados,
+)
+
+df_composiciones = pd.DataFrame([
+    {"N°": n, "Composición": imprimir_composicion(f, c)}
+    for n, (f, c) in enumerate(
+        ((fn, cn) for fn in nombres_ordenados for cn in nombres_ordenados),
+        start=1,
+    )
+])
+
+with pd.ExcelWriter("tabla_cayley_A4.xlsx", engine="openpyxl") as writer:
+    df_tabla.to_excel(writer, sheet_name="Tabla_Cayley")
+    df_composiciones.to_excel(writer, sheet_name="Composiciones", index=False)`}
+    />
+  </section>
+
+  <section id="result">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Final result: A₄ verified as a group
+    </h2>
+    <ul class="mb-4 list-disc pl-8 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      <li>
+        <b>Closure:</b> every composition lands inside A₄ (no KeyError).
+      </li>
+      <li>
+        <b>Latin square:</b> no repeats per row or column, under either
+        composition convention.
+      </li>
+      <li>
+        <b>Identity:</b> ι acts as the neutral element across the whole table.
+      </li>
+      <li>
+        <b>Inverses:</b> every element pairs with ι somewhere in its row.
+      </li>
+    </ul>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      A bonus insight from playing with the table: the row of ι together with
+      the rows of β, γ and βγ form the Klein four-group V₄ inside A₄ — the
+      famous normal subgroup that makes A₄ non-simple.
+    </p>
+  </section>
+
+  <section id="stack">
+    <h2 class="mt-10 mb-4 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+      Stack used: minimal, no magic
+    </h2>
+    <ul class="mb-4 list-disc pl-8 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      <li><code>dict</code> + <code>tuple</code>: representing permutations.</li>
+      <li>The <code>componer</code> function: right operator notation.</li>
+      <li><code>set()</code>: verifying the Latin square.</li>
+      <li><code>pandas</code> + <code>openpyxl</code>: exporting to Excel.</li>
+    </ul>
+    <p class="mb-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      No algebra libraries: pure Python and the standard library only.
+    </p>
+  </section>
+
+  <section id="conclusion">
+    <p class="mt-6 text-lg leading-relaxed text-gray-800 dark:text-gray-200">
+      What I take away from this exercise: a permutation is just a{" "}
+      <b>tuple of destinations</b>; composing means <b>chaining indexes</b> in
+      a single line; verifying a group means checking that{" "}
+      <code>set(row)</code> has 12 elements; and postfix notation makes the{" "}
+      <b>writing order match the application order</b>. The code doesn't just
+      compute: it also verifies and explains every step.
+    </p>
+  </section>
+</BlogLayout>

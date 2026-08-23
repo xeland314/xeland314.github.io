@@ -38,4 +38,13 @@ export const blogDataEN = [
     isPublished: true,
     pubDate: new Date("2026-04-14"),
   },
+  {
+    title: "Cayley Tables: Group Algebra in Python Code",
+    description:
+      "Verify that the even permutations of {1,2,3,4} form the group A₄ by building its Cayley table and exporting it to Excel.",
+    url: "/en/blogs/cayley-tables",
+    lang: "en",
+    isPublished: true,
+    pubDate: new Date("2026-08-23"),
+  },
 ];
