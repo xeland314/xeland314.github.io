@@ -1,203 +1,263 @@
 ---
-// src/pages/es/flyers/cotizacion.astro
-// Plantilla A4 imprimible · Mini cotización para llenar en el momento
-// Precios sugeridos como referencia · Datos de contacto preimpresos
+// Plantilla A4 · Mini cotización para llenar en el momento
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const siteTitle = "Cotización de Servicios | Christopher Villamarín";
+const siteDescription =
+  "Plantilla de cotización para llenar en el momento: servicios digitales para negocios, precios sugeridos, anticipo y saldo. Christopher Villamarín, Quito.";
+const siteKeywords =
+  "cotización servicios web Quito, plantilla cotización, desarrollo digital Ecuador";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/es/flyers/cotizacion";
+const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
+
+const CURRENT = "cotizacion";
+
+const navItems = [
+  { slug: "general", label: "General", href: "/es/flyers/general" },
+  { slug: "google", label: "Google", href: "/es/flyers/google" },
+  { slug: "cotizacion", label: "Cotización", href: "/es/flyers/cotizacion" },
+];
+
+const camposCliente = [
+  { label: "Señor(a)" },
+  { label: "Negocio" },
+  { label: "Teléfono / WhatsApp" },
+  { label: "Dirección" },
+];
+
+const filasServicio = [
+  {
+    nombre: "Página web",
+    incluye: "Sus servicios, fotos y contacto; abre bien en el celular.",
+    tiempo: "1 semana",
+  },
+  {
+    nombre: "Su negocio en Google",
+    incluye: "Registro oficial en el mapa, fotos, horarios y datos.",
+    tiempo: "3 días",
+  },
+  {
+    nombre: "Opiniones con código QR",
+    incluye: "Cartelito listo para pegar + guía para pedir opiniones.",
+    tiempo: "2 días",
+  },
+  {
+    nombre: "Menú o catálogo con QR",
+    incluye: "Lista con precios que usted actualiza desde su celular.",
+    tiempo: "1 semana",
+  },
+  {
+    nombre: "Tareas automáticas",
+    incluye: "Recordatorios de citas, cobros pendientes, inventario.",
+    tiempo: "A convenir",
+  },
+  {
+    nombre: "Programa a medida",
+    incluye: "Lo que su negocio necesite, hecho a su manera de trabajar.",
+    tiempo: "A convenir",
+  },
+];
+
+const condiciones = [
+  "El valor final depende de lo conversado; nada se cobra fuera de lo escrito en esta hoja.",
+  "El trabajo inicia con el anticipo y usted verá avances durante el camino.",
+  "Incluye una sesión práctica para que usted o su personal administren todo solos.",
+  "Los resultados en buscadores dependen también del rubro, la zona y la constancia; por eso no se prometen posiciones específicas.",
+];
 ---
 
-<!doctype html>
-<html lang="es" class="bg-white text-gray-900 antialiased">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>Cotización · Christopher Villamarín</title>
-    <style>
-      @page {
-        size: A4 portrait;
-        margin: 0;
-      }
-      @media print {
-        html,
-        body {
-          margin: 0;
-          padding: 0;
+<BaseLayout
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+  robots="noindex, nofollow"
+>
+  <main class="min-h-screen bg-gray-100 dark:bg-gray-950 py-8 px-4 print:!p-0 print:!bg-white">
+    <!-- Barra de herramientas: SOLO pantalla -->
+    <div class="flyer-toolbar max-w-[210mm] mx-auto mb-5 flex items-center justify-between gap-3 flex-wrap print:hidden">
+      <div class="flex items-center gap-1 bg-white dark:bg-gray-800 rounded-full p-1 shadow-sm border border-gray-200 dark:border-gray-700">
+        {
+          navItems.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                "text-xs font-bold px-3 py-1.5 rounded-full transition-colors",
+                CURRENT === item.slug
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700",
+              ]}
+            >
+              {item.label}
+            </a>
+          ))
         }
-        .page-container {
-          page-break-after: always;
-        }
-      }
-      html,
-      body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-    </style>
-  </head>
-  <body class="w-[210mm] h-[297mm] font-sans text-[10pt]">
-    <div
-      class="page-container w-[210mm] h-[297mm] flex flex-col overflow-hidden bg-white"
-    >
-      <!-- Encabezado -->
-      <div class="px-[12mm] pt-[8mm] flex items-start justify-between border-b-[2px] border-gray-900 pb-[4mm]">
-        <div>
-          <h1 class="text-[20pt] font-extrabold tracking-tight leading-none">
-            COTIZACIÓN
-          </h1>
-          <p class="text-[8pt] text-gray-600 mt-1">
-            Desarrollo digital para negocios · Quito, Ecuador
-          </p>
-        </div>
-        <div class="text-right">
-          <p class="text-[8pt] font-bold uppercase tracking-wider text-gray-500">
-            Fecha
-          </p>
-          <p class="text-[10pt] text-gray-800 mt-0.5">
-            Quito, ____ de ____________ de 20___
-          </p>
-          <p class="text-[8pt] text-gray-600 mt-1.5">
-            Válida por <b>15 días</b>
-          </p>
-        </div>
       </div>
+      <button
+        onclick="window.print()"
+        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-sm font-bold px-5 py-2 rounded-full shadow-lg shadow-blue-600/25 transition-all"
+      >
+        Imprimir · Guardar PDF
+      </button>
+    </div>
 
-      <!-- Datos del cliente -->
-      <div class="px-[12mm] mt-[5mm] grid grid-cols-2 gap-x-6 gap-y-[4.5mm]">
-        <div>
-          <p class="text-[7.5pt] font-bold uppercase tracking-wider text-gray-500">Señor(a)</p>
-          <p class="text-[10pt] text-gray-900 border-b border-gray-400 pb-0.5 min-h-[6mm]"></p>
-        </div>
-        <div>
-          <p class="text-[7.5pt] font-bold uppercase tracking-wider text-gray-500">Negocio</p>
-          <p class="text-[10pt] text-gray-900 border-b border-gray-400 pb-0.5 min-h-[6mm]"></p>
-        </div>
-        <div>
-          <p class="text-[7.5pt] font-bold uppercase tracking-wider text-gray-500">Teléfono / WhatsApp</p>
-          <p class="text-[10pt] text-gray-900 border-b border-gray-400 pb-0.5 min-h-[6mm]"></p>
-        </div>
-        <div>
-          <p class="text-[7.5pt] font-bold uppercase tracking-wider text-gray-500">Dirección</p>
-          <p class="text-[10pt] text-gray-900 border-b border-gray-400 pb-0.5 min-h-[6mm]"></p>
-        </div>
-      </div>
-
-      <!-- Tabla de servicios -->
-      <div class="px-[12mm] mt-[6mm]">
-        <table class="w-full border-collapse text-[8.5pt]">
-          <thead>
-            <tr class="border-y-[1.5px] border-gray-800">
-              <th class="py-1.5 w-[8mm] text-center text-[7.5pt] font-bold uppercase">✓</th>
-              <th class="py-1.5 text-left text-[7.5pt] font-bold uppercase">Servicio</th>
-              <th class="py-1.5 text-left text-[7.5pt] font-bold uppercase">Qué incluye</th>
-              <th class="py-1.5 w-[24mm] text-center text-[7.5pt] font-bold uppercase">Tiempo*</th>
-              <th class="py-1.5 w-[26mm] text-center text-[7.5pt] font-bold uppercase">Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-b border-gray-200">
-              <td class="py-[3mm] text-center"><span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-500 rounded-sm align-middle"></span></td>
-              <td class="pr-2 font-semibold">Página web</td>
-              <td class="pr-2 text-gray-700">Sus servicios, fotos y contacto; abre bien en el celular.</td>
-              <td class="text-center text-gray-600">1 semana</td>
-              <td class="text-center">$ ________</td>
-            </tr>
-            <tr class="border-b border-gray-200">
-              <td class="py-[3mm] text-center"><span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-500 rounded-sm align-middle"></span></td>
-              <td class="pr-2 font-semibold">Su negocio en Google</td>
-              <td class="pr-2 text-gray-700">Registro oficial en el mapa, fotos, horarios y datos.</td>
-              <td class="text-center text-gray-600">3 días</td>
-              <td class="text-center">$ ________</td>
-            </tr>
-            <tr class="border-b border-gray-200">
-              <td class="py-[3mm] text-center"><span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-500 rounded-sm align-middle"></span></td>
-              <td class="pr-2 font-semibold">Opiniones con código QR</td>
-              <td class="pr-2 text-gray-700">Cartelito listo para pegar + guía para pedir opiniones.</td>
-              <td class="text-center text-gray-600">2 días</td>
-              <td class="text-center">$ ________</td>
-            </tr>
-            <tr class="border-b border-gray-200">
-              <td class="py-[3mm] text-center"><span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-500 rounded-sm align-middle"></span></td>
-              <td class="pr-2 font-semibold">Menú o catálogo con QR</td>
-              <td class="pr-2 text-gray-700">Lista con precios que usted actualiza desde su celular.</td>
-              <td class="text-center text-gray-600">1 semana</td>
-              <td class="text-center">$ ________</td>
-            </tr>
-            <tr class="border-b border-gray-200">
-              <td class="py-[3mm] text-center"><span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-500 rounded-sm align-middle"></span></td>
-              <td class="pr-2 font-semibold">Tareas automáticas</td>
-              <td class="pr-2 text-gray-700">Recordatorios de citas, cobros pendientes, inventario.</td>
-              <td class="text-center text-gray-600">A convenir</td>
-              <td class="text-center">$ ________</td>
-            </tr>
-            <tr class="border-b border-gray-200">
-              <td class="py-[3mm] text-center"><span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-500 rounded-sm align-middle"></span></td>
-              <td class="pr-2 font-semibold">Programa a medida</td>
-              <td class="pr-2 text-gray-700">Lo que su negocio necesite, hecho a su manera de trabajar.</td>
-              <td class="text-center text-gray-600">A convenir</td>
-              <td class="text-center">$ ________</td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="text-[7pt] text-gray-500 mt-1.5 italic">
-          * Tiempo aproximado desde la entrega del material por su parte.
-        </p>
-
-        <!-- Totales -->
-        <div class="flex justify-end mt-[4mm]">
-          <div class="w-[80mm] space-y-[2.5mm]">
-            <div class="flex justify-between items-end border-t-[1.5px] border-gray-800 pt-1.5">
-              <p class="text-[9pt] font-extrabold uppercase">Total</p>
-              <p class="text-[11pt] font-extrabold">$ ________</p>
+    <!-- Hoja A4 -->
+    <div class="overflow-x-auto pb-10 print:overflow-visible print:pb-0">
+      <div
+        class="flyer-sheet w-[210mm] h-[297mm] mx-auto bg-white text-gray-900 shadow-xl shadow-gray-400/30 rounded-xl print:shadow-none print:rounded-none"
+      >
+        <div class="w-full h-full flex flex-col px-[14mm] pt-[9mm] pb-[8mm]">
+          <!-- Encabezado -->
+          <div class="flex items-start justify-between border-b-2 border-gray-900 pb-[4mm]">
+            <div>
+              <h1 class="text-[22pt] font-black tracking-tight leading-none">COTIZACIÓN</h1>
+              <p class="text-[8pt] text-gray-600 mt-[1.5mm]">
+                Desarrollo digital para negocios · Quito, Ecuador
+              </p>
             </div>
-            <div class="flex justify-between items-end">
-              <p class="text-[8.5pt] text-gray-700">Anticipo para iniciar (50%)</p>
-              <p class="text-[9pt]">$ ________</p>
-            </div>
-            <div class="flex justify-between items-end">
-              <p class="text-[8.5pt] text-gray-700">Saldo contra entrega</p>
-              <p class="text-[9pt]">$ ________</p>
+            <div class="text-right">
+              <p class="text-[7.5pt] font-extrabold tracking-[0.14em] uppercase text-gray-500">Fecha</p>
+              <p class="text-[10pt] text-gray-800 mt-[1mm]">
+                Quito, ____ de ____________ de 20___
+              </p>
+              <p class="text-[8pt] text-gray-600 mt-[1.5mm]">
+                Válida por <b>15 días</b>
+              </p>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Condiciones -->
-      <div class="mx-[12mm] mt-[5mm] border border-gray-300 rounded-lg p-3">
-        <p class="text-[8pt] font-bold uppercase tracking-wide text-gray-700 mb-1">
-          Acordado
-        </p>
-        <ul class="space-y-1 text-[7.5pt] text-gray-700 leading-snug">
-          <li>· El valor final depende de lo conversado; nada se cobra fuera de lo escrito en esta hoja.</li>
-          <li>· El trabajo inicia con el anticipo y usted verá avances durante el camino.</li>
-          <li>· Incluye una sesión práctica para que usted o su personal administren todo solos.</li>
-          <li>· Los resultados en buscadores dependen también del rubro, la zona y la constancia; por eso no se prometen posiciones específicas.</li>
-        </ul>
-      </div>
+          <!-- Datos del cliente -->
+          <div class="grid grid-cols-2 gap-x-[7mm] gap-y-[4.5mm] mt-[6mm]">
+            {
+              camposCliente.map((c) => (
+                <div>
+                  <p class="text-[7pt] font-extrabold tracking-[0.14em] uppercase text-gray-500">
+                    {c.label}
+                  </p>
+                  <p class="border-b border-gray-400 min-h-[7mm]" />
+                </div>
+              ))
+            }
+          </div>
 
-      <!-- Firmas -->
-      <div class="px-[12mm] mt-auto mb-[4mm] grid grid-cols-2 gap-x-10">
-        <div class="border-t border-gray-800 pt-1 text-center">
-          <p class="text-[8.5pt] font-bold">Christopher Villamarín</p>
-          <p class="text-[7.5pt] text-gray-600">Desarrollo digital</p>
-        </div>
-        <div class="border-t border-gray-800 pt-1 text-center">
-          <p class="text-[8.5pt] font-bold">Cliente</p>
-          <p class="text-[7.5pt] text-gray-600">Nombre y firma</p>
-        </div>
-      </div>
-
-      <!-- Contacto preimpreso -->
-      <div class="border-t-[3px] border-blue-600 py-[3.5mm] px-[12mm] pb-[6mm]">
-        <div class="flex items-center justify-between">
-          <p class="text-[9.5pt] font-extrabold text-gray-900">
-            Gracias por su confianza.
+          <!-- Tabla -->
+          <table class="w-full border-collapse text-[8.5pt] mt-[6mm]">
+            <thead>
+              <tr class="border-y-[1.5px] border-gray-800">
+                <th class="py-[1.5mm] w-[8mm] text-center text-[7pt] font-black uppercase tracking-wider">✓</th>
+                <th class="py-[1.5mm] pl-[2mm] text-left text-[7pt] font-black uppercase tracking-wider">Servicio</th>
+                <th class="py-[1.5mm] text-left text-[7pt] font-black uppercase tracking-wider">Qué incluye</th>
+                <th class="py-[1.5mm] w-[22mm] text-center text-[7pt] font-black uppercase tracking-wider">Tiempo*</th>
+                <th class="py-[1.5mm] w-[27mm] text-center text-[7pt] font-black uppercase tracking-wider">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                filasServicio.map((f) => (
+                  <tr class="border-b border-gray-200">
+                    <td class="py-[3.2mm] text-center align-middle">
+                      <span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-400 rounded-[1mm]" />
+                    </td>
+                    <td class="pl-[2mm] pr-[2mm] font-bold">{f.nombre}</td>
+                    <td class="pr-[2mm] text-gray-600">{f.incluye}</td>
+                    <td class="text-center text-gray-600">{f.tiempo}</td>
+                    <td class="text-center font-semibold text-gray-700">$ ________</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+          <p class="text-[7pt] text-gray-500 italic mt-[1.5mm]">
+            * Tiempo aproximado desde la entrega del material por su parte.
           </p>
-          <div class="flex gap-x-4 text-[8.5pt] text-gray-800">
-            <span>📞 <b>098 712 9357</b></span>
-            <span>✉️ christopher.villamarin@protonmail.com</span>
-            <span>🌐 xeland314.github.io</span>
+
+          <!-- Totales -->
+          <div class="flex justify-end mt-[4mm]">
+            <div class="w-[82mm] space-y-[2.5mm]">
+              <div class="flex justify-between items-end border-t-[1.5px] border-gray-900 pt-[1.5mm]">
+                <p class="text-[9.5pt] font-black uppercase tracking-wide">Total</p>
+                <p class="text-[12pt] font-black">$ ________</p>
+              </div>
+              <div class="flex justify-between items-end">
+                <p class="text-[8.5pt] text-gray-700">Anticipo para iniciar (50%)</p>
+                <p class="text-[9pt] font-semibold">$ ________</p>
+              </div>
+              <div class="flex justify-between items-end">
+                <p class="text-[8.5pt] text-gray-700">Saldo contra entrega</p>
+                <p class="text-[9pt] font-semibold">$ ________</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acordado -->
+          <div class="mt-auto border border-gray-300 rounded-xl p-[3.5mm] mb-[5mm]">
+            <p class="text-[7.5pt] font-extrabold tracking-[0.14em] uppercase text-gray-700 mb-[1.5mm]">
+              Acordado
+            </p>
+            <ul class="space-y-[1mm]">
+              {
+                condiciones.map((c) => (
+                  <li class="flex gap-[2mm] text-[7.5pt] text-gray-700 leading-snug">
+                    <span class="text-blue-600 shrink-0">·</span>
+                    <span>{c}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <!-- Firmas -->
+          <div class="grid grid-cols-2 gap-x-[12mm] mb-[5mm]">
+            <div class="border-t border-gray-900 pt-[1.5mm] text-center">
+              <p class="text-[8.5pt] font-bold">Christopher Villamarín</p>
+              <p class="text-[7.5pt] text-gray-600">Desarrollo digital</p>
+            </div>
+            <div class="border-t border-gray-900 pt-[1.5mm] text-center">
+              <p class="text-[8.5pt] font-bold">Cliente</p>
+              <p class="text-[7.5pt] text-gray-600">Nombre y firma</p>
+            </div>
+          </div>
+
+          <!-- Contacto preimpreso -->
+          <div class="border-t-[3px] border-blue-600 pt-[3.5mm] flex items-center justify-between">
+            <p class="text-[10pt] font-black tracking-tight text-gray-900">
+              Gracias por su confianza.
+            </p>
+            <div class="flex gap-x-[5mm] text-[8.5pt] text-gray-800">
+              <span>📞 <b>098 712 9357</b></span>
+              <span>✉️ christopher.villamarin@protonmail.com</span>
+              <span>🌐 xeland314.github.io</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </body>
-</html>
+  </main>
+</BaseLayout>
+
+<style>
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #fff !important;
+    }
+    main {
+      min-height: auto !important;
+    }
+    .flyer-sheet,
+    * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
