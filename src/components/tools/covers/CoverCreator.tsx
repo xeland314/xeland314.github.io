@@ -376,14 +376,46 @@ export const CoverCreator = () => {
     URL.revokeObjectURL(url);
   };
 
+  // Exporta el estado ACTUAL aunque no esté guardado como proyecto,
+  // en el mismo formato Project para que el import pueda reimportarlo.
+  const handleExportCurrentConfig = () => {
+    const current = projects.find((p) => p.id === currentProjectId);
+    const payload = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: current?.name ?? "Diseño actual",
+      lastModified: Date.now(),
+      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId },
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cover-config-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleImportProject = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const project: Project = JSON.parse(e.target?.result as string);
-        // Clean up project ID to avoid collisions
-        project.id = Math.random().toString(36).substr(2, 9);
-        project.name = `${project.name} (Importado)`;
+        const parsed = JSON.parse(e.target?.result as string);
+        if (
+          !parsed ||
+          typeof parsed !== "object" ||
+          !parsed.data ||
+          !Array.isArray(parsed.data.slides) ||
+          parsed.data.slides.length === 0
+        ) {
+          alert("Archivo inválido: no parece un proyecto de Cover Creator.");
+          return;
+        }
+        const project: Project = {
+          id: Math.random().toString(36).substr(2, 9),
+          name: typeof parsed.name === "string" && parsed.name.trim() ? `${parsed.name} (Importado)` : "Proyecto (Importado)",
+          lastModified: Date.now(),
+          data: { ...parsed.data, slides: migrateSlides(parsed.data.slides) },
+        };
         setProjects([...projects, project]);
         alert("Proyecto importado con éxito");
       } catch (err) {
@@ -548,6 +580,14 @@ export const CoverCreator = () => {
             </svg>
           </summary>
           <div className="p-4">
+            <div className="flex justify-end mb-3">
+              <button
+                onClick={handleExportCurrentConfig}
+                className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-500 bg-violet-50 dark:bg-violet-950/40 border border-violet-100 dark:border-violet-900/60 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                ⬇ Exportar diseño actual (.json)
+              </button>
+            </div>
             <ProjectManager
               projects={projects}
               currentProjectId={currentProjectId}
