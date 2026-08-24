@@ -1,0 +1,207 @@
+---
+// src/pages/es/flyers/google.astro
+// Volante A4 imprimible · Educativo: negocio en Google + reseñas con QR
+// Fondo blanco puro (tinta mínima) · Sin tecnicismos
+---
+
+<!doctype html>
+<html lang="es" class="bg-white text-gray-900 antialiased">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Volante Google · Christopher Villamarín</title>
+    <style>
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      @media print {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .page-container {
+          page-break-after: always;
+        }
+      }
+      html,
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    </style>
+  </head>
+  <body class="w-[210mm] h-[297mm] font-sans text-[10pt]">
+    <div
+      class="page-container w-[210mm] h-[297mm] flex flex-col overflow-hidden bg-white"
+    >
+      <!-- Barra superior -->
+      <div
+        class="flex items-center justify-between px-[12mm] pt-[8mm] pb-[3mm] border-b-[1.5px] border-gray-200"
+      >
+        <p class="text-[8pt] font-bold tracking-wider uppercase text-gray-500">
+          Christopher Villamarín · Servicios digitales
+        </p>
+        <p class="text-[9pt] font-extrabold text-gray-800">
+          📞 098 712 9357
+        </p>
+      </div>
+
+      <!-- Encabezado -->
+      <div class="px-[12mm] pt-[7mm]">
+        <h1 class="text-[20pt] font-extrabold leading-tight text-gray-900 max-w-[170mm]">
+          Su cliente lo buscó en Google…<br />
+          y encontró a su <span class="text-blue-700">competencia.</span>
+        </h1>
+        <p class="mt-2 text-[9.5pt] text-gray-600 leading-relaxed max-w-[168mm]">
+          Cuando alguien necesita un taller, una tienda o un restaurante, lo
+          primero que hace es buscarlo en el celular. Si su negocio no aparece
+          ahí, para ese cliente prácticamente no existe.
+        </p>
+      </div>
+
+      <!-- Creencia vs realidad -->
+      <div class="px-[12mm] mt-[6mm] grid grid-cols-2 gap-3">
+        <div class="border border-gray-300 rounded-lg p-3.5">
+          <p class="text-[8pt] font-bold uppercase tracking-wide text-red-600 mb-2">
+            Lo que casi todos creen
+          </p>
+          <ul class="space-y-2 text-[8pt] text-gray-700 leading-snug">
+            <li class="flex gap-1.5">
+              <span class="text-red-500 font-bold shrink-0">✗</span>
+              "Mi negocio ya existe, Google ya me conoce."
+            </li>
+            <li class="flex gap-1.5">
+              <span class="text-red-500 font-bold shrink-0">✗</span>
+              "Con tener página de Facebook es suficiente."
+            </li>
+            <li class="flex gap-1.5">
+              <span class="text-red-500 font-bold shrink-0">✗</span>
+              "Las opiniones de clientes no afectan mis ventas."
+            </li>
+            <li class="flex gap-1.5">
+              <span class="text-red-500 font-bold shrink-0">✗</span>
+              "Aparecer en Google es cosa de suerte o de pagarle a Google."
+            </li>
+          </ul>
+        </div>
+
+        <div class="border border-gray-300 rounded-lg p-3.5">
+          <p class="text-[8pt] font-bold uppercase tracking-wide text-green-700 mb-2">
+            Lo que realmente pasa
+          </p>
+          <ul class="space-y-2 text-[8pt] text-gray-700 leading-snug">
+            <li class="flex gap-1.5">
+              <span class="text-green-600 font-bold shrink-0">✓</span>
+              Alguien tiene que registrar su negocio y confirmar que existe.
+              Eso lo hago yo por usted.
+            </li>
+            <li class="flex gap-1.5">
+              <span class="text-green-600 font-bold shrink-0">✓</span>
+              Un perfil completo — fotos, horarios, ubicación — aparece antes
+              que uno abandonado.
+            </li>
+            <li class="flex gap-1.5">
+              <span class="text-green-600 font-bold shrink-0">✓</span>
+              Las opiniones recientes suben su puesto en las búsquedas y dan
+              confianza al que llega.
+            </li>
+            <li class="flex gap-1.5">
+              <span class="text-green-600 font-bold shrink-0">✓</span>
+              No se paga a Google por aparecer; se construye paso a paso.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Qué hago por usted -->
+      <div class="px-[12mm] mt-[6mm] flex-1">
+        <h2 class="text-[12pt] font-bold text-gray-900 mb-2.5">
+          ¿Qué haría yo por su negocio?
+        </h2>
+        <ol class="space-y-2">
+          <li class="flex items-start gap-2.5 border-b border-gray-100 pb-2">
+            <span class="w-[6mm] h-[6mm] rounded-full border-[1.5px] border-blue-600 text-blue-700 text-[9pt] font-extrabold flex items-center justify-center shrink-0">1</span>
+            <p class="text-[8.5pt] text-gray-800 leading-snug pt-0.5">
+              <b>Lo registro en Google:</b> nombre oficial, dirección en el
+              mapa, horarios, teléfono y categoría correcta.
+            </p>
+          </li>
+          <li class="flex items-start gap-2.5 border-b border-gray-100 pb-2">
+            <span class="w-[6mm] h-[6mm] rounded-full border-[1.5px] border-blue-600 text-blue-700 text-[9pt] font-extrabold flex items-center justify-center shrink-0">2</span>
+            <p class="text-[8.5pt] text-gray-800 leading-snug pt-0.5">
+              <b>Le doy buena cara:</b> subimos fotos reales de su local,
+              productos y servicios, bien descritos.
+            </p>
+          </li>
+          <li class="flex items-start gap-2.5 border-b border-gray-100 pb-2">
+            <span class="w-[6mm] h-[6mm] rounded-full border-[1.5px] border-blue-600 text-blue-700 text-[9pt] font-extrabold flex items-center justify-center shrink-0">3</span>
+            <p class="text-[8.5pt] text-gray-800 leading-snug pt-0.5">
+              <b>Cartelito con código QR</b> para la caja o la vitrina: su
+              cliente lo escanea y deja su opinión en menos de un minuto.
+              Usted elige el diseño y yo lo imprimo listo para pegar.
+            </p>
+          </li>
+          <li class="flex items-start gap-2.5 border-b border-gray-100 pb-2">
+            <span class="w-[6mm] h-[6mm] rounded-full border-[1.5px] border-blue-600 text-blue-700 text-[9pt] font-extrabold flex items-center justify-center shrink-0">4</span>
+            <p class="text-[8.5pt] text-gray-800 leading-snug pt-0.5">
+              <b>Capacito a su personal:</b> una sesión práctica para que
+              aprendan a pedir opiniones sin incomodar al cliente y a
+              contestarlas bien.
+            </p>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="w-[6mm] h-[6mm] rounded-full border-[1.5px] border-blue-600 text-blue-700 text-[9pt] font-extrabold flex items-center justify-center shrink-0">5</span>
+            <p class="text-[8.5pt] text-gray-800 leading-snug pt-0.5">
+              <b>Revisión periódica opcional:</b> si quiere, vuelvo cada mes
+              para refrescar fotos, responder pendientes y corregir horarios
+              de temporada.
+            </p>
+          </li>
+        </ol>
+
+        <!-- Ejemplo real -->
+        <div class="mt-[5mm] border-l-[3px] border-blue-600 pl-3 py-1">
+          <p class="text-[8pt] font-bold uppercase tracking-wide text-blue-700">
+            Piénselo así
+          </p>
+          <p class="text-[8.5pt] text-gray-700 leading-snug mt-0.5">
+            Dos mecánicos a cuatro cuadras uno del otro. El primero tiene 40
+            opiniones buenas y fotos recientes; el segundo no aparece en el
+            mapa. ¿A cuál le lleva su carro el cliente que acaba de llegar a
+            la ciudad? La calidad de los dos puede ser igual — la diferencia
+            es quien se hizo ver.
+          </p>
+        </div>
+      </div>
+
+      <!-- Pie de contacto -->
+      <div class="mx-[12mm] my-[6mm] border-t-[3px] border-blue-600 pt-[4mm] pb-[2mm]">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[14pt] font-extrabold text-gray-900 leading-tight">
+              Empecemos hoy: la primera conversación no cuesta nada.
+            </p>
+            <p class="text-[8pt] text-gray-500 mt-1">
+              Cada negocio es distinto: el alcance y el precio se acuerdan por
+              escrito después de conocer su caso.
+            </p>
+          </div>
+          <div class="flex flex-col gap-1 shrink-0 text-right">
+            <p class="text-[9pt] text-gray-800">
+              📞 <b>098 712 9357</b> · llamadas y WhatsApp
+            </p>
+            <p class="text-[8pt] text-gray-700">
+              ✉️ christopher.villamarin@protonmail.com
+            </p>
+            <p class="text-[8pt] text-gray-700">
+              🌐 xeland314.github.io · 👤 @xeland314
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

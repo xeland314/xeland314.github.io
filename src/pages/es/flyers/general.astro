@@ -1,0 +1,229 @@
+---
+// src/pages/es/flyers/general.astro
+// Volante A4 imprimible · Servicios digitales generales (fondo blanco, tinta mínima)
+// Uso: abrir en navegador → Ctrl+P → Sin márgenes → Guardar como PDF
+---
+
+<!doctype html>
+<html lang="es" class="bg-white text-gray-900 antialiased">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Volante General · Christopher Villamarín · Servicios Digitales</title>
+    <style>
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      @media print {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .page-container {
+          page-break-after: always;
+        }
+      }
+      html,
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    </style>
+  </head>
+  <body class="w-[210mm] h-[297mm] font-sans text-[10pt]">
+    <div
+      class="page-container w-[210mm] h-[297mm] flex flex-col overflow-hidden bg-white"
+    >
+      <!-- Barra superior -->
+      <div
+        class="flex items-center justify-between px-[12mm] pt-[8mm] pb-[3mm] border-b-[1.5px] border-gray-200"
+      >
+        <p class="text-[8pt] font-bold tracking-wider uppercase text-gray-500">
+          Christopher Villamarín · Servicios digitales
+        </p>
+        <p class="text-[9pt] font-extrabold text-gray-800">
+          📞 098 712 9357
+        </p>
+      </div>
+
+      <!-- Encabezado -->
+      <div class="px-[12mm] pt-[7mm]">
+        <p class="text-[8pt] font-semibold tracking-wider uppercase text-blue-700 mb-1.5">
+          Quito, Ecuador · Atención directa, sin intermediarios
+        </p>
+        <h1 class="text-[22pt] font-extrabold leading-tight text-gray-900">
+          Que nuevos clientes<br />lo encuentren en internet.
+        </h1>
+        <p class="mt-2 text-[10pt] text-gray-600 leading-relaxed max-w-[165mm]">
+          Ayudo a negocios locales a mostrarse en la red con lo que ya tienen:
+          sus fotos, sus servicios y su forma de trabajar. Nada de páginas
+          genéricas ni palabras raras — usted solo nota que más gente lo llama.
+        </p>
+      </div>
+
+      <!-- Servicios -->
+      <div class="px-[12mm] mt-[6mm] flex-1">
+        <h2 class="text-[11pt] font-bold text-gray-900 mb-2.5">
+          ¿En qué le puedo ayudar?
+        </h2>
+        <div class="grid grid-cols-2 gap-x-3 gap-y-2.5">
+          <div class="border border-gray-300 rounded-lg p-3 flex gap-2.5">
+            <span class="text-[13pt] leading-none shrink-0">🌐</span>
+            <div>
+              <div class="text-[9.5pt] font-bold text-gray-900 leading-tight">
+                Página web para su negocio
+              </div>
+              <div class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+                Sus servicios, fotos reales y un botón para que le escriban
+                directo por WhatsApp. Abre rápido en cualquier celular.
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-300 rounded-lg p-3 flex gap-2.5">
+            <span class="text-[13pt] leading-none shrink-0">📍</span>
+            <div>
+              <div class="text-[9.5pt] font-bold text-gray-900 leading-tight">
+                Su negocio en el mapa de Google
+              </div>
+              <div class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+                Lo registro oficialmente para que aparezca cuando alguien
+                busca lo que usted vende. Nombre, horarios, fotos y ubicación
+                siempre al día.
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-300 rounded-lg p-3 flex gap-2.5">
+            <span class="text-[13pt] leading-none shrink-0">⭐</span>
+            <div>
+              <div class="text-[9.5pt] font-bold text-gray-900 leading-tight">
+                Calificaciones de sus clientes
+              </div>
+              <div class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+                Cartelito con código QR para la caja o la vitrina: su cliente
+                lo escanea y deja su opinión en segundos. Los negocios con
+                buenas opiniones atraen más gente.
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-300 rounded-lg p-3 flex gap-2.5">
+            <span class="text-[13pt] leading-none shrink-0">📱</span>
+            <div>
+              <div class="text-[9.5pt] font-bold text-gray-900 leading-tight">
+                Programas para su celular
+              </div>
+              <div class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+                Catálogo de productos, citas, pedidos o cuentas por cobrar,
+                hechos a la medida de cómo trabaja usted. Funcionan incluso
+                sin internet.
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-300 rounded-lg p-3 flex gap-2.5">
+            <span class="text-[13pt] leading-none shrink-0">🔁</span>
+            <div>
+              <div class="text-[9.5pt] font-bold text-gray-900 leading-tight">
+                Tareas que se hacen solas
+              </div>
+              <div class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+                Recordatorios de citas, avisos de cobros pendientes y control
+                de lo que le falta en bodega. Menos cuadernos, menos olvidos.
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-300 rounded-lg p-3 flex gap-2.5">
+            <span class="text-[13pt] leading-none shrink-0">📄</span>
+            <div>
+              <div class="text-[9.5pt] font-bold text-gray-900 leading-tight">
+                Menú o catálogo con código QR
+              </div>
+              <div class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+                Un código en cada mesa o mostrador que abre su lista actual,
+                con precios y fotos. Lo actualiza usted mismo desde el
+                celular, sin reimprimir nada.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dato que casi nadie sabe -->
+        <div class="mt-[5mm] border-l-[3px] border-blue-600 pl-3 py-1">
+          <p class="text-[8pt] font-bold uppercase tracking-wide text-blue-700">
+            Un dato que casi nadie le cuenta
+          </p>
+          <p class="text-[8.5pt] text-gray-700 leading-snug mt-0.5 max-w-[175mm]">
+            Google <b>no</b> muestra su negocio solo por existir. Alguien tiene
+            que registrarlo, confirmarlo y mantenerlo activo — igual que una
+            vitrina limpia atrae miradas, un negocio bien presentado en Google
+            recibe llamadas. Eso es justamente mi trabajo, y le enseño a
+            usted o a su personal a cuidarlo.
+          </p>
+        </div>
+
+        <!-- Cómo trabajamos -->
+        <h2 class="text-[11pt] font-bold text-gray-900 mt-[5mm] mb-2">
+          Así de simple trabajamos
+        </h2>
+        <div class="grid grid-cols-4 gap-2.5">
+          <div class="border border-gray-200 rounded-lg p-2.5">
+            <p class="text-[8pt] font-extrabold text-blue-700">1 · Conversamos</p>
+            <p class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+              Me cuenta qué hace su negocio y qué necesita mostrar.
+            </p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-2.5">
+            <p class="text-[8pt] font-extrabold text-blue-700">2 · Precio claro</p>
+            <p class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+              Le entrego una cotización escrita, sin letra pequeña.
+            </p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-2.5">
+            <p class="text-[8pt] font-extrabold text-blue-700">3 · Usted aprueba</p>
+            <p class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+              Ve avances reales y pide cambios antes de publicar.
+            </p>
+          </div>
+          <div class="border border-gray-200 rounded-lg p-2.5">
+            <p class="text-[8pt] font-extrabold text-blue-700">4 · Le enseño</p>
+            <p class="text-[7.5pt] text-gray-600 leading-snug mt-0.5">
+              Una sesión práctica para manejar todo usted mismo.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie de contacto -->
+      <div class="mx-[12mm] my-[6mm] border-t-[3px] border-blue-600 pt-[4mm] pb-[2mm]">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[14pt] font-extrabold text-gray-900 leading-tight">
+              Cotización en el momento, sin compromiso.
+            </p>
+            <p class="text-[8pt] text-gray-500 mt-1">
+              El precio final depende de lo que su negocio necesite; se define
+              juntos y por escrito antes de empezar.
+            </p>
+          </div>
+          <div class="flex flex-col gap-1 shrink-0 text-right">
+            <p class="text-[9pt] text-gray-800">
+              📞 <b>098 712 9357</b> · llamadas y WhatsApp
+            </p>
+            <p class="text-[8pt] text-gray-700">
+              ✉️ christopher.villamarin@protonmail.com
+            </p>
+            <p class="text-[8pt] text-gray-700">
+              🌐 xeland314.github.io · 👤 @xeland314
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
