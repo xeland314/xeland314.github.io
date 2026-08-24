@@ -1,24 +1,91 @@
 ---
+// Landing de servicios · versión sobria, distinta al portafolio (ruta /)
+// No enlazada aún desde el home ni del header; noindex hasta tener papeles.
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import Footer from "../../../components/common/Footer.astro";
-import HeroSection from "../../../components/services/Hero.astro";
-import PropuestaSection from "../../../components/services/Propuesta.astro";
-import ServicesSection from "../../../components/services/Services.astro";
-import CTASection from "../../../components/services/CTA.astro";
-import ResultsSection from "../../../components/services/Results.astro";
-import TechFrontend from "../../../components/services/TechFrontend.astro";
-import FAQSection from "../../../components/services/FAQ.astro";
 
 const lang = "es";
 const siteTitle =
-  "Desarrollo Web Profesional en Quito · Christopher Villamarín";
+  "Desarrollo Web en Quito · Páginas Web para Negocios | Christopher Villamarín";
 const siteDescription =
-  "Soluciones web a medida para negocios, talleres y empresas en Quito. Sitios web optimizados, catálogos digitales y sistemas de gestión. Cotiza tu proyecto.";
+  "Páginas web y sistemas de gestión para negocios en Quito. Diseño con tus fotos y procesos reales, adaptable al celular y optimizado para buscadores. Escríbeme para cotizar.";
 const siteKeywords =
-  "desarrollo web Quito, páginas web Ecuador, programador freelance Quito, diseño web corporativo, Christopher Villamarín, xeland314";
+  "desarrollo web Quito, páginas web Ecuador, sistemas de gestión, programador freelance, Christopher Villamarín";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
 const siteUrl = "https://xeland314.github.io/es/services";
 const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
+
+const email = "christopher.villamarin@protonmail.com";
+const whatsapp = "https://wa.me/593987129357";
+
+const servicios = [
+  {
+    titulo: "Sitio web para tu negocio",
+    descripcion:
+      "Páginas claras con tus servicios, fotos reales y datos de contacto. Pensadas para que te encuentren en Google y te escriban directo desde el celular.",
+  },
+  {
+    titulo: "Sistemas de gestión a medida",
+    descripcion:
+      "Registro de clientes, citas, pagos pendientes e inventario organizados según la lógica de tu negocio. Pueden funcionar sin depender de internet.",
+  },
+  {
+    titulo: "Mejoras a sitios existentes",
+    descripcion:
+      "Revisión y puesta al día de una página que ya tienes: velocidad, contenido desactualizado y funcionamiento en el móvil.",
+  },
+];
+
+const proceso = [
+  {
+    paso: "01",
+    titulo: "Conversación inicial",
+    descripcion:
+      "Me cuentas qué hace tu negocio, qué quieres mostrar y qué problemas quieres resolver.",
+  },
+  {
+    paso: "02",
+    titulo: "Propuesta con alcance",
+    descripcion:
+      "Definimos por escrito qué incluye el trabajo, el tiempo estimado y el costo. Sin sorpresas después.",
+  },
+  {
+    paso: "03",
+    titulo: "Desarrollo y revisión",
+    descripcion:
+      "Ves avances durante el camino y ajustamos contenido y diseño juntos antes de publicar.",
+  },
+  {
+    paso: "04",
+    titulo: "Entrega y acompañamiento",
+    descripcion:
+      "Tu sitio queda publicado y te explico cómo administrar el contenido del día a día.",
+  },
+];
+
+const incluido = [
+  "Diseño adaptable a celulares, tablets y computadoras",
+  "Optimización básica para buscadores (SEO local)",
+  "Botones de contacto directo: WhatsApp, llamada y correo",
+  "Capacitación breve para actualizar tu contenido",
+];
+
+const faqs = [
+  {
+    pregunta: "¿Cuánto cuesta?",
+    respuesta:
+      "Depende del alcance del proyecto. Después de la conversación inicial te envío una cotización clara por escrito, sin compromiso.",
+  },
+  {
+    pregunta: "¿Cuánto demora?",
+    respuesta:
+      "Un sitio informativo suele estar listo en pocos días una vez que tengo el contenido. Los sistemas a medida se planifican caso por caso.",
+  },
+  {
+    pregunta: "¿Qué necesito entregar?",
+    respuesta:
+      "Fotos reales de tu negocio, la lista de servicios o productos y tus datos de contacto. Con eso podemos empezar.",
+  },
+];
 ---
 
 <BaseLayout
@@ -30,19 +97,247 @@ const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
   url={siteUrl}
   image={siteImage}
   canonical={siteUrl}
+  robots="noindex, nofollow"
+  showHeader={false}
 >
-  <main
-    class="min-h-screen [background-image:radial-gradient(circle,_#94a3b8_1px,_transparent_1px)] [background-size:24px_24px] dark:[background-image:radial-gradient(circle,_#334155_1px,_transparent_1px)] text-gray-900 dark:text-gray-200 py-12 px-4 sm:px-8 transition-colors duration-300"
-  >
-    <div class="max-w-3xl mx-auto space-y-8">
-      <HeroSection />
-      <PropuestaSection />
-      <ServicesSection />
-      <ResultsSection />
-      <TechFrontend />
-      <FAQSection />
-      <CTASection />
-    </div>
+  <main class="min-h-screen bg-slate-950 text-slate-300 antialiased">
+    <!-- Barra superior propia (sin el header del portafolio) -->
+    <nav
+      class="max-w-5xl mx-auto flex items-center justify-between px-6 py-5"
+      aria-label="Navegación de la página"
+    >
+      <span class="font-bold text-white tracking-tight">Christopher Villamarín</span>
+      <a
+        href="/"
+        class="text-sm text-slate-400 hover:text-emerald-400 transition-colors"
+        >Portafolio →</a
+      >
+    </nav>
+
+    <!-- Hero -->
+    <header class="max-w-5xl mx-auto px-6 pt-14 pb-20 sm:pt-20">
+      <p
+        class="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-emerald-400 border border-emerald-400/30 bg-emerald-400/10 rounded-full px-4 py-1.5 mb-8"
+      >
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true"
+        ></span>
+        Desarrollo web · Quito, Ecuador
+      </p>
+      <h1
+        class="text-4xl sm:text-6xl font-black text-white leading-[1.05] tracking-tighter max-w-3xl"
+      >
+        Tu negocio, presente en internet.
+      </h1>
+      <p class="mt-6 text-lg text-slate-400 leading-relaxed max-w-2xl">
+        Diseño y desarrollo páginas web y sistemas de gestión para talleres,
+        tiendas y empresas de Quito. Nada de plantillas genéricas: el sitio se
+        construye con tu información, tus fotos y tus procesos.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <a
+          href={whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-7 py-3.5 rounded-xl transition-colors"
+        >
+          Consultar disponibilidad
+        </a>
+        <a
+          href={`mailto:${email}`}
+          class="inline-flex items-center gap-2 border border-slate-700 hover:border-emerald-400/50 text-slate-200 font-semibold px-7 py-3.5 rounded-xl transition-colors"
+        >
+          Enviar correo
+        </a>
+      </div>
+    </header>
+
+    <!-- Servicios -->
+    <section aria-labelledby="servicios" class="max-w-5xl mx-auto px-6 py-16">
+      <h2
+        id="servicios"
+        class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-10"
+      >
+        Qué puedo desarrollar para ti
+      </h2>
+      <div class="grid gap-5 sm:grid-cols-3">
+        {
+          servicios.map((s) => (
+            <article class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 hover:border-emerald-400/40 transition-colors">
+              <h3 class="font-bold text-white mb-3">{s.titulo}</h3>
+              <p class="text-sm text-slate-400 leading-relaxed">
+                {s.descripcion}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Proceso -->
+    <section
+      aria-labelledby="proceso"
+      class="border-y border-slate-800/80 bg-slate-900/40"
+    >
+      <div class="max-w-5xl mx-auto px-6 py-16">
+        <h2
+          id="proceso"
+          class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-10"
+        >
+          Cómo trabajamos
+        </h2>
+        <ol class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 list-none m-0 p-0">
+          {
+            proceso.map((p) => (
+              <li class="space-y-3">
+                <span class="block font-mono text-sm font-bold text-emerald-400">
+                  {p.paso}
+                </span>
+                <h3 class="font-bold text-white">{p.titulo}</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  {p.descripcion}
+                </p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- Incluido -->
+    <section aria-labelledby="incluido" class="max-w-5xl mx-auto px-6 py-16">
+      <div class="grid gap-10 lg:grid-cols-[auto_1fr] items-start">
+        <h2
+          id="incluido"
+          class="text-2xl sm:text-3xl font-black text-white tracking-tight lg:max-w-xs"
+        >
+          Todo proyecto incluye
+        </h2>
+        <ul class="space-y-4 list-none m-0 p-0">
+          {
+            incluido.map((item) => (
+              <li class="flex items-start gap-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="text-emerald-400 shrink-0 mt-0.5"
+                  aria-hidden="true"
+                >
+                  <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+                <span class="text-slate-300">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section aria-labelledby="faq" class="max-w-3xl mx-auto px-6 py-16 w-full">
+      <h2
+        id="faq"
+        class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-10"
+      >
+        Preguntas frecuentes
+      </h2>
+      <div class="space-y-3">
+        {
+          faqs.map((f) => (
+            <details class="group rounded-2xl border border-slate-800 bg-slate-900/60 open:border-emerald-400/30">
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none p-5 font-semibold text-white select-none [&::-webkit-details-marker]:hidden">
+                {f.pregunta}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="shrink-0 text-slate-500 group-open:rotate-180 transition-transform"
+                  aria-hidden="true"
+                >
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </summary>
+              <p class="px-5 pb-5 text-sm text-slate-400 leading-relaxed">
+                {f.respuesta}
+              </p>
+            </details>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section
+      id="contacto"
+      aria-labelledby="contacto-heading"
+      class="max-w-5xl mx-auto px-6 pb-16"
+    >
+      <div
+        class="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-emerald-950/40 p-8 sm:p-12"
+      >
+        <h2
+          id="contacto-heading"
+          class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-4"
+        >
+          Hablemos de tu proyecto
+        </h2>
+        <p class="text-slate-400 max-w-xl leading-relaxed mb-8">
+          Cuéntame qué necesitas y te respondo con una propuesta concreta.
+        </p>
+        <div class="grid gap-4 sm:grid-cols-2 max-w-2xl">
+          <a
+            href={whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rounded-2xl border border-slate-700 hover:border-emerald-400/50 bg-slate-900/60 p-5 transition-colors"
+          >
+            <p class="text-xs font-mono uppercase tracking-wider text-slate-500 mb-1">
+              WhatsApp
+            </p>
+            <p class="font-bold text-white">098 712 9357</p>
+          </a>
+          <a
+            href={`mailto:${email}`}
+            class="rounded-2xl border border-slate-700 hover:border-emerald-400/50 bg-slate-900/60 p-5 transition-colors break-all"
+          >
+            <p class="text-xs font-mono uppercase tracking-wider text-slate-500 mb-1">
+              Correo
+            </p>
+            <p class="font-bold text-white text-sm">{email}</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="border-t border-slate-800/80">
+      <div
+        class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500"
+      >
+        <p>© {new Date().getFullYear()} Christopher Villamarín · Quito, Ecuador</p>
+        <div class="flex gap-6">
+          <a href="/" class="hover:text-emerald-400 transition-colors"
+            >Portafolio</a
+          >
+          <a
+            href="https://github.com/xeland314"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-emerald-400 transition-colors">GitHub</a
+          >
+        </div>
+      </div>
+    </footer>
   </main>
-  <Footer />
 </BaseLayout>
