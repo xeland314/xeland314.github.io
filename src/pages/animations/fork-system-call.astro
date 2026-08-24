@@ -2,17 +2,17 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Stage from "../../components/animations/Stage.astro";
 import CodePanel from "../../components/animations/code/CodePanel.astro";
-import UmaskDiagram from "../../components/animations/umask-permissions/UmaskDiagram.astro";
-import ConsoleOut from "../../components/animations/umask-permissions/ConsoleOut.astro";
-import ControlsUmask from "../../components/animations/umask-permissions/ControlsUmask.astro";
+import ForkDiagram from "../../components/animations/fork-system-call/ForkDiagram.astro";
+import ConsoleOut from "../../components/animations/fork-system-call/ConsoleOut.astro";
+import ControlsFork from "../../components/animations/fork-system-call/ControlsFork.astro";
 
-const siteTitle = "Linux · umask y Permisos Binarios";
+const siteTitle = "Linux · fork() — una llamada, dos procesos";
 const siteDescription =
-  "Animación de umask en Linux: cómo la máscara 022 o 077 resta bits con una operación AND NOT sobre los permisos por defecto (666 para archivos, 777 para directorios) bit a bit.";
+  "Animación de fork() en C: el kernel duplica al proceso llamador, el hijo recibe 0 y el padre recibe el pid del hijo; ambos reanudan en la misma línea del programa.";
 const siteKeywords =
-  "umask, permisos linux, chmod, rwx, and not, máscara binaria, 644, 755, animación, video";
+  "fork, sistema operativo, procesos linux, pid, proceso hijo, unistd.h, getpid, animación, video";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
-const siteUrl = "https://xeland314.github.io/animations/umask-permissions";
+const siteUrl = "https://xeland314.github.io/animations/fork-system-call";
 const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
 ---
 
@@ -35,33 +35,27 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
   </Fragment>
 
   <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
-    <Stage eyebrow="LINUX · PERMISOS">
+    <Stage eyebrow="LINUX · PROCESOS">
       <Fragment slot="title">
-        umask: la máscara que<br />
-        <span class="text-[#ff5f57]">quita</span> bits antes de crear
+        fork(): una llamada,<br />
+        <span class="text-[#3fd0e0]">dos</span> procesos
       </Fragment>
       <div class="flex-1 min-h-0 flex flex-col justify-center gap-3 px-6 pb-8">
-        <CodePanel file="umask.sh">
+        <CodePanel file="fork_demo.c">
           <Fragment slot="badge">
-            <span id="statusBadge" class="anim-um-badge">ESPERANDO</span>
+            <span id="statusBadge" class="anim-fk-badge">ESPERANDO</span>
           </Fragment>
         </CodePanel>
-        <UmaskDiagram />
+        <ForkDiagram />
         <ConsoleOut />
       </div>
     </Stage>
 
-    <ControlsUmask />
-
-    <a
-      href="/es/posts/linux-permissions"
-      class="text-xs font-mono text-gray-500 hover:text-[#c084fc] transition-colors"
-      >Lectura relacionada → radiografía de permisos rwx</a
-    >
+    <ControlsFork />
   </main>
 </BaseLayout>
 
 <script>
-  import { initUmaskAnimation } from "../../components/animations/umask-permissions/controller";
-  initUmaskAnimation();
+  import { initForkAnimation } from "../../components/animations/fork-system-call/controller";
+  initForkAnimation();
 </script>

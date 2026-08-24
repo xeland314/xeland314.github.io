@@ -1,0 +1,71 @@
+---
+import "./chmod.css";
+
+const COLS = [
+  { id: "own", suffix: "Own", header: "DUEÑO", x: 22, bin: "110", octal: "6" },
+  { id: "grp", suffix: "Grp", header: "GRUPO", x: 146, bin: "100", octal: "4" },
+  { id: "oth", suffix: "Oth", header: "OTROS", x: 270, bin: "100", octal: "4" },
+];
+const BITS = ["r", "w", "x"] as const;
+---
+
+<div class="anim-cb-card">
+  <svg class="anim-cb-svg" viewBox="0 0 360 186" fill="none">
+    <text x="8" y="14" class="cb-title">CHMOD NUMÉRICO: cada tríplica rwx → un dígito</text>
+
+    {COLS.map((col) => (
+      <g>
+        <text
+          x={col.x + 33}
+          y={36}
+          text-anchor="middle"
+          class="cb-colhead">{col.header}</text
+        >
+        {BITS.map((label, i) => (
+          <text
+            x={col.x + i * 24 + 9}
+            y={50}
+            text-anchor="middle"
+            class="cb-bitlabel">{label}</text
+          >
+        ))}
+        {[...Array(3)].map((_, i) => (
+          <rect
+            id={`${col.id}${i}`}
+            x={col.x + i * 24}
+            y={56}
+            width="18"
+            height="15"
+            rx="3"
+            class="cb-cell off"
+          />
+        ))}
+        <text
+          id={`bin${col.suffix}`}
+          x={col.x + 33}
+          y={92}
+          text-anchor="middle"
+          class="cb-bin">{col.bin}</text
+        >
+        <text
+          id={`oct${col.suffix}`}
+          x={col.x + 33}
+          y={114}
+          text-anchor="middle"
+          class="cb-octal">{col.octal}</text
+        >
+      </g>
+    ))}
+
+    <line x1="8" y1="128" x2="352" y2="128" stroke="var(--anim-line)" />
+
+    <text x="8" y="148" class="cb-sub">ls -l script.sh</text>
+    <text id="permFull" x="352" y="148" text-anchor="end" class="cb-permfull"
+      >-rw-r--r--</text
+    >
+
+    <text id="noteText" x="8" y="174" class="cb-note"
+      >r=4 · w=2 · x=1 — chmod SUMA bits sobre el modo actual.</text
+    >
+  </svg>
+</div>

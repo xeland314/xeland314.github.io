@@ -2,17 +2,17 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Stage from "../../components/animations/Stage.astro";
 import CodePanel from "../../components/animations/code/CodePanel.astro";
-import UmaskDiagram from "../../components/animations/umask-permissions/UmaskDiagram.astro";
-import ConsoleOut from "../../components/animations/umask-permissions/ConsoleOut.astro";
-import ControlsUmask from "../../components/animations/umask-permissions/ControlsUmask.astro";
+import ChmodDiagram from "../../components/animations/chmod-binary/ChmodDiagram.astro";
+import ConsoleOut from "../../components/animations/chmod-binary/ConsoleOut.astro";
+import ControlsChmod from "../../components/animations/chmod-binary/ControlsChmod.astro";
 
-const siteTitle = "Linux · umask y Permisos Binarios";
+const siteTitle = "Linux · chmod Bit a Bit";
 const siteDescription =
-  "Animación de umask en Linux: cómo la máscara 022 o 077 resta bits con una operación AND NOT sobre los permisos por defecto (666 para archivos, 777 para directorios) bit a bit.";
+  "Animación de chmod en Linux: cómo el modo numérico 755 enciende los bits de ejecución de rw-r--r-- a rwxr-xr-x, grupo por grupo (dueño, grupo y otros).";
 const siteKeywords =
-  "umask, permisos linux, chmod, rwx, and not, máscara binaria, 644, 755, animación, video";
+  "chmod, permisos linux, 644, 755, rwx, bits, binario, octal, animación, video";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
-const siteUrl = "https://xeland314.github.io/animations/umask-permissions";
+const siteUrl = "https://xeland314.github.io/animations/chmod-binary";
 const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
 ---
 
@@ -37,31 +37,25 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
   <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
     <Stage eyebrow="LINUX · PERMISOS">
       <Fragment slot="title">
-        umask: la máscara que<br />
-        <span class="text-[#ff5f57]">quita</span> bits antes de crear
+        chmod: el modo numérico<br />
+        <span class="text-[#facc15]">bit a bit</span> hasta rwxr-xr-x
       </Fragment>
       <div class="flex-1 min-h-0 flex flex-col justify-center gap-3 px-6 pb-8">
-        <CodePanel file="umask.sh">
+        <CodePanel file="script.sh">
           <Fragment slot="badge">
-            <span id="statusBadge" class="anim-um-badge">ESPERANDO</span>
+            <span id="statusBadge" class="anim-cb-badge">ESPERANDO</span>
           </Fragment>
         </CodePanel>
-        <UmaskDiagram />
+        <ChmodDiagram />
         <ConsoleOut />
       </div>
     </Stage>
 
-    <ControlsUmask />
-
-    <a
-      href="/es/posts/linux-permissions"
-      class="text-xs font-mono text-gray-500 hover:text-[#c084fc] transition-colors"
-      >Lectura relacionada → radiografía de permisos rwx</a
-    >
+    <ControlsChmod />
   </main>
 </BaseLayout>
 
 <script>
-  import { initUmaskAnimation } from "../../components/animations/umask-permissions/controller";
-  initUmaskAnimation();
+  import { initChmodAnimation } from "../../components/animations/chmod-binary/controller";
+  initChmodAnimation();
 </script>

@@ -162,4 +162,37 @@ export const ANIMATIONS: AnimationCard[] = [
     gradient: "from-purple-500 to-pink-500",
     icon: `<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`,
   },
+  {
+    slug: "fork-system-call",
+    title: { es: "Linux · fork()", en: "Linux · fork()" },
+    description: {
+      es: "Una llamada duplica el proceso: padre e hijo",
+      en: "One call duplicates the process: parent & child",
+    },
+    badge: { es: "Linux", en: "Linux" },
+    gradient: "from-blue-500 to-violet-600",
+    icon: `<circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/><path d="M12 12v3"/>`,
+  },
+  {
+    slug: "chmod-binary",
+    title: { es: "Linux · chmod bit a bit", en: "Linux · chmod bit by bit" },
+    description: {
+      es: "De rw-r--r-- a rwxr-xr-x con 755",
+      en: "From rw-r--r-- to rwxr-xr-x with 755",
+    },
+    badge: { es: "Linux", en: "Linux" },
+    gradient: "from-yellow-400 to-orange-500",
+    icon: `<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>`,
+  },
+  {
+    slug: "and-or-chains",
+    title: { es: "Bash · && vs ||", en: "Bash · && vs ||" },
+    description: {
+      es: "Los exit codes deciden si la cadena continúa",
+      en: "Exit codes decide whether the chain continues",
+    },
+    badge: { es: "Bash", en: "Bash" },
+    gradient: "from-lime-400 to-green-600",
+    icon: `<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>`,
+  },
 ];

@@ -1,0 +1,63 @@
+---
+import "./chains.css";
+---
+
+<div class="anim-ch-card">
+  <svg class="anim-ch-svg" viewBox="0 0 360 124" fill="none">
+    <text x="8" y="14" class="ch-title">CORTOCIRCUITO: &amp;&amp; y || según el exit code</text>
+    <text id="sceneTag" x="352" y="14" text-anchor="end" class="ch-rowlabel"
+      >escena A · éxito</text
+    >
+
+    <g id="sceneA" class="ch-scene">
+      <g id="nA1" class="ch-nodegroup">
+        <rect x="10" y="46" width="150" height="38" rx="19" class="ch-node" />
+        <text x="85" y="68" class="ch-label">mkdir proyectos</text>
+      </g>
+      <line id="eA1" x1="164" y1="65" x2="192" y2="65" class="ch-edge" />
+      <text id="opA1" x="178" y="59" class="ch-op">&amp;&amp;</text>
+      <text id="badgeA1" x="178" y="84" class="ch-badge muted">$?</text>
+      <g id="nA2" class="ch-nodegroup">
+        <rect x="196" y="46" width="154" height="38" rx="19" class="ch-node" />
+        <text x="273" y="68" class="ch-label">cd proyectos</text>
+      </g>
+    </g>
+
+    <g id="sceneB" class="ch-scene ch-off">
+      <g id="nB1" class="ch-nodegroup">
+        <rect x="10" y="46" width="88" height="38" rx="19" class="ch-node" />
+        <text x="54" y="62" class="ch-label">ping -c1</text>
+        <text x="54" y="74" class="ch-label sub">&gt; /dev/null</text>
+      </g>
+      <line id="eB1" x1="98" y1="65" x2="118" y2="65" class="ch-edge" />
+      <text id="opB1" x="108" y="59" class="ch-op">&amp;&amp;</text>
+      <text id="badgeB1" x="108" y="84" class="ch-badge muted">$?</text>
+      <g id="nB2" class="ch-nodegroup">
+        <rect x="118" y="46" width="124" height="38" rx="19" class="ch-node" />
+        <text x="180" y="62" class="ch-label">echo</text>
+        <text x="180" y="74" class="ch-label sub">"conexión OK"</text>
+      </g>
+      <text id="skipTag" x="180" y="97" class="ch-tag ch-off">se omite ✕</text>
+      <line id="eB2" x1="242" y1="65" x2="262" y2="65" class="ch-edge" />
+      <text id="opB2" x="252" y="59" class="ch-op">||</text>
+      <text id="badgeB2" x="252" y="84" class="ch-badge muted">$?</text>
+      <g id="nB3" class="ch-nodegroup">
+        <rect x="262" y="46" width="88" height="38" rx="19" class="ch-node" />
+        <text x="306" y="62" class="ch-label">echo</text>
+        <text x="306" y="74" class="ch-label sub">"sin conexión"</text>
+      </g>
+    </g>
+
+    <g id="sceneC" class="ch-scene ch-off">
+      <rect x="8" y="40" width="344" height="50" rx="12" class="ch-rulecard" />
+      <text x="30" y="62" text-anchor="middle" class="ch-rule-kw ch-kw-and">&amp;&amp;</text>
+      <text x="52" y="62" class="ch-rule-txt">avanza solo si el código es 0</text>
+      <text x="30" y="80" text-anchor="middle" class="ch-rule-kw ch-kw-or">||</text>
+      <text x="52" y="80" class="ch-rule-txt">actúa solo si es distinto de 0</text>
+    </g>
+
+    <text id="noteText" x="8" y="114" class="ch-note"
+      >cada comando deja un exit code: 0 éxito · ≠0 fallo.</text
+    >
+  </svg>
+</div>

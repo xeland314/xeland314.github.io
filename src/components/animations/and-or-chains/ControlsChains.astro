@@ -1,0 +1,30 @@
+---
+import "../controls/controls.css";
+import "./chains.css";
+import ResolutionSelect from "../controls/ResolutionSelect.astro";
+---
+
+<div id="controls" class="flex flex-col items-center gap-3 w-[400px]">
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn ch-exito flex-1" id="btnExito">1. Éxito &amp;&amp;</button>
+    <button class="ctrl-btn flex-1" id="btnRescate">2. Rescate ||</button>
+    <button class="ctrl-btn flex-1" id="btnRegla">3. Regla</button>
+  </div>
+  <button class="ctrl-btn primary w-full" id="btnPlay">
+    ▶ Demo completa (cortocircuito &amp;&amp; y ||)
+  </button>
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn ghost flex-1" id="resetBtn">↺ Reiniciar</button>
+    <ResolutionSelect />
+  </div>
+  <div class="flex gap-2 w-full">
+    <button class="ctrl-btn primary flex-1" id="exportBtn">
+      ⬇ Exportar video
+    </button>
+  </div>
+  <div
+    class="font-mono text-center"
+    id="statusText"
+    style="font-size:10.5px;color:#5f6c7a;min-height:14px;"
+  ></div>
+</div>

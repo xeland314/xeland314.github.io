@@ -2,17 +2,17 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Stage from "../../components/animations/Stage.astro";
 import CodePanel from "../../components/animations/code/CodePanel.astro";
-import UmaskDiagram from "../../components/animations/umask-permissions/UmaskDiagram.astro";
-import ConsoleOut from "../../components/animations/umask-permissions/ConsoleOut.astro";
-import ControlsUmask from "../../components/animations/umask-permissions/ControlsUmask.astro";
+import ChainsDiagram from "../../components/animations/and-or-chains/ChainsDiagram.astro";
+import ConsoleOut from "../../components/animations/and-or-chains/ConsoleOut.astro";
+import ControlsChains from "../../components/animations/and-or-chains/ControlsChains.astro";
 
-const siteTitle = "Linux · umask y Permisos Binarios";
+const siteTitle = "Bash · && vs || (Exit Codes)";
 const siteDescription =
-  "Animación de umask en Linux: cómo la máscara 022 o 077 resta bits con una operación AND NOT sobre los permisos por defecto (666 para archivos, 777 para directorios) bit a bit.";
+  "Animación del cortocircuito en Bash: && avanza solo cuando el exit code es 0 y || actúa cuando es distinto de 0, con una cadena ping → echo → echo.";
 const siteKeywords =
-  "umask, permisos linux, chmod, rwx, and not, máscara binaria, 644, 755, animación, video";
+  "bash, shell, exit codes, cortocircuito, short circuit, and, or, encadenamiento, ping, animación, video";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
-const siteUrl = "https://xeland314.github.io/animations/umask-permissions";
+const siteUrl = "https://xeland314.github.io/animations/and-or-chains";
 const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
 ---
 
@@ -35,33 +35,27 @@ const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
   </Fragment>
 
   <main class="min-h-screen flex flex-col items-center justify-center gap-5 py-10 px-4 bg-[#060a0f]">
-    <Stage eyebrow="LINUX · PERMISOS">
+    <Stage eyebrow="BASH · EXIT CODES">
       <Fragment slot="title">
-        umask: la máscara que<br />
-        <span class="text-[#ff5f57]">quita</span> bits antes de crear
+        &amp;&amp; y ||: el exit code<br />
+        decide si la cadena <span class="text-[#facc15]">sigue</span>
       </Fragment>
       <div class="flex-1 min-h-0 flex flex-col justify-center gap-3 px-6 pb-8">
-        <CodePanel file="umask.sh">
+        <CodePanel file="chain.sh">
           <Fragment slot="badge">
-            <span id="statusBadge" class="anim-um-badge">ESPERANDO</span>
+            <span id="statusBadge" class="anim-ch-badge">ESPERANDO</span>
           </Fragment>
         </CodePanel>
-        <UmaskDiagram />
+        <ChainsDiagram />
         <ConsoleOut />
       </div>
     </Stage>
 
-    <ControlsUmask />
-
-    <a
-      href="/es/posts/linux-permissions"
-      class="text-xs font-mono text-gray-500 hover:text-[#c084fc] transition-colors"
-      >Lectura relacionada → radiografía de permisos rwx</a
-    >
+    <ControlsChains />
   </main>
 </BaseLayout>
 
 <script>
-  import { initUmaskAnimation } from "../../components/animations/umask-permissions/controller";
-  initUmaskAnimation();
+  import { initChainAnimation } from "../../components/animations/and-or-chains/controller";
+  initChainAnimation();
 </script>
