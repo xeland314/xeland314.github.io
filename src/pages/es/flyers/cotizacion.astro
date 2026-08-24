@@ -1,10 +1,11 @@
 ---
-// Plantilla A4 · Mini cotización para llenar en el momento
+// Plantilla A4 · Mini cotización en blanco para llenar a mano en el momento
+// Sin emojis · Sin servicios precargados: todas las líneas se escriben a mano
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 
 const siteTitle = "Cotización de Servicios | Christopher Villamarín";
 const siteDescription =
-  "Plantilla de cotización para llenar en el momento: servicios digitales para negocios, precios sugeridos, anticipo y saldo. Christopher Villamarín, Quito.";
+  "Plantilla de cotización en blanco para llenar a mano: servicios digitales para negocios. Christopher Villamarín, Quito.";
 const siteKeywords =
   "cotización servicios web Quito, plantilla cotización, desarrollo digital Ecuador";
 const siteAuthor = "Christopher Alexander Villamarín Pila";
@@ -26,44 +27,12 @@ const camposCliente = [
   { label: "Dirección" },
 ];
 
-const filasServicio = [
-  {
-    nombre: "Página web",
-    incluye: "Sus servicios, fotos y contacto; abre bien en el celular.",
-    tiempo: "1 semana",
-  },
-  {
-    nombre: "Su negocio en Google",
-    incluye: "Registro oficial en el mapa, fotos, horarios y datos.",
-    tiempo: "3 días",
-  },
-  {
-    nombre: "Opiniones con código QR",
-    incluye: "Cartelito listo para pegar + guía para pedir opiniones.",
-    tiempo: "2 días",
-  },
-  {
-    nombre: "Menú o catálogo con QR",
-    incluye: "Lista con precios que usted actualiza desde su celular.",
-    tiempo: "1 semana",
-  },
-  {
-    nombre: "Tareas automáticas",
-    incluye: "Recordatorios de citas, cobros pendientes, inventario.",
-    tiempo: "A convenir",
-  },
-  {
-    nombre: "Programa a medida",
-    incluye: "Lo que su negocio necesite, hecho a su manera de trabajar.",
-    tiempo: "A convenir",
-  },
-];
+const FILAS = 8;
 
 const condiciones = [
   "El valor final depende de lo conversado; nada se cobra fuera de lo escrito en esta hoja.",
   "El trabajo inicia con el anticipo y usted verá avances durante el camino.",
   "Incluye una sesión práctica para que usted o su personal administren todo solos.",
-  "Los resultados en buscadores dependen también del rubro, la zona y la constancia; por eso no se prometen posiciones específicas.",
 ];
 ---
 
@@ -121,10 +90,8 @@ const condiciones = [
             </div>
             <div class="text-right">
               <p class="text-[7.5pt] font-extrabold tracking-[0.14em] uppercase text-gray-500">Fecha</p>
-              <p class="text-[10pt] text-gray-800 mt-[1mm]">
-                Quito, ____ de ____________ de 20___
-              </p>
-              <p class="text-[8pt] text-gray-600 mt-[1.5mm]">
+              <p class="text-[10pt] text-gray-800 mt-[1mm] border-b border-gray-400 min-w-[52mm]">&nbsp;</p>
+              <p class="text-[8pt] text-gray-600 mt-[2.5mm]">
                 Válida por <b>15 días</b>
               </p>
             </div>
@@ -144,40 +111,33 @@ const condiciones = [
             }
           </div>
 
-          <!-- Tabla -->
-          <table class="w-full border-collapse text-[8.5pt] mt-[6mm]">
+          <!-- Detalle de ítems (todo se llena a mano) -->
+          <table class="w-full border-collapse text-[8.5pt] mt-[7mm]">
             <thead>
               <tr class="border-y-[1.5px] border-gray-800">
-                <th class="py-[1.5mm] w-[8mm] text-center text-[7pt] font-black uppercase tracking-wider">✓</th>
-                <th class="py-[1.5mm] pl-[2mm] text-left text-[7pt] font-black uppercase tracking-wider">Servicio</th>
-                <th class="py-[1.5mm] text-left text-[7pt] font-black uppercase tracking-wider">Qué incluye</th>
-                <th class="py-[1.5mm] w-[22mm] text-center text-[7pt] font-black uppercase tracking-wider">Tiempo*</th>
-                <th class="py-[1.5mm] w-[27mm] text-center text-[7pt] font-black uppercase tracking-wider">Valor</th>
+                <th class="py-[1.5mm] w-[8mm] text-center text-[7pt] font-black uppercase tracking-wider">N°</th>
+                <th class="py-[1.5mm] pl-[2mm] text-left text-[7pt] font-black uppercase tracking-wider">Descripción</th>
+                <th class="py-[1.5mm] w-[26mm] text-center text-[7pt] font-black uppercase tracking-wider">Tiempo</th>
+                <th class="py-[1.5mm] w-[28mm] text-center text-[7pt] font-black uppercase tracking-wider">Valor</th>
               </tr>
             </thead>
             <tbody>
               {
-                filasServicio.map((f) => (
+                Array.from({ length: FILAS }).map((_, i) => (
                   <tr class="border-b border-gray-200">
-                    <td class="py-[3.2mm] text-center align-middle">
-                      <span class="inline-block w-[4mm] h-[4mm] border-[1.5px] border-gray-400 rounded-[1mm]" />
-                    </td>
-                    <td class="pl-[2mm] pr-[2mm] font-bold">{f.nombre}</td>
-                    <td class="pr-[2mm] text-gray-600">{f.incluye}</td>
-                    <td class="text-center text-gray-600">{f.tiempo}</td>
-                    <td class="text-center font-semibold text-gray-700">$ ________</td>
+                    <td class="py-[4.2mm] text-center align-middle font-bold text-gray-400">{i + 1}</td>
+                    <td class="pl-[2mm]" />
+                    <td />
+                    <td />
                   </tr>
                 ))
               }
             </tbody>
           </table>
-          <p class="text-[7pt] text-gray-500 italic mt-[1.5mm]">
-            * Tiempo aproximado desde la entrega del material por su parte.
-          </p>
 
           <!-- Totales -->
-          <div class="flex justify-end mt-[4mm]">
-            <div class="w-[82mm] space-y-[2.5mm]">
+          <div class="flex justify-end mt-[6mm]">
+            <div class="w-[82mm] space-y-[3mm]">
               <div class="flex justify-between items-end border-t-[1.5px] border-gray-900 pt-[1.5mm]">
                 <p class="text-[9.5pt] font-black uppercase tracking-wide">Total</p>
                 <p class="text-[12pt] font-black">$ ________</p>
@@ -222,15 +182,15 @@ const condiciones = [
             </div>
           </div>
 
-          <!-- Contacto preimpreso -->
+          <!-- Contacto preimpreso (sin emojis) -->
           <div class="border-t-[3px] border-blue-600 pt-[3.5mm] flex items-center justify-between">
             <p class="text-[10pt] font-black tracking-tight text-gray-900">
               Gracias por su confianza.
             </p>
             <div class="flex gap-x-[5mm] text-[8.5pt] text-gray-800">
-              <span>📞 <b>098 712 9357</b></span>
-              <span>✉️ christopher.villamarin@protonmail.com</span>
-              <span>🌐 xeland314.github.io</span>
+              <span>Tel.: <b>098 712 9357</b></span>
+              <span>Correo: christopher.villamarin@protonmail.com</span>
+              <span>xeland314.github.io</span>
             </div>
           </div>
         </div>
