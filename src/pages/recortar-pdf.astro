@@ -1,0 +1,782 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const siteTitle = "Recortar PDF — Selecciona páginas, borra y recorta sin subir nada";
+const siteDescription =
+  "Herramienta offline para recortar PDFs: selecciona páginas por intervalos (1, 3-5), borra páginas, extrae solo las que necesitas y recorta márgenes. Todo en tu navegador, sin subir archivos. Con deshacer Ctrl+Z.";
+const siteKeywords =
+  "recortar pdf, cortar pdf, borrar páginas pdf, extraer páginas pdf, pdf offline, crop pdf, intervalos páginas";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/recortar-pdf";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+const siteAppName = "Recortar PDF";
+---
+
+<BaseLayout
+  showHeader={false}
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+  applicationName={siteAppName}
+>
+  <div
+    class="min-h-screen py-8 sm:py-12 px-4 flex flex-col items-center bg-gray-50 dark:bg-gray-950 transition-colors duration-300"
+  >
+    <div
+      class="w-full max-w-6xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300"
+    >
+      <!-- Encabezado -->
+      <div class="mb-8 text-center sm:text-left">
+        <p
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono tracking-widest uppercase mb-4"
+        >
+          Herramienta offline · 100% en tu navegador
+        </p>
+        <h1
+          class="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-3"
+        >
+          Recortar PDF
+        </h1>
+        <p
+          class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed max-w-3xl"
+        >
+          Selecciona páginas por intervalos, borra lo que no necesitas, extrae solo un rango y recorta márgenes visualmente. <span class="font-semibold text-gray-900 dark:text-white">Nada se sube a ningún servidor</span> — todo pasa en tu dispositivo. Usa <kbd class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-mono">Ctrl+Z</kbd> para deshacer.
+        </p>
+      </div>
+
+      <!-- Dropzone -->
+      <div
+        id="dropzone"
+        class="group border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-8 sm:p-10 text-center hover:border-emerald-500/50 hover:bg-emerald-500/[0.03] transition-all cursor-pointer"
+      >
+        <div
+          class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-105 transition-transform"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg
+          >
+        </div>
+        <p class="text-sm font-bold text-gray-900 dark:text-white">
+          Arrastra tu PDF aquí o haz clic para seleccionar
+        </p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          PDF · hasta ~50 MB recomendado · funciona offline después de cargar la página
+        </p>
+        <input
+          type="file"
+          id="input-pdf"
+          accept="application/pdf,.pdf"
+          class="hidden"
+        />
+        <p id="pdf-info" class="hidden mt-4 text-xs font-mono text-gray-600 dark:text-gray-400"></p>
+      </div>
+
+      <!-- Controles principales (visible tras cargar PDF) -->
+      <div id="controls" class="hidden mt-8 space-y-6">
+        <!-- Barra de info + acciones rápidas -->
+        <div
+          class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-2xl"
+        >
+          <div class="flex items-center gap-3">
+            <span
+              id="page-count"
+              class="text-sm font-bold text-gray-900 dark:text-white px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+              >0 páginas</span
+            >
+            <span
+              id="selection-count"
+              class="text-xs font-mono text-gray-500 dark:text-gray-400">0 seleccionadas</span
+            >
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button
+              id="btn-undo"
+              class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-semibold hover:border-gray-300 dark:hover:border-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              title="Deshacer (Ctrl+Z)"
+            >
+              ↩ Deshacer
+            </button>
+            <button
+              id="btn-redo"
+              class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-semibold hover:border-gray-300 dark:hover:border-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              title="Rehacer (Ctrl+Shift+Z / Ctrl+Y)"
+            >
+              ↪ Rehacer
+            </button>
+            <button
+              id="btn-download"
+              class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all active:scale-95"
+            >
+              Descargar PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Selección por intervalos -->
+        <div
+          class="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/50 rounded-2xl"
+        >
+          <label class="block text-xs font-bold tracking-widest uppercase text-gray-500 dark:text-gray-400 mb-3">
+            Selección por intervalos
+          </label>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            Ejemplos: <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-mono">1-3, 5</code> <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-mono">2, 4-7</code> <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-mono">1, 10</code>
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              id="input-intervals"
+              placeholder="Ej: 1-3, 5, 8-10"
+              class="flex-1 w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+            />
+            <button
+              id="btn-apply-intervals"
+              class="px-5 py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors active:scale-95 whitespace-nowrap"
+            >
+              Aplicar selección
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <button
+              id="btn-select-all"
+              class="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >Seleccionar todo</button
+            >
+            <button
+              id="btn-invert-selection"
+              class="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >Invertir selección</button
+            >
+            <button
+              id="btn-clear-selection"
+              class="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >Limpiar selección</button
+            >
+          </div>
+        </div>
+
+        <!-- Acciones de páginas -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            id="btn-delete-selected"
+            class="px-4 py-3 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 text-sm font-bold hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            🗑 Borrar seleccionadas
+          </button>
+          <button
+            id="btn-extract-selected"
+            class="px-4 py-3 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 text-sm font-bold hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            📄 Conservar solo seleccionadas
+          </button>
+          <button
+            id="btn-reset"
+            class="px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors active:scale-95"
+          >
+            ↺ Volver al original
+          </button>
+        </div>
+
+        <!-- Recorte visual (márgenes) -->
+        <div
+          class="p-4 sm:p-5 bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-2xl"
+        >
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <h3 class="text-xs font-bold tracking-widest uppercase text-amber-800 dark:text-amber-300">
+              Recorte de márgenes (crop)
+            </h3>
+            <label class="flex items-center gap-2 text-xs cursor-pointer select-none">
+              <input type="checkbox" id="opt-preview-crop" checked class="rounded border-gray-300 dark:border-gray-600 text-emerald-600 focus:ring-emerald-500" />
+              <span class="text-gray-700 dark:text-gray-300 font-medium">Vista previa</span>
+            </label>
+          </div>
+          <p class="text-xs text-amber-800/70 dark:text-amber-200/70 mb-4">
+            Define cuánto recortar de cada borde (en %). Se ve superpuesto en las miniaturas y se aplica al descargar. Como en Smallpdf → recortar páginas.
+          </p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <label class="flex flex-col gap-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Arriba %</span>
+              <input type="number" id="crop-top" min="0" max="50" value="0" class="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-mono focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
+              <input type="range" id="crop-top-range" min="0" max="50" value="0" class="w-full accent-amber-600" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Abajo %</span>
+              <input type="number" id="crop-bottom" min="0" max="50" value="0" class="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-mono focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
+              <input type="range" id="crop-bottom-range" min="0" max="50" value="0" class="w-full accent-amber-600" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Izquierda %</span>
+              <input type="number" id="crop-left" min="0" max="50" value="0" class="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-mono focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
+              <input type="range" id="crop-left-range" min="0" max="50" value="0" class="w-full accent-amber-600" />
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">Derecha %</span>
+              <input type="number" id="crop-right" min="0" max="50" value="0" class="w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm font-mono focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" />
+              <input type="range" id="crop-right-range" min="0" max="50" value="0" class="w-full accent-amber-600" />
+            </label>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 mt-4">
+            <button
+              id="btn-crop-selected"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold transition-colors active:scale-95"
+            >
+              Recortar seleccionadas
+            </button>
+            <button
+              id="btn-crop-all"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors active:scale-95"
+            >
+              Recortar todas
+            </button>
+            <button
+              id="btn-crop-reset"
+              class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Quitar recorte
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid de páginas -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-bold tracking-widest uppercase text-gray-500 dark:text-gray-400">
+              Páginas (clic para seleccionar)
+            </h3>
+            <span class="text-[11px] font-mono text-gray-400">Ctrl+Z deshacer · Ctrl+Shift+Z rehacer</span>
+          </div>
+          <div
+            id="pages-grid"
+            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[120px]"
+          ></div>
+          <p
+            id="pages-empty"
+            class="text-sm text-gray-400 italic py-8 text-center border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl"
+          >
+            Carga un PDF para ver sus páginas aquí.
+          </p>
+        </div>
+      </div>
+
+      <!-- Nota offline -->
+      <div
+        class="mt-8 p-4 rounded-2xl bg-gray-900 dark:bg-black border border-gray-800 text-xs leading-relaxed text-gray-400"
+      >
+        <span class="font-bold text-white">Privado y offline:</span> el PDF nunca sale de tu navegador. Puedes usar esta página sin internet después de la primera carga. Si cierras la pestaña, el archivo se olvida — descarga el resultado antes.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { PDFDocument } from "pdf-lib";
+    import * as pdfjsLib from "pdfjs-dist";
+    import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
+    import { parsePageIntervals } from "../components/tools/pdf-crop/pdfOperations";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
+    let pdfBytes: Uint8Array | null = null;
+    let originalBytes: Uint8Array | null = null;
+    let pdfName: string = "documento.pdf";
+    let pageCount: number = 0;
+    let selected = new Set<number>();
+    let undoStack: Uint8Array[] = [];
+    let redoStack: Uint8Array[] = [];
+    let cropPercents = { top: 0, bottom: 0, left: 0, right: 0 };
+    let previewCrop = true;
+
+    const els = {
+      dropzone: document.getElementById("dropzone") as HTMLDivElement,
+      inputPdf: document.getElementById("input-pdf") as HTMLInputElement,
+      pdfInfo: document.getElementById("pdf-info") as HTMLParagraphElement,
+      controls: document.getElementById("controls") as HTMLDivElement,
+      pageCount: document.getElementById("page-count") as HTMLSpanElement,
+      selectionCount: document.getElementById("selection-count") as HTMLSpanElement,
+      pagesGrid: document.getElementById("pages-grid") as HTMLDivElement,
+      pagesEmpty: document.getElementById("pages-empty") as HTMLParagraphElement,
+      inputIntervals: document.getElementById("input-intervals") as HTMLInputElement,
+      btnApplyIntervals: document.getElementById("btn-apply-intervals") as HTMLButtonElement,
+      btnSelectAll: document.getElementById("btn-select-all") as HTMLButtonElement,
+      btnInvert: document.getElementById("btn-invert-selection") as HTMLButtonElement,
+      btnClearSel: document.getElementById("btn-clear-selection") as HTMLButtonElement,
+      btnDelete: document.getElementById("btn-delete-selected") as HTMLButtonElement,
+      btnExtract: document.getElementById("btn-extract-selected") as HTMLButtonElement,
+      btnReset: document.getElementById("btn-reset") as HTMLButtonElement,
+      btnUndo: document.getElementById("btn-undo") as HTMLButtonElement,
+      btnRedo: document.getElementById("btn-redo") as HTMLButtonElement,
+      btnDownload: document.getElementById("btn-download") as HTMLButtonElement,
+      cropTop: document.getElementById("crop-top") as HTMLInputElement,
+      cropBottom: document.getElementById("crop-bottom") as HTMLInputElement,
+      cropLeft: document.getElementById("crop-left") as HTMLInputElement,
+      cropRight: document.getElementById("crop-right") as HTMLInputElement,
+      cropTopR: document.getElementById("crop-top-range") as HTMLInputElement,
+      cropBottomR: document.getElementById("crop-bottom-range") as HTMLInputElement,
+      cropLeftR: document.getElementById("crop-left-range") as HTMLInputElement,
+      cropRightR: document.getElementById("crop-right-range") as HTMLInputElement,
+      optPreview: document.getElementById("opt-preview-crop") as HTMLInputElement,
+      btnCropSel: document.getElementById("btn-crop-selected") as HTMLButtonElement,
+      btnCropAll: document.getElementById("btn-crop-all") as HTMLButtonElement,
+      btnCropReset: document.getElementById("btn-crop-reset") as HTMLButtonElement,
+    };
+
+    function cloneBytes(b: Uint8Array): Uint8Array {
+      return new Uint8Array(b);
+    }
+
+    function pushUndo() {
+      if (!pdfBytes) return;
+      undoStack.push(cloneBytes(pdfBytes));
+      if (undoStack.length > 40) undoStack.shift();
+      redoStack = [];
+      updateUndoRedoButtons();
+    }
+
+    function updateUndoRedoButtons() {
+      els.btnUndo.disabled = undoStack.length === 0;
+      els.btnRedo.disabled = redoStack.length === 0;
+    }
+
+    async function undo() {
+      if (undoStack.length === 0) return;
+      if (!pdfBytes) return;
+      redoStack.push(cloneBytes(pdfBytes));
+      const prev = undoStack.pop()!;
+      pdfBytes = cloneBytes(prev);
+      selected.clear();
+      await renderAll();
+      updateUndoRedoButtons();
+    }
+
+    async function redo() {
+      if (redoStack.length === 0) return;
+      if (!pdfBytes) return;
+      undoStack.push(cloneBytes(pdfBytes));
+      const next = redoStack.pop()!;
+      pdfBytes = cloneBytes(next);
+      selected.clear();
+      await renderAll();
+      updateUndoRedoButtons();
+    }
+
+    function syncCropInputs(from: "number" | "range", key: keyof typeof cropPercents) {
+      const clamp = (v: number) => Math.max(0, Math.min(50, Math.round(v) || 0));
+      if (from === "number") {
+        const v = clamp(Number((els as any)[`crop${key.charAt(0).toUpperCase()+key.slice(1)}`].value));
+        (els as any)[`crop${key.charAt(0).toUpperCase()+key.slice(1)}R`].value = String(v);
+        cropPercents[key] = v;
+      } else {
+        const v = clamp(Number((els as any)[`crop${key.charAt(0).toUpperCase()+key.slice(1)}R`].value));
+        (els as any)[`crop${key.charAt(0).toUpperCase()+key.slice(1)}`].value = String(v);
+        cropPercents[key] = v;
+      }
+      updateCropPreview();
+    }
+
+    function updateCropPreview() {
+      // actualiza overlays en grid
+      document.querySelectorAll<HTMLDivElement>("[data-crop-overlay]").forEach((el) => {
+        if (!previewCrop || (cropPercents.top===0 && cropPercents.bottom===0 && cropPercents.left===0 && cropPercents.right===0)) {
+          el.style.display = "none";
+          return;
+        }
+        el.style.display = "block";
+        el.style.inset = `${cropPercents.top}% ${cropPercents.right}% ${cropPercents.bottom}% ${cropPercents.left}%`;
+        el.style.border = "2px dashed #f59e0b";
+        el.style.background = "rgba(245,158,11,0.08)";
+        el.style.pointerEvents = "none";
+      });
+    }
+
+    function updateSelectionUI() {
+      const n = selected.size;
+      els.selectionCount.textContent = `${n} seleccionada${n!==1?"s":""}`;
+      els.btnDelete.disabled = n === 0;
+      els.btnExtract.disabled = n === 0;
+      // resalta tarjetas
+      document.querySelectorAll<HTMLDivElement>("[data-page-idx]").forEach((card) => {
+        const idx = Number(card.dataset.pageIdx);
+        const isSel = selected.has(idx);
+        card.classList.toggle("ring-2", isSel);
+        card.classList.toggle("ring-emerald-500", isSel);
+        card.classList.toggle("border-emerald-500", isSel);
+        const chk = card.querySelector<HTMLInputElement>("input[type=checkbox]");
+        if (chk) chk.checked = isSel;
+      });
+    }
+
+    async function renderThumbnails() {
+      if (!pdfBytes) return;
+      const grid = els.pagesGrid;
+      grid.innerHTML = "";
+      try {
+        const loadingTask = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
+        const pdf = await loadingTask.promise;
+        pageCount = pdf.numPages;
+        els.pageCount.textContent = `${pageCount} página${pageCount!==1?"s":""}`;
+        els.pagesEmpty.classList.add("hidden");
+        grid.classList.remove("hidden");
+
+        for (let i = 1; i <= pageCount; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 1 });
+          const scale = 260 / viewport.width;
+          const vp = page.getViewport({ scale });
+
+          const card = document.createElement("div");
+          card.dataset.pageIdx = String(i - 1);
+          card.className =
+            "group relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer select-none";
+
+          const canvasWrap = document.createElement("div");
+          canvasWrap.className = "relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden";
+          canvasWrap.style.aspectRatio = `${vp.width} / ${vp.height}`;
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.round(vp.width);
+          canvas.height = Math.round(vp.height);
+          canvas.className = "max-w-full h-auto object-contain rounded-lg shadow-sm";
+          canvas.style.width = "100%";
+          canvas.style.height = "auto";
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
+          }
+
+          const overlay = document.createElement("div");
+          overlay.dataset.cropOverlay = "1";
+          overlay.className = "absolute rounded-lg";
+          overlay.style.display = "none";
+
+          const badge = document.createElement("span");
+          badge.className =
+            "absolute top-2 left-2 text-[11px] font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-full shadow";
+          badge.textContent = String(i);
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "absolute top-2 right-2 w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 text-emerald-600 focus:ring-emerald-500 bg-white dark:bg-gray-900";
+          checkbox.checked = selected.has(i - 1);
+          checkbox.addEventListener("click", (e) => e.stopPropagation());
+
+          const delBtn = document.createElement("button");
+          delBtn.title = "Borrar esta página";
+          delBtn.className =
+            "absolute bottom-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow";
+          delBtn.textContent = "✕";
+          delBtn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            selected.clear();
+            selected.add(i - 1);
+            updateSelectionUI();
+            await deleteSelected();
+          });
+
+          canvasWrap.appendChild(canvas);
+          canvasWrap.appendChild(overlay);
+          canvasWrap.appendChild(badge);
+          canvasWrap.appendChild(checkbox);
+          canvasWrap.appendChild(delBtn);
+
+          const footer = document.createElement("div");
+          footer.className = "px-3 py-2 flex items-center justify-between gap-2";
+          footer.innerHTML = `<span class="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. ${i}</span><span class="text-[10px] font-bold tracking-widest uppercase text-gray-400">clic para seleccionar</span>`;
+
+          card.appendChild(canvasWrap);
+          card.appendChild(footer);
+
+          card.addEventListener("click", () => {
+            const idx = i - 1;
+            if (selected.has(idx)) selected.delete(idx);
+            else selected.add(idx);
+            updateSelectionUI();
+            // también actualiza input intervalos visualmente
+            const sorted = Array.from(selected).sort((a, b) => a - b);
+            if (sorted.length) {
+              // no auto-escribe intervalos, solo deja selección visual
+            }
+          });
+
+          grid.appendChild(card);
+        }
+
+        updateSelectionUI();
+        updateCropPreview();
+      } catch (err) {
+        console.error("Error renderizando PDF:", err);
+        els.pagesEmpty.textContent = "No se pudo renderizar el PDF. ¿Es un PDF válido?";
+        els.pagesEmpty.classList.remove("hidden");
+      }
+    }
+
+    async function renderAll() {
+      if (!pdfBytes) return;
+      await renderThumbnails();
+    }
+
+    async function loadPdfFromArrayBuffer(buf: ArrayBuffer, name: string) {
+      const bytes = new Uint8Array(buf);
+      // validación básica PDF header
+      const header = new TextDecoder().decode(bytes.slice(0, 5));
+      if (header !== "%PDF-") {
+        alert("El archivo no parece ser un PDF válido.");
+        return;
+      }
+      pdfBytes = bytes;
+      originalBytes = cloneBytes(bytes);
+      pdfName = name;
+      selected.clear();
+      undoStack = [];
+      redoStack = [];
+      updateUndoRedoButtons();
+      els.pdfInfo.textContent = `${name} — ${(bytes.length / 1024).toFixed(1)} KB`;
+      els.pdfInfo.classList.remove("hidden");
+      els.controls.classList.remove("hidden");
+      await renderAll();
+      // scroll a controles
+      els.controls.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function deleteSelected() {
+      if (!pdfBytes || selected.size === 0) return;
+      if (selected.size === pageCount) {
+        if (!confirm("Vas a borrar todas las páginas. ¿Continuar?")) return;
+      }
+      pushUndo();
+      try {
+        const src = await PDFDocument.load(pdfBytes);
+        const toDelete = Array.from(selected).sort((a, b) => b - a);
+        for (const idx of toDelete) src.removePage(idx);
+        if (src.getPageCount() === 0) {
+          alert("No puedes dejar el PDF sin páginas.");
+          undoStack.pop();
+          updateUndoRedoButtons();
+          return;
+        }
+        pdfBytes = await src.save();
+        selected.clear();
+        await renderAll();
+      } catch (e) {
+        console.error(e);
+        alert("Error al borrar páginas.");
+      }
+    }
+
+    async function extractSelected() {
+      if (!pdfBytes || selected.size === 0) return;
+      pushUndo();
+      try {
+        const src = await PDFDocument.load(pdfBytes);
+        const dst = await PDFDocument.create();
+        const indices = Array.from(selected).sort((a, b) => a - b);
+        const copied = await dst.copyPages(src, indices);
+        copied.forEach((p) => dst.addPage(p));
+        pdfBytes = await dst.save();
+        selected.clear();
+        await renderAll();
+      } catch (e) {
+        console.error(e);
+        alert("Error al extraer páginas.");
+      }
+    }
+
+    async function applyCrop(applyToAll: boolean) {
+      if (!pdfBytes) return;
+      const hasCrop = cropPercents.top || cropPercents.bottom || cropPercents.left || cropPercents.right;
+      if (!hasCrop) {
+        alert("Define al menos un margen de recorte (arriba/abajo/izquierda/derecha).");
+        return;
+      }
+      const targetCount = applyToAll ? pageCount : selected.size;
+      if (!applyToAll && targetCount === 0) {
+        alert("Selecciona al menos una página para recortar.");
+        return;
+      }
+      const total = cropPercents.top + cropPercents.bottom;
+      const horiz = cropPercents.left + cropPercents.right;
+      if (total >= 100 || horiz >= 100) {
+        alert("Los márgenes no pueden sumar 100%. Reduce los valores.");
+        return;
+      }
+      pushUndo();
+      try {
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+        const indices = applyToAll
+          ? Array.from({ length: pdfDoc.getPageCount() }, (_, i) => i)
+          : Array.from(selected).sort((a, b) => a - b);
+        for (const idx of indices) {
+          const page = pdfDoc.getPage(idx);
+          const { width, height } = page.getSize();
+          const newW = width * (1 - (cropPercents.left + cropPercents.right) / 100);
+          const newH = height * (1 - (cropPercents.top + cropPercents.bottom) / 100);
+          const x = (width * cropPercents.left) / 100;
+          const y = (height * cropPercents.bottom) / 100;
+          // CropBox en coordenadas PDF (origen abajo-izquierda)
+          page.setCropBox(x, y, newW, newH);
+        }
+        pdfBytes = await pdfDoc.save();
+        await renderAll();
+      } catch (e) {
+        console.error(e);
+        alert("Error al recortar. Revisa los márgenes.");
+      }
+    }
+
+    async function downloadPdf() {
+      if (!pdfBytes) return;
+      const blob = new Blob([pdfBytes.slice(0) as any], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const base = pdfName.replace(/\.pdf$/i, "");
+      a.href = url;
+      a.download = `${base}-recortado.pdf`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
+    // Eventos de archivo
+    function handleFile(file: File) {
+      if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+        alert("Solo se admiten archivos PDF.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result instanceof ArrayBuffer) loadPdfFromArrayBuffer(reader.result, file.name);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    els.dropzone.addEventListener("click", () => els.inputPdf.click());
+    els.inputPdf.addEventListener("change", () => {
+      const f = els.inputPdf.files?.[0];
+      if (f) handleFile(f);
+    });
+    els.dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      els.dropzone.classList.add("border-emerald-500", "bg-emerald-50", "dark:bg-emerald-950/20");
+    });
+    els.dropzone.addEventListener("dragleave", () => {
+      els.dropzone.classList.remove("border-emerald-500", "bg-emerald-50", "dark:bg-emerald-950/20");
+    });
+    els.dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      els.dropzone.classList.remove("border-emerald-500", "bg-emerald-50", "dark:bg-emerald-950/20");
+      const f = e.dataTransfer?.files?.[0];
+      if (f) handleFile(f);
+    });
+
+    // Intervalos
+    els.btnApplyIntervals.addEventListener("click", () => {
+      const raw = els.inputIntervals.value;
+      const parsed = parsePageIntervals(raw, pageCount);
+      if (parsed.length === 0 && raw.trim() !== "") {
+        alert("Intervalo no válido. Usa formato 1-3, 5 o 2,4-7 y dentro del rango 1-" + pageCount);
+        return;
+      }
+      selected = new Set(parsed);
+      updateSelectionUI();
+    });
+    els.inputIntervals.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") els.btnApplyIntervals.click();
+    });
+    els.btnSelectAll.addEventListener("click", () => {
+      selected = new Set(Array.from({ length: pageCount }, (_, i) => i));
+      updateSelectionUI();
+    });
+    els.btnInvert.addEventListener("click", () => {
+      const next = new Set<number>();
+      for (let i = 0; i < pageCount; i++) if (!selected.has(i)) next.add(i);
+      selected = next;
+      updateSelectionUI();
+    });
+    els.btnClearSel.addEventListener("click", () => {
+      selected.clear();
+      updateSelectionUI();
+    });
+
+    // Acciones páginas
+    els.btnDelete.addEventListener("click", deleteSelected);
+    els.btnExtract.addEventListener("click", extractSelected);
+    els.btnReset.addEventListener("click", async () => {
+      if (!originalBytes) return;
+      pushUndo();
+      pdfBytes = cloneBytes(originalBytes);
+      selected.clear();
+      await renderAll();
+    });
+
+    // Undo/Redo
+    els.btnUndo.addEventListener("click", undo);
+    els.btnRedo.addEventListener("click", redo);
+    window.addEventListener("keydown", (e) => {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const mod = isMac ? e.metaKey : e.ctrlKey;
+      if (!mod) return;
+      if (e.key.toLowerCase() === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((e.key.toLowerCase() === "z" && e.shiftKey) || (e.key.toLowerCase() === "y" && !e.shiftKey)) {
+        e.preventDefault();
+        redo();
+      }
+    });
+
+    els.btnDownload.addEventListener("click", downloadPdf);
+
+    // Crop bindings
+    const bindCrop = (key: keyof typeof cropPercents) => {
+      const cap = key.charAt(0).toUpperCase() + key.slice(1);
+      (els as any)[`crop${cap}`].addEventListener("input", () => syncCropInputs("number", key));
+      (els as any)[`crop${cap}R`].addEventListener("input", () => syncCropInputs("range", key));
+    };
+    (["top", "bottom", "left", "right"] as const).forEach(bindCrop);
+    els.optPreview.addEventListener("change", () => {
+      previewCrop = els.optPreview.checked;
+      updateCropPreview();
+    });
+    els.btnCropSel.addEventListener("click", () => applyCrop(false));
+    els.btnCropAll.addEventListener("click", () => applyCrop(true));
+    els.btnCropReset.addEventListener("click", async () => {
+      // reset crop: quitar CropBox -> restaurar MediaBox como CropBox
+      if (!pdfBytes) return;
+      pushUndo();
+      try {
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+        for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+          const page = pdfDoc.getPage(i);
+          const { width, height } = page.getSize();
+          // reset a media box completo
+          const media = page.getMediaBox();
+          page.setCropBox(media.x, media.y, media.width, media.height);
+          // Fallback si media box no existe, usa size
+          if (media.width === 0) page.setCropBox(0, 0, width, height);
+        }
+        pdfBytes = await pdfDoc.save();
+        cropPercents = { top: 0, bottom: 0, left: 0, right: 0 };
+        (["Top", "Bottom", "Left", "Right"] as const).forEach((k) => {
+          (els as any)[`crop${k}`].value = "0";
+          (els as any)[`crop${k}R`].value = "0";
+        });
+        await renderAll();
+      } catch (e) {
+        console.error(e);
+        alert("No se pudo quitar el recorte.");
+      }
+    });
+
+    updateUndoRedoButtons();
+  </script>
+</BaseLayout>
