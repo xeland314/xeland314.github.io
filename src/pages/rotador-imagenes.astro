@@ -275,6 +275,36 @@ const siteAppName = "Rotador de imágenes";
       <!-- Contenedor del Resultado -->
       <div id="resultado" class="mt-8"></div>
 
+      <!-- Historial (IndexedDB) -->
+      <div id="historial-sec" class="mt-10 border-t border-gray-200 dark:border-gray-800 pt-8">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <h2 class="text-sm font-bold tracking-widest uppercase text-gray-900 dark:text-white flex items-center gap-2">
+            Historial
+            <span
+              id="historial-count"
+              class="text-[10px] font-mono font-normal tracking-normal normal-case bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700"
+              >0</span
+            >
+          </h2>
+          <button
+            id="btn-clear-history"
+            class="text-xs font-semibold text-red-500 dark:text-red-400 hover:text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 border border-transparent hover:border-red-200 dark:hover:border-red-500/20 transition-colors"
+          >
+            Limpiar historial
+          </button>
+        </div>
+        <p
+          id="historial-empty"
+          class="text-sm text-gray-400 dark:text-gray-500 italic py-4 text-center border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl"
+        >
+          Aún no hay elementos en el historial. Aplica una rotación y se guardará automáticamente.
+        </p>
+        <div id="historial-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden"></div>
+        <p id="historial-hint" class="text-[11px] text-gray-400 dark:text-gray-500 mt-3 hidden">
+          Las imágenes se guardan en tu navegador (IndexedDB), no se suben a ningún servidor. Puedes restaurar cualquier trabajo anterior sin rehacerlo.
+        </p>
+      </div>
+
       <canvas id="export-canvas" class="hidden"></canvas>
     </div>
 
@@ -361,14 +391,191 @@ const siteAppName = "Rotador de imágenes";
       exportAllStepsAsZip,
       renderStepToCanvas,
     } from "../components/tools/rotador-imagenes/canvas";
+    import {
+      saveHistoryEntry,
+      getHistoryEntries,
+      deleteHistoryEntry,
+      clearHistory,
+    } from "../components/tools/rotador-imagenes/history";
+    import type { RotadorHistoryEntry } from "../components/tools/rotador-imagenes/history";
 
     let operations: RotationOperation[] = [];
     let imageDataUrl: string | null = null;
+    let imageFileName: string = "imagen";
     let currentExport: { cancel: () => void } | null = null;
     let lastBuiltSteps: AnimationStep[] = [];
     let editingIndex: number | null = null;
     let showTrace = false;
     let includeDirectScene = true;
+
+    // --- Historial IndexedDB ---
+    function formatHistoryDate(ts: number): string {
+      try {
+        return new Date(ts).toLocaleString("es-EC", {
+          dateStyle: "short",
+          timeStyle: "short",
+        });
+      } catch {
+        return new Date(ts).toISOString();
+      }
+    }
+
+    async function renderHistory() {
+      const list = document.getElementById("historial-list");
+      const empty = document.getElementById("historial-empty");
+      const count = document.getElementById("historial-count");
+      const hint = document.getElementById("historial-hint");
+      if (!list || !empty || !count) return;
+      let entries: RotadorHistoryEntry[] = [];
+      try {
+        entries = await getHistoryEntries();
+      } catch (err) {
+        console.error("Error leyendo historial:", err);
+        empty.textContent = "No se pudo leer el historial (IndexedDB no disponible).";
+        empty.classList.remove("hidden");
+        list.classList.add("hidden");
+        count.textContent = "0";
+        return;
+      }
+      count.textContent = String(entries.length);
+      if (entries.length === 0) {
+        empty.classList.remove("hidden");
+        list.classList.add("hidden");
+        if (hint) hint.classList.add("hidden");
+        list.innerHTML = "";
+        return;
+      }
+      empty.classList.add("hidden");
+      list.classList.remove("hidden");
+      if (hint) hint.classList.remove("hidden");
+      list.innerHTML = entries
+        .map(
+          (e) => `
+        <div class="bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 rounded-2xl p-4 flex flex-col gap-3 hover:border-blue-500/30 transition-colors">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-mono text-gray-500 dark:text-gray-400">${formatHistoryDate(e.createdAt)}</span>
+            <span class="text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">${e.operations.length} op · ${e.totalAngle}° → ${e.normalizedAngle}°</span>
+          </div>
+          <p class="text-xs font-mono text-gray-600 dark:text-gray-400 truncate" title="${e.formula}">${e.formula}</p>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col gap-1">
+              <span class="text-[10px] font-bold tracking-widest uppercase text-gray-500 dark:text-gray-400">Inicial</span>
+              <div class="aspect-square bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center p-1">
+                <img src="${e.imageOriginal}" alt="Inicial ${e.name}" class="max-w-full max-h-full object-contain rounded-lg" loading="lazy" />
+              </div>
+              <span class="text-[10px] text-gray-400 dark:text-gray-500 truncate">${e.name}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-[10px] font-bold tracking-widest uppercase text-gray-500 dark:text-gray-400">Resultado</span>
+              <div class="aspect-square bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex items-center justify-center p-1">
+                <img src="${e.imageResult}" alt="Resultado ${e.name}" class="max-w-full max-h-full object-contain rounded-lg" loading="lazy" />
+              </div>
+              <span class="text-[10px] text-gray-400 dark:text-gray-500">${e.showTrace ? "con trazo" : "sin trazo"}${e.includeDirect ? " · directo" : ""}</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-1.5 text-[11px] mb-1">
+            ${e.operations
+              .map(
+                (op) =>
+                  `<span class="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono">${op.degrees}° ${op.direction === "cw" ? "horario" : "antihorario"}</span>`,
+              )
+              .join("")}
+          </div>
+          <div class="flex gap-2 mt-auto pt-2 border-t border-gray-100 dark:border-gray-700/50">
+            <button data-history-restore="${e.id}" class="flex-1 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors">Restaurar</button>
+            <button data-history-delete="${e.id}" class="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:border-red-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Eliminar</button>
+          </div>
+        </div>
+      `,
+        )
+        .join("");
+
+      list.querySelectorAll("[data-history-restore]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const id = (btn as HTMLElement).dataset.historyRestore!;
+          const entry = entries.find((x) => x.id === id);
+          if (!entry) return;
+          imageDataUrl = entry.imageOriginal;
+          imageFileName = entry.name;
+          operations = entry.operations.map((o) => ({ ...o }));
+          showTrace = entry.showTrace;
+          includeDirectScene = entry.includeDirect;
+          const traceCheck = document.getElementById("opt-trace") as HTMLInputElement | null;
+          const directCheck = document.getElementById("opt-direct") as HTMLInputElement | null;
+          if (traceCheck) traceCheck.checked = showTrace;
+          if (directCheck) directCheck.checked = includeDirectScene;
+          const preview = document.getElementById("image-preview") as HTMLImageElement | null;
+          const previewWrap = document.getElementById("image-preview-wrap");
+          if (preview) preview.src = imageDataUrl;
+          if (previewWrap) previewWrap.classList.remove("hidden");
+          renderOperations();
+          lastBuiltSteps = buildAnimationSteps(operations, undefined, includeDirectScene);
+          applyRotations();
+          const btnExport = document.getElementById("btn-export") as HTMLButtonElement | null;
+          const imageExportButtons = document.getElementById("image-export-buttons");
+          if (btnExport) btnExport.disabled = false;
+          if (imageExportButtons) {
+            imageExportButtons.classList.remove("hidden");
+            imageExportButtons.classList.add("flex");
+          }
+          document.getElementById("resultado")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      list.querySelectorAll("[data-history-delete]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const id = (btn as HTMLElement).dataset.historyDelete!;
+          try {
+            await deleteHistoryEntry(id);
+          } catch (err) {
+            console.error("Error eliminando del historial:", err);
+          }
+          await renderHistory();
+        });
+      });
+    }
+
+    async function saveCurrentToHistory() {
+      if (!imageDataUrl || operations.length === 0) return;
+      try {
+        const totalAngle = calculateTotalAngle(operations);
+        const normalizedAngle = normalizeAngle(totalAngle);
+        const formula = formatFormula(operations);
+        const img = await loadImage(imageDataUrl);
+        const finalStep: AnimationStep =
+          lastBuiltSteps.find((s) => s.label === "Resultado final") ??
+          lastBuiltSteps[lastBuiltSteps.length - 1] ?? {
+            fromAngle: normalizedAngle,
+            toAngle: normalizedAngle,
+            duration: 0,
+            label: "Resultado final",
+            traceMode: "cumulative",
+          };
+        const size = Math.max(img.naturalWidth, img.naturalHeight, 720);
+        const canvas = renderStepToCanvas(img, finalStep, {
+          canvasWidth: size,
+          canvasHeight: size,
+          bgColor: "#ffffff",
+          trace: showTrace,
+          showTurns: true,
+        });
+        const imageResult = canvas.toDataURL("image/jpeg", 0.85);
+        await saveHistoryEntry({
+          name: imageFileName,
+          imageOriginal: imageDataUrl,
+          imageResult,
+          operations: operations.map((o) => ({ ...o })),
+          totalAngle,
+          normalizedAngle,
+          formula,
+          showTrace,
+          includeDirect: includeDirectScene,
+        });
+        await renderHistory();
+      } catch (err) {
+        console.error("Error guardando en historial:", err);
+      }
+    }
 
     function renderOperations() {
       const container = document.getElementById("operations-list");
@@ -757,6 +964,7 @@ function applyRotations() {
       if (!ctx) return;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+      imageFileName = `foto-${new Date().toISOString().slice(0, 10)}.jpg`;
       setImage(dataUrl);
       closeCamera();
     }
@@ -777,6 +985,7 @@ function applyRotations() {
     document.getElementById("input-image")?.addEventListener("change", (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
+        imageFileName = file.name || "imagen";
         const reader = new FileReader();
         reader.onload = (event) => {
           setImage(event.target?.result as string);
@@ -815,7 +1024,15 @@ function applyRotations() {
         renderOperations();
       });
 
-    document.getElementById("btn-apply")?.addEventListener("click", () => {
+    document.getElementById("btn-apply")?.addEventListener("click", async () => {
+      const canExport = !!imageDataUrl && operations.length > 0;
+      if (canExport) {
+        lastBuiltSteps = buildAnimationSteps(
+          operations,
+          undefined,
+          includeDirectScene,
+        );
+      }
       applyRotations();
       const btnExport = document.getElementById(
         "btn-export",
@@ -823,18 +1040,13 @@ function applyRotations() {
       const imageExportButtons = document.getElementById(
         "image-export-buttons",
       );
-      const canExport = !!imageDataUrl && operations.length > 0;
       if (btnExport) btnExport.disabled = !canExport;
       if (imageExportButtons) {
         imageExportButtons.classList.toggle("hidden", !canExport);
         imageExportButtons.classList.toggle("flex", canExport);
       }
       if (canExport) {
-        lastBuiltSteps = buildAnimationSteps(
-          operations,
-          undefined,
-          includeDirectScene,
-        );
+        await saveCurrentToHistory();
       }
     });
 
@@ -943,6 +1155,7 @@ function applyRotations() {
       }
       operations = [];
       imageDataUrl = null;
+      imageFileName = "imagen";
       lastBuiltSteps = [];
       editingIndex = null;
       closeCamera();
@@ -982,6 +1195,19 @@ function applyRotations() {
       if (progressContainer) progressContainer.classList.add("hidden");
     });
 
+    document
+      .getElementById("btn-clear-history")
+      ?.addEventListener("click", async () => {
+        if (!confirm("¿Borrar todo el historial? Esta acción no se puede deshacer.")) return;
+        try {
+          await clearHistory();
+        } catch (err) {
+          console.error("Error limpiando historial:", err);
+        }
+        await renderHistory();
+      });
+
     renderOperations();
+    renderHistory();
   </script>
 </BaseLayout>
