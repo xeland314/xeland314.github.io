@@ -540,7 +540,6 @@ export default function PdfCropper() {
                 </>
               )}
             </div>
-            {autoProgress && <p className="text-[11px] text-amber-800/60 mt-2">Visión clásica sin IA — analiza 800px por pág, original intacto. Ver <code className="font-mono">pdfs_moodle/auto_crop_study.py</code> para tunear.</p>}
           </div>
 
           <div>
