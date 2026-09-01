@@ -86,68 +86,76 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, rotation = 0, isSelected
       <div
         ref={wrapRef}
         onDoubleClick={() => onPreview(pageIndex)}
-        className={`relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center min-h-[160px] ${isSwapped ? "overflow-visible" : "overflow-hidden"}`}
+        className={`relative bg-gray-50 dark:bg-gray-900 p-2 overflow-hidden min-h-[160px] flex ${isSwapped ? "items-start justify-start" : "items-center justify-center"}`}
       >
-        {/* contenedor rotado — imagen + crop box giran juntos via CSS, sin re-render pdfjs */}
-        <div
-          className="relative flex items-center justify-center w-full transition-transform duration-200"
-          style={{ transform: deg ? `rotate(${deg}deg)` : undefined, transformOrigin: "center center" }}
-        >
-          {!visible ? (
-            <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
-          ) : !thumbnailSrc ? (
-            <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
-          ) : (
-            <img src={thumbnailSrc} alt={`Página ${pageIndex+1}`} loading="lazy" decoding="async" className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none" style={{ width: "100%", height: "auto" }} draggable={false} onDoubleClick={() => onPreview(pageIndex)} />
-          )}
-          {visible && showBox && (
-            <div
-              data-crop-box="1"
-              onPointerDown={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.dataset.handle) return;
-                handlePointerDown(e, "move");
-              }}
-              className="absolute rounded-sm cursor-move touch-none"
-              style={{
-                left: `${rect.x * 100}%`,
-                top: `${rect.y * 100}%`,
-                width: `${rect.w * 100}%`,
-                height: `${rect.h * 100}%`,
-                border: `2px dashed ${borderColor}`,
-                background: bg,
-                boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
-              }}
-            >
-              {["nw","ne","sw","se","n","s","e","w"].map((pos) => {
-                const isCorner = ["nw","ne","sw","se"].includes(pos);
-                const style: React.CSSProperties = isCorner
-                  ? { width: 12, height: 12 }
-                  : pos === "n" || pos === "s" ? { width: 28, height: 8, borderRadius: 9999 } : { width: 8, height: 28, borderRadius: 9999 };
-                const posStyle: Record<string, React.CSSProperties> = {
-                  nw: { left: -6, top: -6, cursor: "nw-resize" },
-                  ne: { right: -6, top: -6, cursor: "ne-resize" },
-                  sw: { left: -6, bottom: -6, cursor: "sw-resize" },
-                  se: { right: -6, bottom: -6, cursor: "se-resize" },
-                  n: { left: "50%", top: -4, transform: "translateX(-50%)", cursor: "n-resize" },
-                  s: { left: "50%", bottom: -4, transform: "translateX(-50%)", cursor: "s-resize" },
-                  w: { left: -4, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
-                  e: { right: -4, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
-                };
-                return (
-                  <div
-                    key={pos}
-                    data-handle={pos}
-                    onPointerDown={(e) => handlePointerDown(e, "resize", pos)}
-                    className="absolute bg-amber-500 border-2 border-white rounded-sm shadow"
-                    style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties}
-                  />
-                );
-              })}
-              <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Conservar</span>
-            </div>
-          )}
-        </div>
+        {!visible ? (
+          <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
+        ) : !thumbnailSrc ? (
+          <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
+        ) : (
+          <img
+            src={thumbnailSrc}
+            alt={`Página ${pageIndex+1}`}
+            loading="lazy"
+            decoding="async"
+            className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none transition-transform duration-200"
+            style={{
+              width: "100%",
+              height: "auto",
+              transform: deg ? `rotate(${deg}deg)${isSwapped ? " scale(0.75)" : ""}` : undefined,
+              transformOrigin: "center center",
+            }}
+            draggable={false}
+            onDoubleClick={() => onPreview(pageIndex)}
+          />
+        )}
+        {visible && showBox && (
+          <div
+            data-crop-box="1"
+            onPointerDown={(e) => {
+              const target = e.target as HTMLElement;
+              if (target.dataset.handle) return;
+              handlePointerDown(e, "move");
+            }}
+            className="absolute rounded-sm cursor-move touch-none"
+            style={{
+              left: `${rect.x * 100}%`,
+              top: `${rect.y * 100}%`,
+              width: `${rect.w * 100}%`,
+              height: `${rect.h * 100}%`,
+              border: `2px dashed ${borderColor}`,
+              background: bg,
+              boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
+            }}
+          >
+            {["nw","ne","sw","se","n","s","e","w"].map((pos) => {
+              const isCorner = ["nw","ne","sw","se"].includes(pos);
+              const style: React.CSSProperties = isCorner
+                ? { width: 12, height: 12 }
+                : pos === "n" || pos === "s" ? { width: 28, height: 8, borderRadius: 9999 } : { width: 8, height: 28, borderRadius: 9999 };
+              const posStyle: Record<string, React.CSSProperties> = {
+                nw: { left: -6, top: -6, cursor: "nw-resize" },
+                ne: { right: -6, top: -6, cursor: "ne-resize" },
+                sw: { left: -6, bottom: -6, cursor: "sw-resize" },
+                se: { right: -6, bottom: -6, cursor: "se-resize" },
+                n: { left: "50%", top: -4, transform: "translateX(-50%)", cursor: "n-resize" },
+                s: { left: "50%", bottom: -4, transform: "translateX(-50%)", cursor: "s-resize" },
+                w: { left: -4, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
+                e: { right: -4, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
+              };
+              return (
+                <div
+                  key={pos}
+                  data-handle={pos}
+                  onPointerDown={(e) => handlePointerDown(e, "resize", pos)}
+                  className="absolute bg-amber-500 border-2 border-white rounded-sm shadow"
+                  style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties}
+                />
+              );
+            })}
+            <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Conservar</span>
+          </div>
+        )}
         {/* botón flotante expandir — solo hover, no satura footer */}
         <button
           onClick={(e) => { e.stopPropagation(); onPreview(pageIndex); }}

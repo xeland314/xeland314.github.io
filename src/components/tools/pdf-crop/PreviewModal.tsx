@@ -57,7 +57,10 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           await pageProxy.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
         }
-        if (wrapRef.current) wrapRef.current.style.aspectRatio = `${vp.width} / ${vp.height}`;
+        if (wrapRef.current) {
+          const isSwapped = rotation === 90 || rotation === 270;
+          wrapRef.current.style.aspectRatio = isSwapped ? `${vp.height} / ${vp.width}` : `${vp.width} / ${vp.height}`;
+        }
         if (!ac.signal.aborted && !cancelled) setHighResReady(true);
       } catch (e:any) {
         if (e?.name === "AbortError" || ac.signal.aborted) return;
@@ -78,6 +81,15 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
       }
     };
   }, [pdfBytes, pageIndex]);
+
+  // actualiza aspectRatio al cambiar rotación sin re-renderizar canvas
+  useEffect(() => {
+    const c = canvasRef.current;
+    const w = wrapRef.current;
+    if (!c || !w || !c.width || !c.height) return;
+    const isSwapped = rotation === 90 || rotation === 270;
+    w.style.aspectRatio = isSwapped ? `${c.height} / ${c.width}` : `${c.width} / ${c.height}`;
+  }, [rotation]);
 
   // Esc para cerrar
   useEffect(() => {
@@ -142,18 +154,21 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
         </div>
 
         <div className="flex-1 overflow-auto bg-gray-50 dark:bg-black p-4 sm:p-6 flex items-center justify-center">
-          <div ref={wrapRef} className="relative inline-block max-w-full max-h-full transition-transform duration-200" style={{ transform: rotation ? `rotate(${rotation}deg)` : undefined, transformOrigin: "center center" }}>
-            {/* placeholder blur mientras carga high-res */}
-            {!highResReady && thumbnailSrc && (
-              <img src={thumbnailSrc} alt="" className="absolute inset-0 w-full h-full object-contain rounded-lg blur-[6px] opacity-60 pointer-events-none" />
-            )}
-            <canvas ref={canvasRef} className="max-w-[88vw] max-h-[72vh] w-auto h-auto object-contain rounded-lg shadow-lg bg-white" style={{ display: highResReady ? "block" : "none" }} />
-            {!highResReady && !thumbnailSrc && (
-              <div className="w-[480px] h-[640px] max-w-[60vw] bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg flex items-center justify-center text-xs text-gray-400">Generando alta resolución…</div>
-            )}
-            {renderError && <div className="absolute inset-0 flex items-center justify-center text-xs text-red-500 bg-white/80 rounded-lg">Error al renderizar página</div>}
+          <div ref={wrapRef} className="relative inline-block max-w-full max-h-full">
+            {/* imagen rotada sola — overlay queda fijo a pantalla */}
+            <div className="transition-transform duration-200" style={{ transform: rotation ? `rotate(${rotation}deg)` : undefined, transformOrigin: "center center" }}>
+              {/* placeholder blur mientras carga high-res — gira con canvas */}
+              {!highResReady && thumbnailSrc && (
+                <img src={thumbnailSrc} alt="" className="absolute inset-0 w-full h-full object-contain rounded-lg blur-[6px] opacity-60 pointer-events-none" />
+              )}
+              <canvas ref={canvasRef} className="max-w-[88vw] max-h-[72vh] w-auto h-auto object-contain rounded-lg shadow-lg bg-white" style={{ display: highResReady ? "block" : "none" }} />
+              {!highResReady && !thumbnailSrc && (
+                <div className="w-[480px] h-[640px] max-w-[60vw] bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg flex items-center justify-center text-xs text-gray-400">Generando alta resolución…</div>
+              )}
+              {renderError && <div className="absolute inset-0 flex items-center justify-center text-xs text-red-500 bg-white/80 rounded-lg">Error al renderizar página</div>}
+            </div>
 
-            {/* overlay recorte reutilizado */}
+            {/* overlay recorte — NO gira, queda fijo a pantalla para que e/w/n/s sigan siendo horizontales */}
             <div
               data-crop-box="1"
               onPointerDown={(e) => {
@@ -161,7 +176,7 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
                 if (t.dataset.handle) return;
                 handlePointerDown(e, "move");
               }}
-              className="absolute rounded-sm cursor-move touch-none"
+              className="absolute inset-0 rounded-sm cursor-move touch-none"
               style={{
                 left: `${rect.x * 100}%`,
                 top: `${rect.y * 100}%`,

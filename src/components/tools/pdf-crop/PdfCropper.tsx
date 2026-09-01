@@ -19,6 +19,14 @@ const MAX_AUTOSAVE_BYTES = 25 * 1024 * 1024;
 function cloneBytes(b: Uint8Array) { return new Uint8Array(b); }
 function cloneRects(m: Map<number, NormalizedRect>) { return new Map(Array.from(m.entries()).map(([k,v])=>[k,{...v}])); }
 function cloneRots(m: Map<number, PageRotation>) { return new Map(m); }
+// visual (pantalla) -> original para pdf-lib: el CropBox siempre en coords sin rotar, rotation es flag separado
+function visualToOriginalRect(r: NormalizedRect, rot: PageRotation): NormalizedRect {
+  if (!rot || rot===0) return r;
+  if (rot===90) return { x: r.y, y: 1 - r.x - r.w, w: r.h, h: r.w };
+  if (rot===180) return { x: 1 - r.x - r.w, y: 1 - r.y - r.h, w: r.w, h: r.h };
+  // 270
+  return { x: 1 - r.y - r.h, y: r.x, w: r.h, h: r.w };
+}
 function reindexRotsAfterDelete(rots: Map<number, PageRotation>, kept: number[]): Map<number, PageRotation> {
   const pos = new Map(kept.map((old,i)=>[old,i] as const));
   const next = new Map<number, PageRotation>();
@@ -409,7 +417,9 @@ export default function PdfCropper() {
           const mw = media.width || page.getSize().width;
           const mh = media.height || page.getSize().height;
           const mx = media.x || 0; const my = media.y || 0;
-          const box = normalizedRectToCropBox(rect, mw, mh);
+          const rot = (rotations.get(idx) ?? 0) as PageRotation;
+          const origRect = visualToOriginalRect(rect, rot);
+          const box = normalizedRectToCropBox(origRect, mw, mh);
           page.setCropBox(mx + box.x, my + box.y, box.width, box.height);
         }
         for (const [idx, deg] of rotations.entries()) {
