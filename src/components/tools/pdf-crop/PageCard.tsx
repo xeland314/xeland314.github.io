@@ -120,8 +120,7 @@ const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSel
   return (
     <div
       data-page-idx={pageIndex}
-      onClick={() => onSelect(pageIndex)}
-      className={`group relative bg-white dark:bg-gray-800 border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer select-none ${isSelected ? "ring-2 ring-emerald-500 border-emerald-500" : "border-gray-200 dark:border-gray-700"}`}
+      className={`group relative bg-white dark:bg-gray-800 border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all select-none ${isSelected ? "ring-2 ring-emerald-500 border-emerald-500" : "border-gray-200 dark:border-gray-700"}`}
     >
       <div ref={wrapRef} className="relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden min-h-[160px]">
         {!visible ? (
@@ -201,7 +200,7 @@ const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSel
       </div>
       <div className="px-3 py-2 flex items-center justify-between gap-2">
         <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}</span>
-        <span className="text-[10px] font-bold tracking-widest uppercase text-gray-400">clic para seleccionar</span>
+        <span className="text-[10px] font-bold tracking-widest uppercase text-gray-400">☑ casilla para seleccionar</span>
       </div>
     </div>
   );
