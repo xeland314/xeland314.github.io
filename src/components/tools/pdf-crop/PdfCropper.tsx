@@ -4,13 +4,18 @@ import { parsePageIntervals, normalizedRectToCropBox, FULL_RECT, isFullRect, cla
 import type { NormalizedRect } from "./pdfOperations";
 import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtract } from "./cropSync";
 import { saveSession, loadSession, clearSession, listProjects, saveProject, getProject, deleteProject, duplicateProject, exportProjectJson, importProjectJson, base64ToBytes } from "./storage";
-import type { PdfCropProject, PageRotation } from "./storage";
+import type { PdfCropProject, PageRotation, Quad } from "./storage";
 import PageCard from "./PageCard";
 import PreviewModal from "./PreviewModal";
 import { generateThumbnails, thumbKey } from "./thumbnail";
 import { detectCropBatchRects } from "./autoCrop";
+import { warpImageData } from "./warp";
+import type { Quad as WarpQuad, Point } from "./warp";
+import * as pdfjsLib from "pdfjs-dist";
+import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
+if (!pdfjsLib.GlobalWorkerOptions.workerSrc) pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
-type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect>; rotations: Map<number, PageRotation>; thumbs: string[] };
+type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect>; rotations: Map<number, PageRotation>; quads: Map<number, Quad>; thumbs: string[] };
 
 const UNDO_LIMIT = 8;
 const PERSIST_DEBOUNCE_MS = 1500;
@@ -19,6 +24,7 @@ const MAX_AUTOSAVE_BYTES = 25 * 1024 * 1024;
 function cloneBytes(b: Uint8Array) { return new Uint8Array(b); }
 function cloneRects(m: Map<number, NormalizedRect>) { return new Map(Array.from(m.entries()).map(([k,v])=>[k,{...v}])); }
 function cloneRots(m: Map<number, PageRotation>) { return new Map(m); }
+function cloneQuads(m: Map<number, Quad>) { return new Map(Array.from(m.entries()).map(([k,v])=>[k, v.map(p=>({ ...p } as Point)) as Quad])); }
 // visual (pantalla) -> original para pdf-lib: el CropBox siempre en coords sin rotar, rotation es flag separado
 function visualToOriginalRect(r: NormalizedRect, rot: PageRotation): NormalizedRect {
   if (!rot || rot===0) return r;
@@ -26,6 +32,18 @@ function visualToOriginalRect(r: NormalizedRect, rot: PageRotation): NormalizedR
   if (rot===180) return { x: 1 - r.x - r.w, y: 1 - r.y - r.h, w: r.w, h: r.h };
   // 270
   return { x: 1 - r.y - r.h, y: r.x, w: r.h, h: r.w };
+}
+function reindexQuadsAfterDelete(quads: Map<number, Quad>, kept: number[]): Map<number, Quad> {
+  const pos = new Map(kept.map((old,i)=>[old,i] as const));
+  const next = new Map<number, Quad>();
+  for (const [k,v] of quads) { const n = pos.get(k); if (n !== undefined) next.set(n, v); }
+  return next;
+}
+function reindexQuadsAfterExtract(quads: Map<number, Quad>, indices: number[]): Map<number, Quad> {
+  const pos = new Map(indices.map((old,i)=>[old,i] as const));
+  const next = new Map<number, Quad>();
+  for (const [k,v] of quads) { const n = pos.get(k); if (n !== undefined) next.set(n, v); }
+  return next;
 }
 function reindexRotsAfterDelete(rots: Map<number, PageRotation>, kept: number[]): Map<number, PageRotation> {
   const pos = new Map(kept.map((old,i)=>[old,i] as const));
@@ -52,6 +70,7 @@ export default function PdfCropper() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [cropRects, setCropRects] = useState<Map<number, NormalizedRect>>(new Map());
   const [rotations, setRotations] = useState<Map<number, PageRotation>>(new Map());
+  const [quads, setQuads] = useState<Map<number, Quad>>(new Map());
   const [previewCrop, setPreviewCrop] = useState(true);
   const [undoStack, setUndoStack] = useState<UndoState[]>([]);
   const [redoStack, setRedoStack] = useState<UndoState[]>([]);
@@ -68,15 +87,15 @@ export default function PdfCropper() {
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
-  const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, sel: Set<number>, count: number) => {
+  const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, sel: Set<number>, count: number) => {
     if (!bytes) return;
     if (bytes.length > MAX_AUTOSAVE_BYTES) return;
-    try { await saveSession({ pdfBytes: bytes, pdfName: name, rects, rotations: rots, selected: sel, pageCount: count }); } catch {}
+    try { await saveSession({ pdfBytes: bytes, pdfName: name, rects, rotations: rots, quads: qds, selected: sel, pageCount: count }); } catch {}
   }, []);
 
-  const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, thumbs: string[]) => {
+  const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, thumbs: string[]) => {
     setUndoStack(s => {
-      const next = [...s, { bytes: cloneBytes(bytes), rects: cloneRects(rects), rotations: cloneRots(rots), thumbs: [...thumbs] }];
+      const next = [...s, { bytes: cloneBytes(bytes), rects: cloneRects(rects), rotations: cloneRots(rots), quads: cloneQuads(qds), thumbs: [...thumbs] }];
       return next.length > UNDO_LIMIT ? next.slice(next.length - UNDO_LIMIT) : next;
     });
     setRedoStack([]);
@@ -134,6 +153,7 @@ export default function PdfCropper() {
           setPdfName(sess.pdfName);
           setCropRects(new Map(sess.rects as any));
           setRotations(new Map((sess as any).rotations as any ?? []));
+          setQuads(new Map((sess as any).quads as any ?? []));
           setSelected(new Set(sess.selected));
           setPageCount(sess.pageCount);
           // genera thumbnails desde bytes restaurados (cache)
@@ -146,9 +166,9 @@ export default function PdfCropper() {
   // persist
   useEffect(() => {
     if (!pdfBytes) return;
-    const t = setTimeout(()=> persist(pdfBytes, pdfName, cropRects, rotations, selected, pageCount), PERSIST_DEBOUNCE_MS);
+    const t = setTimeout(()=> persist(pdfBytes, pdfName, cropRects, rotations, quads, selected, pageCount), PERSIST_DEBOUNCE_MS);
     return ()=> clearTimeout(t);
-  }, [pdfBytes, pdfName, cropRects, rotations, selected, pageCount, persist]);
+  }, [pdfBytes, pdfName, cropRects, rotations, quads, selected, pageCount, persist]);
 
   const handleFile = useCallback(async (file: File) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) { alert("Solo PDF"); return; }
@@ -166,6 +186,7 @@ export default function PdfCropper() {
     setSelected(new Set());
     setCropRects(new Map());
     setRotations(new Map());
+    setQuads(new Map());
     setUndoStack([]); setRedoStack([]);
     ensureThumbnails(bytes, file.name);
   }, [ensureThumbnails]);
@@ -190,8 +211,9 @@ export default function PdfCropper() {
     const bytes = cloneBytes(pdfBytes);
     const rects = cloneRects(cropRects);
     const rotsSnap = cloneRots(rotations);
+    const quadsSnap = cloneQuads(quads);
     const thumbsSnap = [...thumbnails];
-    pushUndo(bytes, rects, rotsSnap, thumbsSnap);
+    pushUndo(bytes, rects, rotsSnap, quadsSnap, thumbsSnap);
     try {
       const src = await PDFDocument.load(pdfBytes);
       const kept = Array.from({length: pageCount}, (_,i)=>i).filter(i=>!selected.has(i)).sort((a,b)=>a-b);
@@ -202,6 +224,7 @@ export default function PdfCropper() {
       const out = await dst.save();
       const newRects = reindexRectsAfterDelete(cropRects, kept);
       const newRots = reindexRotsAfterDelete(rotations, kept);
+      const newQuads = reindexQuadsAfterDelete(quads, kept);
       // evita re-render forzoso: splice thumbnails cacheados sin regenerar pdfjs
       const newThumbs = kept.map(idx => thumbnails[idx]).filter(Boolean);
       setPdfBytes(out);
@@ -211,10 +234,11 @@ export default function PdfCropper() {
       thumbCache.current.set(thumbKey(out, pdfName), newThumbs);
       setCropRects(newRects);
       setRotations(newRots);
+      setQuads(newQuads);
       setSelected(new Set());
     } catch(e){ console.error(e); alert("Error al borrar"); }
     setIsProcessing(false);
-  }, [pdfBytes, selected, pageCount, cropRects, rotations, pushUndo, thumbnails, pdfName]);
+  }, [pdfBytes, selected, pageCount, cropRects, rotations, quads, pushUndo, thumbnails, pdfName]);
 
   const extractSelected = useCallback(async () => {
     if (!pdfBytes || selected.size===0) return;
@@ -222,8 +246,9 @@ export default function PdfCropper() {
     const bytes = cloneBytes(pdfBytes);
     const rects = cloneRects(cropRects);
     const rotsSnap = cloneRots(rotations);
+    const quadsSnap = cloneQuads(quads);
     const thumbsSnap = [...thumbnails];
-    pushUndo(bytes, rects, rotsSnap, thumbsSnap);
+    pushUndo(bytes, rects, rotsSnap, quadsSnap, thumbsSnap);
     try {
       const src = await PDFDocument.load(pdfBytes);
       const indices = Array.from(selected).sort((a,b)=>a-b);
@@ -233,6 +258,7 @@ export default function PdfCropper() {
       const out = await dst.save();
       const newRects = reindexRectsAfterExtract(cropRects, indices);
       const newRots = reindexRotsAfterExtract(rotations, indices);
+      const newQuads = reindexQuadsAfterExtract(quads, indices);
       const newThumbs = indices.map(idx => thumbnails[idx]).filter(Boolean);
       setPdfBytes(out);
       setThumbnails(newThumbs);
@@ -240,10 +266,11 @@ export default function PdfCropper() {
       thumbCache.current.set(thumbKey(out, pdfName), newThumbs);
       setCropRects(newRects);
       setRotations(newRots);
+      setQuads(newQuads);
       setSelected(new Set());
     } catch(e){ console.error(e); alert("Error al extraer"); }
     setIsProcessing(false);
-  }, [pdfBytes, selected, cropRects, rotations, pushUndo, thumbnails, pdfName]);
+  }, [pdfBytes, selected, cropRects, rotations, quads, pushUndo, thumbnails, pdfName]);
 
   const clearCropVisual = useCallback(() => {
     if (cropRects.size === 0) return;
@@ -300,6 +327,33 @@ export default function PdfCropper() {
     });
   }, [selected]);
 
+  // trapecio 4 puntos -> warp perspectiva a rectángulo (raster)
+  const handleQuadToggle = useCallback((idx:number)=>{
+    setQuads(prev=>{
+      const next = new Map(prev);
+      if (next.has(idx)) next.delete(idx);
+      else {
+        // quad inicial inset 5% para que se vea
+        const m = 0.05;
+        next.set(idx, [{x:m,y:m},{x:1-m,y:m},{x:1-m,y:1-m},{x:m,y:1-m}] as Quad);
+        // al activar trapecio, quita crop rect para no confundir (visual fijo)
+        setCropRects(c=>{ const n2=new Map(c); n2.delete(idx); return n2; });
+      }
+      return next;
+    });
+  }, []);
+  const handleQuadPoint = useCallback((idx:number, pIdx:number, pt:{x:number,y:number})=>{
+    setQuads(prev=>{
+      const next = new Map(prev);
+      const q = next.get(idx);
+      if (!q) return prev;
+      const nq = q.map(p=>({ ...p })) as Quad;
+      nq[pIdx] = { x: Math.max(0,Math.min(1, pt.x)), y: Math.max(0,Math.min(1, pt.y)) };
+      next.set(idx, nq);
+      return next;
+    });
+  }, []);
+
   const handleAutoCrop = useCallback(async () => {
     if (!pdfBytes || pageCount===0) return;
     if (autoProgress) { autoAbort.current?.abort(); setAutoProgress(null); return; }
@@ -339,7 +393,7 @@ export default function PdfCropper() {
     if(!pdfBytes) return;
     setIsProcessing(true);
     const thumbsSnap = [...thumbnails];
-    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects), cloneRots(rotations), thumbsSnap);
+    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects), cloneRots(rotations), cloneQuads(quads), thumbsSnap);
     try{
       const src = await PDFDocument.load(pdfBytes);
       const kept = Array.from({length: pageCount}, (_,i)=>i).filter(i=>i!==idx);
@@ -350,6 +404,7 @@ export default function PdfCropper() {
       const out = await dst.save();
       const newRects = reindexRectsAfterDelete(cropRects, kept);
       const newRots = reindexRotsAfterDelete(rotations, kept);
+      const newQuads = reindexQuadsAfterDelete(quads, kept);
       const newThumbs = kept.map(k => thumbnails[k]).filter(Boolean);
       setPdfBytes(out);
       setThumbnails(newThumbs);
@@ -357,36 +412,39 @@ export default function PdfCropper() {
       thumbCache.current.set(thumbKey(out, pdfName), newThumbs);
       setCropRects(newRects);
       setRotations(newRots);
+      setQuads(newQuads);
       setSelected(new Set());
     }catch(e){ console.error(e); }
     setIsProcessing(false);
-  }, [pdfBytes, pageCount, cropRects, rotations, pushUndo, thumbnails, pdfName]);
+  }, [pdfBytes, pageCount, cropRects, rotations, quads, pushUndo, thumbnails, pdfName]);
 
   const undo = useCallback(async ()=>{
     if(undoStack.length===0) return;
     const prev = undoStack[undoStack.length-1];
     setUndoStack(s=>s.slice(0,-1));
-    if(pdfBytes) setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
+    if(pdfBytes) setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
     setPdfBytes(cloneBytes(prev.bytes));
     setThumbnails([...prev.thumbs]);
     setPageCount(prev.thumbs.length);
     setCropRects(cloneRects(prev.rects));
     setRotations(cloneRots(prev.rotations));
+    setQuads(cloneQuads(prev.quads));
     setSelected(new Set());
-  }, [undoStack, pdfBytes, cropRects, rotations, thumbnails]);
+  }, [undoStack, pdfBytes, cropRects, rotations, quads, thumbnails]);
 
   const redo = useCallback(async ()=>{
     if(redoStack.length===0) return;
     const nxt = redoStack[redoStack.length-1];
     setRedoStack(r=>r.slice(0,-1));
-    if(pdfBytes) setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
+    if(pdfBytes) setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
     setPdfBytes(cloneBytes(nxt.bytes));
     setThumbnails([...nxt.thumbs]);
     setPageCount(nxt.thumbs.length);
     setCropRects(cloneRects(nxt.rects));
     setRotations(cloneRots(nxt.rotations));
+    setQuads(cloneQuads(nxt.quads));
     setSelected(new Set());
-  }, [redoStack, pdfBytes, cropRects, rotations, thumbnails]);
+  }, [redoStack, pdfBytes, cropRects, rotations, quads, thumbnails]);
 
   useEffect(()=>{
     const handler = (e: KeyboardEvent)=>{
@@ -407,7 +465,67 @@ export default function PdfCropper() {
       let outBytes: Uint8Array = pdfBytes;
       const hasCrop = Array.from(cropRects.values()).some(r => !isFullRect(r));
       const hasRot = rotations.size > 0;
-      if (hasCrop || hasRot) {
+      const hasQuad = quads.size > 0;
+      // Si hay quads trapezoidales, rasteriza esas páginas con warp (rectángulo final)
+      if (hasQuad) {
+        const srcDoc = await PDFDocument.load(pdfBytes);
+        const dstDoc = await PDFDocument.create();
+        // para no recargar pdfjs por cada página, usa un doc pdfjs
+        const pdfjsTask = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
+        const pdfjsDoc = await pdfjsTask.promise;
+        for (let idx = 0; idx < pageCount; idx++) {
+          const quad = quads.get(idx);
+          if (quad) {
+            const rot = (rotations.get(idx) ?? 0) as PageRotation;
+            const page = await pdfjsDoc.getPage(idx + 1);
+            const vp1 = page.getViewport({ scale: 1, rotation: rot as number });
+            const targetW = 1200;
+            const scale = targetW / vp1.width;
+            const vp = page.getViewport({ scale, rotation: rot as number });
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.ceil(vp.width);
+            canvas.height = Math.ceil(vp.height);
+            const ctx = canvas.getContext("2d", { willReadFrequently: true } as any);
+            if (!ctx) continue;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
+            try { page.cleanup(); } catch {}
+            const srcData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const srcQuad: WarpQuad = quad.map(p=>({ x: p.x * canvas.width, y: p.y * canvas.height } as Point)) as WarpQuad;
+            const warped = warpImageData(srcData, srcQuad, canvas.width, canvas.height);
+            const outCanvas = document.createElement("canvas");
+            outCanvas.width = warped.width; outCanvas.height = warped.height;
+            const octx = outCanvas.getContext("2d")!;
+            octx.putImageData(warped, 0, 0);
+            const dataUrl = outCanvas.toDataURL("image/jpeg", 0.85);
+            const b64 = dataUrl.split(",")[1];
+            const jpgBytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
+            const jpg = await dstDoc.embedJpg(jpgBytes);
+            const pg = dstDoc.addPage([warped.width, warped.height]);
+            pg.drawImage(jpg, { x: 0, y: 0, width: warped.width, height: warped.height });
+          } else {
+            // página sin quad: preserva vectorial con crop/rot si aplica
+            const [copied] = await dstDoc.copyPages(srcDoc, [idx]);
+            const media = copied.getMediaBox();
+            const mw = media.width || copied.getSize().width;
+            const mh = media.height || copied.getSize().height;
+            const mx = media.x || 0, my = media.y || 0;
+            const rect = cropRects.get(idx);
+            if (rect && !isFullRect(rect)) {
+              const rot = (rotations.get(idx) ?? 0) as PageRotation;
+              const origRect = visualToOriginalRect(rect, rot);
+              const box = normalizedRectToCropBox(origRect, mw, mh);
+              copied.setCropBox(mx + box.x, my + box.y, box.width, box.height);
+            }
+            const rot = rotations.get(idx);
+            if (rot) copied.setRotation(degrees(rot));
+            dstDoc.addPage(copied);
+          }
+        }
+        try { await pdfjsDoc.destroy(); } catch {}
+        outBytes = await dstDoc.save();
+      } else if (hasCrop || hasRot) {
         const doc = await PDFDocument.load(pdfBytes);
         for (const [idx, rect] of cropRects.entries()) {
           if (isFullRect(rect)) continue;
@@ -436,13 +554,13 @@ export default function PdfCropper() {
       setTimeout(()=>URL.revokeObjectURL(url),2000);
     } catch(e){ console.error(e); alert("Error al generar PDF recortado"); }
     setIsProcessing(false);
-  }, [pdfBytes, pdfName, cropRects, rotations]);
+  }, [pdfBytes, pdfName, cropRects, rotations, quads, pageCount]);
 
   const handleSaveProject = async ()=>{
     const name = projectNameInput.trim();
     if(!name){ alert("Nombre requerido"); return; }
     if(!pdfBytes){ alert("Carga PDF primero"); return; }
-    const id = await saveProject({ name, pdfBytes, pdfName, rects: cropRects, rotations, selected, pageCount, id: currentProjectId??undefined });
+    const id = await saveProject({ name, pdfBytes, pdfName, rects: cropRects, rotations, quads, selected, pageCount, id: currentProjectId??undefined });
     setCurrentProjectId(id);
     setProjectNameInput("");
     refreshProjects();
@@ -459,7 +577,7 @@ export default function PdfCropper() {
     }
     if (!bytes) return;
     setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName);
-    setCropRects(new Map(proj.rects as any)); setRotations(new Map((proj as any).rotations as any ?? [])); setSelected(new Set(proj.selected));
+    setCropRects(new Map(proj.rects as any)); setRotations(new Map((proj as any).rotations as any ?? [])); setQuads(new Map((proj as any).quads as any ?? [])); setSelected(new Set(proj.selected));
     setCurrentProjectId(id);
     setShowProjects(false);
     thumbAbort.current?.abort();
@@ -486,7 +604,7 @@ export default function PdfCropper() {
           </button>
           <button onClick={()=>{
             if(pdfBytes && !confirm("¿Nuevo proyecto? Se limpiará selección.")) return;
-            setCurrentProjectId(null); setSelected(new Set()); setCropRects(new Map()); setRotations(new Map());
+            setCurrentProjectId(null); setSelected(new Set()); setCropRects(new Map()); setRotations(new Map()); setQuads(new Map());
           }} className="p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95" title="Nuevo">＋</button>
         </div>
         {showProjects && (
@@ -507,7 +625,7 @@ export default function PdfCropper() {
                         let bytes: Uint8Array | null = null;
                         if (proj.pdfBytes instanceof Uint8Array) bytes = proj.pdfBytes;
                         else if (proj.pdfBase64) bytes = base64ToBytes(proj.pdfBase64);
-                        if(bytes){ setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName); setCropRects(new Map(proj.rects as any)); setRotations(new Map((proj as any).rotations as any ?? [])); setSelected(new Set(proj.selected)); ensureThumbnails(bytes, proj.pdfName); }
+                        if(bytes){ setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName); setCropRects(new Map(proj.rects as any)); setRotations(new Map((proj as any).rotations as any ?? [])); setQuads(new Map((proj as any).quads as any ?? [])); setSelected(new Set(proj.selected)); ensureThumbnails(bytes, proj.pdfName); }
                       } }
                     }catch(err){ alert("JSON inválido"); }
                     if(importInputRef.current) importInputRef.current.value="";
@@ -563,8 +681,8 @@ export default function PdfCropper() {
               {thumbProgress && thumbProgress.total>0 && <span className="text-xs text-emerald-600 animate-pulse">Miniaturas {thumbProgress.done}/{thumbProgress.total}</span>}
             </div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(prev.bytes)); setThumbnails([...prev.thumbs]); setPageCount(prev.thumbs.length); setCropRects(cloneRects(prev.rects)); setRotations(cloneRots(prev.rotations)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↩ Deshacer</button>
-              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(nxt.bytes)); setThumbnails([...nxt.thumbs]); setPageCount(nxt.thumbs.length); setCropRects(cloneRects(nxt.rects)); setRotations(cloneRots(nxt.rotations)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↪ Rehacer</button>
+              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(prev.bytes)); setThumbnails([...prev.thumbs]); setPageCount(prev.thumbs.length); setCropRects(cloneRects(prev.rects)); setRotations(cloneRots(prev.rotations)); setQuads(cloneQuads(prev.quads)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↩ Deshacer</button>
+              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(nxt.bytes)); setThumbnails([...nxt.thumbs]); setPageCount(nxt.thumbs.length); setCropRects(cloneRects(nxt.rects)); setRotations(cloneRots(nxt.rotations)); setQuads(cloneQuads(nxt.quads)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↪ Rehacer</button>
               <button onClick={download} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Descargar PDF</button>
             </div>
           </div>
@@ -585,7 +703,7 @@ export default function PdfCropper() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button onClick={deleteSelected} disabled={selected.size===0 || isProcessing} className="px-4 py-3 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm font-bold disabled:opacity-40">🗑 Borrar seleccionadas</button>
             <button onClick={extractSelected} disabled={selected.size===0 || isProcessing} className="px-4 py-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-bold disabled:opacity-40">📄 Conservar solo seleccionadas</button>
-            <button onClick={async()=>{ if(!originalBytes) return; const b=cloneBytes(originalBytes); setPdfBytes(b); setCropRects(new Map()); setRotations(new Map()); setSelected(new Set()); setUndoStack([]); setRedoStack([]); thumbAbort.current?.abort(); setThumbnails([]); ensureThumbnails(b, pdfName); }} className="px-4 py-3 rounded-xl border bg-white text-sm font-semibold">↺ Volver al original</button>
+            <button onClick={async()=>{ if(!originalBytes) return; const b=cloneBytes(originalBytes); setPdfBytes(b); setCropRects(new Map()); setRotations(new Map()); setQuads(new Map()); setSelected(new Set()); setUndoStack([]); setRedoStack([]); thumbAbort.current?.abort(); setThumbnails([]); ensureThumbnails(b, pdfName); }} className="px-4 py-3 rounded-xl border bg-white text-sm font-semibold">↺ Volver al original</button>
           </div>
           {selected.size>0 && (
             <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-2xl">
@@ -631,12 +749,15 @@ export default function PdfCropper() {
                       pageIndex={idx}
                       thumbnailSrc={src}
                       rect={cropRects.get(idx) ?? FULL_RECT}
+                      quad={quads.get(idx) ?? null}
                       rotation={rotations.get(idx) ?? 0}
                       isSelected={selected.has(idx)}
                       previewCrop={previewCrop}
                       onSelect={handleSelect}
                       onDelete={handleDeleteOne}
                       onRotate={handleRotateOne}
+                      onQuadToggle={handleQuadToggle}
+                      onQuadPoint={handleQuadPoint}
                       onRectChange={handleRectChange}
                       onPreview={setPreviewIdx}
                     />

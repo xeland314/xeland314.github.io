@@ -1,26 +1,30 @@
 import React, { useEffect, useRef, useState, memo } from "react";
 import type { NormalizedRect } from "./pdfOperations";
 import { isFullRect } from "./pdfOperations";
-import type { PageRotation } from "./storage";
+import type { PageRotation, Quad } from "./storage";
 
 interface Props {
   pageIndex: number; // 0-based
   thumbnailSrc: string | null; // low-res JPEG cache (180px), null = aún generando
   rect: NormalizedRect;
+  quad?: Quad | null;
   rotation?: PageRotation;
   isSelected: boolean;
   previewCrop: boolean;
   onSelect: (idx: number) => void;
   onDelete: (idx: number) => void;
   onRotate: (idx: number, delta: 90 | -90) => void;
+  onQuadToggle: (idx: number) => void;
+  onQuadPoint: (idx: number, pIdx: number, pt: { x: number; y: number }) => void;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
   onPreview: (idx: number) => void;
 }
 
-const PageCard = memo(({ pageIndex, thumbnailSrc, rect, rotation = 0, isSelected, previewCrop, onSelect, onDelete, onRotate, onRectChange, onPreview }: Props) => {
+const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, isSelected, previewCrop, onSelect, onDelete, onRotate, onQuadToggle, onQuadPoint, onRectChange, onPreview }: Props) => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
+  const quadDragRef = useRef<null | { pIdx: number; startX: number; startY: number; startQuad: Quad }>(null);
 
   useEffect(() => {
     const el = wrapRef.current?.parentElement ?? wrapRef.current;
@@ -36,6 +40,13 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, rotation = 0, isSelected
     e.preventDefault();
     e.stopPropagation();
     dragRef.current = { type, handle, startX: e.clientX, startY: e.clientY, startRect: { ...rect } };
+    (e.target as Element).setPointerCapture?.(e.nativeEvent.pointerId);
+  };
+  const handleQuadPointerDown = (e: React.PointerEvent, pIdx: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!quad) return;
+    quadDragRef.current = { pIdx, startX: e.clientX, startY: e.clientY, startQuad: quad.map(p=>({ ...p })) as Quad };
     (e.target as Element).setPointerCapture?.(e.nativeEvent.pointerId);
   };
 
@@ -72,9 +83,29 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, rotation = 0, isSelected
     };
   }, [pageIndex, onRectChange]);
 
-  const showBox = previewCrop;
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      const d = quadDragRef.current;
+      if (!d || !wrapRef.current) return;
+      const r = wrapRef.current.getBoundingClientRect();
+      const dx = (e.clientX - d.startX) / r.width;
+      const dy = (e.clientY - d.startY) / r.height;
+      const start = d.startQuad[d.pIdx];
+      onQuadPoint(pageIndex, d.pIdx, { x: start.x + dx, y: start.y + dy });
+    };
+    const onUp = () => { quadDragRef.current = null; };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+  }, [pageIndex, onQuadPoint]);
+
+  const showBox = previewCrop && !quad;
   const borderColor = isFullRect(rect) ? "rgba(245,158,11,0.9)" : "#f59e0b";
   const bg = isFullRect(rect) ? "rgba(245,158,11,0.04)" : "rgba(245,158,11,0.12)";
+  const showQuad = !!quad;
   const deg = (rotation ?? 0) as number;
   const isSwapped = deg === 90 || deg === 270;
 
@@ -156,6 +187,29 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, rotation = 0, isSelected
             <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Conservar</span>
           </div>
         )}
+        {visible && showQuad && quad && (
+          <>
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <polygon
+                points={quad.map(p=>`${p.x*100},${p.y*100}`).join(" ")}
+                fill="rgba(99,102,241,0.12)"
+                stroke="rgba(99,102,241,0.95)"
+                strokeWidth={0.6}
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+            {quad.map((pt,i)=>(
+              <div
+                key={i}
+                onPointerDown={e=>handleQuadPointerDown(e,i)}
+                title={`Esquina ${i+1} — arrastra`}
+                className="absolute w-3.5 h-3.5 bg-indigo-500 border-2 border-white rounded-full shadow -translate-x-1/2 -translate-y-1/2 cursor-move touch-none hover:scale-110 transition-transform"
+                style={{ left: `${pt.x*100}%`, top: `${pt.y*100}%` }}
+              />
+            ))}
+            <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[8px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Trapecio → rectángulo</span>
+          </>
+        )}
         {/* botón flotante expandir — solo hover, no satura footer */}
         <button
           onClick={(e) => { e.stopPropagation(); onPreview(pageIndex); }}
@@ -181,12 +235,15 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, rotation = 0, isSelected
           className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow"
         >✕</button>
       </div>
-      <div className="px-3 py-2 flex items-center justify-between gap-1">
-        <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}{deg ? ` · ${deg}°` : ""}</span>
-        <div className="flex items-center gap-1">
-          <button title="Rotar 90° antihorario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, -90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↺</button>
-          <button title="Rotar 90° horario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, 90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↻</button>
+      <div className="px-3 py-2 flex flex-col gap-1">
+        <div className="flex items-center justify-between gap-1">
+          <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}{deg ? ` · ${deg}°` : ""}{quad ? " · ◫" : ""}</span>
+          <div className="flex items-center gap-1">
+            <button title="Rotar 90° antihorario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, -90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↺</button>
+            <button title="Rotar 90° horario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, 90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↻</button>
+          </div>
         </div>
+        <button onClick={(e)=>{ e.stopPropagation(); onQuadToggle(pageIndex); }} className={`w-full text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-full border transition-colors ${quad ? "bg-indigo-500 text-white border-indigo-500 hover:bg-indigo-600" : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50"}`}>{quad ? "✕ Quitar trapecio" : "◫ Trapecio"}</button>
       </div>
     </div>
   );

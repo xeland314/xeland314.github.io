@@ -1,6 +1,8 @@
 import type { NormalizedRect } from "./pdfOperations";
 
 export type PageRotation = 0 | 90 | 180 | 270;
+export type QuadPoint = { x: number; y: number }; // normalizado 0-1
+export type Quad = [QuadPoint, QuadPoint, QuadPoint, QuadPoint]; // TL,TR,BR,BL
 
 export interface PdfCropSession {
   id: string;
@@ -10,6 +12,7 @@ export interface PdfCropSession {
   pdfBytes?: Uint8Array;
   rects: [number, NormalizedRect][];
   rotations?: [number, PageRotation][]; // v4 — rotación por página (0|90|180|270), omitido =0
+  quads?: [number, Quad][]; // v5 trapezoidal
   selected: number[];
   pageCount: number;
   updatedAt: number;
@@ -23,6 +26,7 @@ export interface PdfCropProject {
   pdfBytes?: Uint8Array; // v3 binario directo
   rects: [number, NormalizedRect][];
   rotations?: [number, PageRotation][]; // v4
+  quads?: [number, Quad][]; // v5
   selected: number[];
   pageCount: number;
   createdAt: number;
@@ -30,7 +34,7 @@ export interface PdfCropProject {
 }
 
 const DB_NAME = "PdfCropDB";
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 const STORE_SESSION = "sessions";
 const STORE_PROJECTS = "projects";
 const KEY_CURRENT = "current";
@@ -87,6 +91,7 @@ export async function saveSession(opts: {
   pdfName: string;
   rects: Map<number, NormalizedRect>;
   rotations?: Map<number, PageRotation>;
+  quads?: Map<number, Quad>;
   selected: Set<number>;
   pageCount: number;
 }): Promise<void> {
@@ -99,6 +104,7 @@ export async function saveSession(opts: {
     pdfBytes: opts.pdfBytes, // binario directo
     rects: Array.from(opts.rects.entries()),
     rotations: opts.rotations ? Array.from(opts.rotations.entries()) : [],
+    quads: opts.quads ? Array.from(opts.quads.entries()) : [],
     selected: Array.from(opts.selected),
     pageCount: opts.pageCount,
     updatedAt: Date.now(),
@@ -118,6 +124,7 @@ export async function loadSession(): Promise<{
   pdfName: string;
   rects: Map<number, NormalizedRect>;
   rotations: Map<number, PageRotation>;
+  quads: Map<number, Quad>;
   selected: Set<number>;
   pageCount: number;
 } | null> {
@@ -139,6 +146,7 @@ export async function loadSession(): Promise<{
       pdfName: session.pdfName,
       rects: new Map(session.rects),
       rotations: new Map((session.rotations ?? []) as [number, PageRotation][]),
+      quads: new Map((session.quads ?? []) as [number, Quad][]),
       selected: new Set(session.selected),
       pageCount: session.pageCount,
     };
@@ -195,6 +203,7 @@ export async function saveProject(opts: {
   pdfName: string;
   rects: Map<number, NormalizedRect>;
   rotations?: Map<number, PageRotation>;
+  quads?: Map<number, Quad>;
   selected: Set<number>;
   pageCount: number;
   id?: string;
@@ -211,6 +220,7 @@ export async function saveProject(opts: {
     pdfBytes: opts.pdfBytes,
     rects: Array.from(opts.rects.entries()),
     rotations: opts.rotations ? Array.from(opts.rotations.entries()) : (existing?.rotations ?? []),
+    quads: opts.quads ? Array.from(opts.quads.entries()) : (existing?.quads ?? []),
     selected: Array.from(opts.selected),
     pageCount: opts.pageCount,
     createdAt: existing?.createdAt ?? now,
@@ -250,6 +260,7 @@ export async function duplicateProject(id: string): Promise<string | null> {
     pdfName: p.pdfName,
     rects: new Map(p.rects),
     rotations: new Map((p.rotations ?? []) as [number, PageRotation][]),
+    quads: new Map((p.quads ?? []) as [number, Quad][]),
     selected: new Set(p.selected),
     pageCount: p.pageCount,
   });
@@ -296,6 +307,7 @@ export async function importProjectJson(file: File): Promise<string | null> {
     pdfBytes: bytes,
     rects: parsed.rects || [],
     rotations: parsed.rotations || [],
+    quads: parsed.quads || [],
     selected: parsed.selected || [],
     pageCount: parsed.pageCount || 0,
     createdAt: Date.now(),
