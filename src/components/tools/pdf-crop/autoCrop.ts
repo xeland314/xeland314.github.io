@@ -26,25 +26,24 @@ export function calculateSmartCropRight(
       // azul Moodle: #002a51 (0,42,81) y bordes grilla azulados
       // b dominante y relativamente oscuro = borde/celda
       const isBlue = b > 70 && b > r + 18 && b > g + 6 && avg < 190;
-      // marrón dorado botón ocultar #704a06 (112,74,6) también marca sidebar
       const isBrown = r > 90 && r > b + 30 && g < 120 && avg < 170;
-      if (isBlue || isBrown) columnBlue[x]++;
+      // generalizado: cualquier borde coloreado (no gris) para sidebars no-Moodle
+      const maxC = Math.max(r,g,b), minC = Math.min(r,g,b);
+      const isColored = (maxC - minC) > 32 && avg < 200 && maxC > 80;
+      if (isBlue || isBrown || isColored) columnBlue[x]++;
     }
   }
 
-  // 2a. Intento por color: borde izquierdo de la grilla azul (más robusto que gutter blanco)
-  // Colores no exactos → tolerancia amplia ya aplicada en isBlue/isBrown
-  const blueThr = Math.max(8, Math.round(height * 0.04)); // 4% altura = ~30px en 800px
+  // 2a. Generalizado: detecta grilla lateral por color (no solo #002a51 exacto)
+  // Moodle azul/borde, pero también cualquier sidebar no-blanco: generaliza a pixel coloreado
+  // vs OCR: no hace falta, layout analysis basta
+  const blueThr = Math.max(6, Math.round(height * 0.03)); // 3% altura, más permissivo para no-Moodle
   let sidebarLeftByBlue = -1;
   for (let x = width - 1; x >= 0; x--) {
     if (columnBlue[x] > blueThr) {
       let left = x;
-      while (left > 0 && columnBlue[left] > 2) left--;
-      // margen de seguridad: 20px en miniatura 180px ≈ 88px en 800px es mucho,
-      // para no comerse botón azul usamos 14px en 800px (~3px en 180px) y para
-      // las que falta morder 5-10px en 180px ≈ 22-44px en 800px → compromiso 12-14
-      // Ajuste fino: 14px a 800px ≈ 3.1px a 180px, evita comer botón sin dejar grid
-      const gutterPx = Math.round(width * 0.018); // 1.8% ≈ 14px en 800px
+      while (left > 0 && columnBlue[left] > 1) left--; // más permisivo para grillas tenues
+      const gutterPx = Math.round(width * 0.015); // 1.5% ≈ 12px en 800px (compromiso 20px/5px en 180px)
       const cutX = Math.max(0, left - gutterPx);
       sidebarLeftByBlue = cutX;
       break;
@@ -52,7 +51,8 @@ export function calculateSmartCropRight(
   }
   if (sidebarLeftByBlue !== -1) {
     const crop = sidebarLeftByBlue / width;
-    if (crop > 0.55 && crop < 0.92) return crop;
+    // generalizado: acepta 0.50-0.94 para no-Moodle con barras más anchas/estrechas
+    if (crop > 0.50 && crop < 0.94) return crop;
   }
 
   // 2b. Fallback gutter blanco clásico (para PDFs sin grilla o sin azul)
