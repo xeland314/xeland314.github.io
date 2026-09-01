@@ -12,8 +12,9 @@ export function calculateSmartCropRight(
 ): number {
   const { data, width, height } = imageData;
   const columnInk = new Uint32Array(width);
+  const columnBlue = new Uint32Array(width); // para grid azul #002a51 y bordes
 
-  // 1. perfil vertical
+  // 1. perfil vertical + perfil azul (no solo fondo blanco)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const i = (y * width + x) * 4;
@@ -22,13 +23,40 @@ export function calculateSmartCropRight(
       const b = data[i + 2];
       const avg = (r + g + b) / 3;
       if (avg < luminanceThreshold) columnInk[x]++;
+      // azul Moodle: #002a51 (0,42,81) y bordes grilla azulados
+      // b dominante y relativamente oscuro = borde/celda
+      const isBlue = b > 70 && b > r + 18 && b > g + 6 && avg < 190;
+      // marrón dorado botón ocultar #704a06 (112,74,6) también marca sidebar
+      const isBrown = r > 90 && r > b + 30 && g < 120 && avg < 170;
+      if (isBlue || isBrown) columnBlue[x]++;
     }
   }
 
-  // 2. escanear desde derecha buscando gutter blanco
+  // 2a. Intento por color: borde izquierdo de la grilla azul (más robusto que gutter blanco)
+  // Si la barra es grid con bordes azules, habrá una columna con muchos px azules
+  const blueThr = Math.max(8, Math.round(height * 0.04)); // 4% altura = ~30px en 800px
+  let sidebarLeftByBlue = -1;
+  for (let x = width - 1; x >= 0; x--) {
+    if (columnBlue[x] > blueThr) {
+      // encontramos grilla, buscamos su borde izquierdo (donde deja de haber azul)
+      let left = x;
+      while (left > 0 && columnBlue[left] > 2) left--;
+      // gutter pequeño de seguridad 6-10px a la izquierda del borde
+      const cutX = Math.max(0, left - 8);
+      sidebarLeftByBlue = cutX;
+      break;
+    }
+  }
+  if (sidebarLeftByBlue !== -1) {
+    const crop = sidebarLeftByBlue / width;
+    // solo si recorta entre 12% y 45% (evita falsos por texto azul en pregunta)
+    if (crop > 0.55 && crop < 0.92) return crop;
+  }
+
+  // 2b. Fallback gutter blanco clásico (para PDFs sin grilla o sin azul)
   let seenSidebar = false;
   let gutter = 0;
-  const minGutter = Math.max(12, minGutterWidthPixels);
+  const minGutter = Math.max(10, minGutterWidthPixels); // 10-16px (antes 12-25) para gutters estrechos
 
   for (let x = width - 1; x >= 0; x--) {
     const hasInk = columnInk[x] > inkPerColumnTol;
@@ -39,7 +67,9 @@ export function calculateSmartCropRight(
         gutter++;
         if (gutter >= minGutter) return x / width;
       } else {
-        gutter = 0;
+        // si es una línea vertical fina (1px azul), no reiniciar del todo
+        if (columnInk[x] < height * 0.12 && columnBlue[x] < blueThr) gutter++;
+        else gutter = 0;
       }
     }
   }
