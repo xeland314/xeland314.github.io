@@ -23,27 +23,34 @@ export function calculateSmartCropRight(
       const b = data[i + 2];
       const avg = (r + g + b) / 3;
       if (avg < luminanceThreshold) columnInk[x]++;
-      // azul Moodle: #002a51 (0,42,81) y bordes grilla azulados
-      // b dominante y relativamente oscuro = borde/celda
       const isBlue = b > 70 && b > r + 18 && b > g + 6 && avg < 190;
       const isBrown = r > 90 && r > b + 30 && g < 120 && avg < 170;
-      // generalizado: cualquier borde coloreado (no gris) para sidebars no-Moodle
       const maxC = Math.max(r,g,b), minC = Math.min(r,g,b);
       const isColored = (maxC - minC) > 32 && avg < 200 && maxC > 80;
       if (isBlue || isBrown || isColored) columnBlue[x]++;
     }
   }
+  // 1b. Suavizado 1D (media móvil 3px) para ruido JPEG — barato y evita gutter roto
+  const smooth = (arr: Uint32Array, k=1): Uint32Array => {
+    const out = new Uint32Array(arr.length);
+    for (let x=0;x<arr.length;x++) {
+      let s=0,c=0;
+      for (let d=-k; d<=k; d++) { const j=x+d; if (j>=0 && j<arr.length) { s+=arr[j]; c++; } }
+      out[x]=Math.round(s/c);
+    }
+    return out;
+  };
+  const columnInkS = smooth(columnInk, 1); // ventana 3
+  const columnBlueS = smooth(columnBlue, 1);
 
-  // 2a. Generalizado: detecta grilla lateral por color (no solo #002a51 exacto)
-  // Moodle azul/borde, pero también cualquier sidebar no-blanco: generaliza a pixel coloreado
-  // vs OCR: no hace falta, layout analysis basta
-  const blueThr = Math.max(6, Math.round(height * 0.03)); // 3% altura, más permissivo para no-Moodle
+  // 2a. Generalizado por color con perfil suavizado
+  const blueThr = Math.max(6, Math.round(height * 0.03));
   let sidebarLeftByBlue = -1;
   for (let x = width - 1; x >= 0; x--) {
-    if (columnBlue[x] > blueThr) {
+    if (columnBlueS[x] > blueThr) {
       let left = x;
-      while (left > 0 && columnBlue[left] > 1) left--; // más permisivo para grillas tenues
-      const gutterPx = Math.round(width * 0.015); // 1.5% ≈ 12px en 800px (compromiso 20px/5px en 180px)
+      while (left > 0 && columnBlueS[left] > 1) left--;
+      const gutterPx = Math.round(width * 0.015);
       const cutX = Math.max(0, left - gutterPx);
       sidebarLeftByBlue = cutX;
       break;
@@ -51,17 +58,28 @@ export function calculateSmartCropRight(
   }
   if (sidebarLeftByBlue !== -1) {
     const crop = sidebarLeftByBlue / width;
-    // generalizado: acepta 0.50-0.94 para no-Moodle con barras más anchas/estrechas
     if (crop > 0.50 && crop < 0.94) return crop;
   }
 
-  // 2b. Fallback gutter blanco clásico (para PDFs sin grilla o sin azul)
+  // 2a-bis. Gradiente horizontal (robusto a hex no exacto) — salto sostenido
+  let bestGradX = -1, bestGrad = 0;
+  for (let x = width - 2; x >= 0; x--) {
+    const grad = Math.abs((columnInkS[x] as number) - (columnInkS[x+1] as number));
+    const gradBlue = Math.abs((columnBlueS[x] as number) - (columnBlueS[x+1] as number));
+    const g = grad + gradBlue * 2; // pondera color
+    if (g > height * 0.12 && g > bestGrad) { bestGrad = g; bestGradX = x; }
+  }
+  if (bestGradX !== -1 && bestGrad > height * 0.12) {
+    const crop = bestGradX / width;
+    if (crop > 0.50 && crop < 0.94) return crop;
+  }
+
+  // 2b. Fallback gutter blanco con perfil suavizado
   let seenSidebar = false;
   let gutter = 0;
-  const minGutter = Math.max(10, minGutterWidthPixels); // 10-16px (antes 12-25) para gutters estrechos
-
+  const minGutter = Math.max(10, minGutterWidthPixels);
   for (let x = width - 1; x >= 0; x--) {
-    const hasInk = columnInk[x] > inkPerColumnTol;
+    const hasInk = columnInkS[x] > inkPerColumnTol;
     if (!seenSidebar) {
       if (hasInk) seenSidebar = true;
     } else {
@@ -69,8 +87,7 @@ export function calculateSmartCropRight(
         gutter++;
         if (gutter >= minGutter) return x / width;
       } else {
-        // si es una línea vertical fina (1px azul), no reiniciar del todo
-        if (columnInk[x] < height * 0.12 && columnBlue[x] < blueThr) gutter++;
+        if (columnInkS[x] < height * 0.12 && columnBlueS[x] < blueThr) gutter++;
         else gutter = 0;
       }
     }
