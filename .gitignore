@@ -21,5 +21,9 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# pdfs de prueba locales (no subir)
+pdfs_moodle/
+Analizador-lexico/
+
 # jetbrains setting folder
 .idea/
