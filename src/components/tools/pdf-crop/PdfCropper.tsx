@@ -185,75 +185,20 @@ export default function PdfCropper() {
     setIsProcessing(false);
   }, [pdfBytes, selected, cropRects, pushUndo]);
 
-  const applyCropToSelected = useCallback(async () => {
-    if (!pdfBytes) return;
-    if (selected.size===0) { alert("Selecciona páginas y ajusta su marco naranja"); return; }
-    let hasAny=false;
-    for(const idx of selected) { const r = cropRects.get(idx) ?? FULL_RECT; if(!isFullRect(r)) {hasAny=true;break;} }
-    if(!hasAny){ alert("Arrastra el marco naranja de las seleccionadas"); return; }
-    setIsProcessing(true);
-    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects));
-    try{
-      const doc = await PDFDocument.load(pdfBytes);
-      const indices = Array.from(selected).sort((a,b)=>a-b);
-      for(const idx of indices){
-        const rect = cropRects.get(idx) ?? FULL_RECT;
-        if(isFullRect(rect)) continue;
-        const page = doc.getPage(idx);
-        const media = page.getMediaBox();
-        const mw = media.width || page.getSize().width;
-        const mh = media.height || page.getSize().height;
-        const mx = media.x || 0; const my = media.y || 0;
-        const box = normalizedRectToCropBox(rect, mw, mh);
-        page.setCropBox(mx+box.x, my+box.y, box.width, box.height);
-      }
-      const out = await doc.save();
-      setPdfBytes(out);
-    }catch(e){ console.error(e); alert("Error al recortar"); }
-    setIsProcessing(false);
-  }, [pdfBytes, selected, cropRects, pushUndo]);
+  // Recorte ahora es solo visual: arrastrar el marco ya es el resultado (overlay + sombra).
+  // No se re-renderiza ni se muta pdfBytes hasta Descargar. Quita botones "Recortar".
 
-  const clearCropFromSelected = useCallback(async () => {
-    if(selected.size===0){ alert("Selecciona páginas"); return; }
-    if(!pdfBytes) return;
-    setIsProcessing(true);
-    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects));
-    try{
-      const doc = await PDFDocument.load(pdfBytes);
-      for(const idx of Array.from(selected).sort((a,b)=>a-b)){
-        const page = doc.getPage(idx);
-        const media = page.getMediaBox();
-        page.setCropBox(media.x, media.y, media.width, media.height);
-      }
-      const out = await doc.save();
+  const clearCropVisual = useCallback(() => {
+    if (cropRects.size === 0) return;
+    // limpia solo visual, sin tocar pdfBytes ni pushUndo de bytes (evita re-render y OOM)
+    if (selected.size > 0) {
       const next = new Map(cropRects);
-      for(const idx of selected) next.delete(idx);
+      for (const idx of selected) next.delete(idx);
       setCropRects(next);
-      setPdfBytes(out);
-    }catch(e){ console.error(e); alert("No se pudo quitar recorte");}
-    setIsProcessing(false);
-  }, [pdfBytes, selected, cropRects, pushUndo]);
-
-  const handleCropOne = useCallback(async (idx:number) => {
-    const rect = cropRects.get(idx) ?? FULL_RECT;
-    if(isFullRect(rect)){ alert("Arrastra el marco naranja primero"); return; }
-    if(!pdfBytes) return;
-    setIsProcessing(true);
-    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects));
-    try{
-      const doc = await PDFDocument.load(pdfBytes);
-      const page = doc.getPage(idx);
-      const media = page.getMediaBox();
-      const mw = media.width || page.getSize().width;
-      const mh = media.height || page.getSize().height;
-      const mx = media.x||0, my=media.y||0;
-      const box = normalizedRectToCropBox(rect, mw, mh);
-      page.setCropBox(mx+box.x, my+box.y, box.width, box.height);
-      const out = await doc.save();
-      setPdfBytes(out);
-    }catch(e){ console.error(e); alert("Error al recortar");}
-    setIsProcessing(false);
-  }, [pdfBytes, cropRects, pushUndo]);
+    } else {
+      setCropRects(new Map());
+    }
+  }, [cropRects, selected]);
 
   const handleRectChange = useCallback((idx:number, newRect: NormalizedRect, startRect: NormalizedRect) => {
     setCropRects(prev => {
@@ -330,12 +275,34 @@ export default function PdfCropper() {
 
   const download = useCallback(async ()=>{
     if(!pdfBytes) return;
-    const blob = new Blob([pdfBytes.slice(0) as any], {type:"application/pdf"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href=url; a.download=`${pdfName.replace(/\.pdf$/i,"")}-recortado.pdf`; a.click();
-    setTimeout(()=>URL.revokeObjectURL(url),2000);
-  }, [pdfBytes, pdfName]);
+    setIsProcessing(true);
+    try {
+      // aplica recortes visuales al vuelo solo en el archivo de salida
+      let outBytes: Uint8Array = pdfBytes;
+      const hasCrop = Array.from(cropRects.values()).some(r => !isFullRect(r));
+      if (hasCrop) {
+        const doc = await PDFDocument.load(pdfBytes);
+        for (const [idx, rect] of cropRects.entries()) {
+          if (isFullRect(rect)) continue;
+          if (idx < 0 || idx >= doc.getPageCount()) continue;
+          const page = doc.getPage(idx);
+          const media = page.getMediaBox();
+          const mw = media.width || page.getSize().width;
+          const mh = media.height || page.getSize().height;
+          const mx = media.x || 0; const my = media.y || 0;
+          const box = normalizedRectToCropBox(rect, mw, mh);
+          page.setCropBox(mx + box.x, my + box.y, box.width, box.height);
+        }
+        outBytes = await doc.save();
+      }
+      const blob = new Blob([outBytes.slice(0) as any], {type:"application/pdf"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href=url; a.download=`${pdfName.replace(/\.pdf$/i,"")}-recortado.pdf`; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+    } catch(e){ console.error(e); alert("Error al generar PDF recortado"); }
+    setIsProcessing(false);
+  }, [pdfBytes, pdfName, cropRects]);
 
   // projects handlers (v3 binario)
   const handleSaveProject = async ()=>{
@@ -492,11 +459,13 @@ export default function PdfCropper() {
               <h3 className="text-xs font-bold tracking-widest uppercase text-amber-800">Recorte visual por página</h3>
               <label className="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" checked={previewCrop} onChange={e=>setPreviewCrop(e.target.checked)} className="rounded" /><span>Vista previa</span></label>
             </div>
-            <p className="text-xs text-amber-800/70 mb-4">Arrastra el <b>marco naranja</b> — <b>barras y esquinas</b> para ajustar. Si hay varias seleccionadas, <b>se mueven al unísono</b>.</p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button onClick={applyCropToSelected} disabled={isProcessing} className="flex-1 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold disabled:opacity-40">✂️ Recortar seleccionadas</button>
-              <button onClick={clearCropFromSelected} disabled={isProcessing} className="px-4 py-2.5 rounded-xl border bg-white text-sm font-semibold">Quitar recorte de seleccionadas</button>
-            </div>
+            <p className="text-xs text-amber-800/70">Arrastra el <b>marco naranja</b> — el área dentro es el resultado. <b>Sin botón</b>: se aplica automáticamente al <b>Descargar</b>. Si hay varias seleccionadas, se mueven al unísono.</p>
+            {cropRects.size > 0 && (
+              <div className="mt-3 flex gap-2">
+                <button onClick={clearCropVisual} className="px-4 py-2 rounded-xl border bg-white text-xs font-semibold">↺ Quitar recorte {selected.size>0 ? "de seleccionadas" : "de todas"}</button>
+                <span className="text-[11px] text-amber-800/60 self-center">{cropRects.size} pág con recorte</span>
+              </div>
+            )}
           </div>
 
           <div>
@@ -518,7 +487,6 @@ export default function PdfCropper() {
                     previewCrop={previewCrop}
                     onSelect={handleSelect}
                     onDelete={handleDeleteOne}
-                    onCropOne={handleCropOne}
                     onRectChange={handleRectChange}
                   />
                 ))}

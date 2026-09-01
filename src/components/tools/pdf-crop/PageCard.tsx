@@ -11,11 +11,10 @@ interface Props {
   previewCrop: boolean;
   onSelect: (idx: number) => void;
   onDelete: (idx: number) => void;
-  onCropOne: (idx: number) => void;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
 }
 
-const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSelect, onDelete, onCropOne, onRectChange }: Props) => {
+const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSelect, onDelete, onRectChange }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [renderError, setRenderError] = useState(false);
@@ -193,10 +192,6 @@ const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSel
           onClick={(e) => { e.stopPropagation(); onDelete(pageIndex); }}
           className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow"
         >✕</button>
-        <button
-          onClick={(e) => { e.stopPropagation(); onCropOne(pageIndex); }}
-          className="absolute bottom-2 left-2 px-2 py-1 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold shadow opacity-0 group-hover:opacity-100 transition-opacity"
-        >Recortar esta</button>
       </div>
       <div className="px-3 py-2 flex items-center justify-between gap-2">
         <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}</span>
