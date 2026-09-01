@@ -40,6 +40,29 @@ describe("syncRectsForSelection", () => {
     expect(out.get(0)).toEqual(resized);
     expect(out.get(1)).toEqual({ x: 0, y: 0, w: 0.6, h: 0.6 });
   });
+
+  it("consecutive drags do not exaggerate (incremental fix)", () => {
+    // simula 3 pointermove seguidos arrastrando pág 0 con selección [0,1,2]
+    // antes del fix la 2ª y 3ª se movían 2x/3x
+    const selected = new Set([0, 1, 2]);
+    const start = { x: 0, y: 0, w: 0.5, h: 0.5 };
+    let rects = new Map<number, NormalizedRect>([
+      [0, { x: 0, y: 0, w: 0.5, h: 0.5 }],
+      [1, { x: 0.1, y: 0.1, w: 0.5, h: 0.5 }],
+      [2, { x: 0.2, y: 0.2, w: 0.5, h: 0.5 }],
+    ]);
+    // frame 1: drag 0 de 0 -> 0.05
+    rects = syncRectsForSelection(rects, 0, start, { x: 0.05, y: 0.05, w: 0.5, h: 0.5 }, selected);
+    expect(rects.get(1)!.x).toBeCloseTo(0.15, 5);
+    // frame 2: drag 0 de 0.05 -> 0.10 (total delta 0.10 desde start, pero incremental 0.05)
+    rects = syncRectsForSelection(rects, 0, start, { x: 0.10, y: 0.10, w: 0.5, h: 0.5 }, selected);
+    expect(rects.get(1)!.x).toBeCloseTo(0.20, 5); // no 0.25 ni 0.30
+    expect(rects.get(2)!.x).toBeCloseTo(0.30, 5);
+    // frame 3: drag 0 -> 0.15
+    rects = syncRectsForSelection(rects, 0, start, { x: 0.15, y: 0.15, w: 0.5, h: 0.5 }, selected);
+    expect(rects.get(1)!.x).toBeCloseTo(0.25, 5);
+    expect(rects.get(2)!.x).toBeCloseTo(0.35, 5);
+  });
 });
 
 describe("reindex", () => {

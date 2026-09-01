@@ -19,7 +19,10 @@ export function setRectInMap(
 
 /**
  * Sincroniza el movimiento de recorte al unísono para todas las páginas seleccionadas.
- * Si el usuario arrastra una página seleccionada, el mismo delta se aplica a las demás seleccionadas.
+ * FIX OOM/exagerado: antes usaba total delta (newRect - startRect) sumado a `cur` ya movido,
+ * lo que triplicaba el movimiento en la 2ª/3ª actualización. Ahora usa delta incremental
+ * respecto al valor previo de la página arrastrada (prevDragged) para que cada pointermove
+ * aplique solo el incremento de ese frame.
  */
 export function syncRectsForSelection(
   rects: Map<number, NormalizedRect>,
@@ -28,19 +31,21 @@ export function syncRectsForSelection(
   newRect: NormalizedRect,
   selected: Set<number>,
 ): Map<number, NormalizedRect> {
-  // Si la página arrastrada no está seleccionada, solo actualiza esa
   if (!selected.has(draggedIdx) || selected.size <= 1) {
     return setRectInMap(rects, draggedIdx, newRect);
   }
-  const dx = newRect.x - startRect.x;
-  const dy = newRect.y - startRect.y;
-  const dw = newRect.w - startRect.w;
-  const dh = newRect.h - startRect.h;
+  // delta incremental: compara con el valor previo (prevDragged), no con startRect total
+  const prevDragged = getRect(rects, draggedIdx);
+  // fallback si no había rect previo (FULL_RECT no guardado): usa startRect
+  const base = rects.has(draggedIdx) ? prevDragged : startRect;
+  const dx = newRect.x - base.x;
+  const dy = newRect.y - base.y;
+  const dw = newRect.w - base.w;
+  const dh = newRect.h - base.h;
 
   let next = new Map(rects);
   for (const idx of selected) {
     const cur = getRect(rects, idx);
-    // Para la página arrastrada usamos newRect directo (ya clampeado)
     if (idx === draggedIdx) {
       next = setRectInMap(next, idx, newRect);
     } else {
