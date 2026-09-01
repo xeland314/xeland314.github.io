@@ -33,23 +33,25 @@ export function calculateSmartCropRight(
   }
 
   // 2a. Intento por color: borde izquierdo de la grilla azul (más robusto que gutter blanco)
-  // Si la barra es grid con bordes azules, habrá una columna con muchos px azules
+  // Colores no exactos → tolerancia amplia ya aplicada en isBlue/isBrown
   const blueThr = Math.max(8, Math.round(height * 0.04)); // 4% altura = ~30px en 800px
   let sidebarLeftByBlue = -1;
   for (let x = width - 1; x >= 0; x--) {
     if (columnBlue[x] > blueThr) {
-      // encontramos grilla, buscamos su borde izquierdo (donde deja de haber azul)
       let left = x;
       while (left > 0 && columnBlue[left] > 2) left--;
-      // gutter pequeño de seguridad 6-10px a la izquierda del borde
-      const cutX = Math.max(0, left - 8);
+      // margen de seguridad: 20px en miniatura 180px ≈ 88px en 800px es mucho,
+      // para no comerse botón azul usamos 14px en 800px (~3px en 180px) y para
+      // las que falta morder 5-10px en 180px ≈ 22-44px en 800px → compromiso 12-14
+      // Ajuste fino: 14px a 800px ≈ 3.1px a 180px, evita comer botón sin dejar grid
+      const gutterPx = Math.round(width * 0.018); // 1.8% ≈ 14px en 800px
+      const cutX = Math.max(0, left - gutterPx);
       sidebarLeftByBlue = cutX;
       break;
     }
   }
   if (sidebarLeftByBlue !== -1) {
     const crop = sidebarLeftByBlue / width;
-    // solo si recorta entre 12% y 45% (evita falsos por texto azul en pregunta)
     if (crop > 0.55 && crop < 0.92) return crop;
   }
 
@@ -74,6 +76,47 @@ export function calculateSmartCropRight(
     }
   }
   return 1.0;
+}
+
+export function calculateSmartCropRect(
+  imageData: ImageData,
+  opts?: { minGutterPx?: number; lumThr?: number },
+): { x: number; y: number; w: number; h: number } {
+  const right = calculateSmartCropRight(imageData, opts?.minGutterPx ?? 25, opts?.lumThr ?? 240, 5);
+  // top/bottom solo fondo blanco (sin azul) — usa fila
+  const { data, width, height } = imageData;
+  const lumThr = opts?.lumThr ?? 240;
+  const rowInk = new Uint32Array(height);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      const avg = (data[i] + data[i+1] + data[i+2]) / 3;
+      if (avg < lumThr) rowInk[y]++;
+    }
+  }
+  const tol = 5;
+  const minGutterY = Math.max(8, Math.round(height * 0.015)); // 1.5% alto
+  let top = 0, bottom = height;
+  // top: busca primer gutter blanco después de margen superior
+  let seenTop = false, gutter = 0;
+  for (let y = 0; y < height; y++) {
+    const hasInk = rowInk[y] > tol;
+    if (!seenTop) { if (hasInk) seenTop = true; }
+    else if (!hasInk) { gutter++; if (gutter >= minGutterY) { top = y - gutter; break; } } else gutter = 0;
+  }
+  // bottom
+  let seenBottom = false; gutter = 0;
+  for (let y = height - 1; y >= 0; y--) {
+    const hasInk = rowInk[y] > tol;
+    if (!seenBottom) { if (hasInk) seenBottom = true; }
+    else if (!hasInk) { gutter++; if (gutter >= minGutterY) { bottom = y + gutter; break; } } else gutter = 0;
+  }
+  const yN = Math.max(0, top / height - 0.005); // pequeño margen 0.5% para no cortar texto
+  const hN = Math.min(1 - yN, (bottom - top) / height + 0.01);
+  // si no hay recorte vertical significativo (<2%), deja 0,1
+  const finalY = hN > 0.96 && yN < 0.02 ? 0 : yN;
+  const finalH = hN > 0.96 ? 1 : hN;
+  return { x: 0, y: finalY, w: right, h: finalH };
 }
 
 // helper para renderizar una página a ancho ~800px y analizar
@@ -118,10 +161,19 @@ export async function detectCropBatch(
   onProgress?: (done: number, total: number, crop: number) => void,
   signal?: AbortSignal,
 ): Promise<number[]> {
-  // usa un solo doc para lote (más rápido)
+  const rects = await detectCropBatchRects(pdfBytes, pageCount, (d,t,r)=> onProgress?.(d,t,r.w), signal);
+  return rects.map(r=>r.w);
+}
+
+export async function detectCropBatchRects(
+  pdfBytes: Uint8Array,
+  pageCount: number,
+  onProgress?: (done: number, total: number, rect: {x:number,y:number,w:number,h:number}) => void,
+  signal?: AbortSignal,
+): Promise<{x:number,y:number,w:number,h:number}[]> {
   const task = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
   const doc = await task.promise;
-  const out: number[] = [];
+  const out: {x:number,y:number,w:number,h:number}[] = [];
   try {
     for (let idx = 0; idx < pageCount; idx++) {
       if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
@@ -138,12 +190,11 @@ export async function detectCropBatch(
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const minGutter = Math.max(12, Math.round(canvas.width * 0.02));
-        const crop = calculateSmartCropRight(imageData, minGutter, 240, 5);
-        out.push(crop);
-        onProgress?.(idx + 1, pageCount, crop);
+        const rect = calculateSmartCropRect(imageData);
+        out.push(rect);
+        onProgress?.(idx + 1, pageCount, rect);
       } else {
-        out.push(1.0);
+        out.push({x:0,y:0,w:1,h:1});
       }
       try { page.cleanup(); } catch {}
       await new Promise((r) => setTimeout(r, 0));

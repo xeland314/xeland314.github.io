@@ -8,7 +8,7 @@ import type { PdfCropProject } from "./storage";
 import PageCard from "./PageCard";
 import PreviewModal from "./PreviewModal";
 import { generateThumbnails, thumbKey } from "./thumbnail";
-import { detectCropBatch } from "./autoCrop";
+import { detectCropBatchRects } from "./autoCrop";
 
 type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect>; thumbs: string[] };
 
@@ -255,26 +255,27 @@ export default function PdfCropper() {
     setAutoProgress({done:0,total:pageCount});
     setIsProcessing(true);
     try {
-      const crops = await detectCropBatch(pdfBytes, pageCount, (done,total)=> setAutoProgress({done,total}), ac.signal);
+      const rects = await detectCropBatchRects(pdfBytes, pageCount, (done,total)=> setAutoProgress({done,total}), ac.signal);
       if (ac.signal.aborted) return;
       const next = new Map<number, NormalizedRect>();
       let applied = 0;
-      for (let idx=0; idx<crops.length; idx++) {
-        const c = crops[idx];
-        // solo si detecta recorte significativo (evita falsos 1.0 o 0.02 por ruido)
-        if (c < 0.97 && c > 0.45) {
-          next.set(idx, { x:0, y:0, w: clampRect({x:0,y:0,w:c,h:1}).w, h:1 });
+      for (let idx=0; idx<rects.length; idx++) {
+        const r = rects[idx];
+        // lateral: margen 5-10px faltante y 20px mordida en 180px => compensación 1.8% (≈14px en 800px) ya en autoCrop.ts
+        // top/bottom: solo fondo blanco, ya calculado en r.y/r.h
+        if (r.w < 0.97 && r.w > 0.45) {
+          const clamped = clampRect({ x: r.x, y: r.y, w: r.w, h: r.h });
+          // si top/bottom es casi completo, deja 0,1 para no recortar header/footer blanco útil
+          next.set(idx, clamped);
           applied++;
         }
       }
-      // conserva recortes manuales que no fueron sobrescritos? para lote reemplazamos todos detectados
       setCropRects(prev => {
         const merged = new Map(prev);
         for (const [k,v] of next) merged.set(k, v);
-        // si no detectó nada en una pág, deja el previo
         return merged;
       });
-      if (applied===0) alert("No se detectó barra lateral — prueba ajustar umbral o revisa pdfs_moodle/auto_crop_study.py");
+      if (applied===0) alert("No se detectó barra lateral — colores no exactos, revisa pdfs_moodle/auto_crop_study.py (ajustar blueThr/lum)");
     } catch(e:any) {
       if (e?.name !== "AbortError") { console.error(e); alert("Error auto recorte"); }
     }
