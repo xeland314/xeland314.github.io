@@ -133,6 +133,13 @@ export async function detectCropBatch(
   return rects.map(r=>r.w);
 }
 
+function median(arr: number[]): number {
+  if (arr.length===0) return 1.0;
+  const s=[...arr].sort((a,b)=>a-b);
+  const mid=Math.floor(s.length/2);
+  return s.length%2===0 ? (s[mid-1]+s[mid])/2 : s[mid];
+}
+
 export async function detectCropBatchRects(
   pdfBytes: Uint8Array,
   pageCount: number,
@@ -142,7 +149,9 @@ export async function detectCropBatchRects(
   const task = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
   const doc = await task.promise;
   const out: {x:number,y:number,w:number,h:number}[] = [];
+  const imageDatas: (ImageData|null)[] = [];
   try {
+    // Pasada 1: estricta (como hasta ahora)
     for (let idx = 0; idx < pageCount; idx++) {
       if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
       const page = await doc.getPage(idx + 1);
@@ -158,10 +167,12 @@ export async function detectCropBatchRects(
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        imageDatas.push(imageData);
         const rect = calculateSmartCropRect(imageData);
         out.push(rect);
         onProgress?.(idx + 1, pageCount, rect);
       } else {
+        imageDatas.push(null);
         out.push({x:0,y:0,w:1,h:1});
       }
       try { page.cleanup(); } catch {}
@@ -169,6 +180,41 @@ export async function detectCropBatchRects(
     }
   } finally {
     try { await doc.destroy(); } catch {}
+  }
+  // Estrategia 3 pasadas + consenso (sin IA)
+  const successful = out.filter(r=> r.w < 0.97 && r.w > 0.50).map(r=>r.w);
+  const medianCrop = median(successful);
+  const hasConsensus = successful.length >= 5 && medianCrop < 1.0;
+  for (let i=0; i<out.length; i++) {
+    if (out[i].w >= 0.999) {
+      // Pasada 2: desesperada — más agresiva solo en fallidas
+      const im = imageDatas[i];
+      let aggressiveW = 1.0;
+      if (im) {
+        // minGutter 8px + lum 210 + inkTol 3 para gutters estrechos sin azul
+        aggressiveW = calculateSmartCropRight(im, 8, 210, 3);
+        // derivada: pico de cambio brusco si gutter pegado (sin canal blanco)
+        if (aggressiveW >= 0.999) {
+          // derivada simple: busca salto >15% altura
+          const { width, height, data } = im;
+          const colInk = new Uint32Array(width);
+          for (let y=0;y<height;y++) for(let x=0;x<width;x++) if ((data[(y*width+x)*4]+data[(y*width+x)*4+1]+data[(y*width+x)*4+2])/3 < 210) colInk[x]++;
+          let bestX = -1, bestDeriv = 0;
+          for (let x=width-2;x>=0;x--) {
+            const d = Math.abs((colInk[x] as number) - (colInk[x+1] as number));
+            if (d > height*0.15 && d > bestDeriv) { bestDeriv=d; bestX=x; }
+          }
+          if (bestX !== -1 && bestX/width >0.50 && bestX/width <0.94) aggressiveW = bestX/width;
+        }
+      }
+      if (aggressiveW < 0.97 && aggressiveW > 0.50) {
+        out[i] = { x:0, y:0, w: aggressiveW, h:1 };
+      } else if (hasConsensus) {
+        // Pasada 3: consenso del lote — hereda mediana
+        out[i] = { x:0, y:0, w: medianCrop, h:1 };
+        onProgress?.(i+1, pageCount, out[i]);
+      }
+    }
   }
   return out;
 }
