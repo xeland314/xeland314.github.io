@@ -228,6 +228,116 @@ function windowMedian(out: {w:number}[], idx: number, k=7): number | null {
   return null;
 }
 
+function weightedMedian(items: {w:number, weight:number}[]): number {
+  if (items.length===0) return 1.0;
+  const sorted=[...items].sort((a,b)=>a.w-b.w);
+  const total=sorted.reduce((s,i)=>s+i.weight,0);
+  let acc=0;
+  for (const it of sorted) {
+    acc+=it.weight;
+    if (acc >= total/2) return it.w;
+  }
+  return sorted[sorted.length-1].w;
+}
+
+// 5. Connected components como alternativa al perfil de columna puro — solo en páginas fallidas
+function connectedComponentsRight(imageData: ImageData): number | null {
+  const { data, width: W, height: H } = imageData;
+  const N = W*H;
+  const mask = new Uint8Array(N);
+  for (let y=0;y<H;y++) for(let x=0;x<W;x++) {
+    const i=(y*W+x)*4;
+    if ((data[i]+data[i+1]+data[i+2])/3 < 240) mask[y*W+x]=1;
+  }
+  const labels = new Int32Array(N).fill(-1);
+  const comps: {minX:number,maxX:number,minY:number,maxY:number,area:number}[]=[];
+  let curLabel=0;
+  const stack: number[]=[];
+  const idx = (x:number,y:number)=> y*W+x;
+  for (let y=0;y<H;y++) for(let x=0;x<W;x++) {
+    const id=idx(x,y);
+    if (mask[id]===0 || labels[id]!==-1) continue;
+    // BFS para componente
+    let minX=x,maxX=x,minY=y,maxY=y,area=0;
+    stack.length=0; stack.push(id); labels[id]=curLabel;
+    while (stack.length) {
+      const cur=stack.pop()!;
+      const cx=cur%W, cy=Math.floor(cur/W);
+      area++; minX=Math.min(minX,cx); maxX=Math.max(maxX,cx); minY=Math.min(minY,cy); maxY=Math.max(maxY,cy);
+      for (let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) {
+        if (dx===0 && dy===0) continue;
+        const nx=cx+dx, ny=cy+dy;
+        if (nx<0||nx>=W||ny<0||ny>=H) continue;
+        const nid=idx(nx,ny);
+        if (mask[nid]===1 && labels[nid]===-1) { labels[nid]=curLabel; stack.push(nid); }
+      }
+    }
+    // filtra ruido pequeño
+    const w=maxX-minX+1, h=maxY-minY+1;
+    if (area > 200 && w>20 && h>15 && w*H > 500) {
+      comps.push({minX,maxX,minY,maxY,area});
+    }
+    curLabel++;
+    // limita a 2000 componentes para performance
+    if (curLabel>2000) break;
+  }
+  if (comps.length===0) return null;
+  // bloque principal: mayor área en zona izquierda (minX < 0.2*W) y que no sea sidebar derecha aislada
+  let best: typeof comps[0] | null = null;
+  for (const c of comps) {
+    if (c.minX > W*0.25) continue; // ignora sidebar derecha
+    if (c.maxX - c.minX < W*0.25) continue; // muy estrecho
+    if (!best || c.area > best.area) best=c;
+  }
+  if (!best) {
+    // fallback: mayor área general
+    best = comps.reduce((a,b)=> a.area>b.area?a:b);
+  }
+  const margin = Math.round(W*0.02);
+  const right = Math.min(W-1, best.maxX + margin);
+  const w = (right+1)/W;
+  if (w < 0.97 && w > 0.50) return w;
+  return null;
+}
+
+// 6. Score confianza por método — ponderación para mediana
+function cropConfidence(method: string): number {
+  // azul exacto > marrón > colored > gradiente > gutter > derivada > bbox > ventana > global
+  switch(method) {
+    case "blue": return 1.0;
+    case "brown": return 0.95;
+    case "colored": return 0.8;
+    case "gradient": return 0.7;
+    case "gutter": return 0.6;
+    case "deriv": return 0.5;
+    case "bbox": return 0.4;
+    case "cc": return 0.45;
+    case "window": return 0.35;
+    case "global": return 0.2;
+    default: return 0.3;
+  }
+}
+
+function smartCropMeta(imageData: ImageData): {w:number, method:string} {
+  const w = calculateSmartCropRight(imageData, 25, 240, 5);
+  if (w < 0.97 && w > 0.50) {
+    // estima método por inspección rápida del perfil
+    const { data, width: W, height: H } = imageData;
+    let maxBlue=0, maxBrown=0;
+    for (let y=0;y<H;y++) for(let x=Math.round(W*0.5); x<W; x++) {
+      const i=(y*W+x)*4; const r=data[i], g=data[i+1], b=data[i+2], avg=(r+g+b)/3;
+      const isBlue = b>70 && b>r+18 && b>g+6 && avg<190;
+      const isBrown = r>90 && r>b+30 && g<120 && avg<170;
+      if (isBlue) maxBlue++; if (isBrown) maxBrown++;
+    }
+    if (maxBlue > H*2) return {w, method:"blue"};
+    if (maxBrown > H*1.5) return {w, method:"brown"};
+    // si no es color fuerte, asume gutter/gradient genérico
+    return {w, method:"gutter"};
+  }
+  return {w, method:"none"};
+}
+
 export async function detectCropBatchRects(
   pdfBytes: Uint8Array,
   pageCount: number,
@@ -269,16 +379,18 @@ export async function detectCropBatchRects(
   } finally {
     try { await doc.destroy(); } catch {}
   }
-  // Estrategia: 3 pasadas + consenso ventana + fallback bounding box (sin IA)
-  const successful = out.filter(r=> r.w < 0.97 && r.w > 0.50).map(r=>r.w);
-  const medianCrop = median(successful);
-  const hasConsensus = successful.length >= 5 && medianCrop < 1.0;
+  // 4+6: ventana deslizante k=7 + mediana ponderada por confianza (azul > gutter > deriv > bbox)
+  const metas = imageDatas.map(im=> im ? smartCropMeta(im) : {w:1, method:"none"});
+  const weightedItems = metas.filter(m=> m.w<0.97 && m.w>0.50).map(m=> ({w:m.w, weight:cropConfidence(m.method)}));
+  const medianCrop = weightedItems.length ? weightedMedian(weightedItems) : median(out.filter(r=>r.w<0.97&&r.w>0.50).map(r=>r.w));
+  const hasConsensus = weightedItems.length >= 3 && medianCrop < 1.0;
   for (let i=0; i<out.length; i++) {
     if (out[i].w >= 0.999) {
       const im = imageDatas[i];
-      let aggressiveW = 1.0;
+      let aggressiveW = 1.0; let aggMethod="none";
       if (im) {
-        aggressiveW = calculateSmartCropRight(im, 8, 210, 3);
+        const metaAgg = smartCropMeta(im); // re-eval con umbral agresivo
+        aggressiveW = calculateSmartCropRight(im, 8, 210, 3); aggMethod = metaAgg.w<0.97 ? metaAgg.method : "none";
         if (aggressiveW >= 0.999) {
           const { width, height, data } = im;
           const colInk = new Uint32Array(width);
@@ -288,23 +400,43 @@ export async function detectCropBatchRects(
             const d = Math.abs((colInk[x] as number) - (colInk[x+1] as number));
             if (d > height*0.15 && d > bestDeriv) { bestDeriv=d; bestX=x; }
           }
-          if (bestX !== -1 && bestX/width >0.50 && bestX/width <0.94) aggressiveW = bestX/width;
+          if (bestX !== -1 && bestX/width >0.50 && bestX/width <0.94) { aggressiveW = bestX/width; aggMethod="deriv"; }
         }
       }
       if (aggressiveW < 0.97 && aggressiveW > 0.50) {
         out[i] = { x:0, y:0, w: aggressiveW, h:1 };
+        metas[i]={w:aggressiveW, method:aggMethod};
       } else {
-        // Fallback 1: bounding box de contenido (para págs sin grilla/gutter)
+        // Fallback 1: bounding box de contenido (para págs sin grilla/gutter) — 1
         let bboxW = 1.0;
         if (im) bboxW = boundingBoxCrop(im, 0.02);
         if (bboxW < 0.97 && bboxW > 0.50) {
           out[i] = { x:0, y:0, w: bboxW, h:1 };
-        } else if (hasConsensus) {
-          // Fallback 2: consenso ventana deslizante (k=7) > global
-          const winMed = windowMedian(out, i, 7);
-          const useCrop = winMed ?? medianCrop;
-          out[i] = { x:0, y:0, w: useCrop, h:1 };
-          onProgress?.(i+1, pageCount, out[i]);
+          metas[i]={w:bboxW, method:"bbox"};
+        } else {
+          // 5: Connected components solo en páginas fallidas (10/160) — no penaliza perf global
+          let ccW: number | null = null;
+          if (im) ccW = connectedComponentsRight(im);
+          if (ccW !== null && ccW < 0.97 && ccW > 0.50) {
+            out[i] = { x:0, y:0, w: ccW, h:1 };
+            metas[i]={w:ccW, method:"cc"};
+          } else if (hasConsensus) {
+            // 4: ventana deslizante k=7 adaptativa > global
+            const winVals: {w:number, weight:number}[]=[];
+            for (let d=-7; d<=7; d++) {
+              const j=i+d; if (j<0||j>=out.length||j===i) continue;
+              const m=metas[j]; if (m && m.w<0.97 && m.w>0.50) winVals.push({w:m.w, weight:cropConfidence(m.method)});
+            }
+            let useCrop: number;
+            if (winVals.length >= 2) useCrop = weightedMedian(winVals);
+            else {
+              const winMed = windowMedian(out, i, 7);
+              useCrop = winMed ?? medianCrop;
+            }
+            out[i] = { x:0, y:0, w: useCrop, h:1 };
+            metas[i]={w:useCrop, method: winVals.length>=2 ? "window" : "global"};
+            onProgress?.(i+1, pageCount, out[i]);
+          }
         }
       }
     }

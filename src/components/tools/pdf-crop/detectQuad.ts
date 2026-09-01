@@ -117,7 +117,13 @@ export function detectTrapezoidQuad(imageData: ImageData, opts?: { paperThr?: nu
     for (let i=0;i<4;i++) maxDev = Math.max(maxDev, Math.hypot(quadPx[i].x - ideal[i].x, quadPx[i].y - ideal[i].y));
     if (maxDev < 0.03) return null; // <3% es rectángulo, usa CropBox
   }
-  // clamp 0-1
-  for (const p of quadPx) { p.x = Math.max(0, Math.min(1, p.x)); p.y = Math.max(0, Math.min(1, p.y)); }
+  // clamp 0-1 y fuerza izquierda x=0 (solo recortamos derecha donde está la barra, nunca izquierda)
+  // si el quad detecta papel con margen izquierdo >0, lo llevamos a 0 para no cortar contenido
+  for (const p of quadPx) { p.y = Math.max(0, Math.min(1, p.y)); }
+  quadPx[0].x = 0; quadPx[3].x = 0;
+  quadPx[1].x = Math.max(0, Math.min(1, quadPx[1].x));
+  quadPx[2].x = Math.max(0, Math.min(1, quadPx[2].x));
+  // valida que aún sea trapecio válido con izquierda 0
+  if (quadPx[1].x - quadPx[0].x < 0.45 || quadPx[2].x - quadPx[3].x < 0.45) return null;
   return quadPx;
 }

@@ -344,6 +344,8 @@ export default function PdfCropper() {
     });
   }, []);
   const handleQuadPoint = useCallback((idx:number, pIdx:number, pt:{x:number,y:number})=>{
+    const isLeft = pIdx===0 || pIdx===3;
+    const clampPt = (p:{x:number,y:number})=> ({ x: isLeft ? 0 : Math.max(0,Math.min(1, p.x)), y: Math.max(0,Math.min(1, p.y)) });
     setQuads(prev=>{
       const next = new Map(prev);
       const q = next.get(idx);
@@ -352,7 +354,7 @@ export default function PdfCropper() {
       const dx = pt.x - cur.x;
       const dy = pt.y - cur.y;
       const nq = q.map(p=>({ ...p })) as Quad;
-      nq[pIdx] = { x: Math.max(0,Math.min(1, pt.x)), y: Math.max(0,Math.min(1, pt.y)) };
+      nq[pIdx] = clampPt(pt);
       next.set(idx, nq);
       // sync solo trapecios entre trapecios en seleccion multiple (rects separados via syncRectsForSelection)
       if (selected.has(idx) && selected.size > 1) {
@@ -362,7 +364,7 @@ export default function PdfCropper() {
           if (!oq) continue;
           const op = oq[pIdx];
           const nqOther = oq.map(p=>({ ...p })) as Quad;
-          nqOther[pIdx] = { x: Math.max(0,Math.min(1, op.x + dx)), y: Math.max(0,Math.min(1, op.y + dy)) };
+          nqOther[pIdx] = clampPt({ x: op.x + dx, y: op.y + dy });
           next.set(other, nqOther);
         }
       }
