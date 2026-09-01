@@ -108,6 +108,8 @@ export function calculateSmartCropRect(
 import * as pdfjsLib from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+import { detectTrapezoidQuad } from "./detectQuad";
+import type { Quad } from "./storage";
 
 export async function detectCropForPage(
   pdfBytes: Uint8Array,
@@ -272,4 +274,47 @@ export async function detectCropBatchRects(
     }
   }
   return out;
+}
+
+// Pipeline 2 pasos: rect vectorial primero, quad trapezoidal solo si rect==1.0 (cascada)
+export async function detectSmartBatchWithQuads(
+  pdfBytes: Uint8Array,
+  pageCount: number,
+  onProgress?: (done: number, total: number, rect: {x:number,y:number,w:number,h:number}, quad?: Quad | null) => void,
+  signal?: AbortSignal,
+): Promise<{ rects: {x:number,y:number,w:number,h:number}[]; quads: Map<number, Quad> }> {
+  const rects = await detectCropBatchRects(pdfBytes, pageCount, onProgress as any, signal);
+  const quads = new Map<number, Quad>();
+  // re-render solo fallidas para quad (usa mismo 800px pero con detector de bordes)
+  // Para no re-render, reutiliza lógica: si rect==1.0 intenta quad sobre copia 200px (más rápido y robusto a perspectiva)
+  // Hacemos render extra solo para fallidas
+  const task = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
+  const doc = await task.promise;
+  try {
+    for (let i=0;i<pageCount;i++) {
+      if (rects[i].w < 0.999) continue;
+      if (signal?.aborted) throw new DOMException("Aborted","AbortError");
+      const page = await doc.getPage(i+1);
+      const vp1 = page.getViewport({ scale: 1 });
+      const scale = 800 / vp1.width;
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(vp.width);
+      canvas.height = Math.ceil(vp.height);
+      const ctx = canvas.getContext("2d", { willReadFrequently: true } as any);
+      if (!ctx) { try{ page.cleanup(); }catch{}; continue; }
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
+      try{ page.cleanup(); }catch{}
+      const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+      const quad = detectTrapezoidQuad(imageData);
+      if (quad) {
+        quads.set(i, quad);
+        onProgress?.(i+1, pageCount, rects[i], quad);
+      }
+      await new Promise(r=>setTimeout(r,0));
+    }
+  } finally { try{ await doc.destroy(); }catch{} }
+  return { rects, quads };
 }

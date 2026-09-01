@@ -8,7 +8,7 @@ import type { PdfCropProject, PageRotation, Quad } from "./storage";
 import PageCard from "./PageCard";
 import PreviewModal from "./PreviewModal";
 import { generateThumbnails, thumbKey } from "./thumbnail";
-import { detectCropBatchRects } from "./autoCrop";
+import { detectCropBatchRects, detectSmartBatchWithQuads } from "./autoCrop";
 import { warpImageData } from "./warp";
 import type { Quad as WarpQuad, Point } from "./warp";
 import * as pdfjsLib from "pdfjs-dist";
@@ -377,32 +377,40 @@ export default function PdfCropper() {
     setAutoProgress({done:0,total:pageCount});
     setIsProcessing(true);
     try {
-      const rects = await detectCropBatchRects(pdfBytes, pageCount, (done,total)=> setAutoProgress({done,total}), ac.signal);
+      const { rects, quads: smartQuads } = await detectSmartBatchWithQuads(pdfBytes, pageCount, (done,total)=> setAutoProgress({done,total}), ac.signal);
       if (ac.signal.aborted) return;
-      const next = new Map<number, NormalizedRect>();
-      let applied = 0;
+      const nextRects = new Map<number, NormalizedRect>();
+      let appliedRect = 0, appliedQuad = 0;
       for (let idx=0; idx<rects.length; idx++) {
         const r = rects[idx];
+        if (smartQuads.has(idx)) continue; // quad tiene prioridad, no duplica rect
         if (r.w < 0.97 && r.w > 0.45) {
-          // solo lateral: y=0 h=1 para no tocar parte blanca superior/inferior
           const clamped = clampRect({ x: 0, y: 0, w: r.w, h: 1 });
-          next.set(idx, clamped);
-          applied++;
+          nextRects.set(idx, clamped);
+          appliedRect++;
         }
       }
+      for (const [idx,q] of smartQuads) { if (!quads.has(idx)) appliedQuad++; }
       setCropRects(prev => {
         const merged = new Map(prev);
-        for (const [k,v] of next) merged.set(k, v);
+        for (const [k,v] of nextRects) merged.set(k, v);
         return merged;
       });
-      if (applied===0) alert("No se detectó barra lateral — revisa pdfs_moodle/auto_crop_study.py");
+      setQuads(prev=>{
+        const merged = new Map(prev);
+        for (const [k,v] of smartQuads) if (!merged.has(k)) merged.set(k, v);
+        return merged;
+      });
+      const totalApplied = appliedRect + appliedQuad;
+      if (totalApplied===0) alert("No se detectó barra lateral ni trapecio — revisa pdfs_moodle/auto_crop_study.py");
+      else if (appliedQuad>0) console.log(`SmartBatch: ${appliedRect} rect + ${appliedQuad} quad`);
     } catch(e:any) {
       if (e?.name !== "AbortError") { console.error(e); alert("Error auto recorte"); }
     }
     setIsProcessing(false);
     setAutoProgress(null);
     autoAbort.current = null;
-  }, [pdfBytes, pageCount, autoProgress]);
+  }, [pdfBytes, pageCount, autoProgress, quads]);
 
   const handleDeleteOne = useCallback(async (idx:number)=>{
     if(!pdfBytes) return;
