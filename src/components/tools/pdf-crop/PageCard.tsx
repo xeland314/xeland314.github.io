@@ -218,30 +218,41 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
         >
           <span className="text-[11px]">⛶</span>
         </button>
-        <span className="absolute top-2 left-2 text-[11px] font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-full shadow">{pageIndex + 1}{deg ? ` · ${deg}°` : ""}</span>
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => {
-            e.stopPropagation();
-            onSelect(pageIndex);
-          }}
-          className="absolute top-2 right-2 w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 text-emerald-600 focus:ring-emerald-500 bg-white dark:bg-gray-900"
-        />
-        <button
-          title="Borrar esta página"
-          onClick={(e) => { e.stopPropagation(); onDelete(pageIndex); }}
-          className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow"
-        >✕</button>
+        <span className="absolute top-2 left-2 text-[11px] font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-full shadow pointer-events-none">{pageIndex + 1}{deg ? ` · ${deg}°` : ""}</span>
+        {!showQuad && (
+          <>
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => {
+                e.stopPropagation();
+                onSelect(pageIndex);
+              }}
+              className="absolute top-2 right-2 w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 text-emerald-600 focus:ring-emerald-500 bg-white dark:bg-gray-900"
+            />
+            <button
+              title="Borrar esta página"
+              onClick={(e) => { e.stopPropagation(); onDelete(pageIndex); }}
+              className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow"
+            >✕</button>
+          </>
+        )}
       </div>
-      <div className="px-3 py-2 flex flex-col gap-1">
+      <div className="px-3 py-2 flex flex-col gap-1.5">
         <div className="flex items-center justify-between gap-1">
           <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}{deg ? ` · ${deg}°` : ""}{quad ? " · ◫" : ""}</span>
           <div className="flex items-center gap-1">
             <button title="Rotar 90° antihorario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, -90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↺</button>
             <button title="Rotar 90° horario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, 90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↻</button>
           </div>
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <label className={`flex items-center gap-1.5 text-[11px] font-semibold cursor-pointer select-none px-2 py-1 rounded-full border ${isSelected ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600"}`}>
+            <input type="checkbox" checked={isSelected} onChange={(e)=>{ e.stopPropagation(); onSelect(pageIndex); }} onClick={e=>e.stopPropagation()} className="rounded text-emerald-600" />
+            Seleccionar
+          </label>
+          <button title="Borrar esta página" onClick={(e)=>{ e.stopPropagation(); onDelete(pageIndex); }} className="px-2.5 py-1 rounded-full border bg-white dark:bg-gray-900 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-gray-600 dark:text-gray-300 text-[11px] font-bold">🗑 Borrar</button>
         </div>
         <button onClick={(e)=>{ e.stopPropagation(); onQuadToggle(pageIndex); }} className={`w-full text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-full border transition-colors ${quad ? "bg-indigo-500 text-white border-indigo-500 hover:bg-indigo-600" : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50"}`}>{quad ? "✕ Quitar trapecio" : "◫ Trapecio"}</button>
       </div>
