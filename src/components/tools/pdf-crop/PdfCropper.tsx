@@ -6,6 +6,7 @@ import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtrac
 import { saveSession, loadSession, clearSession, listProjects, saveProject, getProject, deleteProject, duplicateProject, exportProjectJson, importProjectJson, base64ToBytes } from "./storage";
 import type { PdfCropProject } from "./storage";
 import PageCard from "./PageCard";
+import PreviewModal from "./PreviewModal";
 import { generateThumbnails, thumbKey } from "./thumbnail";
 
 type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect>; thumbs: string[] };
@@ -37,6 +38,7 @@ export default function PdfCropper() {
   const [projects, setProjects] = useState<PdfCropProject[]>([]);
   const [showProjects, setShowProjects] = useState(false);
   const [projectNameInput, setProjectNameInput] = useState("");
+  const [previewIdx, setPreviewIdx] = useState<number|null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -505,21 +507,34 @@ export default function PdfCropper() {
             {thumbnails.length===0 ? (
               <div className="py-8 text-center text-xs text-gray-400 animate-pulse border border-dashed rounded-2xl">Generando miniaturas {thumbProgress ? `${thumbProgress.done}/${thumbProgress.total}` : "…"} — UI baja resolución, PDF original intacto</div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[120px]">
-                {thumbnails.map((src, idx) => (
-                  <PageCard
-                    key={`${pdfName}-thumb-${idx}`}
-                    pageIndex={idx}
-                    thumbnailSrc={src}
-                    rect={cropRects.get(idx) ?? FULL_RECT}
-                    isSelected={selected.has(idx)}
-                    previewCrop={previewCrop}
-                    onSelect={handleSelect}
-                    onDelete={handleDeleteOne}
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[120px]">
+                  {thumbnails.map((src, idx) => (
+                    <PageCard
+                      key={`${pdfName}-thumb-${idx}`}
+                      pageIndex={idx}
+                      thumbnailSrc={src}
+                      rect={cropRects.get(idx) ?? FULL_RECT}
+                      isSelected={selected.has(idx)}
+                      previewCrop={previewCrop}
+                      onSelect={handleSelect}
+                      onDelete={handleDeleteOne}
+                      onRectChange={handleRectChange}
+                      onPreview={setPreviewIdx}
+                    />
+                  ))}
+                </div>
+                {previewIdx !== null && pdfBytes && (
+                  <PreviewModal
+                    pdfBytes={pdfBytes}
+                    pageIndex={previewIdx}
+                    thumbnailSrc={thumbnails[previewIdx] ?? null}
+                    rect={cropRects.get(previewIdx) ?? FULL_RECT}
                     onRectChange={handleRectChange}
+                    onClose={() => setPreviewIdx(null)}
                   />
-                ))}
-              </div>
+                )}
+              </>
             )}
             {pageCount===0 && thumbnails.length===0 && <p className="text-sm text-gray-400 italic py-8 text-center border border-dashed rounded-2xl">Carga un PDF para ver páginas</p>}
           </div>

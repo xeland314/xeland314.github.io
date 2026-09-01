@@ -11,9 +11,10 @@ interface Props {
   onSelect: (idx: number) => void;
   onDelete: (idx: number) => void;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
+  onPreview: (idx: number) => void;
 }
 
-const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop, onSelect, onDelete, onRectChange }: Props) => {
+const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop, onSelect, onDelete, onRectChange, onPreview }: Props) => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
@@ -77,14 +78,26 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop,
       data-page-idx={pageIndex}
       className={`group relative bg-white dark:bg-gray-800 border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all select-none ${isSelected ? "ring-2 ring-emerald-500 border-emerald-500" : "border-gray-200 dark:border-gray-700"}`}
     >
-      <div ref={wrapRef} className="relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden min-h-[160px]">
+      <div
+        ref={wrapRef}
+        onDoubleClick={() => onPreview(pageIndex)}
+        className="relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden min-h-[160px]"
+      >
         {!visible ? (
           <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
         ) : !thumbnailSrc ? (
           <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
         ) : (
-          <img src={thumbnailSrc} alt={`Página ${pageIndex+1}`} loading="lazy" decoding="async" className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none" style={{ width: "100%", height: "auto" }} draggable={false} />
+          <img src={thumbnailSrc} alt={`Página ${pageIndex+1}`} loading="lazy" decoding="async" className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none" style={{ width: "100%", height: "auto" }} draggable={false} onDoubleClick={() => onPreview(pageIndex)} />
         )}
+        {/* botón flotante expandir — solo hover, no satura footer */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onPreview(pageIndex); }}
+          title="Previsualizar a pantalla completa (alta resolución)"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur border border-gray-200 dark:border-gray-700 shadow-lg flex items-center justify-center text-gray-700 dark:text-gray-200 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:scale-105 active:scale-95"
+        >
+          <span className="text-[11px]">⛶</span>
+        </button>
         {visible && showBox && (
           <div
             data-crop-box="1"
