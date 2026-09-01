@@ -22,6 +22,7 @@ interface Props {
 
 const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, isSelected, previewCrop, onSelect, onDelete, onRotate, onQuadToggle, onQuadPoint, onRectChange, onPreview }: Props) => {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
   const quadDragRef = useRef<null | { pIdx: number; startX: number; startY: number; startQuad: Quad }>(null);
@@ -53,8 +54,8 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       const d = dragRef.current;
-      if (!d || !wrapRef.current) return;
-      const wrapRect = wrapRef.current.getBoundingClientRect();
+      if (!d || !innerRef.current) return;
+      const wrapRect = innerRef.current.getBoundingClientRect();
       const dxNorm = (e.clientX - d.startX) / wrapRect.width;
       const dyNorm = (e.clientY - d.startY) / wrapRect.height;
       let nr: NormalizedRect = { ...d.startRect };
@@ -86,8 +87,8 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       const d = quadDragRef.current;
-      if (!d || !wrapRef.current) return;
-      const r = wrapRef.current.getBoundingClientRect();
+      if (!d || !innerRef.current) return;
+      const r = innerRef.current.getBoundingClientRect();
       const dx = (e.clientX - d.startX) / r.width;
       const dy = (e.clientY - d.startY) / r.height;
       const start = d.startQuad[d.pIdx];
@@ -119,27 +120,29 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
         onDoubleClick={() => onPreview(pageIndex)}
         className={`relative bg-gray-50 dark:bg-gray-900 p-2 overflow-hidden min-h-[160px] flex ${isSwapped ? "items-start justify-start" : "items-center justify-center"}`}
       >
-        {!visible ? (
-          <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
-        ) : !thumbnailSrc ? (
-          <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
-        ) : (
-          <img
-            src={thumbnailSrc}
-            alt={`Página ${pageIndex+1}`}
-            loading="lazy"
-            decoding="async"
-            className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none transition-transform duration-200"
-            style={{
-              width: "100%",
-              height: "auto",
-              transform: deg ? `rotate(${deg}deg)${isSwapped ? " scale(0.75)" : ""}` : undefined,
-              transformOrigin: "center center",
-            }}
-            draggable={false}
-            onDoubleClick={() => onPreview(pageIndex)}
-          />
-        )}
+        {/* inner exacto al tamaño de la imagen — overlays 0..100% mapean a imagen sin padding */}
+        <div ref={innerRef} className="relative w-full flex items-center justify-center max-w-full">
+          {!visible ? (
+            <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
+          ) : !thumbnailSrc ? (
+            <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
+          ) : (
+            <img
+              src={thumbnailSrc}
+              alt={`Página ${pageIndex+1}`}
+              loading="lazy"
+              decoding="async"
+              className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none transition-transform duration-200 block"
+              style={{
+                width: "100%",
+                height: "auto",
+                transform: deg ? `rotate(${deg}deg)${isSwapped ? " scale(0.75)" : ""}` : undefined,
+                transformOrigin: "center center",
+              }}
+              draggable={false}
+              onDoubleClick={() => onPreview(pageIndex)}
+            />
+          )}
         {visible && showBox && (
           <div
             data-crop-box="1"
@@ -210,14 +213,15 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
             <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[8px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Trapecio → rectángulo</span>
           </>
         )}
-        {/* botón flotante expandir — solo hover, no satura footer */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onPreview(pageIndex); }}
-          title="Previsualizar a pantalla completa (alta resolución)"
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur border border-gray-200 dark:border-gray-700 shadow-lg flex items-center justify-center text-gray-700 dark:text-gray-200 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:scale-105 active:scale-95"
-        >
-          <span className="text-[11px]">⛶</span>
-        </button>
+          {/* botón flotante expandir — centrado sobre imagen (inner) */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onPreview(pageIndex); }}
+            title="Previsualizar a pantalla completa (alta resolución)"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur border border-gray-200 dark:border-gray-700 shadow-lg flex items-center justify-center text-gray-700 dark:text-gray-200 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:scale-105 active:scale-95"
+          >
+            <span className="text-[11px]">⛶</span>
+          </button>
+        </div>
         <span className="absolute top-2 left-2 text-[11px] font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-full shadow pointer-events-none">{pageIndex + 1}{deg ? ` · ${deg}°` : ""}</span>
         {!showQuad && (
           <>
