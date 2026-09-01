@@ -5,9 +5,60 @@ export interface CropPercents {
   right: number;
 }
 
+export interface NormalizedRect {
+  x: number; // 0..1 desde izquierda
+  y: number; // 0..1 desde arriba
+  w: number; // 0..1
+  h: number; // 0..1
+}
+
+export const FULL_RECT: NormalizedRect = { x: 0, y: 0, w: 1, h: 1 };
+
 export function clampPercent(v: number): number {
   if (isNaN(v)) return 0;
   return Math.max(0, Math.min(50, Math.round(v)));
+}
+
+export function clampRect(r: NormalizedRect): NormalizedRect {
+  const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+  let { x, y, w, h } = r;
+  w = clamp(w, 0.05, 1);
+  h = clamp(h, 0.05, 1);
+  x = clamp(x, 0, 1 - w);
+  y = clamp(y, 0, 1 - h);
+  return { x, y, w, h };
+}
+
+export function isFullRect(r: NormalizedRect): boolean {
+  return r.x === 0 && r.y === 0 && r.w === 1 && r.h === 1;
+}
+
+export function normalizedRectToCropBox(rect: NormalizedRect, mediaWidth: number, mediaHeight: number) {
+  const c = clampRect(rect);
+  const x = c.x * mediaWidth;
+  // PDF origen abajo-izquierda
+  const y = (1 - c.y - c.h) * mediaHeight;
+  const width = c.w * mediaWidth;
+  const height = c.h * mediaHeight;
+  return { x, y, width, height };
+}
+
+export function cropPercentsToRect(c: CropPercents): NormalizedRect {
+  return {
+    x: c.left / 100,
+    y: c.top / 100,
+    w: 1 - (c.left + c.right) / 100,
+    h: 1 - (c.top + c.bottom) / 100,
+  };
+}
+
+export function rectToCropPercents(r: NormalizedRect): CropPercents {
+  return {
+    left: Math.round(r.x * 100),
+    top: Math.round(r.y * 100),
+    right: Math.round((1 - r.x - r.w) * 100),
+    bottom: Math.round((1 - r.y - r.h) * 100),
+  };
 }
 
 export function parsePageIntervals(input: string, totalPages: number): number[] {
@@ -64,5 +115,12 @@ export function validateCropPercents(c: CropPercents): boolean {
     c.right >= 0 && c.right <= 50 &&
     c.top + c.bottom < 100 &&
     c.left + c.right < 100
+  );
+}
+
+export function validateNormalizedRect(r: NormalizedRect): boolean {
+  return (
+    r.x >= 0 && r.y >= 0 && r.w > 0 && r.h > 0 &&
+    r.x + r.w <= 1.001 && r.y + r.h <= 1.001
   );
 }
