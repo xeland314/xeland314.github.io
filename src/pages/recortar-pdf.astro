@@ -84,6 +84,69 @@ const siteAppName = "Recortar PDF";
         <p id="pdf-info" class="hidden mt-4 text-xs font-mono text-gray-600 dark:text-gray-400"></p>
       </div>
 
+      <!-- Mini proyectos (IndexedDB) — como Cover Creator -->
+      <div id="projects-panel" class="mt-6 relative">
+        <div class="flex items-center gap-2">
+          <button
+            id="btn-projects-toggle"
+            class="flex-1 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:border-emerald-500 transition-colors text-left"
+          >
+            <div class="flex flex-col items-start">
+              <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Proyecto actual</span>
+              <span id="current-project-name" class="text-sm font-bold text-gray-700 dark:text-gray-200 truncate">Sin proyecto — guardado automático en IndexedDB</span>
+            </div>
+            <span class="text-gray-400">▾</span>
+          </button>
+          <button
+            id="btn-new-project"
+            class="p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+            title="Nuevo proyecto (limpia PDF actual)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+
+        <div id="projects-dropdown" class="hidden relative z-50 mt-2 bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-inner overflow-hidden">
+          <div class="p-4 border-b border-gray-100 dark:border-gray-800 space-y-3">
+            <div class="flex gap-2">
+              <input
+                type="text"
+                id="input-project-name"
+                placeholder="Guardar como... (ej: Facturas Q1)"
+                class="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <button
+                id="btn-save-project"
+                class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors"
+              >
+                Guardar
+              </button>
+            </div>
+            <div class="flex gap-2">
+              <input type="file" id="input-import-project" accept=".json" class="hidden" />
+              <button
+                id="btn-import-project"
+                class="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Importar JSON
+              </button>
+              <button
+                id="btn-clear-projects"
+                class="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-red-500 transition-colors"
+                title="Borrar restauración automática"
+              >
+                Limpiar
+              </button>
+            </div>
+          </div>
+          <div id="projects-list" class="max-h-64 overflow-y-auto p-2 space-y-1">
+            <div class="py-8 text-center text-gray-400 text-xs italic">No hay mini proyectos guardados</div>
+          </div>
+        </div>
+        <div id="projects-backdrop" class="hidden fixed inset-0 z-40"></div>
+      </div>
+
       <!-- Controles principales (visible tras cargar PDF) -->
       <div id="controls" class="hidden mt-8 space-y-6">
         <!-- Barra de info + acciones rápidas -->
@@ -265,6 +328,8 @@ const siteAppName = "Recortar PDF";
       isFullRect,
     } from "../components/tools/pdf-crop/pdfOperations";
     import type { NormalizedRect } from "../components/tools/pdf-crop/pdfOperations";
+    import { saveSession, loadSession, clearSession, listProjects, saveProject, getProject, deleteProject, duplicateProject, exportProjectJson, importProjectJson } from "../components/tools/pdf-crop/storage";
+    import type { PdfCropProject } from "../components/tools/pdf-crop/storage";
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -304,6 +369,17 @@ const siteAppName = "Recortar PDF";
       optPreview: document.getElementById("opt-preview-crop") as HTMLInputElement,
       btnCropSel: document.getElementById("btn-crop-selected") as HTMLButtonElement,
       btnCropReset: document.getElementById("btn-crop-reset") as HTMLButtonElement,
+      btnProjectsToggle: document.getElementById("btn-projects-toggle") as HTMLButtonElement,
+      projectsDropdown: document.getElementById("projects-dropdown") as HTMLDivElement,
+      projectsBackdrop: document.getElementById("projects-backdrop") as HTMLDivElement,
+      currentProjectName: document.getElementById("current-project-name") as HTMLSpanElement,
+      inputProjectName: document.getElementById("input-project-name") as HTMLInputElement,
+      btnSaveProject: document.getElementById("btn-save-project") as HTMLButtonElement,
+      btnNewProject: document.getElementById("btn-new-project") as HTMLButtonElement,
+      btnImportProject: document.getElementById("btn-import-project") as HTMLButtonElement,
+      inputImportProject: document.getElementById("input-import-project") as HTMLInputElement,
+      projectsList: document.getElementById("projects-list") as HTMLDivElement,
+      btnClearProjects: document.getElementById("btn-clear-projects") as HTMLButtonElement,
     };
 
     function cloneBytes(b: Uint8Array): Uint8Array {
@@ -336,6 +412,7 @@ const siteAppName = "Recortar PDF";
       selected.clear();
       await renderAll();
       updateUndoRedoButtons();
+      await persistSession();
     }
 
     async function redo() {
@@ -348,6 +425,7 @@ const siteAppName = "Recortar PDF";
       selected.clear();
       await renderAll();
       updateUndoRedoButtons();
+      await persistSession();
     }
 
     function getRect(pageIdx: number): NormalizedRect {
@@ -377,15 +455,32 @@ const siteAppName = "Recortar PDF";
     }
 
     function updateCropBoxStyle(boxEl: HTMLDivElement, rect: NormalizedRect) {
-      if (!previewCrop || isFullRect(rect)) {
+      if (!previewCrop) {
         boxEl.style.display = "none";
         return;
       }
+      // Siempre visible para que el usuario entienda que existe herramienta de corte
+      // Si es FULL_RECT, muestra marco a todo el borde; si hay recorte, muestra área a conservar
       boxEl.style.display = "block";
       boxEl.style.left = `${rect.x * 100}%`;
       boxEl.style.top = `${rect.y * 100}%`;
       boxEl.style.width = `${rect.w * 100}%`;
       boxEl.style.height = `${rect.h * 100}%`;
+      // pista visual cuando es recorte parcial
+      if (isFullRect(rect)) {
+        boxEl.style.borderColor = "rgba(245,158,11,0.9)";
+        boxEl.style.background = "rgba(245,158,11,0.04)";
+      } else {
+        boxEl.style.borderColor = "#f59e0b";
+        boxEl.style.background = "rgba(245,158,11,0.12)";
+      }
+    }
+
+    async function persistSession() {
+      if (!pdfBytes) return;
+      try {
+        await saveSession({ pdfBytes, pdfName, rects: cropRects, selected, pageCount });
+      } catch {}
     }
 
     async function renderThumbnails() {
@@ -432,21 +527,32 @@ const siteAppName = "Recortar PDF";
           cropBox.dataset.cropBox = "1";
           cropBox.className = "absolute border-2 border-amber-500 bg-amber-500/10 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] rounded-sm cursor-move touch-none";
           cropBox.style.display = "none";
-          // handles
+          // marco rectangular con barras vertical/horizontal + esquinas
           const handles: HTMLDivElement[] = [];
-          const positions = ["nw", "ne", "sw", "se"] as const;
+          const positions = ["nw", "ne", "sw", "se", "n", "s", "e", "w"] as const;
           for (const pos of positions) {
             const h = document.createElement("div");
             h.dataset.handle = pos;
-            h.className =
-              "absolute w-3 h-3 bg-amber-500 border-2 border-white rounded-sm shadow cursor-pointer";
-            if (pos === "nw") h.style.cssText = "left:-6px;top:-6px;cursor:nw-resize";
-            if (pos === "ne") h.style.cssText = "right:-6px;top:-6px;cursor:ne-resize";
-            if (pos === "sw") h.style.cssText = "left:-6px;bottom:-6px;cursor:sw-resize";
-            if (pos === "se") h.style.cssText = "right:-6px;bottom:-6px;cursor:se-resize";
+            const isCorner = ["nw","ne","sw","se"].includes(pos);
+            h.className = isCorner
+              ? "absolute w-3 h-3 bg-amber-500 border-2 border-white rounded-sm shadow cursor-pointer"
+              : "absolute bg-amber-500 border border-white shadow cursor-pointer";
+            if (pos === "nw") h.style.cssText = "left:-6px;top:-6px;cursor:nw-resize;width:12px;height:12px";
+            if (pos === "ne") h.style.cssText = "right:-6px;top:-6px;cursor:ne-resize;width:12px;height:12px";
+            if (pos === "sw") h.style.cssText = "left:-6px;bottom:-6px;cursor:sw-resize;width:12px;height:12px";
+            if (pos === "se") h.style.cssText = "right:-6px;bottom:-6px;cursor:se-resize;width:12px;height:12px";
+            if (pos === "n") h.style.cssText = "left:50%;top:-4px;transform:translateX(-50%);width:28px;height:8px;border-radius:9999px;cursor:n-resize";
+            if (pos === "s") h.style.cssText = "left:50%;bottom:-4px;transform:translateX(-50%);width:28px;height:8px;border-radius:9999px;cursor:s-resize";
+            if (pos === "w") h.style.cssText = "left:-4px;top:50%;transform:translateY(-50%);width:8px;height:28px;border-radius:9999px;cursor:w-resize";
+            if (pos === "e") h.style.cssText = "right:-4px;top:50%;transform:translateY(-50%);width:8px;height:28px;border-radius:9999px;cursor:e-resize";
             cropBox.appendChild(h);
             handles.push(h);
           }
+          // etiqueta dentro del marco
+          const label = document.createElement("span");
+          label.textContent = "Conservar";
+          label.className = "absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none";
+          cropBox.appendChild(label);
 
           const rect = getRect(pageIdx);
           updateCropBoxStyle(cropBox, rect);
@@ -498,6 +604,16 @@ const siteAppName = "Recortar PDF";
                 nr.x = dragState.startRect.x + dxNorm;
                 nr.w = dragState.startRect.w - dxNorm;
                 nr.h = dragState.startRect.h + dyNorm;
+              } else if (h === "n") {
+                nr.y = dragState.startRect.y + dyNorm;
+                nr.h = dragState.startRect.h - dyNorm;
+              } else if (h === "s") {
+                nr.h = dragState.startRect.h + dyNorm;
+              } else if (h === "e") {
+                nr.w = dragState.startRect.w + dxNorm;
+              } else if (h === "w") {
+                nr.x = dragState.startRect.x + dxNorm;
+                nr.w = dragState.startRect.w - dxNorm;
               }
             }
             nr = clampRect(nr);
@@ -505,7 +621,12 @@ const siteAppName = "Recortar PDF";
             updateCropBoxStyle(cropBox, nr);
           };
           const onPointerUp = () => {
-            dragState = null;
+            if (dragState) {
+              dragState = null;
+              persistSession();
+            } else {
+              dragState = null;
+            }
           };
           window.addEventListener("pointermove", onPointerMove);
           window.addEventListener("pointerup", onPointerUp);
@@ -547,7 +668,6 @@ const siteAppName = "Recortar PDF";
             "absolute bottom-2 left-2 px-2 py-1 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold shadow opacity-0 group-hover:opacity-100 transition-opacity";
           cropOneBtn.addEventListener("click", async (e) => {
             e.stopPropagation();
-            // aplica solo esta página sin necesidad de selección
             const r = getRect(pageIdx);
             if (isFullRect(r)) {
               alert("Primero arrastra el marco naranja de esta página para definir el recorte.");
@@ -558,10 +678,15 @@ const siteAppName = "Recortar PDF";
               const doc = await PDFDocument.load(pdfBytes!);
               const page = doc.getPage(pageIdx);
               const media = page.getMediaBox();
-              const box = normalizedRectToCropBox(r, media.width, media.height);
-              page.setCropBox(box.x, box.y, box.width, box.height);
+              const mw = media.width || page.getSize().width;
+              const mh = media.height || page.getSize().height;
+              const mx = media.x || 0;
+              const my = media.y || 0;
+              const box = normalizedRectToCropBox(r, mw, mh);
+              page.setCropBox(mx + box.x, my + box.y, box.width, box.height);
               pdfBytes = await doc.save();
               await renderAll();
+              await persistSession();
             } catch (err) {
               console.error(err);
               alert("Error al recortar.");
@@ -625,6 +750,7 @@ const siteAppName = "Recortar PDF";
       els.pdfInfo.classList.remove("hidden");
       els.controls.classList.remove("hidden");
       await renderAll();
+      await persistSession();
       els.controls.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -633,30 +759,32 @@ const siteAppName = "Recortar PDF";
       if (selected.size === pageCount) {
         if (!confirm("Vas a borrar todas las páginas. ¿Continuar?")) return;
       }
+      if (selected.size === 0) return;
       pushUndo();
       try {
         const src = await PDFDocument.load(pdfBytes);
-        const toDelete = Array.from(selected).sort((a, b) => b - a);
-        for (const idx of toDelete) src.removePage(idx);
-        if (src.getPageCount() === 0) {
+        const kept = Array.from({ length: pageCount }, (_, i) => i).filter((i) => !selected.has(i)).sort((a,b)=>a-b);
+        if (kept.length === 0) {
           alert("No puedes dejar el PDF sin páginas.");
           undoStack.pop();
           updateUndoRedoButtons();
           return;
         }
-        pdfBytes = await src.save();
-        // ajusta cropRects: elimina y reordena
+        // usar copyPages para no desordenar (bug reportado)
+        const dst = await PDFDocument.create();
+        const copied = await dst.copyPages(src, kept);
+        copied.forEach((p) => dst.addPage(p));
+        pdfBytes = await dst.save();
+        // reindexa rects manteniendo orden estable + persistencia en IndexedDB
         const newRects = new Map<number, NormalizedRect>();
-        let newIdx = 0;
-        for (let old = 0; old < pageCount; old++) {
-          if (selected.has(old)) continue;
-          const r = cropRects.get(old);
+        kept.forEach((oldIdx, newIdx) => {
+          const r = cropRects.get(oldIdx);
           if (r) newRects.set(newIdx, r);
-          newIdx++;
-        }
+        });
         cropRects = newRects;
         selected.clear();
         await renderAll();
+        await persistSession();
       } catch (e) {
         console.error(e);
         alert("Error al borrar páginas.");
@@ -673,7 +801,6 @@ const siteAppName = "Recortar PDF";
         const copied = await dst.copyPages(src, indices);
         copied.forEach((p) => dst.addPage(p));
         pdfBytes = await dst.save();
-        // nuevo rects solo para las extraídas, en orden
         const newRects = new Map<number, NormalizedRect>();
         indices.forEach((oldIdx, newIdx) => {
           const r = cropRects.get(oldIdx);
@@ -682,6 +809,7 @@ const siteAppName = "Recortar PDF";
         cropRects = newRects;
         selected.clear();
         await renderAll();
+        await persistSession();
       } catch (e) {
         console.error(e);
         alert("Error al extraer páginas.");
@@ -690,12 +818,10 @@ const siteAppName = "Recortar PDF";
 
     async function applyCropToSelected() {
       if (!pdfBytes) return;
-      // por defecto solo seleccionadas, si no hay selección avisa (individual ya tiene su botón por página)
       if (selected.size === 0) {
         alert("Selecciona al menos una página (clic en la miniatura) y ajusta su marco naranja antes de recortar.");
         return;
       }
-      // verifica que al menos una seleccionada tenga recorte no-full
       let hasAny = false;
       for (const idx of selected) {
         if (!isFullRect(getRect(idx))) { hasAny = true; break; }
@@ -707,24 +833,22 @@ const siteAppName = "Recortar PDF";
       pushUndo();
       try {
         const pdfDoc = await PDFDocument.load(pdfBytes);
-        // IMPORTANTE: usar MediaBox para no desordenar / derivar tamaños (bug fix)
         const indices = Array.from(selected).sort((a, b) => a - b);
         for (const idx of indices) {
           const rect = getRect(idx);
           if (isFullRect(rect)) continue;
           const page = pdfDoc.getPage(idx);
           const media = page.getMediaBox();
-          // media puede ser 0 si no hay CropBox previo, fallback a getSize viejo
           const mw = media.width || page.getSize().width;
           const mh = media.height || page.getSize().height;
           const mx = media.x || 0;
           const my = media.y || 0;
           const box = normalizedRectToCropBox(rect, mw, mh);
-          // CropBox relativo a MediaBox origin
           page.setCropBox(mx + box.x, my + box.y, box.width, box.height);
         }
         pdfBytes = await pdfDoc.save();
         await renderAll();
+        await persistSession();
       } catch (e) {
         console.error(e);
         alert("Error al recortar. Revisa los recuadros.");
@@ -747,6 +871,7 @@ const siteAppName = "Recortar PDF";
         }
         pdfBytes = await pdfDoc.save();
         await renderAll();
+        await persistSession();
       } catch (e) {
         console.error(e);
         alert("No se pudo quitar el recorte.");
@@ -874,5 +999,188 @@ const siteAppName = "Recortar PDF";
     els.btnCropReset.addEventListener("click", clearCropFromSelected);
 
     updateUndoRedoButtons();
+
+    // --- Mini proyectos en IndexedDB (como Cover Creator) ---
+    let currentProjectId: string | null = null;
+    let projectsCache: PdfCropProject[] = [];
+
+    function updateCurrentProjectLabel() {
+      const p = projectsCache.find((x) => x.id === currentProjectId);
+      if (p) els.currentProjectName.textContent = `${p.name} — ${p.pdfName}`;
+      else if (pdfBytes) els.currentProjectName.textContent = `Sin proyecto — ${pdfName} (autosave IndexedDB)`;
+      else els.currentProjectName.textContent = "Sin proyecto — guardado automático en IndexedDB";
+    }
+
+    async function refreshProjects() {
+      try {
+        projectsCache = await listProjects();
+      } catch { projectsCache = []; }
+      updateCurrentProjectLabel();
+      const list = els.projectsList;
+      if (!list) return;
+      if (projectsCache.length === 0) {
+        list.innerHTML = `<div class="py-8 text-center text-gray-400 text-xs italic">No hay mini proyectos guardados<br/><span class="text-[11px]">Guarda tu PDF recortado para volver luego sin perder el orden ni los recortes por página.</span></div>`;
+        return;
+      }
+      list.innerHTML = projectsCache
+        .map(
+          (p) => `
+        <div class="group flex items-center gap-2 p-2 rounded-lg transition-colors ${p.id===currentProjectId ? "bg-emerald-50 dark:bg-emerald-900/20" : "hover:bg-white dark:hover:bg-gray-800"}">
+          <button data-load="${p.id}" class="flex-1 text-left">
+            <div class="text-sm font-bold text-gray-700 dark:text-gray-200 truncate">${p.name}</div>
+            <div class="text-[11px] text-gray-400">${p.pdfName} · ${p.pageCount} pág · ${new Date(p.updatedAt).toLocaleDateString()}</div>
+          </button>
+          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button data-dup="${p.id}" class="p-2 text-gray-400 hover:text-emerald-500" title="Duplicar">⎘</button>
+            <button data-exp="${p.id}" class="p-2 text-gray-400 hover:text-blue-500" title="Exportar JSON">⬇</button>
+            <button data-del="${p.id}" class="p-2 text-gray-400 hover:text-red-500" title="Eliminar">🗑</button>
+          </div>
+        </div>
+      `,
+        )
+        .join("");
+      list.querySelectorAll<HTMLButtonElement>("[data-load]").forEach((b) => {
+        b.addEventListener("click", async () => {
+          const id = b.dataset.load!;
+          const proj = await getProject(id);
+          if (!proj) return;
+          const bytes = Uint8Array.from(atob(proj.pdfBase64), (c) => c.charCodeAt(0));
+          // usa base64ToBytes internamente pero aquí decode directo
+          pdfBytes = bytes;
+          originalBytes = cloneBytes(bytes);
+          pdfName = proj.pdfName;
+          cropRects = new Map(proj.rects as any);
+          selected = new Set(proj.selected);
+          pageCount = proj.pageCount;
+          currentProjectId = id;
+          els.pdfInfo.textContent = `${pdfName} — ${(pdfBytes.length/1024).toFixed(1)} KB (proyecto: ${proj.name})`;
+          els.pdfInfo.classList.remove("hidden");
+          els.controls.classList.remove("hidden");
+          await renderAll();
+          updateUndoRedoButtons();
+          updateCurrentProjectLabel();
+          await persistSession();
+          // cierra dropdown
+          els.projectsDropdown.classList.add("hidden");
+          els.projectsBackdrop.classList.add("hidden");
+        });
+      });
+      list.querySelectorAll<HTMLButtonElement>("[data-dup]").forEach((b) => {
+        b.addEventListener("click", async () => {
+          const id = b.dataset.dup!;
+          const newId = await duplicateProject(id);
+          if (newId) await refreshProjects();
+        });
+      });
+      list.querySelectorAll<HTMLButtonElement>("[data-exp]").forEach((b) => {
+        b.addEventListener("click", async () => {
+          const id = b.dataset.exp!;
+          await exportProjectJson(id);
+        });
+      });
+      list.querySelectorAll<HTMLButtonElement>("[data-del]").forEach((b) => {
+        b.addEventListener("click", async () => {
+          const id = b.dataset.del!;
+          if (!confirm("¿Eliminar este mini proyecto?")) return;
+          await deleteProject(id);
+          if (currentProjectId === id) currentProjectId = null;
+          await refreshProjects();
+        });
+      });
+    }
+
+    els.btnProjectsToggle.addEventListener("click", () => {
+      const isHidden = els.projectsDropdown.classList.contains("hidden");
+      els.projectsDropdown.classList.toggle("hidden", !isHidden);
+      els.projectsBackdrop.classList.toggle("hidden", !isHidden);
+      if (isHidden) refreshProjects();
+    });
+    els.projectsBackdrop.addEventListener("click", () => {
+      els.projectsDropdown.classList.add("hidden");
+      els.projectsBackdrop.classList.add("hidden");
+    });
+    els.btnSaveProject.addEventListener("click", async () => {
+      const name = els.inputProjectName.value.trim();
+      if (!name) { alert("Pon un nombre al proyecto"); return; }
+      if (!pdfBytes) { alert("Primero carga un PDF"); return; }
+      const id = await saveProject({ name, pdfBytes, pdfName, rects: cropRects, selected, pageCount, id: currentProjectId ?? undefined });
+      currentProjectId = id;
+      els.inputProjectName.value = "";
+      await refreshProjects();
+      await persistSession();
+    });
+    els.btnNewProject.addEventListener("click", async () => {
+      if (pdfBytes && !confirm("¿Crear nuevo proyecto? El PDF actual se mantendrá como autosave pero se limpiará la selección.")) return;
+      currentProjectId = null;
+      selected.clear();
+      cropRects.clear();
+      updateCurrentProjectLabel();
+      if (pdfBytes) {
+        await renderAll();
+        await persistSession();
+      }
+      await refreshProjects();
+    });
+    els.btnImportProject.addEventListener("click", () => els.inputImportProject.click());
+    els.inputImportProject.addEventListener("change", async () => {
+      const f = els.inputImportProject.files?.[0];
+      if (!f) return;
+      try {
+        const id = await importProjectJson(f);
+        if (id) {
+          currentProjectId = id;
+          await refreshProjects();
+          // auto-carga el importado
+          const proj = await getProject(id);
+          if (proj) {
+            const bytes = Uint8Array.from(atob(proj.pdfBase64), (c)=>c.charCodeAt(0));
+            pdfBytes = bytes;
+            originalBytes = cloneBytes(bytes);
+            pdfName = proj.pdfName;
+            cropRects = new Map(proj.rects as any);
+            selected = new Set(proj.selected);
+            pageCount = proj.pageCount;
+            els.pdfInfo.textContent = `${pdfName} — ${(pdfBytes.length/1024).toFixed(1)} KB (importado: ${proj.name})`;
+            els.pdfInfo.classList.remove("hidden");
+            els.controls.classList.remove("hidden");
+            await renderAll();
+          }
+        }
+      } catch (e) { alert("JSON inválido: " + (e as Error).message); }
+      els.inputImportProject.value = "";
+    });
+    els.btnClearProjects.addEventListener("click", async () => {
+      if (!confirm("¿Borrar la sesión autosave de IndexedDB?")) return;
+      await clearSession();
+      alert("Autosave borrado. Recarga la página si quieres empezar limpio.");
+    });
+
+    // carga inicial lista proyectos
+    refreshProjects();
+
+    updateUndoRedoButtons();
+
+    // Restaurar sesión persistida en IndexedDB (índices estables, evita desorden)
+    (async () => {
+      try {
+        const sess = await loadSession();
+        if (sess && sess.pdfBytes && sess.pdfBytes.length > 5) {
+          // valida que sea PDF
+          const h = new TextDecoder().decode(sess.pdfBytes.slice(0,5));
+          if (h !== "%PDF-") return;
+          pdfBytes = sess.pdfBytes;
+          originalBytes = cloneBytes(sess.pdfBytes);
+          pdfName = sess.pdfName || pdfName;
+          cropRects = new Map(sess.rects as any);
+          selected = new Set(sess.selected);
+          pageCount = sess.pageCount;
+          els.pdfInfo.textContent = `${pdfName} — ${(pdfBytes.length/1024).toFixed(1)} KB (restaurado de IndexedDB)`;
+          els.pdfInfo.classList.remove("hidden");
+          els.controls.classList.remove("hidden");
+          await renderAll();
+          updateUndoRedoButtons();
+        }
+      } catch (e) { console.warn("No se pudo restaurar sesión", e); }
+    })();
   </script>
 </BaseLayout>
