@@ -532,7 +532,7 @@ export default function PdfCropper() {
             <p className="text-xs text-amber-800/70">Arrastra el <b>marco naranja</b> — el área dentro es el resultado. <b>Sin botón</b>: se aplica al <b>Descargar</b> en resolución original. Si hay varias seleccionadas, se mueven al unísono.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <button onClick={handleAutoCrop} disabled={isProcessing && !autoProgress} className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white text-xs font-bold flex items-center gap-2">
-                {autoProgress ? `⏳ ${autoProgress.done}/${autoProgress.total} — Cancelar` : "✨ Auto barra lateral (lote 100)"}
+                {autoProgress ? `⏳ ${autoProgress.done}/${autoProgress.total} — Cancelar` : "✨ Recorte inteligente"}
               </button>
               {cropRects.size > 0 && (
                 <>
