@@ -140,6 +140,39 @@ function median(arr: number[]): number {
   return s.length%2===0 ? (s[mid-1]+s[mid])/2 : s[mid];
 }
 
+function boundingBoxCrop(imageData: ImageData, marginRatio=0.02): number {
+  const { data, width, height } = imageData;
+  const lumThr = 240, tol = 5;
+  const colInk = new Uint32Array(width);
+  for (let y=0;y<height;y++) for(let x=0;x<width;x++) {
+    const i=(y*width+x)*4;
+    if ((data[i]+data[i+1]+data[i+2])/3 < lumThr) colInk[x]++;
+  }
+  let minX = width, maxX = -1;
+  for (let x=0;x<width;x++) if (colInk[x] > tol) { minX = Math.min(minX, x); maxX = Math.max(maxX, x); }
+  if (maxX === -1) return 1.0;
+  const margin = Math.round(width * marginRatio);
+  minX = Math.max(0, minX - margin);
+  maxX = Math.min(width-1, maxX + margin);
+  const w = (maxX - minX + 1) / width;
+  // solo si recorta algo significativo pero no demasiado (evita página casi vacía)
+  if (w < 0.98 && w > 0.50) return (minX + (maxX-minX+1)) / width; // = maxX+1 /width con margen
+  // fallback: w = maxX/width
+  return (maxX + 1) / width;
+}
+
+function windowMedian(out: {w:number}[], idx: number, k=7): number | null {
+  const vals:number[]=[];
+  for (let d=-k; d<=k; d++) {
+    const j= idx+d;
+    if (j<0 || j>=out.length || j===idx) continue;
+    const w= out[j].w;
+    if (w < 0.97 && w > 0.50) vals.push(w);
+  }
+  if (vals.length >= 3) return median(vals);
+  return null;
+}
+
 export async function detectCropBatchRects(
   pdfBytes: Uint8Array,
   pageCount: number,
@@ -181,21 +214,17 @@ export async function detectCropBatchRects(
   } finally {
     try { await doc.destroy(); } catch {}
   }
-  // Estrategia 3 pasadas + consenso (sin IA)
+  // Estrategia: 3 pasadas + consenso ventana + fallback bounding box (sin IA)
   const successful = out.filter(r=> r.w < 0.97 && r.w > 0.50).map(r=>r.w);
   const medianCrop = median(successful);
   const hasConsensus = successful.length >= 5 && medianCrop < 1.0;
   for (let i=0; i<out.length; i++) {
     if (out[i].w >= 0.999) {
-      // Pasada 2: desesperada — más agresiva solo en fallidas
       const im = imageDatas[i];
       let aggressiveW = 1.0;
       if (im) {
-        // minGutter 8px + lum 210 + inkTol 3 para gutters estrechos sin azul
         aggressiveW = calculateSmartCropRight(im, 8, 210, 3);
-        // derivada: pico de cambio brusco si gutter pegado (sin canal blanco)
         if (aggressiveW >= 0.999) {
-          // derivada simple: busca salto >15% altura
           const { width, height, data } = im;
           const colInk = new Uint32Array(width);
           for (let y=0;y<height;y++) for(let x=0;x<width;x++) if ((data[(y*width+x)*4]+data[(y*width+x)*4+1]+data[(y*width+x)*4+2])/3 < 210) colInk[x]++;
@@ -209,10 +238,19 @@ export async function detectCropBatchRects(
       }
       if (aggressiveW < 0.97 && aggressiveW > 0.50) {
         out[i] = { x:0, y:0, w: aggressiveW, h:1 };
-      } else if (hasConsensus) {
-        // Pasada 3: consenso del lote — hereda mediana
-        out[i] = { x:0, y:0, w: medianCrop, h:1 };
-        onProgress?.(i+1, pageCount, out[i]);
+      } else {
+        // Fallback 1: bounding box de contenido (para págs sin grilla/gutter)
+        let bboxW = 1.0;
+        if (im) bboxW = boundingBoxCrop(im, 0.02);
+        if (bboxW < 0.97 && bboxW > 0.50) {
+          out[i] = { x:0, y:0, w: bboxW, h:1 };
+        } else if (hasConsensus) {
+          // Fallback 2: consenso ventana deslizante (k=7) > global
+          const winMed = windowMedian(out, i, 7);
+          const useCrop = winMed ?? medianCrop;
+          out[i] = { x:0, y:0, w: useCrop, h:1 };
+          onProgress?.(i+1, pageCount, out[i]);
+        }
       }
     }
   }
