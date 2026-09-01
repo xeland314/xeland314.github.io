@@ -8,23 +8,26 @@ if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 }
 
-import type { PageRotation } from "./storage";
+import type { PageRotation, Quad } from "./storage";
 interface Props {
   pdfBytes: Uint8Array;
   pageIndex: number;
   thumbnailSrc: string | null;
   rect: NormalizedRect;
+  quad?: Quad | null;
   rotation?: PageRotation;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
+  onQuadPoint?: (idx: number, pIdx: number, pt: { x: number; y: number }) => void;
   onClose: () => void;
 }
 
-export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, rotation = 0, onRectChange, onClose }: Props) {
+export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, onRectChange, onQuadPoint, onClose }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [highResReady, setHighResReady] = useState(false);
   const [renderError, setRenderError] = useState(false);
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
+  const quadDragRef = useRef<null | { pIdx: number; startX: number; startY: number; startQuad: Quad }>(null);
 
   // high-res render solo de esta página, desde bytes originales
   useEffect(() => {
@@ -104,6 +107,12 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
     dragRef.current = { type, handle, startX: e.clientX, startY: e.clientY, startRect: { ...rect } };
     (e.target as Element).setPointerCapture?.(e.nativeEvent.pointerId);
   };
+  const handleQuadPointerDown = (e: React.PointerEvent, pIdx: number) => {
+    e.preventDefault(); e.stopPropagation();
+    if (!quad || !onQuadPoint) return;
+    quadDragRef.current = { pIdx, startX: e.clientX, startY: e.clientY, startQuad: quad.map(p=>({ ...p })) as Quad };
+    (e.target as Element).setPointerCapture?.(e.nativeEvent.pointerId);
+  };
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
@@ -138,6 +147,22 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
     };
   }, [pageIndex, onRectChange]);
 
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      const d = quadDragRef.current;
+      if (!d || !wrapRef.current || !onQuadPoint) return;
+      const r = wrapRef.current.getBoundingClientRect();
+      const dx = (e.clientX - d.startX) / r.width;
+      const dy = (e.clientY - d.startY) / r.height;
+      const st = d.startQuad[d.pIdx];
+      onQuadPoint(pageIndex, d.pIdx, { x: st.x + dx, y: st.y + dy });
+    };
+    const onUp = () => { quadDragRef.current = null; };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+  }, [pageIndex, onQuadPoint]);
+
   const borderColor = isFullRect(rect) ? "rgba(245,158,11,0.95)" : "#f59e0b";
   const bg = isFullRect(rect) ? "rgba(245,158,11,0.06)" : "rgba(245,158,11,0.14)";
 
@@ -147,8 +172,8 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
       <div className="relative w-full max-w-[min(1200px,88vw)] max-h-[92vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2.5 py-1 rounded-full">Pág. {pageIndex + 1}{rotation ? ` · ${rotation}°` : ""}</span>
-            <span className="text-xs text-gray-500 hidden sm:inline">Arrastra el marco naranja — precisión a nivel de píxel · <b>Esc</b> para cerrar</span>
+            <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2.5 py-1 rounded-full">Pág. {pageIndex + 1}{rotation ? ` · ${rotation}°` : ""}{quad ? " · ◫" : ""}</span>
+            <span className="text-xs text-gray-500 hidden sm:inline">{quad ? "Arrastra esquinas del trapecio — warp a rectángulo" : "Arrastra el marco naranja — precisión a nivel de píxel"} · <b>Esc</b> para cerrar</span>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300">✕</button>
         </div>
@@ -168,42 +193,54 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
               {renderError && <div className="absolute inset-0 flex items-center justify-center text-xs text-red-500 bg-white/80 rounded-lg">Error al renderizar página</div>}
             </div>
 
-            {/* overlay recorte — NO gira, queda fijo a pantalla para que e/w/n/s sigan siendo horizontales */}
-            <div
-              data-crop-box="1"
-              onPointerDown={(e) => {
-                const t = e.target as HTMLElement;
-                if (t.dataset.handle) return;
-                handlePointerDown(e, "move");
-              }}
-              className="absolute inset-0 rounded-sm cursor-move touch-none"
-              style={{
-                left: `${rect.x * 100}%`,
-                top: `${rect.y * 100}%`,
-                width: `${rect.w * 100}%`,
-                height: `${rect.h * 100}%`,
-                border: `2.5px dashed ${borderColor}`,
-                background: bg,
-                boxShadow: "0 0 0 9999px rgba(0,0,0,0.38)",
-              }}
-            >
-              {(["nw","ne","sw","se","n","s","e","w"] as const).map((pos) => {
-                const isCorner = ["nw","ne","sw","se"].includes(pos);
-                const style: React.CSSProperties = isCorner ? { width: 14, height: 14 } : pos === "n" || pos === "s" ? { width: 32, height: 10, borderRadius: 9999 } : { width: 10, height: 32, borderRadius: 9999 };
-                const posStyle: Record<string, React.CSSProperties> = {
-                  nw: { left: -7, top: -7, cursor: "nw-resize" },
-                  ne: { right: -7, top: -7, cursor: "ne-resize" },
-                  sw: { left: -7, bottom: -7, cursor: "sw-resize" },
-                  se: { right: -7, bottom: -7, cursor: "se-resize" },
-                  n: { left: "50%", top: -5, transform: "translateX(-50%)", cursor: "n-resize" },
-                  s: { left: "50%", bottom: -5, transform: "translateX(-50%)", cursor: "s-resize" },
-                  w: { left: -5, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
-                  e: { right: -5, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
-                };
-                return <div key={pos} data-handle={pos} onPointerDown={(e) => handlePointerDown(e, "resize", pos)} className="absolute bg-amber-500 border-2 border-white rounded-sm shadow-md" style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties} />;
-              })}
-              <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow pointer-events-none">Conservar</span>
-            </div>
+            {/* overlay — quad trapecio si existe, si no rect naranja */}
+            {quad ? (
+              <>
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <polygon points={quad.map(p=>`${p.x*100},${p.y*100}`).join(" ")} fill="rgba(99,102,241,0.14)" stroke="rgba(99,102,241,0.95)" strokeWidth={0.6} vectorEffect="non-scaling-stroke" />
+                </svg>
+                {quad.map((pt,i)=>(
+                  <div key={i} onPointerDown={e=>handleQuadPointerDown(e,i)} title={`Esquina ${i+1}`} className="absolute w-4 h-4 bg-indigo-500 border-2 border-white rounded-full shadow -translate-x-1/2 -translate-y-1/2 cursor-move hover:scale-110 transition-transform" style={{ left: `${pt.x*100}%`, top: `${pt.y*100}%` }} />
+                ))}
+                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow pointer-events-none">Trapecio → rectángulo</span>
+              </>
+            ) : (
+              <div
+                data-crop-box="1"
+                onPointerDown={(e) => {
+                  const t = e.target as HTMLElement;
+                  if (t.dataset.handle) return;
+                  handlePointerDown(e, "move");
+                }}
+                className="absolute inset-0 rounded-sm cursor-move touch-none"
+                style={{
+                  left: `${rect.x * 100}%`,
+                  top: `${rect.y * 100}%`,
+                  width: `${rect.w * 100}%`,
+                  height: `${rect.h * 100}%`,
+                  border: `2.5px dashed ${borderColor}`,
+                  background: bg,
+                  boxShadow: "0 0 0 9999px rgba(0,0,0,0.38)",
+                }}
+              >
+                {(["nw","ne","sw","se","n","s","e","w"] as const).map((pos) => {
+                  const isCorner = ["nw","ne","sw","se"].includes(pos);
+                  const style: React.CSSProperties = isCorner ? { width: 14, height: 14 } : pos === "n" || pos === "s" ? { width: 32, height: 10, borderRadius: 9999 } : { width: 10, height: 32, borderRadius: 9999 };
+                  const posStyle: Record<string, React.CSSProperties> = {
+                    nw: { left: -7, top: -7, cursor: "nw-resize" },
+                    ne: { right: -7, top: -7, cursor: "ne-resize" },
+                    sw: { left: -7, bottom: -7, cursor: "sw-resize" },
+                    se: { right: -7, bottom: -7, cursor: "se-resize" },
+                    n: { left: "50%", top: -5, transform: "translateX(-50%)", cursor: "n-resize" },
+                    s: { left: "50%", bottom: -5, transform: "translateX(-50%)", cursor: "s-resize" },
+                    w: { left: -5, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
+                    e: { right: -5, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
+                  };
+                  return <div key={pos} data-handle={pos} onPointerDown={(e) => handlePointerDown(e, "resize", pos)} className="absolute bg-amber-500 border-2 border-white rounded-sm shadow-md" style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties} />;
+                })}
+                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow pointer-events-none">Conservar</span>
+              </div>
+            )}
           </div>
         </div>
 

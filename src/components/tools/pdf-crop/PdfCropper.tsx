@@ -347,12 +347,27 @@ export default function PdfCropper() {
       const next = new Map(prev);
       const q = next.get(idx);
       if (!q) return prev;
+      const cur = q[pIdx];
+      const dx = pt.x - cur.x;
+      const dy = pt.y - cur.y;
       const nq = q.map(p=>({ ...p })) as Quad;
       nq[pIdx] = { x: Math.max(0,Math.min(1, pt.x)), y: Math.max(0,Math.min(1, pt.y)) };
       next.set(idx, nq);
+      // sync solo trapecios entre trapecios en seleccion multiple (rects separados via syncRectsForSelection)
+      if (selected.has(idx) && selected.size > 1) {
+        for (const other of selected) {
+          if (other === idx) continue;
+          const oq = next.get(other);
+          if (!oq) continue;
+          const op = oq[pIdx];
+          const nqOther = oq.map(p=>({ ...p })) as Quad;
+          nqOther[pIdx] = { x: Math.max(0,Math.min(1, op.x + dx)), y: Math.max(0,Math.min(1, op.y + dy)) };
+          next.set(other, nqOther);
+        }
+      }
       return next;
     });
-  }, []);
+  }, [selected]);
 
   const handleAutoCrop = useCallback(async () => {
     if (!pdfBytes || pageCount===0) return;
@@ -769,8 +784,10 @@ export default function PdfCropper() {
                     pageIndex={previewIdx}
                     thumbnailSrc={thumbnails[previewIdx] ?? null}
                     rect={cropRects.get(previewIdx) ?? FULL_RECT}
+                    quad={quads.get(previewIdx) ?? null}
                     rotation={rotations.get(previewIdx) ?? 0}
                     onRectChange={handleRectChange}
+                    onQuadPoint={handleQuadPoint}
                     onClose={() => setPreviewIdx(null)}
                   />
                 )}
