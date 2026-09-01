@@ -1,4 +1,10 @@
 import * as pdfjsLib from "pdfjs-dist";
+import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
+
+// asegura worker para generateThumbnails (PdfCropper también lo setea, pero este módulo puede cargarse antes)
+if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+}
 
 export function thumbKey(bytes: Uint8Array, name: string): string {
   // hash ligero: nombre + longitud + primeros/últimos 32 bytes, suficiente para cache sesión
