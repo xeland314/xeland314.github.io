@@ -1,5 +1,7 @@
 import type { NormalizedRect } from "./pdfOperations";
 
+export type PageRotation = 0 | 90 | 180 | 270;
+
 export interface PdfCropSession {
   id: string;
   pdfName: string;
@@ -7,6 +9,7 @@ export interface PdfCropSession {
   // v3: guardamos binario directo; si existe, tiene prioridad sobre pdfBase64
   pdfBytes?: Uint8Array;
   rects: [number, NormalizedRect][];
+  rotations?: [number, PageRotation][]; // v4 — rotación por página (0|90|180|270), omitido =0
   selected: number[];
   pageCount: number;
   updatedAt: number;
@@ -19,6 +22,7 @@ export interface PdfCropProject {
   pdfBase64: string; // legacy
   pdfBytes?: Uint8Array; // v3 binario directo
   rects: [number, NormalizedRect][];
+  rotations?: [number, PageRotation][]; // v4
   selected: number[];
   pageCount: number;
   createdAt: number;
@@ -82,6 +86,7 @@ export async function saveSession(opts: {
   pdfBytes: Uint8Array;
   pdfName: string;
   rects: Map<number, NormalizedRect>;
+  rotations?: Map<number, PageRotation>;
   selected: Set<number>;
   pageCount: number;
 }): Promise<void> {
@@ -93,6 +98,7 @@ export async function saveSession(opts: {
     pdfBase64: "", // legacy vacío
     pdfBytes: opts.pdfBytes, // binario directo
     rects: Array.from(opts.rects.entries()),
+    rotations: opts.rotations ? Array.from(opts.rotations.entries()) : [],
     selected: Array.from(opts.selected),
     pageCount: opts.pageCount,
     updatedAt: Date.now(),
@@ -111,6 +117,7 @@ export async function loadSession(): Promise<{
   pdfBytes: Uint8Array;
   pdfName: string;
   rects: Map<number, NormalizedRect>;
+  rotations: Map<number, PageRotation>;
   selected: Set<number>;
   pageCount: number;
 } | null> {
@@ -131,6 +138,7 @@ export async function loadSession(): Promise<{
       pdfBytes: bytes,
       pdfName: session.pdfName,
       rects: new Map(session.rects),
+      rotations: new Map((session.rotations ?? []) as [number, PageRotation][]),
       selected: new Set(session.selected),
       pageCount: session.pageCount,
     };
@@ -186,6 +194,7 @@ export async function saveProject(opts: {
   pdfBytes: Uint8Array;
   pdfName: string;
   rects: Map<number, NormalizedRect>;
+  rotations?: Map<number, PageRotation>;
   selected: Set<number>;
   pageCount: number;
   id?: string;
@@ -201,6 +210,7 @@ export async function saveProject(opts: {
     pdfBase64: "", // legacy vacío
     pdfBytes: opts.pdfBytes,
     rects: Array.from(opts.rects.entries()),
+    rotations: opts.rotations ? Array.from(opts.rotations.entries()) : (existing?.rotations ?? []),
     selected: Array.from(opts.selected),
     pageCount: opts.pageCount,
     createdAt: existing?.createdAt ?? now,
@@ -239,6 +249,7 @@ export async function duplicateProject(id: string): Promise<string | null> {
     pdfBytes: bytes,
     pdfName: p.pdfName,
     rects: new Map(p.rects),
+    rotations: new Map((p.rotations ?? []) as [number, PageRotation][]),
     selected: new Set(p.selected),
     pageCount: p.pageCount,
   });
@@ -284,6 +295,7 @@ export async function importProjectJson(file: File): Promise<string | null> {
     pdfBase64: "",
     pdfBytes: bytes,
     rects: parsed.rects || [],
+    rotations: parsed.rotations || [],
     selected: parsed.selected || [],
     pageCount: parsed.pageCount || 0,
     createdAt: Date.now(),

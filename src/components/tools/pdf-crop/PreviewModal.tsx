@@ -8,16 +8,18 @@ if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 }
 
+import type { PageRotation } from "./storage";
 interface Props {
   pdfBytes: Uint8Array;
   pageIndex: number;
   thumbnailSrc: string | null;
   rect: NormalizedRect;
+  rotation?: PageRotation;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
   onClose: () => void;
 }
 
-export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, onRectChange, onClose }: Props) {
+export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, rotation = 0, onRectChange, onClose }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [highResReady, setHighResReady] = useState(false);
@@ -133,14 +135,14 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
       <div className="relative w-full max-w-[min(1200px,88vw)] max-h-[92vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2.5 py-1 rounded-full">Pág. {pageIndex + 1}</span>
+            <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2.5 py-1 rounded-full">Pág. {pageIndex + 1}{rotation ? ` · ${rotation}°` : ""}</span>
             <span className="text-xs text-gray-500 hidden sm:inline">Arrastra el marco naranja — precisión a nivel de píxel · <b>Esc</b> para cerrar</span>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300">✕</button>
         </div>
 
         <div className="flex-1 overflow-auto bg-gray-50 dark:bg-black p-4 sm:p-6 flex items-center justify-center">
-          <div ref={wrapRef} className="relative inline-block max-w-full max-h-full">
+          <div ref={wrapRef} className="relative inline-block max-w-full max-h-full transition-transform duration-200" style={{ transform: rotation ? `rotate(${rotation}deg)` : undefined, transformOrigin: "center center" }}>
             {/* placeholder blur mientras carga high-res */}
             {!highResReady && thumbnailSrc && (
               <img src={thumbnailSrc} alt="" className="absolute inset-0 w-full h-full object-contain rounded-lg blur-[6px] opacity-60 pointer-events-none" />

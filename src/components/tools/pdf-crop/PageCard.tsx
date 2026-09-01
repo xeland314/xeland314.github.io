@@ -1,20 +1,23 @@
 import React, { useEffect, useRef, useState, memo } from "react";
 import type { NormalizedRect } from "./pdfOperations";
 import { isFullRect } from "./pdfOperations";
+import type { PageRotation } from "./storage";
 
 interface Props {
   pageIndex: number; // 0-based
   thumbnailSrc: string | null; // low-res JPEG cache (180px), null = aún generando
   rect: NormalizedRect;
+  rotation?: PageRotation;
   isSelected: boolean;
   previewCrop: boolean;
   onSelect: (idx: number) => void;
   onDelete: (idx: number) => void;
+  onRotate: (idx: number, delta: 90 | -90) => void;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
   onPreview: (idx: number) => void;
 }
 
-const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop, onSelect, onDelete, onRectChange, onPreview }: Props) => {
+const PageCard = memo(({ pageIndex, thumbnailSrc, rect, rotation = 0, isSelected, previewCrop, onSelect, onDelete, onRotate, onRectChange, onPreview }: Props) => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
@@ -72,6 +75,8 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop,
   const showBox = previewCrop;
   const borderColor = isFullRect(rect) ? "rgba(245,158,11,0.9)" : "#f59e0b";
   const bg = isFullRect(rect) ? "rgba(245,158,11,0.04)" : "rgba(245,158,11,0.12)";
+  const deg = (rotation ?? 0) as number;
+  const isSwapped = deg === 90 || deg === 270;
 
   return (
     <div
@@ -81,15 +86,68 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop,
       <div
         ref={wrapRef}
         onDoubleClick={() => onPreview(pageIndex)}
-        className="relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden min-h-[160px]"
+        className={`relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center min-h-[160px] ${isSwapped ? "overflow-visible" : "overflow-hidden"}`}
       >
-        {!visible ? (
-          <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
-        ) : !thumbnailSrc ? (
-          <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
-        ) : (
-          <img src={thumbnailSrc} alt={`Página ${pageIndex+1}`} loading="lazy" decoding="async" className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none" style={{ width: "100%", height: "auto" }} draggable={false} onDoubleClick={() => onPreview(pageIndex)} />
-        )}
+        {/* contenedor rotado — imagen + crop box giran juntos via CSS, sin re-render pdfjs */}
+        <div
+          className="relative flex items-center justify-center w-full transition-transform duration-200"
+          style={{ transform: deg ? `rotate(${deg}deg)` : undefined, transformOrigin: "center center" }}
+        >
+          {!visible ? (
+            <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
+          ) : !thumbnailSrc ? (
+            <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
+          ) : (
+            <img src={thumbnailSrc} alt={`Página ${pageIndex+1}`} loading="lazy" decoding="async" className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none" style={{ width: "100%", height: "auto" }} draggable={false} onDoubleClick={() => onPreview(pageIndex)} />
+          )}
+          {visible && showBox && (
+            <div
+              data-crop-box="1"
+              onPointerDown={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.dataset.handle) return;
+                handlePointerDown(e, "move");
+              }}
+              className="absolute rounded-sm cursor-move touch-none"
+              style={{
+                left: `${rect.x * 100}%`,
+                top: `${rect.y * 100}%`,
+                width: `${rect.w * 100}%`,
+                height: `${rect.h * 100}%`,
+                border: `2px dashed ${borderColor}`,
+                background: bg,
+                boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
+              }}
+            >
+              {["nw","ne","sw","se","n","s","e","w"].map((pos) => {
+                const isCorner = ["nw","ne","sw","se"].includes(pos);
+                const style: React.CSSProperties = isCorner
+                  ? { width: 12, height: 12 }
+                  : pos === "n" || pos === "s" ? { width: 28, height: 8, borderRadius: 9999 } : { width: 8, height: 28, borderRadius: 9999 };
+                const posStyle: Record<string, React.CSSProperties> = {
+                  nw: { left: -6, top: -6, cursor: "nw-resize" },
+                  ne: { right: -6, top: -6, cursor: "ne-resize" },
+                  sw: { left: -6, bottom: -6, cursor: "sw-resize" },
+                  se: { right: -6, bottom: -6, cursor: "se-resize" },
+                  n: { left: "50%", top: -4, transform: "translateX(-50%)", cursor: "n-resize" },
+                  s: { left: "50%", bottom: -4, transform: "translateX(-50%)", cursor: "s-resize" },
+                  w: { left: -4, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
+                  e: { right: -4, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
+                };
+                return (
+                  <div
+                    key={pos}
+                    data-handle={pos}
+                    onPointerDown={(e) => handlePointerDown(e, "resize", pos)}
+                    className="absolute bg-amber-500 border-2 border-white rounded-sm shadow"
+                    style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties}
+                  />
+                );
+              })}
+              <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Conservar</span>
+            </div>
+          )}
+        </div>
         {/* botón flotante expandir — solo hover, no satura footer */}
         <button
           onClick={(e) => { e.stopPropagation(); onPreview(pageIndex); }}
@@ -98,54 +156,7 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop,
         >
           <span className="text-[11px]">⛶</span>
         </button>
-        {visible && showBox && (
-          <div
-            data-crop-box="1"
-            onPointerDown={(e) => {
-              const target = e.target as HTMLElement;
-              if (target.dataset.handle) return;
-              handlePointerDown(e, "move");
-            }}
-            className="absolute rounded-sm cursor-move touch-none"
-            style={{
-              left: `${rect.x * 100}%`,
-              top: `${rect.y * 100}%`,
-              width: `${rect.w * 100}%`,
-              height: `${rect.h * 100}%`,
-              border: `2px dashed ${borderColor}`,
-              background: bg,
-              boxShadow: "0 0 0 9999px rgba(0,0,0,0.35)",
-            }}
-          >
-            {["nw","ne","sw","se","n","s","e","w"].map((pos) => {
-              const isCorner = ["nw","ne","sw","se"].includes(pos);
-              const style: React.CSSProperties = isCorner
-                ? { width: 12, height: 12 }
-                : pos === "n" || pos === "s" ? { width: 28, height: 8, borderRadius: 9999 } : { width: 8, height: 28, borderRadius: 9999 };
-              const posStyle: Record<string, React.CSSProperties> = {
-                nw: { left: -6, top: -6, cursor: "nw-resize" },
-                ne: { right: -6, top: -6, cursor: "ne-resize" },
-                sw: { left: -6, bottom: -6, cursor: "sw-resize" },
-                se: { right: -6, bottom: -6, cursor: "se-resize" },
-                n: { left: "50%", top: -4, transform: "translateX(-50%)", cursor: "n-resize" },
-                s: { left: "50%", bottom: -4, transform: "translateX(-50%)", cursor: "s-resize" },
-                w: { left: -4, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
-                e: { right: -4, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
-              };
-              return (
-                <div
-                  key={pos}
-                  data-handle={pos}
-                  onPointerDown={(e) => handlePointerDown(e, "resize", pos)}
-                  className="absolute bg-amber-500 border-2 border-white rounded-sm shadow"
-                  style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties}
-                />
-              );
-            })}
-            <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Conservar</span>
-          </div>
-        )}
-        <span className="absolute top-2 left-2 text-[11px] font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-full shadow">{pageIndex + 1}</span>
+        <span className="absolute top-2 left-2 text-[11px] font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-full shadow">{pageIndex + 1}{deg ? ` · ${deg}°` : ""}</span>
         <input
           type="checkbox"
           checked={isSelected}
@@ -162,9 +173,12 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop,
           className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow"
         >✕</button>
       </div>
-      <div className="px-3 py-2 flex items-center justify-between gap-2">
-        <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}</span>
-        <span className="text-[10px] font-bold tracking-widest uppercase text-gray-400">☑ casilla para seleccionar</span>
+      <div className="px-3 py-2 flex items-center justify-between gap-1">
+        <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}{deg ? ` · ${deg}°` : ""}</span>
+        <div className="flex items-center gap-1">
+          <button title="Rotar 90° antihorario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, -90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↺</button>
+          <button title="Rotar 90° horario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, 90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↻</button>
+        </div>
       </div>
     </div>
   );

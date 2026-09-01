@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, degrees } from "pdf-lib";
 import { parsePageIntervals, normalizedRectToCropBox, FULL_RECT, isFullRect, clampRect } from "./pdfOperations";
 import type { NormalizedRect } from "./pdfOperations";
 import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtract } from "./cropSync";
 import { saveSession, loadSession, clearSession, listProjects, saveProject, getProject, deleteProject, duplicateProject, exportProjectJson, importProjectJson, base64ToBytes } from "./storage";
-import type { PdfCropProject } from "./storage";
+import type { PdfCropProject, PageRotation } from "./storage";
 import PageCard from "./PageCard";
 import PreviewModal from "./PreviewModal";
 import { generateThumbnails, thumbKey } from "./thumbnail";
 import { detectCropBatchRects } from "./autoCrop";
 
-type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect>; thumbs: string[] };
+type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect>; rotations: Map<number, PageRotation>; thumbs: string[] };
 
 const UNDO_LIMIT = 8;
 const PERSIST_DEBOUNCE_MS = 1500;
@@ -18,6 +18,19 @@ const MAX_AUTOSAVE_BYTES = 25 * 1024 * 1024;
 
 function cloneBytes(b: Uint8Array) { return new Uint8Array(b); }
 function cloneRects(m: Map<number, NormalizedRect>) { return new Map(Array.from(m.entries()).map(([k,v])=>[k,{...v}])); }
+function cloneRots(m: Map<number, PageRotation>) { return new Map(m); }
+function reindexRotsAfterDelete(rots: Map<number, PageRotation>, kept: number[]): Map<number, PageRotation> {
+  const pos = new Map(kept.map((old,i)=>[old,i] as const));
+  const next = new Map<number, PageRotation>();
+  for (const [k,v] of rots) { const n = pos.get(k); if (n !== undefined) next.set(n, v); }
+  return next;
+}
+function reindexRotsAfterExtract(rots: Map<number, PageRotation>, indices: number[]): Map<number, PageRotation> {
+  const pos = new Map(indices.map((old,i)=>[old,i] as const));
+  const next = new Map<number, PageRotation>();
+  for (const [k,v] of rots) { const n = pos.get(k); if (n !== undefined) next.set(n, v); }
+  return next;
+}
 
 export default function PdfCropper() {
   const [pdfBytes, setPdfBytes] = useState<Uint8Array | null>(null);
@@ -30,6 +43,7 @@ export default function PdfCropper() {
   const thumbAbort = useRef<AbortController | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [cropRects, setCropRects] = useState<Map<number, NormalizedRect>>(new Map());
+  const [rotations, setRotations] = useState<Map<number, PageRotation>>(new Map());
   const [previewCrop, setPreviewCrop] = useState(true);
   const [undoStack, setUndoStack] = useState<UndoState[]>([]);
   const [redoStack, setRedoStack] = useState<UndoState[]>([]);
@@ -46,15 +60,15 @@ export default function PdfCropper() {
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
-  const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, sel: Set<number>, count: number) => {
+  const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, sel: Set<number>, count: number) => {
     if (!bytes) return;
     if (bytes.length > MAX_AUTOSAVE_BYTES) return;
-    try { await saveSession({ pdfBytes: bytes, pdfName: name, rects, selected: sel, pageCount: count }); } catch {}
+    try { await saveSession({ pdfBytes: bytes, pdfName: name, rects, rotations: rots, selected: sel, pageCount: count }); } catch {}
   }, []);
 
-  const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>, thumbs: string[]) => {
+  const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, thumbs: string[]) => {
     setUndoStack(s => {
-      const next = [...s, { bytes: cloneBytes(bytes), rects: cloneRects(rects), thumbs: [...thumbs] }];
+      const next = [...s, { bytes: cloneBytes(bytes), rects: cloneRects(rects), rotations: cloneRots(rots), thumbs: [...thumbs] }];
       return next.length > UNDO_LIMIT ? next.slice(next.length - UNDO_LIMIT) : next;
     });
     setRedoStack([]);
@@ -111,6 +125,7 @@ export default function PdfCropper() {
           setOriginalBytes(cloneBytes(sess.pdfBytes));
           setPdfName(sess.pdfName);
           setCropRects(new Map(sess.rects as any));
+          setRotations(new Map((sess as any).rotations as any ?? []));
           setSelected(new Set(sess.selected));
           setPageCount(sess.pageCount);
           // genera thumbnails desde bytes restaurados (cache)
@@ -123,9 +138,9 @@ export default function PdfCropper() {
   // persist
   useEffect(() => {
     if (!pdfBytes) return;
-    const t = setTimeout(()=> persist(pdfBytes, pdfName, cropRects, selected, pageCount), PERSIST_DEBOUNCE_MS);
+    const t = setTimeout(()=> persist(pdfBytes, pdfName, cropRects, rotations, selected, pageCount), PERSIST_DEBOUNCE_MS);
     return ()=> clearTimeout(t);
-  }, [pdfBytes, pdfName, cropRects, selected, pageCount, persist]);
+  }, [pdfBytes, pdfName, cropRects, rotations, selected, pageCount, persist]);
 
   const handleFile = useCallback(async (file: File) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) { alert("Solo PDF"); return; }
@@ -142,6 +157,7 @@ export default function PdfCropper() {
     setPdfName(file.name);
     setSelected(new Set());
     setCropRects(new Map());
+    setRotations(new Map());
     setUndoStack([]); setRedoStack([]);
     ensureThumbnails(bytes, file.name);
   }, [ensureThumbnails]);
@@ -165,8 +181,9 @@ export default function PdfCropper() {
     setIsProcessing(true);
     const bytes = cloneBytes(pdfBytes);
     const rects = cloneRects(cropRects);
+    const rotsSnap = cloneRots(rotations);
     const thumbsSnap = [...thumbnails];
-    pushUndo(bytes, rects, thumbsSnap);
+    pushUndo(bytes, rects, rotsSnap, thumbsSnap);
     try {
       const src = await PDFDocument.load(pdfBytes);
       const kept = Array.from({length: pageCount}, (_,i)=>i).filter(i=>!selected.has(i)).sort((a,b)=>a-b);
@@ -176,6 +193,7 @@ export default function PdfCropper() {
       copied.forEach(p=>dst.addPage(p));
       const out = await dst.save();
       const newRects = reindexRectsAfterDelete(cropRects, kept);
+      const newRots = reindexRotsAfterDelete(rotations, kept);
       // evita re-render forzoso: splice thumbnails cacheados sin regenerar pdfjs
       const newThumbs = kept.map(idx => thumbnails[idx]).filter(Boolean);
       setPdfBytes(out);
@@ -184,18 +202,20 @@ export default function PdfCropper() {
       // actualiza cache para nuevo bytes
       thumbCache.current.set(thumbKey(out, pdfName), newThumbs);
       setCropRects(newRects);
+      setRotations(newRots);
       setSelected(new Set());
     } catch(e){ console.error(e); alert("Error al borrar"); }
     setIsProcessing(false);
-  }, [pdfBytes, selected, pageCount, cropRects, pushUndo, thumbnails, pdfName]);
+  }, [pdfBytes, selected, pageCount, cropRects, rotations, pushUndo, thumbnails, pdfName]);
 
   const extractSelected = useCallback(async () => {
     if (!pdfBytes || selected.size===0) return;
     setIsProcessing(true);
     const bytes = cloneBytes(pdfBytes);
     const rects = cloneRects(cropRects);
+    const rotsSnap = cloneRots(rotations);
     const thumbsSnap = [...thumbnails];
-    pushUndo(bytes, rects, thumbsSnap);
+    pushUndo(bytes, rects, rotsSnap, thumbsSnap);
     try {
       const src = await PDFDocument.load(pdfBytes);
       const indices = Array.from(selected).sort((a,b)=>a-b);
@@ -204,16 +224,18 @@ export default function PdfCropper() {
       copied.forEach(p=>dst.addPage(p));
       const out = await dst.save();
       const newRects = reindexRectsAfterExtract(cropRects, indices);
+      const newRots = reindexRotsAfterExtract(rotations, indices);
       const newThumbs = indices.map(idx => thumbnails[idx]).filter(Boolean);
       setPdfBytes(out);
       setThumbnails(newThumbs);
       setPageCount(newThumbs.length);
       thumbCache.current.set(thumbKey(out, pdfName), newThumbs);
       setCropRects(newRects);
+      setRotations(newRots);
       setSelected(new Set());
     } catch(e){ console.error(e); alert("Error al extraer"); }
     setIsProcessing(false);
-  }, [pdfBytes, selected, cropRects, pushUndo, thumbnails, pdfName]);
+  }, [pdfBytes, selected, cropRects, rotations, pushUndo, thumbnails, pdfName]);
 
   const clearCropVisual = useCallback(() => {
     if (cropRects.size === 0) return;
@@ -246,6 +268,29 @@ export default function PdfCropper() {
       return next;
     });
   }, []);
+
+  // rotación: CSS preview + pdf-lib setRotation al descargar — no toca crop/autoCrop
+  const handleRotateOne = useCallback((idx:number, delta: 90 | -90) => {
+    setRotations(prev=>{
+      const next = new Map(prev);
+      const cur = (next.get(idx) ?? 0) as number;
+      const n = (cur + delta + 360) % 360 as PageRotation;
+      if (n === 0) next.delete(idx); else next.set(idx, n);
+      return next;
+    });
+  }, []);
+  const handleRotateSelected = useCallback((delta: 90 | -90) => {
+    if (selected.size===0) return;
+    setRotations(prev=>{
+      const next = new Map(prev);
+      for (const idx of selected) {
+        const cur = (next.get(idx) ?? 0) as number;
+        const n = (cur + delta + 360) % 360 as PageRotation;
+        if (n === 0) next.delete(idx); else next.set(idx, n);
+      }
+      return next;
+    });
+  }, [selected]);
 
   const handleAutoCrop = useCallback(async () => {
     if (!pdfBytes || pageCount===0) return;
@@ -286,7 +331,7 @@ export default function PdfCropper() {
     if(!pdfBytes) return;
     setIsProcessing(true);
     const thumbsSnap = [...thumbnails];
-    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects), thumbsSnap);
+    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects), cloneRots(rotations), thumbsSnap);
     try{
       const src = await PDFDocument.load(pdfBytes);
       const kept = Array.from({length: pageCount}, (_,i)=>i).filter(i=>i!==idx);
@@ -296,40 +341,44 @@ export default function PdfCropper() {
       copied.forEach(p=>dst.addPage(p));
       const out = await dst.save();
       const newRects = reindexRectsAfterDelete(cropRects, kept);
+      const newRots = reindexRotsAfterDelete(rotations, kept);
       const newThumbs = kept.map(k => thumbnails[k]).filter(Boolean);
       setPdfBytes(out);
       setThumbnails(newThumbs);
       setPageCount(newThumbs.length);
       thumbCache.current.set(thumbKey(out, pdfName), newThumbs);
       setCropRects(newRects);
+      setRotations(newRots);
       setSelected(new Set());
     }catch(e){ console.error(e); }
     setIsProcessing(false);
-  }, [pdfBytes, pageCount, cropRects, pushUndo, thumbnails, pdfName]);
+  }, [pdfBytes, pageCount, cropRects, rotations, pushUndo, thumbnails, pdfName]);
 
   const undo = useCallback(async ()=>{
     if(undoStack.length===0) return;
     const prev = undoStack[undoStack.length-1];
     setUndoStack(s=>s.slice(0,-1));
-    if(pdfBytes) setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
+    if(pdfBytes) setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
     setPdfBytes(cloneBytes(prev.bytes));
     setThumbnails([...prev.thumbs]);
     setPageCount(prev.thumbs.length);
     setCropRects(cloneRects(prev.rects));
+    setRotations(cloneRots(prev.rotations));
     setSelected(new Set());
-  }, [undoStack, pdfBytes, cropRects, thumbnails]);
+  }, [undoStack, pdfBytes, cropRects, rotations, thumbnails]);
 
   const redo = useCallback(async ()=>{
     if(redoStack.length===0) return;
     const nxt = redoStack[redoStack.length-1];
     setRedoStack(r=>r.slice(0,-1));
-    if(pdfBytes) setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
+    if(pdfBytes) setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs: [...thumbnails]}].slice(-UNDO_LIMIT));
     setPdfBytes(cloneBytes(nxt.bytes));
     setThumbnails([...nxt.thumbs]);
     setPageCount(nxt.thumbs.length);
     setCropRects(cloneRects(nxt.rects));
+    setRotations(cloneRots(nxt.rotations));
     setSelected(new Set());
-  }, [redoStack, pdfBytes, cropRects, thumbnails]);
+  }, [redoStack, pdfBytes, cropRects, rotations, thumbnails]);
 
   useEffect(()=>{
     const handler = (e: KeyboardEvent)=>{
@@ -349,7 +398,8 @@ export default function PdfCropper() {
     try {
       let outBytes: Uint8Array = pdfBytes;
       const hasCrop = Array.from(cropRects.values()).some(r => !isFullRect(r));
-      if (hasCrop) {
+      const hasRot = rotations.size > 0;
+      if (hasCrop || hasRot) {
         const doc = await PDFDocument.load(pdfBytes);
         for (const [idx, rect] of cropRects.entries()) {
           if (isFullRect(rect)) continue;
@@ -362,6 +412,11 @@ export default function PdfCropper() {
           const box = normalizedRectToCropBox(rect, mw, mh);
           page.setCropBox(mx + box.x, my + box.y, box.width, box.height);
         }
+        for (const [idx, deg] of rotations.entries()) {
+          if (idx < 0 || idx >= doc.getPageCount()) continue;
+          const page = doc.getPage(idx);
+          page.setRotation(degrees(deg));
+        }
         outBytes = await doc.save();
       }
       const blob = new Blob([outBytes.slice(0) as any], {type:"application/pdf"});
@@ -371,13 +426,13 @@ export default function PdfCropper() {
       setTimeout(()=>URL.revokeObjectURL(url),2000);
     } catch(e){ console.error(e); alert("Error al generar PDF recortado"); }
     setIsProcessing(false);
-  }, [pdfBytes, pdfName, cropRects]);
+  }, [pdfBytes, pdfName, cropRects, rotations]);
 
   const handleSaveProject = async ()=>{
     const name = projectNameInput.trim();
     if(!name){ alert("Nombre requerido"); return; }
     if(!pdfBytes){ alert("Carga PDF primero"); return; }
-    const id = await saveProject({ name, pdfBytes, pdfName, rects: cropRects, selected, pageCount, id: currentProjectId??undefined });
+    const id = await saveProject({ name, pdfBytes, pdfName, rects: cropRects, rotations, selected, pageCount, id: currentProjectId??undefined });
     setCurrentProjectId(id);
     setProjectNameInput("");
     refreshProjects();
@@ -394,7 +449,7 @@ export default function PdfCropper() {
     }
     if (!bytes) return;
     setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName);
-    setCropRects(new Map(proj.rects as any)); setSelected(new Set(proj.selected));
+    setCropRects(new Map(proj.rects as any)); setRotations(new Map((proj as any).rotations as any ?? [])); setSelected(new Set(proj.selected));
     setCurrentProjectId(id);
     setShowProjects(false);
     thumbAbort.current?.abort();
@@ -421,7 +476,7 @@ export default function PdfCropper() {
           </button>
           <button onClick={()=>{
             if(pdfBytes && !confirm("¿Nuevo proyecto? Se limpiará selección.")) return;
-            setCurrentProjectId(null); setSelected(new Set()); setCropRects(new Map());
+            setCurrentProjectId(null); setSelected(new Set()); setCropRects(new Map()); setRotations(new Map());
           }} className="p-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95" title="Nuevo">＋</button>
         </div>
         {showProjects && (
@@ -442,7 +497,7 @@ export default function PdfCropper() {
                         let bytes: Uint8Array | null = null;
                         if (proj.pdfBytes instanceof Uint8Array) bytes = proj.pdfBytes;
                         else if (proj.pdfBase64) bytes = base64ToBytes(proj.pdfBase64);
-                        if(bytes){ setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName); setCropRects(new Map(proj.rects as any)); setSelected(new Set(proj.selected)); ensureThumbnails(bytes, proj.pdfName); }
+                        if(bytes){ setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName); setCropRects(new Map(proj.rects as any)); setRotations(new Map((proj as any).rotations as any ?? [])); setSelected(new Set(proj.selected)); ensureThumbnails(bytes, proj.pdfName); }
                       } }
                     }catch(err){ alert("JSON inválido"); }
                     if(importInputRef.current) importInputRef.current.value="";
@@ -498,8 +553,8 @@ export default function PdfCropper() {
               {thumbProgress && thumbProgress.total>0 && <span className="text-xs text-emerald-600 animate-pulse">Miniaturas {thumbProgress.done}/{thumbProgress.total}</span>}
             </div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(prev.bytes)); setThumbnails([...prev.thumbs]); setPageCount(prev.thumbs.length); setCropRects(cloneRects(prev.rects)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↩ Deshacer</button>
-              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(nxt.bytes)); setThumbnails([...nxt.thumbs]); setPageCount(nxt.thumbs.length); setCropRects(cloneRects(nxt.rects)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↪ Rehacer</button>
+              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(prev.bytes)); setThumbnails([...prev.thumbs]); setPageCount(prev.thumbs.length); setCropRects(cloneRects(prev.rects)); setRotations(cloneRots(prev.rotations)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↩ Deshacer</button>
+              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(nxt.bytes)); setThumbnails([...nxt.thumbs]); setPageCount(nxt.thumbs.length); setCropRects(cloneRects(nxt.rects)); setRotations(cloneRots(nxt.rotations)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↪ Rehacer</button>
               <button onClick={download} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Descargar PDF</button>
             </div>
           </div>
@@ -520,8 +575,16 @@ export default function PdfCropper() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button onClick={deleteSelected} disabled={selected.size===0 || isProcessing} className="px-4 py-3 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm font-bold disabled:opacity-40">🗑 Borrar seleccionadas</button>
             <button onClick={extractSelected} disabled={selected.size===0 || isProcessing} className="px-4 py-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-bold disabled:opacity-40">📄 Conservar solo seleccionadas</button>
-            <button onClick={async()=>{ if(!originalBytes) return; const b=cloneBytes(originalBytes); setPdfBytes(b); setCropRects(new Map()); setSelected(new Set()); setUndoStack([]); setRedoStack([]); thumbAbort.current?.abort(); setThumbnails([]); ensureThumbnails(b, pdfName); }} className="px-4 py-3 rounded-xl border bg-white text-sm font-semibold">↺ Volver al original</button>
+            <button onClick={async()=>{ if(!originalBytes) return; const b=cloneBytes(originalBytes); setPdfBytes(b); setCropRects(new Map()); setRotations(new Map()); setSelected(new Set()); setUndoStack([]); setRedoStack([]); thumbAbort.current?.abort(); setThumbnails([]); ensureThumbnails(b, pdfName); }} className="px-4 py-3 rounded-xl border bg-white text-sm font-semibold">↺ Volver al original</button>
           </div>
+          {selected.size>0 && (
+            <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-2xl">
+              <span className="text-xs font-bold text-gray-600 dark:text-gray-300 self-center">Rotar seleccionadas:</span>
+              <button onClick={()=>handleRotateSelected(-90)} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-bold hover:bg-gray-50">↺ 90°</button>
+              <button onClick={()=>handleRotateSelected(90)} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-bold hover:bg-gray-50">↻ 90°</button>
+              {Array.from(selected).some(i=> (rotations.get(i) ?? 0) !==0) && <span className="text-[11px] text-gray-400 self-center">{Array.from(selected).filter(i=> rotations.get(i)).length} con giro</span>}
+            </div>
+          )}
 
           <div className="p-4 sm:p-5 bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 rounded-2xl">
             <div className="flex items-center justify-between mb-2">
@@ -558,10 +621,12 @@ export default function PdfCropper() {
                       pageIndex={idx}
                       thumbnailSrc={src}
                       rect={cropRects.get(idx) ?? FULL_RECT}
+                      rotation={rotations.get(idx) ?? 0}
                       isSelected={selected.has(idx)}
                       previewCrop={previewCrop}
                       onSelect={handleSelect}
                       onDelete={handleDeleteOne}
+                      onRotate={handleRotateOne}
                       onRectChange={handleRectChange}
                       onPreview={setPreviewIdx}
                     />
@@ -573,6 +638,7 @@ export default function PdfCropper() {
                     pageIndex={previewIdx}
                     thumbnailSrc={thumbnails[previewIdx] ?? null}
                     rect={cropRects.get(previewIdx) ?? FULL_RECT}
+                    rotation={rotations.get(previewIdx) ?? 0}
                     onRectChange={handleRectChange}
                     onClose={() => setPreviewIdx(null)}
                   />
