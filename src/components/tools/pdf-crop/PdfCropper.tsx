@@ -8,6 +8,7 @@ import type { PdfCropProject } from "./storage";
 import PageCard from "./PageCard";
 import PreviewModal from "./PreviewModal";
 import { generateThumbnails, thumbKey } from "./thumbnail";
+import { detectCropBatch } from "./autoCrop";
 
 type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect>; thumbs: string[] };
 
@@ -39,6 +40,8 @@ export default function PdfCropper() {
   const [showProjects, setShowProjects] = useState(false);
   const [projectNameInput, setProjectNameInput] = useState("");
   const [previewIdx, setPreviewIdx] = useState<number|null>(null);
+  const [autoProgress, setAutoProgress] = useState<{done:number,total:number}|null>(null);
+  const autoAbort = useRef<AbortController|null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -243,6 +246,42 @@ export default function PdfCropper() {
       return next;
     });
   }, []);
+
+  const handleAutoCrop = useCallback(async () => {
+    if (!pdfBytes || pageCount===0) return;
+    if (autoProgress) { autoAbort.current?.abort(); setAutoProgress(null); return; }
+    const ac = new AbortController();
+    autoAbort.current = ac;
+    setAutoProgress({done:0,total:pageCount});
+    setIsProcessing(true);
+    try {
+      const crops = await detectCropBatch(pdfBytes, pageCount, (done,total)=> setAutoProgress({done,total}), ac.signal);
+      if (ac.signal.aborted) return;
+      const next = new Map<number, NormalizedRect>();
+      let applied = 0;
+      for (let idx=0; idx<crops.length; idx++) {
+        const c = crops[idx];
+        // solo si detecta recorte significativo (evita falsos 1.0 o 0.02 por ruido)
+        if (c < 0.97 && c > 0.45) {
+          next.set(idx, { x:0, y:0, w: clampRect({x:0,y:0,w:c,h:1}).w, h:1 });
+          applied++;
+        }
+      }
+      // conserva recortes manuales que no fueron sobrescritos? para lote reemplazamos todos detectados
+      setCropRects(prev => {
+        const merged = new Map(prev);
+        for (const [k,v] of next) merged.set(k, v);
+        // si no detectó nada en una pág, deja el previo
+        return merged;
+      });
+      if (applied===0) alert("No se detectó barra lateral — prueba ajustar umbral o revisa pdfs_moodle/auto_crop_study.py");
+    } catch(e:any) {
+      if (e?.name !== "AbortError") { console.error(e); alert("Error auto recorte"); }
+    }
+    setIsProcessing(false);
+    setAutoProgress(null);
+    autoAbort.current = null;
+  }, [pdfBytes, pageCount, autoProgress]);
 
   const handleDeleteOne = useCallback(async (idx:number)=>{
     if(!pdfBytes) return;
@@ -491,12 +530,18 @@ export default function PdfCropper() {
               <label className="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" checked={previewCrop} onChange={e=>setPreviewCrop(e.target.checked)} className="rounded" /><span>Vista previa</span></label>
             </div>
             <p className="text-xs text-amber-800/70">Arrastra el <b>marco naranja</b> — el área dentro es el resultado. <b>Sin botón</b>: se aplica al <b>Descargar</b> en resolución original. Si hay varias seleccionadas, se mueven al unísono.</p>
-            {cropRects.size > 0 && (
-              <div className="mt-3 flex gap-2">
-                <button onClick={clearCropVisual} className="px-4 py-2 rounded-xl border bg-white text-xs font-semibold">↺ Quitar recorte {selected.size>0 ? "de seleccionadas" : "de todas"}</button>
-                <span className="text-[11px] text-amber-800/60 self-center">{cropRects.size} pág con recorte</span>
-              </div>
-            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button onClick={handleAutoCrop} disabled={isProcessing && !autoProgress} className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white text-xs font-bold flex items-center gap-2">
+                {autoProgress ? `⏳ ${autoProgress.done}/${autoProgress.total} — Cancelar` : "✨ Auto barra lateral (lote 100)"}
+              </button>
+              {cropRects.size > 0 && (
+                <>
+                  <button onClick={clearCropVisual} className="px-4 py-2 rounded-xl border bg-white text-xs font-semibold">↺ Quitar recorte {selected.size>0 ? "de seleccionadas" : "de todas"}</button>
+                  <span className="text-[11px] text-amber-800/60 self-center">{cropRects.size} pág con recorte</span>
+                </>
+              )}
+            </div>
+            {autoProgress && <p className="text-[11px] text-amber-800/60 mt-2">Visión clásica sin IA — analiza 800px por pág, original intacto. Ver <code className="font-mono">pdfs_moodle/auto_crop_study.py</code> para tunear.</p>}
           </div>
 
           <div>
