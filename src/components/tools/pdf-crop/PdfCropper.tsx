@@ -273,15 +273,16 @@ export default function PdfCropper() {
   }, [pdfBytes, selected, cropRects, rotations, quads, pushUndo, thumbnails, pdfName]);
 
   const clearCropVisual = useCallback(() => {
-    if (cropRects.size === 0) return;
+    if (cropRects.size === 0 && quads.size === 0) return;
     if (selected.size > 0) {
-      const next = new Map(cropRects);
-      for (const idx of selected) next.delete(idx);
-      setCropRects(next);
+      const nextR = new Map(cropRects);
+      const nextQ = new Map(quads);
+      for (const idx of selected) { nextR.delete(idx); nextQ.delete(idx); }
+      setCropRects(nextR); setQuads(nextQ);
     } else {
-      setCropRects(new Map());
+      setCropRects(new Map()); setQuads(new Map());
     }
-  }, [cropRects, selected]);
+  }, [cropRects, quads, selected]);
 
   const handleRectChange = useCallback((idx:number, newRect: NormalizedRect, startRect: NormalizedRect) => {
     setCropRects(prev => {
@@ -747,10 +748,10 @@ export default function PdfCropper() {
               <button onClick={handleAutoCrop} disabled={isProcessing && !autoProgress} className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white text-xs font-bold flex items-center gap-2">
                 {autoProgress ? `⏳ ${autoProgress.done}/${autoProgress.total} — Cancelar` : "✨ Recorte inteligente"}
               </button>
-              {cropRects.size > 0 && (
+              {(cropRects.size + quads.size) > 0 && (
                 <>
                   <button onClick={clearCropVisual} className="px-4 py-2 rounded-xl border bg-white text-xs font-semibold">↺ Quitar recorte {selected.size>0 ? "de seleccionadas" : "de todas"}</button>
-                  <span className="text-[11px] text-amber-800/60 self-center">{cropRects.size} pág con recorte</span>
+                  <span className="text-[11px] text-amber-800/60 self-center">{new Set([...cropRects.keys(), ...quads.keys()]).size} pág con recorte ({cropRects.size} rect · {quads.size} ◫)</span>
                 </>
               )}
             </div>
