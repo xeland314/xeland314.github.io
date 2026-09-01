@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState, memo } from "react";
-import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { NormalizedRect } from "./pdfOperations";
 import { isFullRect } from "./pdfOperations";
 
 interface Props {
   pageIndex: number; // 0-based
-  pdfDoc: PDFDocumentProxy;
+  thumbnailSrc: string | null; // low-res JPEG cache (180px), null = aún generando
   rect: NormalizedRect;
   isSelected: boolean;
   previewCrop: boolean;
@@ -14,63 +13,20 @@ interface Props {
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
 }
 
-const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSelect, onDelete, onRectChange }: Props) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+const PageCard = memo(({ pageIndex, thumbnailSrc, rect, isSelected, previewCrop, onSelect, onDelete, onRectChange }: Props) => {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [renderError, setRenderError] = useState(false);
-  const [visible, setVisible] = useState(false); // lazy: solo renderiza cuando entra en viewport
+  const [visible, setVisible] = useState(false);
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
 
-  // IntersectionObserver lazy - evita renderizar 100 páginas a la vez (OOM canvas)
   useEffect(() => {
     const el = wrapRef.current?.parentElement ?? wrapRef.current;
     if (!el) { setVisible(true); return; }
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) { setVisible(true); io.disconnect(); break; }
-    }, { rootMargin: "400px" });
+    }, { rootMargin: "600px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
-
-  useEffect(() => {
-    if (!visible) return;
-    let cancelled = false;
-    let pageProxy: any = null;
-    const render = async () => {
-      if (!canvasRef.current || !pdfDoc) return;
-      try {
-        pageProxy = await pdfDoc.getPage(pageIndex + 1);
-        if (cancelled) return;
-        const viewport = pageProxy.getViewport({ scale: 1 });
-        const scale = 260 / viewport.width;
-        const vp = pageProxy.getViewport({ scale });
-        const canvas = canvasRef.current!;
-        // limpia canvas previo para liberar memoria
-        canvas.width = Math.round(vp.width);
-        canvas.height = Math.round(vp.height);
-        const ctx = canvas.getContext("2d", { alpha: false });
-        if (ctx) {
-          await pageProxy.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
-        }
-        if (wrapRef.current) wrapRef.current.style.aspectRatio = `${vp.width} / ${vp.height}`;
-      } catch (e) {
-        if (!cancelled) setRenderError(true);
-        console.error("render page", pageIndex, e);
-      } finally {
-        if (pageProxy) try { pageProxy.cleanup(); } catch {}
-      }
-    };
-    render();
-    return () => {
-      cancelled = true;
-      if (pageProxy) try { pageProxy.cleanup(); } catch {}
-      // liberar canvas memory al desmontar o cambiar doc
-      if (canvasRef.current) {
-        canvasRef.current.width = 0;
-        canvasRef.current.height = 0;
-      }
-    };
-  }, [pdfDoc, pageIndex, visible]);
 
   const handlePointerDown = (e: React.PointerEvent, type: "move" | "resize", handle?: string) => {
     e.preventDefault();
@@ -124,10 +80,10 @@ const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSel
       <div ref={wrapRef} className="relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden min-h-[160px]">
         {!visible ? (
           <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
-        ) : renderError ? (
-          <div className="text-xs text-red-500 p-4">Error render</div>
+        ) : !thumbnailSrc ? (
+          <div className="text-xs text-gray-400 animate-pulse py-8">Generando…</div>
         ) : (
-          <canvas ref={canvasRef} className="max-w-full h-auto object-contain rounded-lg shadow-sm" style={{ width: "100%", height: "auto" }} />
+          <img src={thumbnailSrc} alt={`Página ${pageIndex+1}`} loading="lazy" decoding="async" className="max-w-full h-auto object-contain rounded-lg shadow-sm select-none" style={{ width: "100%", height: "auto" }} draggable={false} />
         )}
         {visible && showBox && (
           <div
