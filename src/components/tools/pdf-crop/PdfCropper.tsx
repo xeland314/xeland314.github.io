@@ -261,11 +261,9 @@ export default function PdfCropper() {
       let applied = 0;
       for (let idx=0; idx<rects.length; idx++) {
         const r = rects[idx];
-        // lateral: margen 5-10px faltante y 20px mordida en 180px => compensación 1.8% (≈14px en 800px) ya en autoCrop.ts
-        // top/bottom: solo fondo blanco, ya calculado en r.y/r.h
         if (r.w < 0.97 && r.w > 0.45) {
-          const clamped = clampRect({ x: r.x, y: r.y, w: r.w, h: r.h });
-          // si top/bottom es casi completo, deja 0,1 para no recortar header/footer blanco útil
+          // solo lateral: y=0 h=1 para no tocar parte blanca superior/inferior
+          const clamped = clampRect({ x: 0, y: 0, w: r.w, h: 1 });
           next.set(idx, clamped);
           applied++;
         }
@@ -275,7 +273,7 @@ export default function PdfCropper() {
         for (const [k,v] of next) merged.set(k, v);
         return merged;
       });
-      if (applied===0) alert("No se detectó barra lateral — colores no exactos, revisa pdfs_moodle/auto_crop_study.py (ajustar blueThr/lum)");
+      if (applied===0) alert("No se detectó barra lateral — revisa pdfs_moodle/auto_crop_study.py");
     } catch(e:any) {
       if (e?.name !== "AbortError") { console.error(e); alert("Error auto recorte"); }
     }

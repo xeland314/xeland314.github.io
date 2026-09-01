@@ -83,40 +83,8 @@ export function calculateSmartCropRect(
   opts?: { minGutterPx?: number; lumThr?: number },
 ): { x: number; y: number; w: number; h: number } {
   const right = calculateSmartCropRight(imageData, opts?.minGutterPx ?? 25, opts?.lumThr ?? 240, 5);
-  // top/bottom solo fondo blanco (sin azul) — usa fila
-  const { data, width, height } = imageData;
-  const lumThr = opts?.lumThr ?? 240;
-  const rowInk = new Uint32Array(height);
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = (y * width + x) * 4;
-      const avg = (data[i] + data[i+1] + data[i+2]) / 3;
-      if (avg < lumThr) rowInk[y]++;
-    }
-  }
-  const tol = 5;
-  const minGutterY = Math.max(8, Math.round(height * 0.015)); // 1.5% alto
-  let top = 0, bottom = height;
-  // top: busca primer gutter blanco después de margen superior
-  let seenTop = false, gutter = 0;
-  for (let y = 0; y < height; y++) {
-    const hasInk = rowInk[y] > tol;
-    if (!seenTop) { if (hasInk) seenTop = true; }
-    else if (!hasInk) { gutter++; if (gutter >= minGutterY) { top = y - gutter; break; } } else gutter = 0;
-  }
-  // bottom
-  let seenBottom = false; gutter = 0;
-  for (let y = height - 1; y >= 0; y--) {
-    const hasInk = rowInk[y] > tol;
-    if (!seenBottom) { if (hasInk) seenBottom = true; }
-    else if (!hasInk) { gutter++; if (gutter >= minGutterY) { bottom = y + gutter; break; } } else gutter = 0;
-  }
-  const yN = Math.max(0, top / height - 0.005); // pequeño margen 0.5% para no cortar texto
-  const hN = Math.min(1 - yN, (bottom - top) / height + 0.01);
-  // si no hay recorte vertical significativo (<2%), deja 0,1
-  const finalY = hN > 0.96 && yN < 0.02 ? 0 : yN;
-  const finalH = hN > 0.96 ? 1 : hN;
-  return { x: 0, y: finalY, w: right, h: finalH };
+  // solo lateral — top/bottom deshabilitado para evitar cortar pregunta
+  return { x: 0, y: 0, w: right, h: 1 };
 }
 
 // helper para renderizar una página a ancho ~800px y analizar
