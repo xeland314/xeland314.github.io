@@ -104,6 +104,41 @@ export function calculateSmartCropRect(
   return { x: 0, y: 0, w: right, h: 1 };
 }
 
+export function calculateSmartQuad(
+  imageData: ImageData,
+  opts?: { minGutterPx?: number; lumThr?: number },
+): import("./storage").Quad | null {
+  const right = calculateSmartCropRight(imageData, opts?.minGutterPx ?? 25, opts?.lumThr ?? 240, 5);
+  if (right >= 0.999 || right <= 0.45) return null;
+  const { data, width, height } = imageData;
+  const rowInk = new Uint32Array(height);
+  for (let y=0;y<height;y++) for(let x=0;x<width;x++) {
+    const i=(y*width+x)*4;
+    if ((data[i]+data[i+1]+data[i+2])/3 < 240) rowInk[y]++;
+  }
+  // suavizado 3
+  const smooth = (arr: Uint32Array, k=1)=>{ const o=new Uint32Array(arr.length); for(let i=0;i<arr.length;i++){ let s=0,c=0; for(let d=-k;d<=k;d++){ const j=i+d; if(j>=0&&j<arr.length){ s+=arr[j]; c++; } } o[i]=Math.round(s/c);} return o; };
+  const rowS = smooth(rowInk,1);
+  const thr = Math.max(8, Math.round(width*0.02)); // 2% ancho como tinta por fila
+  let top = -1, bottom = -1;
+  for (let y=0;y<height;y++) if (rowS[y] > thr) { top=y; break; }
+  for (let y=height-1;y>=0;y--) if (rowS[y] > thr) { bottom=y; break; }
+  if (top===-1 || bottom===-1 || bottom-top < height*0.15) return null;
+  // margen 1% para no cortar texto
+  const mY = Math.round(height*0.01);
+  top = Math.max(0, top - mY); bottom = Math.min(height-1, bottom + mY);
+  const y0 = top/height, y1 = bottom/height, x1 = right;
+  // Quad rectangular que conserva solo preguntas (x 0->right, y top->bottom) — luego warp lo hace trapezoidal si detecta perspectiva
+  // Si hay perspectiva, detectTrapezoidQuad refinará, pero este Quad ya es válido para warp a rectángulo
+  const quad: import("./storage").Quad = [
+    { x: 0, y: y0 },
+    { x: x1, y: y0 },
+    { x: x1, y: y1 },
+    { x: 0, y: y1 },
+  ];
+  return quad;
+}
+
 // helper para renderizar una página a ancho ~800px y analizar
 import * as pdfjsLib from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
@@ -276,7 +311,8 @@ export async function detectCropBatchRects(
   return out;
 }
 
-// Pipeline 2 pasos: rect vectorial primero, quad trapezoidal solo si rect==1.0 (cascada)
+// Pipeline obligatorio trapezoidal desde inicio: siempre genera Quad de solo preguntas (x 0->right, y top->bottom)
+// Si Quad existe, se usa warp raster; rect se mantiene solo como fallback vectorial si Quad falla
 export async function detectSmartBatchWithQuads(
   pdfBytes: Uint8Array,
   pageCount: number,
@@ -285,14 +321,10 @@ export async function detectSmartBatchWithQuads(
 ): Promise<{ rects: {x:number,y:number,w:number,h:number}[]; quads: Map<number, Quad> }> {
   const rects = await detectCropBatchRects(pdfBytes, pageCount, onProgress as any, signal);
   const quads = new Map<number, Quad>();
-  // re-render solo fallidas para quad (usa mismo 800px pero con detector de bordes)
-  // Para no re-render, reutiliza lógica: si rect==1.0 intenta quad sobre copia 200px (más rápido y robusto a perspectiva)
-  // Hacemos render extra solo para fallidas
   const task = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
   const doc = await task.promise;
   try {
     for (let i=0;i<pageCount;i++) {
-      if (rects[i].w < 0.999) continue;
       if (signal?.aborted) throw new DOMException("Aborted","AbortError");
       const page = await doc.getPage(i+1);
       const vp1 = page.getViewport({ scale: 1 });
@@ -308,7 +340,9 @@ export async function detectSmartBatchWithQuads(
       await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
       try{ page.cleanup(); }catch{}
       const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
-      const quad = detectTrapezoidQuad(imageData);
+      // obligatorio: intenta Quad de solo preguntas primero
+      let quad = calculateSmartQuad(imageData);
+      if (!quad) quad = detectTrapezoidQuad(imageData); // fallback papel si no hay bloque pregunta claro
       if (quad) {
         quads.set(i, quad);
         onProgress?.(i+1, pageCount, rects[i], quad);
