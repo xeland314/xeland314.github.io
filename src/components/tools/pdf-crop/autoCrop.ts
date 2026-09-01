@@ -111,15 +111,16 @@ export function calculateSmartQuad(
   const right = calculateSmartCropRight(imageData, opts?.minGutterPx ?? 25, opts?.lumThr ?? 240, 5);
   if (right >= 0.999 || right <= 0.45) return null;
   const { data, width, height } = imageData;
+  const contentW = Math.round(width * right);
   const rowInk = new Uint32Array(height);
-  for (let y=0;y<height;y++) for(let x=0;x<width;x++) {
+  for (let y=0;y<height;y++) for(let x=0;x<contentW;x++) {
     const i=(y*width+x)*4;
     if ((data[i]+data[i+1]+data[i+2])/3 < 240) rowInk[y]++;
   }
   // suavizado 3
   const smooth = (arr: Uint32Array, k=1)=>{ const o=new Uint32Array(arr.length); for(let i=0;i<arr.length;i++){ let s=0,c=0; for(let d=-k;d<=k;d++){ const j=i+d; if(j>=0&&j<arr.length){ s+=arr[j]; c++; } } o[i]=Math.round(s/c);} return o; };
   const rowS = smooth(rowInk,1);
-  const thr = Math.max(8, Math.round(width*0.02)); // 2% ancho como tinta por fila
+  const thr = Math.max(8, Math.round(contentW*0.02)); // 2% ancho contenido como tinta por fila
   let top = -1, bottom = -1;
   for (let y=0;y<height;y++) if (rowS[y] > thr) { top=y; break; }
   for (let y=height-1;y>=0;y--) if (rowS[y] > thr) { bottom=y; break; }
