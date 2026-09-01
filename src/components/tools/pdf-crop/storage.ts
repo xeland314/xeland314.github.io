@@ -3,7 +3,9 @@ import type { NormalizedRect } from "./pdfOperations";
 export interface PdfCropSession {
   id: string;
   pdfName: string;
-  pdfBase64: string;
+  pdfBase64: string; // legacy (v2) - se mantiene para compatibilidad import/export
+  // v3: guardamos binario directo; si existe, tiene prioridad sobre pdfBase64
+  pdfBytes?: Uint8Array;
   rects: [number, NormalizedRect][];
   selected: number[];
   pageCount: number;
@@ -14,7 +16,8 @@ export interface PdfCropProject {
   id: string;
   name: string;
   pdfName: string;
-  pdfBase64: string;
+  pdfBase64: string; // legacy
+  pdfBytes?: Uint8Array; // v3 binario directo
   rects: [number, NormalizedRect][];
   selected: number[];
   pageCount: number;
@@ -23,7 +26,7 @@ export interface PdfCropProject {
 }
 
 const DB_NAME = "PdfCropDB";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORE_SESSION = "sessions";
 const STORE_PROJECTS = "projects";
 const KEY_CURRENT = "current";
@@ -41,19 +44,40 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-function bytesToBase64(bytes: Uint8Array): string {
+export function bytesToBase64(bytes: Uint8Array): string {
+  // chunked para no explotar call stack ni memoria; ~1MB por chunk
+  const CHUNK = 1 << 15;
   let binary = "";
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    const slice = bytes.subarray(i, Math.min(i + CHUNK, bytes.length));
+    // @ts-ignore
+    binary += String.fromCharCode.apply(null, slice as any);
+  }
   return btoa(binary);
 }
-function base64ToBytes(b64: string): Uint8Array {
+export function base64ToBytes(b64: string): Uint8Array {
   const binary = atob(b64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return bytes;
 }
 
-// --- Sesión actual (autosave) ---
+// Obtiene bytes desde sesión/proyecto (soporta legacy base64 y v3 binario)
+function extractBytes(obj: PdfCropSession | PdfCropProject): Uint8Array | null {
+  if (obj.pdfBytes instanceof Uint8Array) return obj.pdfBytes;
+  // Algunos browsers deserializan Uint8Array como ArrayBuffer
+  if (obj.pdfBytes && (obj.pdfBytes as any).buffer instanceof ArrayBuffer) {
+    const ab = obj.pdfBytes as any;
+    if (ab instanceof ArrayBuffer) return new Uint8Array(ab);
+    if (ab.buffer) return new Uint8Array(ab.buffer, ab.byteOffset ?? 0, ab.byteLength ?? ab.length);
+  }
+  if (typeof obj.pdfBase64 === "string" && obj.pdfBase64.length > 0) {
+    try { return base64ToBytes(obj.pdfBase64); } catch { return null; }
+  }
+  return null;
+}
+
+// --- Sesión actual (autosave) — guarda binario directo ---
 export async function saveSession(opts: {
   pdfBytes: Uint8Array;
   pdfName: string;
@@ -62,10 +86,12 @@ export async function saveSession(opts: {
   pageCount: number;
 }): Promise<void> {
   const db = await openDB();
+  // guardamos binario directo (structured clone), sin base64 para evitar +33% y strings gigantes
   const session: PdfCropSession = {
     id: KEY_CURRENT,
     pdfName: opts.pdfName,
-    pdfBase64: bytesToBase64(opts.pdfBytes),
+    pdfBase64: "", // legacy vacío
+    pdfBytes: opts.pdfBytes, // binario directo
     rects: Array.from(opts.rects.entries()),
     selected: Array.from(opts.selected),
     pageCount: opts.pageCount,
@@ -74,7 +100,7 @@ export async function saveSession(opts: {
   await new Promise<void>((resolve, reject) => {
     const tx = db.transaction(STORE_SESSION, "readwrite");
     const st = tx.objectStore(STORE_SESSION);
-    const req = st.put(session, KEY_CURRENT);
+    const req = st.put(session as any, KEY_CURRENT);
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
   });
@@ -99,8 +125,10 @@ export async function loadSession(): Promise<{
   try { db.close(); } catch {}
   if (!session) return null;
   try {
+    const bytes = extractBytes(session);
+    if (!bytes) return null;
     return {
-      pdfBytes: base64ToBytes(session.pdfBase64),
+      pdfBytes: bytes,
       pdfName: session.pdfName,
       rects: new Map(session.rects),
       selected: new Set(session.selected),
@@ -170,7 +198,8 @@ export async function saveProject(opts: {
     id,
     name: opts.name,
     pdfName: opts.pdfName,
-    pdfBase64: bytesToBase64(opts.pdfBytes),
+    pdfBase64: "", // legacy vacío
+    pdfBytes: opts.pdfBytes,
     rects: Array.from(opts.rects.entries()),
     selected: Array.from(opts.selected),
     pageCount: opts.pageCount,
@@ -180,7 +209,7 @@ export async function saveProject(opts: {
   await new Promise<void>((resolve, reject) => {
     const tx = db.transaction(STORE_PROJECTS, "readwrite");
     const st = tx.objectStore(STORE_PROJECTS);
-    const req = st.put(proj, id);
+    const req = st.put(proj as any, id);
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
   });
@@ -203,9 +232,11 @@ export async function deleteProject(id: string): Promise<void> {
 export async function duplicateProject(id: string): Promise<string | null> {
   const p = await getProject(id);
   if (!p) return null;
+  const bytes = extractBytes(p);
+  if (!bytes) return null;
   return saveProject({
     name: `${p.name} (copia)`,
-    pdfBytes: base64ToBytes(p.pdfBase64),
+    pdfBytes: bytes,
     pdfName: p.pdfName,
     rects: new Map(p.rects),
     selected: new Set(p.selected),
@@ -214,13 +245,18 @@ export async function duplicateProject(id: string): Promise<string | null> {
 }
 
 export function projectToBytes(proj: PdfCropProject): Uint8Array {
-  return base64ToBytes(proj.pdfBase64);
+  const b = extractBytes(proj);
+  return b ?? new Uint8Array(0);
 }
 
 export async function exportProjectJson(id: string): Promise<void> {
   const p = await getProject(id);
   if (!p) return;
-  const blob = new Blob([JSON.stringify(p, null, 2)], { type: "application/json" });
+  const bytes = extractBytes(p);
+  if (!bytes) return;
+  // export incluye base64 para portabilidad
+  const payload = { ...p, pdfBase64: bytesToBase64(bytes), pdfBytes: undefined };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -232,14 +268,21 @@ export async function exportProjectJson(id: string): Promise<void> {
 export async function importProjectJson(file: File): Promise<string | null> {
   const text = await file.text();
   const parsed = JSON.parse(text);
-  // valida campos mínimos
-  if (!parsed.pdfBase64 || !parsed.name) throw new Error("JSON inválido");
+  if (!parsed.name) throw new Error("JSON inválido");
+  let bytes: Uint8Array | null = null;
+  if (typeof parsed.pdfBase64 === "string" && parsed.pdfBase64.length > 0) {
+    bytes = base64ToBytes(parsed.pdfBase64);
+  } else if (parsed.pdfBytes) {
+    bytes = extractBytes(parsed as PdfCropProject);
+  }
+  if (!bytes) throw new Error("JSON sin PDF");
   const id = genId();
   const proj: PdfCropProject = {
     id,
     name: parsed.name,
     pdfName: parsed.pdfName || "importado.pdf",
-    pdfBase64: parsed.pdfBase64,
+    pdfBase64: "",
+    pdfBytes: bytes,
     rects: parsed.rects || [],
     selected: parsed.selected || [],
     pageCount: parsed.pageCount || 0,
@@ -250,7 +293,7 @@ export async function importProjectJson(file: File): Promise<string | null> {
   await new Promise<void>((resolve, reject) => {
     const tx = db.transaction(STORE_PROJECTS, "readwrite");
     const st = tx.objectStore(STORE_PROJECTS);
-    const req = st.put(proj, id);
+    const req = st.put(proj as any, id);
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
   });

@@ -1,17 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import * as pdfjsLib from "pdfjs-dist";
+import type { PDFDocumentProxy } from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 import { parsePageIntervals, normalizedRectToCropBox, FULL_RECT, isFullRect, clampRect } from "./pdfOperations";
 import type { NormalizedRect } from "./pdfOperations";
 import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtract } from "./cropSync";
-import { saveSession, loadSession, clearSession, listProjects, saveProject, getProject, deleteProject, duplicateProject, exportProjectJson, importProjectJson } from "./storage";
+import { saveSession, loadSession, clearSession, listProjects, saveProject, getProject, deleteProject, duplicateProject, exportProjectJson, importProjectJson, base64ToBytes, bytesToBase64 } from "./storage";
 import type { PdfCropProject } from "./storage";
 import PageCard from "./PageCard";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
 type UndoState = { bytes: Uint8Array; rects: Map<number, NormalizedRect> };
+
+const UNDO_LIMIT = 8; // optimizado para OOM: 40 copias -> 8 copias max
+const PERSIST_DEBOUNCE_MS = 1500; // antes 400 -> reduce presión IndexedDB
+const MAX_AUTOSAVE_BYTES = 25 * 1024 * 1024; // 25MB, si pasa no autosave binario directo (aviso)
 
 function cloneBytes(b: Uint8Array) { return new Uint8Array(b); }
 function cloneRects(m: Map<number, NormalizedRect>) { return new Map(Array.from(m.entries()).map(([k,v])=>[k,{...v}])); }
@@ -21,6 +26,7 @@ export default function PdfCropper() {
   const [originalBytes, setOriginalBytes] = useState<Uint8Array | null>(null);
   const [pdfName, setPdfName] = useState("documento.pdf");
   const [pageCount, setPageCount] = useState(0);
+  const [pdfJsDoc, setPdfJsDoc] = useState<PDFDocumentProxy | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [cropRects, setCropRects] = useState<Map<number, NormalizedRect>>(new Map());
   const [previewCrop, setPreviewCrop] = useState(true);
@@ -38,13 +44,14 @@ export default function PdfCropper() {
 
   const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, sel: Set<number>, count: number) => {
     if (!bytes) return;
+    if (bytes.length > MAX_AUTOSAVE_BYTES) return; // evita OOM por IndexedDB con PDFs grandes
     try { await saveSession({ pdfBytes: bytes, pdfName: name, rects, selected: sel, pageCount: count }); } catch {}
   }, []);
 
   const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>) => {
     setUndoStack(s => {
       const next = [...s, { bytes: cloneBytes(bytes), rects: cloneRects(rects) }];
-      return next.length > 40 ? next.slice(1) : next;
+      return next.length > UNDO_LIMIT ? next.slice(next.length - UNDO_LIMIT) : next;
     });
     setRedoStack([]);
   }, []);
@@ -55,7 +62,7 @@ export default function PdfCropper() {
 
   useEffect(() => { refreshProjects(); }, [refreshProjects]);
 
-  // restore session
+  // restore session (v3 binario directo, compat v2 base64)
   useEffect(() => {
     (async () => {
       try {
@@ -74,33 +81,45 @@ export default function PdfCropper() {
     })();
   }, []);
 
-  // update pageCount from pdfBytes via pdfjs (also for display)
+  // single pdfjs document shared -> evita N copias (antes cada PageCard hacía getDocument({data: bytes.slice()}))
   useEffect(() => {
-    if (!pdfBytes) { setPageCount(0); return; }
+    if (!pdfBytes) { setPdfJsDoc(null); setPageCount(0); return; }
     let cancelled = false;
+    let doc: PDFDocumentProxy | null = null;
     (async () => {
       try {
+        // pdfjs clona el buffer si pasamos Uint8Array directo; usamos slice(0) solo 1 vez aquí
         const task = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
-        const pdf = await task.promise;
-        if (!cancelled) setPageCount(pdf.numPages);
+        doc = await task.promise;
+        if (cancelled) { try { await doc.destroy(); } catch {} return; }
+        setPdfJsDoc(doc);
+        setPageCount(doc.numPages);
       } catch {}
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      if (doc) { try { doc.destroy(); } catch {} }
+      setPdfJsDoc(null);
+    };
   }, [pdfBytes]);
 
-  // persist on change (debounced)
+  // persist on change (debounced largo + guardado binario)
   useEffect(() => {
     if (!pdfBytes) return;
-    const t = setTimeout(()=> persist(pdfBytes, pdfName, cropRects, selected, pageCount), 400);
+    const t = setTimeout(()=> persist(pdfBytes, pdfName, cropRects, selected, pageCount), PERSIST_DEBOUNCE_MS);
     return ()=> clearTimeout(t);
   }, [pdfBytes, pdfName, cropRects, selected, pageCount, persist]);
 
   const handleFile = useCallback(async (file: File) => {
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) { alert("Solo PDF"); return; }
+    // alerta si es muy grande
+    if (file.size > 60 * 1024 * 1024) { if (!confirm(`PDF de ${(file.size/1024/1024).toFixed(1)} MB puede ser lento y consumir memoria. ¿Continuar?`)) return; }
     const buf = await file.arrayBuffer();
     const bytes = new Uint8Array(buf);
     const h = new TextDecoder().decode(bytes.slice(0,5));
     if (h !== "%PDF-") { alert("No es PDF válido"); return; }
+    // limpia doc anterior
+    setPdfJsDoc(null);
     setPdfBytes(bytes);
     setOriginalBytes(cloneBytes(bytes));
     setPdfName(file.name);
@@ -237,10 +256,8 @@ export default function PdfCropper() {
   }, [pdfBytes, cropRects, pushUndo]);
 
   const handleRectChange = useCallback((idx:number, newRect: NormalizedRect, startRect: NormalizedRect) => {
-    // sincroniza al unísono con seleccionadas
     setCropRects(prev => {
       const clamped = clampRect(newRect);
-      // si idx está seleccionado y hay varias seleccionadas, aplica delta a todas
       if (selected.has(idx) && selected.size > 1) {
         return syncRectsForSelection(prev, idx, startRect, clamped, selected);
       }
@@ -260,9 +277,6 @@ export default function PdfCropper() {
   }, []);
 
   const handleDeleteOne = useCallback(async (idx:number)=>{
-    setSelected(new Set([idx]));
-    // defer to deleteSelected which uses selected state - need direct
-    // do direct delete of one without relying on selected state race
     if(!pdfBytes) return;
     setIsProcessing(true);
     pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects));
@@ -286,7 +300,7 @@ export default function PdfCropper() {
     if(undoStack.length===0) return;
     const prev = undoStack[undoStack.length-1];
     setUndoStack(s=>s.slice(0,-1));
-    if(pdfBytes) setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects)}]);
+    if(pdfBytes) setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects)}].slice(-UNDO_LIMIT));
     setPdfBytes(cloneBytes(prev.bytes));
     setCropRects(cloneRects(prev.rects));
     setSelected(new Set());
@@ -296,7 +310,7 @@ export default function PdfCropper() {
     if(redoStack.length===0) return;
     const nxt = redoStack[redoStack.length-1];
     setRedoStack(r=>r.slice(0,-1));
-    if(pdfBytes) setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects)}]);
+    if(pdfBytes) setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes), rects: cloneRects(cropRects)}].slice(-UNDO_LIMIT));
     setPdfBytes(cloneBytes(nxt.bytes));
     setCropRects(cloneRects(nxt.rects));
     setSelected(new Set());
@@ -323,7 +337,7 @@ export default function PdfCropper() {
     setTimeout(()=>URL.revokeObjectURL(url),2000);
   }, [pdfBytes, pdfName]);
 
-  // projects handlers
+  // projects handlers (v3 binario)
   const handleSaveProject = async ()=>{
     const name = projectNameInput.trim();
     if(!name){ alert("Nombre requerido"); return; }
@@ -336,7 +350,15 @@ export default function PdfCropper() {
   const handleLoadProject = async (id:string)=>{
     const proj = await getProject(id);
     if(!proj) return;
-    const bytes = Uint8Array.from(atob(proj.pdfBase64), c=>c.charCodeAt(0));
+    // v3: pdfBytes directo; fallback legacy base64
+    let bytes: Uint8Array | null = null;
+    if (proj.pdfBytes instanceof Uint8Array) bytes = proj.pdfBytes;
+    else if ((proj as any).pdfBytes?.buffer) {
+      const ab = (proj as any).pdfBytes; bytes = new Uint8Array(ab.buffer ?? ab);
+    } else if (proj.pdfBase64) {
+      try { bytes = base64ToBytes(proj.pdfBase64); } catch {}
+    }
+    if (!bytes) return;
     setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName);
     setCropRects(new Map(proj.rects as any)); setSelected(new Set(proj.selected));
     setCurrentProjectId(id);
@@ -378,7 +400,15 @@ export default function PdfCropper() {
                 <div className="flex gap-2">
                   <input ref={importInputRef} type="file" accept=".json" className="hidden" onChange={async e=>{
                     const f=e.target.files?.[0]; if(!f) return;
-                    try{ const id=await importProjectJson(f); if(id){ setCurrentProjectId(id); refreshProjects(); const proj=await getProject(id); if(proj){ const bytes=Uint8Array.from(atob(proj.pdfBase64), c=>c.charCodeAt(0)); setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName); setCropRects(new Map(proj.rects as any)); setSelected(new Set(proj.selected)); } } }catch(err){ alert("JSON inválido"); }
+                    try{
+                      const id=await importProjectJson(f);
+                      if(id){ setCurrentProjectId(id); refreshProjects(); const proj=await getProject(id); if(proj){
+                        let bytes: Uint8Array | null = null;
+                        if (proj.pdfBytes instanceof Uint8Array) bytes = proj.pdfBytes;
+                        else if (proj.pdfBase64) bytes = base64ToBytes(proj.pdfBase64);
+                        if(bytes){ setPdfBytes(bytes); setOriginalBytes(cloneBytes(bytes)); setPdfName(proj.pdfName); setCropRects(new Map(proj.rects as any)); setSelected(new Set(proj.selected)); }
+                      } }
+                    }catch(err){ alert("JSON inválido"); }
                     if(importInputRef.current) importInputRef.current.value="";
                   }} />
                   <button onClick={()=>importInputRef.current?.click()} className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-2 rounded-lg text-xs font-bold uppercase flex items-center justify-center gap-2">Importar JSON</button>
@@ -420,7 +450,7 @@ export default function PdfCropper() {
         <p className="text-sm font-bold text-gray-900 dark:text-white">Arrastra tu PDF aquí o haz clic para seleccionar</p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">PDF · hasta ~50 MB · 100% offline</p>
         <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" className="hidden" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleFile(f); }} />
-        {pdfBytes && <p className="mt-4 text-xs font-mono text-gray-600 dark:text-gray-400">{pdfName} — {(pdfBytes.length/1024).toFixed(1)} KB · {pageCount} pág</p>}
+        {pdfBytes && <p className="mt-4 text-xs font-mono text-gray-600 dark:text-gray-400">{pdfName} — {(pdfBytes.length/1024).toFixed(1)} KB · {pageCount} pág {pdfBytes.length > MAX_AUTOSAVE_BYTES && <span className="text-amber-600">· autosave pausado (&gt;25MB)</span>}</p>}
       </div>
 
       {pdfBytes && (
@@ -432,8 +462,8 @@ export default function PdfCropper() {
               {isProcessing && <span className="text-xs font-bold text-amber-600 animate-pulse">Procesando…</span>}
             </div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects)}]); setPdfBytes(cloneBytes(prev.bytes)); setCropRects(cloneRects(prev.rects)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↩ Deshacer</button>
-              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects)}]); setPdfBytes(cloneBytes(nxt.bytes)); setCropRects(cloneRects(nxt.rects)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↪ Rehacer</button>
+              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects)}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(prev.bytes)); setCropRects(cloneRects(prev.rects)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↩ Deshacer</button>
+              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects)}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(nxt.bytes)); setCropRects(cloneRects(nxt.rects)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↪ Rehacer</button>
               <button onClick={download} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Descargar PDF</button>
             </div>
           </div>
@@ -462,7 +492,7 @@ export default function PdfCropper() {
               <h3 className="text-xs font-bold tracking-widest uppercase text-amber-800">Recorte visual por página</h3>
               <label className="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" checked={previewCrop} onChange={e=>setPreviewCrop(e.target.checked)} className="rounded" /><span>Vista previa</span></label>
             </div>
-            <p className="text-xs text-amber-800/70 mb-4">Arrastra el <b>marco naranja</b> de cada página — <b>barras verticales/horizontales</b> en los bordes y <b>esquinas</b> para ajustar el rectángulo. Si tienes varias seleccionadas, <b>se mueven al unísono</b>.</p>
+            <p className="text-xs text-amber-800/70 mb-4">Arrastra el <b>marco naranja</b> — <b>barras y esquinas</b> para ajustar. Si hay varias seleccionadas, <b>se mueven al unísono</b>.</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={applyCropToSelected} disabled={isProcessing} className="flex-1 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold disabled:opacity-40">✂️ Recortar seleccionadas</button>
               <button onClick={clearCropFromSelected} disabled={isProcessing} className="px-4 py-2.5 rounded-xl border bg-white text-sm font-semibold">Quitar recorte de seleccionadas</button>
@@ -472,24 +502,28 @@ export default function PdfCropper() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold tracking-widest uppercase text-gray-500">Páginas — arrastra el marco naranja</h3>
-              <span className="text-[11px] font-mono text-gray-400">Ctrl+Z deshacer</span>
+              <span className="text-[11px] font-mono text-gray-400">Ctrl+Z deshacer · {UNDO_LIMIT} niveles</span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[120px]">
-              {Array.from({ length: pageCount }, (_, idx) => (
-                <PageCard
-                  key={`${pdfName}-${idx}-${pageCount}`}
-                  pageIndex={idx}
-                  pdfBytes={pdfBytes!}
-                  rect={cropRects.get(idx) ?? FULL_RECT}
-                  isSelected={selected.has(idx)}
-                  previewCrop={previewCrop}
-                  onSelect={handleSelect}
-                  onDelete={handleDeleteOne}
-                  onCropOne={handleCropOne}
-                  onRectChange={handleRectChange}
-                />
-              ))}
-            </div>
+            {!pdfJsDoc ? (
+              <div className="py-8 text-center text-xs text-gray-400 animate-pulse border border-dashed rounded-2xl">Renderizando {pageCount || "…"} páginas…</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[120px]">
+                {Array.from({ length: pageCount }, (_, idx) => (
+                  <PageCard
+                    key={`${pdfName}-${idx}-${pageCount}`}
+                    pageIndex={idx}
+                    pdfDoc={pdfJsDoc}
+                    rect={cropRects.get(idx) ?? FULL_RECT}
+                    isSelected={selected.has(idx)}
+                    previewCrop={previewCrop}
+                    onSelect={handleSelect}
+                    onDelete={handleDeleteOne}
+                    onCropOne={handleCropOne}
+                    onRectChange={handleRectChange}
+                  />
+                ))}
+              </div>
+            )}
             {pageCount===0 && <p className="text-sm text-gray-400 italic py-8 text-center border border-dashed rounded-2xl">Carga un PDF para ver páginas</p>}
           </div>
         </div>

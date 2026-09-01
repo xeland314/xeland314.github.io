@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState, memo } from "react";
-import * as pdfjsLib from "pdfjs-dist";
+import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { NormalizedRect } from "./pdfOperations";
-import { FULL_RECT, isFullRect } from "./pdfOperations";
+import { isFullRect } from "./pdfOperations";
 
 interface Props {
   pageIndex: number; // 0-based
-  pdfBytes: Uint8Array;
+  pdfDoc: PDFDocumentProxy;
   rect: NormalizedRect;
   isSelected: boolean;
   previewCrop: boolean;
@@ -15,43 +15,63 @@ interface Props {
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
 }
 
-const PageCard = memo(({ pageIndex, pdfBytes, rect, isSelected, previewCrop, onSelect, onDelete, onCropOne, onRectChange }: Props) => {
+const PageCard = memo(({ pageIndex, pdfDoc, rect, isSelected, previewCrop, onSelect, onDelete, onCropOne, onRectChange }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [renderError, setRenderError] = useState(false);
+  const [visible, setVisible] = useState(false); // lazy: solo renderiza cuando entra en viewport
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
 
+  // IntersectionObserver lazy - evita renderizar 100 páginas a la vez (OOM canvas)
   useEffect(() => {
+    const el = wrapRef.current?.parentElement ?? wrapRef.current;
+    if (!el) { setVisible(true); return; }
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { setVisible(true); io.disconnect(); break; }
+    }, { rootMargin: "400px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
     let cancelled = false;
+    let pageProxy: any = null;
     const render = async () => {
-      if (!canvasRef.current || !pdfBytes) return;
+      if (!canvasRef.current || !pdfDoc) return;
       try {
-        const task = pdfjsLib.getDocument({ data: pdfBytes.slice(0) });
-        const pdf = await task.promise;
+        pageProxy = await pdfDoc.getPage(pageIndex + 1);
         if (cancelled) return;
-        const page = await pdf.getPage(pageIndex + 1);
-        if (cancelled) return;
-        const viewport = page.getViewport({ scale: 1 });
+        const viewport = pageProxy.getViewport({ scale: 1 });
         const scale = 260 / viewport.width;
-        const vp = page.getViewport({ scale });
+        const vp = pageProxy.getViewport({ scale });
         const canvas = canvasRef.current!;
+        // limpia canvas previo para liberar memoria
         canvas.width = Math.round(vp.width);
         canvas.height = Math.round(vp.height);
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { alpha: false });
         if (ctx) {
-          await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
+          await pageProxy.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
         }
-        // set aspect ratio via parent
         if (wrapRef.current) wrapRef.current.style.aspectRatio = `${vp.width} / ${vp.height}`;
       } catch (e) {
         if (!cancelled) setRenderError(true);
         console.error("render page", pageIndex, e);
+      } finally {
+        if (pageProxy) try { pageProxy.cleanup(); } catch {}
       }
     };
     render();
-    return () => { cancelled = true; };
-    // pdfBytes changes when pdf is modified (delete/crop), need re-render
-  }, [pdfBytes, pageIndex]);
+    return () => {
+      cancelled = true;
+      if (pageProxy) try { pageProxy.cleanup(); } catch {}
+      // liberar canvas memory al desmontar o cambiar doc
+      if (canvasRef.current) {
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+      }
+    };
+  }, [pdfDoc, pageIndex, visible]);
 
   const handlePointerDown = (e: React.PointerEvent, type: "move" | "resize", handle?: string) => {
     e.preventDefault();
@@ -82,7 +102,6 @@ const PageCard = memo(({ pageIndex, pdfBytes, rect, isSelected, previewCrop, onS
         else if (h === "e") { nr.w = d.startRect.w + dxNorm; }
         else if (h === "w") { nr.x = d.startRect.x + dxNorm; nr.w = d.startRect.w - dxNorm; }
       }
-      // clamp will be done in parent, but do quick clamp here for visual
       onRectChange(pageIndex, nr, d.startRect);
     };
     const onUp = () => { dragRef.current = null; };
@@ -94,7 +113,7 @@ const PageCard = memo(({ pageIndex, pdfBytes, rect, isSelected, previewCrop, onS
     };
   }, [pageIndex, onRectChange]);
 
-  const showBox = previewCrop; // siempre visible si previewCrop, incluso FULL_RECT para que se vea la herramienta
+  const showBox = previewCrop;
   const borderColor = isFullRect(rect) ? "rgba(245,158,11,0.9)" : "#f59e0b";
   const bg = isFullRect(rect) ? "rgba(245,158,11,0.04)" : "rgba(245,158,11,0.12)";
 
@@ -104,13 +123,15 @@ const PageCard = memo(({ pageIndex, pdfBytes, rect, isSelected, previewCrop, onS
       onClick={() => onSelect(pageIndex)}
       className={`group relative bg-white dark:bg-gray-800 border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer select-none ${isSelected ? "ring-2 ring-emerald-500 border-emerald-500" : "border-gray-200 dark:border-gray-700"}`}
     >
-      <div ref={wrapRef} className="relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden">
-        {renderError ? (
+      <div ref={wrapRef} className="relative bg-gray-50 dark:bg-gray-900 p-2 flex items-center justify-center overflow-hidden min-h-[160px]">
+        {!visible ? (
+          <div className="text-xs text-gray-400 animate-pulse py-8">Cargando pág. {pageIndex+1}…</div>
+        ) : renderError ? (
           <div className="text-xs text-red-500 p-4">Error render</div>
         ) : (
           <canvas ref={canvasRef} className="max-w-full h-auto object-contain rounded-lg shadow-sm" style={{ width: "100%", height: "auto" }} />
         )}
-        {showBox && (
+        {visible && showBox && (
           <div
             data-crop-box="1"
             onPointerDown={(e) => {
