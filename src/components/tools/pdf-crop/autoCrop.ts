@@ -473,10 +473,15 @@ export async function detectSmartBatchWithQuads(
       await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
       try{ page.cleanup(); }catch{}
       const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
-      // obligatorio: intenta Quad de solo preguntas primero
+      // obligatorio: intenta Quad de solo preguntas primero (izquierda siempre 0 en inteligente)
       let quad = calculateSmartQuad(imageData);
-      if (!quad) quad = detectTrapezoidQuad(imageData); // fallback papel si no hay bloque pregunta claro
+      let fromSmartQuad = !!quad;
+      if (!quad) { quad = detectTrapezoidQuad(imageData); fromSmartQuad=false; } // fallback papel si no hay bloque pregunta claro
       if (quad) {
+        if (!fromSmartQuad) {
+          // inteligente nunca corta izquierda: fuerza x=0
+          quad = [{x:0,y:quad[0].y},{x:quad[1].x,y:quad[1].y},{x:quad[2].x,y:quad[2].y},{x:0,y:quad[3].y}] as Quad;
+        }
         quads.set(i, quad);
         onProgress?.(i+1, pageCount, rects[i], quad);
       }

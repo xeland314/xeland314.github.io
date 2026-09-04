@@ -344,8 +344,7 @@ export default function PdfCropper() {
     });
   }, []);
   const handleQuadPoint = useCallback((idx:number, pIdx:number, pt:{x:number,y:number})=>{
-    const isLeft = pIdx===0 || pIdx===3;
-    const clampPt = (p:{x:number,y:number})=> ({ x: isLeft ? 0 : Math.max(0,Math.min(1, p.x)), y: Math.max(0,Math.min(1, p.y)) });
+    const clampPt = (p:{x:number,y:number})=> ({ x: Math.max(0,Math.min(1, p.x)), y: Math.max(0,Math.min(1, p.y)) });
     setQuads(prev=>{
       const next = new Map(prev);
       const q = next.get(idx);

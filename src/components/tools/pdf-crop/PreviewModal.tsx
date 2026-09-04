@@ -186,7 +186,7 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
               {!highResReady && thumbnailSrc && (
                 <img src={thumbnailSrc} alt="" className="absolute inset-0 w-full h-full object-contain rounded-lg blur-[6px] opacity-60 pointer-events-none" />
               )}
-              <canvas ref={canvasRef} className="max-w-[88vw] max-h-[72vh] w-auto h-auto object-contain rounded-lg shadow-lg bg-white" style={{ display: highResReady ? "block" : "none" }} />
+              <canvas ref={canvasRef} className="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg bg-white" style={{ display: highResReady ? "block" : "none" }} />
               {!highResReady && !thumbnailSrc && (
                 <div className="w-[480px] h-[640px] max-w-[60vw] bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg flex items-center justify-center text-xs text-gray-400">Generando alta resolución…</div>
               )}
