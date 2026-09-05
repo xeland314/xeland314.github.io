@@ -87,11 +87,19 @@ export default function PdfCropper() {
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
-  const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, sel: Set<number>, count: number) => {
+  const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, sel: Set<number>, count: number, force=false) => {
     if (!bytes) return;
-    if (bytes.length > MAX_AUTOSAVE_BYTES) return;
+    if (!force && bytes.length > MAX_AUTOSAVE_BYTES) return;
     try { await saveSession({ pdfBytes: bytes, pdfName: name, rects, rotations: rots, quads: qds, selected: sel, pageCount: count }); } catch {}
   }, []);
+  const manualSave = useCallback(async ()=>{
+    if(!pdfBytes) return;
+    const wasPaused = pdfBytes.length > MAX_AUTOSAVE_BYTES;
+    if(wasPaused && !confirm(`PDF de ${(pdfBytes.length/1024/1024).toFixed(1)} MB supera autosave 25MB. ¿Guardar manualmente de todas formas? Puede tardar.`)) return;
+    await persist(pdfBytes, pdfName, cropRects, rotations, quads, selected, pageCount, true);
+    // feedback breve
+    const el=document.createElement("div"); el.textContent="✓ Guardado"; el.className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-full shadow z-[90]"; document.body.appendChild(el); setTimeout(()=>el.remove(),1500);
+  }, [pdfBytes, pdfName, cropRects, rotations, quads, selected, pageCount, persist]);
 
   const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, thumbs: string[]) => {
     setUndoStack(s => {
@@ -476,12 +484,14 @@ export default function PdfCropper() {
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const mod = isMac ? e.metaKey : e.ctrlKey;
       if(!mod) return;
-      if(e.key.toLowerCase()==="z" && !e.shiftKey){ e.preventDefault(); undo(); }
-      else if((e.key.toLowerCase()==="z" && e.shiftKey) || e.key.toLowerCase()==="y"){ e.preventDefault(); redo(); }
+      const k=e.key.toLowerCase();
+      if(k==="z" && !e.shiftKey){ e.preventDefault(); undo(); }
+      else if((k==="z" && e.shiftKey) || k==="y"){ e.preventDefault(); redo(); }
+      else if(k==="s" || k==="g"){ e.preventDefault(); if(pdfBytes) manualSave(); }
     };
     window.addEventListener("keydown", handler);
     return ()=> window.removeEventListener("keydown", handler);
-  }, [undo, redo]);
+  }, [undo, redo, pdfBytes, manualSave]);
 
   const download = useCallback(async ()=>{
     if(!pdfBytes) return;
@@ -693,7 +703,7 @@ export default function PdfCropper() {
         <p className="text-sm font-bold text-gray-900 dark:text-white">Arrastra tu PDF aquí o haz clic para seleccionar</p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">PDF · hasta ~50 MB · 100% offline · miniaturas cacheadas</p>
         <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" className="hidden" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleFile(f); }} />
-        {pdfBytes && <p className="mt-4 text-xs font-mono text-gray-600 dark:text-gray-400">{pdfName} — {(pdfBytes.length/1024).toFixed(1)} KB · {pageCount} pág {pdfBytes.length > MAX_AUTOSAVE_BYTES && <span className="text-amber-600">· autosave pausado (&gt;25MB)</span>} {thumbProgress && <span className="text-emerald-600">· miniaturas {thumbProgress.done}/{thumbProgress.total}</span>}</p>}
+        {pdfBytes && <p className="mt-4 text-xs font-mono text-gray-600 dark:text-gray-400 flex flex-wrap items-center gap-2 justify-center">{pdfName} — {(pdfBytes.length/1024).toFixed(1)} KB · {pageCount} pág {pdfBytes.length > MAX_AUTOSAVE_BYTES ? <span className="inline-flex items-center gap-2"><span className="text-amber-600">· autosave pausado (&gt;25MB)</span><button onClick={manualSave} className="px-2.5 py-1 rounded-full bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold">Guardar ahora (Ctrl+S)</button></span> : null} {thumbProgress && <span className="text-emerald-600">· miniaturas {thumbProgress.done}/{thumbProgress.total}</span>}</p>}
       </div>
 
       {pdfBytes && (
