@@ -629,13 +629,13 @@ export default function PdfCropper() {
   return (
     <div className="w-full max-w-6xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-8 shadow-sm">
       <div className="relative mb-6">
-        <div className="flex items-center gap-2">
-          <button onClick={()=>{setShowProjects(v=>!v); if(!showProjects) refreshProjects();}} className="flex-1 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:border-emerald-500 transition-colors text-left">
-            <div className="flex flex-col items-start">
+        <div className="flex items-center gap-2 min-w-0">
+          <button onClick={()=>{setShowProjects(v=>!v); if(!showProjects) refreshProjects();}} className="flex-1 min-w-0 flex items-center justify-between gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:border-emerald-500 transition-colors text-left overflow-hidden">
+            <div className="flex flex-col items-start min-w-0 flex-1 overflow-hidden">
               <span className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Proyecto actual</span>
-              <span className="text-sm font-bold text-gray-700 dark:text-gray-200 truncate">{projects.find(p=>p.id===currentProjectId)?.name ?? (pdfBytes ? `${pdfName} — autosave` : "Sin proyecto — autosave IndexedDB")}</span>
+              <span className="text-sm font-bold text-gray-700 dark:text-gray-200 truncate w-full block text-left">{projects.find(p=>p.id===currentProjectId)?.name ?? (pdfBytes ? `${pdfName} — autosave` : "Sin proyecto — autosave IndexedDB")}</span>
             </div>
-            <span className="text-gray-400">▾</span>
+            <span className="text-gray-400 shrink-0">▾</span>
           </button>
           <button onClick={()=>{
             if(pdfBytes && !confirm("¿Nuevo proyecto? Se limpiará selección.")) return;
@@ -645,13 +645,13 @@ export default function PdfCropper() {
         {showProjects && (
           <>
             <div className="fixed inset-0 z-40" onClick={()=>setShowProjects(false)} />
-            <div className="relative z-50 mt-2 bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-inner overflow-hidden">
+            <div className="relative z-50 mt-2 w-full max-w-full bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-inner overflow-hidden">
               <div className="p-4 border-b border-gray-100 dark:border-gray-800 space-y-3">
-                <div className="flex gap-2">
-                  <input value={projectNameInput} onChange={e=>setProjectNameInput(e.target.value)} placeholder="Guardar como... (ej: Facturas Q1)" className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-                  <button onClick={handleSaveProject} className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Guardar</button>
+                <div className="flex gap-2 min-w-0">
+                  <input value={projectNameInput} onChange={e=>setProjectNameInput(e.target.value)} placeholder="Guardar como... (ej: Facturas Q1)" className="flex-1 min-w-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <button onClick={handleSaveProject} className="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase">Guardar</button>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 min-w-0">
                   <input ref={importInputRef} type="file" accept=".json" className="hidden" onChange={async e=>{
                     const f=e.target.files?.[0]; if(!f) return;
                     try{
@@ -665,16 +665,16 @@ export default function PdfCropper() {
                     }catch(err){ alert("JSON inválido"); }
                     if(importInputRef.current) importInputRef.current.value="";
                   }} />
-                  <button onClick={()=>importInputRef.current?.click()} className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-2 rounded-lg text-xs font-bold uppercase flex items-center justify-center gap-2">Importar JSON</button>
-                  <button onClick={async()=>{ if(!confirm("¿Borrar autosave?"))return; await clearSession(); alert("Autosave borrado");}} className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border text-xs font-bold uppercase text-gray-500">Limpiar</button>
+                  <button onClick={()=>importInputRef.current?.click()} className="flex-1 min-w-0 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-2 rounded-lg text-xs font-bold uppercase flex items-center justify-center gap-2 truncate">Importar JSON</button>
+                  <button onClick={async()=>{ if(!confirm("¿Borrar autosave?"))return; await clearSession(); alert("Autosave borrado");}} className="shrink-0 px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border text-xs font-bold uppercase text-gray-500">Limpiar</button>
                 </div>
               </div>
               <div className="max-h-64 overflow-y-auto p-2 space-y-1">
                 {projects.length===0 ? <div className="py-8 text-center text-gray-400 text-xs italic">No hay mini proyectos<br/><span className="text-[11px]">Guarda tu PDF para volver luego sin perder orden ni recortes.</span></div> : projects.map(p=>(
-                  <div key={p.id} className={`group flex items-center gap-2 p-2 rounded-lg ${p.id===currentProjectId?"bg-emerald-50 dark:bg-emerald-900/20":"hover:bg-white dark:hover:bg-gray-800"}`}>
-                    <button onClick={()=>handleLoadProject(p.id)} className="flex-1 text-left">
+                  <div key={p.id} className={`group flex items-center gap-2 p-2 rounded-lg min-w-0 overflow-hidden ${p.id===currentProjectId?"bg-emerald-50 dark:bg-emerald-900/20":"hover:bg-white dark:hover:bg-gray-800"}`}>
+                    <button onClick={()=>handleLoadProject(p.id)} className="flex-1 min-w-0 text-left overflow-hidden">
                       <div className="text-sm font-bold text-gray-700 dark:text-gray-200 truncate">{p.name}</div>
-                      <div className="text-[11px] text-gray-400">{p.pdfName} · {p.pageCount} pág · {new Date(p.updatedAt).toLocaleDateString()}</div>
+                      <div className="text-[11px] text-gray-400 truncate">{p.pdfName} · {p.pageCount} pág · {new Date(p.updatedAt).toLocaleDateString()}</div>
                     </button>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={async()=>{ const nid=await duplicateProject(p.id); if(nid) refreshProjects();}} className="p-2 text-gray-400 hover:text-emerald-500" title="Duplicar">⎘</button>
