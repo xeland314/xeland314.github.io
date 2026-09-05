@@ -716,22 +716,22 @@ export default function PdfCropper() {
               {thumbProgress && thumbProgress.total>0 && <span className="text-xs text-emerald-600 animate-pulse">Miniaturas {thumbProgress.done}/{thumbProgress.total}</span>}
             </div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(prev.bytes)); setThumbnails([...prev.thumbs]); setPageCount(prev.thumbs.length); setCropRects(cloneRects(prev.rects)); setRotations(cloneRots(prev.rotations)); setQuads(cloneQuads(prev.quads)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↩ Deshacer</button>
-              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(nxt.bytes)); setThumbnails([...nxt.thumbs]); setPageCount(nxt.thumbs.length); setCropRects(cloneRects(nxt.rects)); setRotations(cloneRots(nxt.rotations)); setQuads(cloneQuads(nxt.quads)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-semibold disabled:opacity-40">↪ Rehacer</button>
-              <button onClick={download} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Descargar PDF</button>
+              <button onClick={()=>{ if(undoStack.length) { const prev=undoStack[undoStack.length-1]; setUndoStack(s=>s.slice(0,-1)); setRedoStack(r=>[...r, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(prev.bytes)); setThumbnails([...prev.thumbs]); setPageCount(prev.thumbs.length); setCropRects(cloneRects(prev.rects)); setRotations(cloneRots(prev.rotations)); setQuads(cloneQuads(prev.quads)); setSelected(new Set()); } }} disabled={undoStack.length===0} className="px-4 py-3 sm:px-3 sm:py-2 rounded-xl border bg-white dark:bg-gray-800 text-sm sm:text-xs font-semibold disabled:opacity-40 min-h-[44px] sm:min-h-0 touch-manipulation">↩ Deshacer</button>
+              <button onClick={()=>{ if(redoStack.length===0) return; const nxt=redoStack[redoStack.length-1]; setRedoStack(r=>r.slice(0,-1)); setUndoStack(s=>[...s, {bytes: cloneBytes(pdfBytes!), rects: cloneRects(cropRects), rotations: cloneRots(rotations), quads: cloneQuads(quads), thumbs:[...thumbnails]}].slice(-UNDO_LIMIT)); setPdfBytes(cloneBytes(nxt.bytes)); setThumbnails([...nxt.thumbs]); setPageCount(nxt.thumbs.length); setCropRects(cloneRects(nxt.rects)); setRotations(cloneRots(nxt.rotations)); setQuads(cloneQuads(nxt.quads)); setSelected(new Set()); }} disabled={redoStack.length===0} className="px-4 py-3 sm:px-3 sm:py-2 rounded-xl border bg-white dark:bg-gray-800 text-sm sm:text-xs font-semibold disabled:opacity-40 min-h-[44px] sm:min-h-0 touch-manipulation">↪ Rehacer</button>
+              <button onClick={download} className="px-6 py-3 sm:px-4 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm sm:text-xs font-bold min-h-[44px] sm:min-h-0 touch-manipulation">Descargar PDF</button>
             </div>
           </div>
 
           <div className="p-4 bg-white dark:bg-gray-900 border rounded-2xl">
             <label className="block text-xs font-bold tracking-widest uppercase text-gray-500 mb-3">Selección por intervalos</label>
             <div className="flex flex-col sm:flex-row gap-3">
-              <input value={intervalsInput} onChange={e=>setIntervalsInput(e.target.value)} onKeyDown={e=>e.key==="Enter" && applyIntervals()} placeholder="Ej: 1-3, 5, 8-10" className="flex-1 bg-gray-50 dark:bg-gray-950 border rounded-xl px-4 py-2.5 text-sm font-mono" />
-              <button onClick={applyIntervals} className="px-5 py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold">Aplicar selección</button>
+              <input value={intervalsInput} onChange={e=>setIntervalsInput(e.target.value)} onKeyDown={e=>e.key==="Enter" && applyIntervals()} placeholder="Ej: 1-3, 5, 8-10" className="flex-1 bg-gray-50 dark:bg-gray-950 border rounded-xl px-4 py-3 sm:py-2.5 text-sm font-mono min-h-[44px] sm:min-h-0" />
+              <button onClick={applyIntervals} className="px-5 py-3 sm:py-2.5 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold min-h-[44px] sm:min-h-0 touch-manipulation">Aplicar selección</button>
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
-              <button onClick={()=> setSelected(new Set(Array.from({length: pageCount}, (_,i)=>i)))} className="text-xs px-3 py-1.5 rounded-full border hover:bg-gray-50">Seleccionar todo</button>
-              <button onClick={()=>{ const n=new Set<number>(); for(let i=0;i<pageCount;i++) if(!selected.has(i)) n.add(i); setSelected(n);}} className="text-xs px-3 py-1.5 rounded-full border hover:bg-gray-50">Invertir</button>
-              <button onClick={()=> setSelected(new Set())} className="text-xs px-3 py-1.5 rounded-full border hover:bg-gray-50">Limpiar</button>
+              <button onClick={()=> setSelected(new Set(Array.from({length: pageCount}, (_,i)=>i)))} className="text-sm sm:text-xs px-4 py-2.5 sm:px-3 sm:py-1.5 rounded-full border hover:bg-gray-50 min-h-[44px] sm:min-h-0 touch-manipulation">Seleccionar todo</button>
+              <button onClick={()=>{ const n=new Set<number>(); for(let i=0;i<pageCount;i++) if(!selected.has(i)) n.add(i); setSelected(n);}} className="text-sm sm:text-xs px-4 py-2.5 sm:px-3 sm:py-1.5 rounded-full border hover:bg-gray-50 min-h-[44px] sm:min-h-0 touch-manipulation">Invertir</button>
+              <button onClick={()=> setSelected(new Set())} className="text-sm sm:text-xs px-4 py-2.5 sm:px-3 sm:py-1.5 rounded-full border hover:bg-gray-50 min-h-[44px] sm:min-h-0 touch-manipulation">Limpiar</button>
             </div>
           </div>
 
@@ -743,8 +743,8 @@ export default function PdfCropper() {
           {selected.size>0 && (
             <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-2xl">
               <span className="text-xs font-bold text-gray-600 dark:text-gray-300 self-center">Rotar seleccionadas:</span>
-              <button onClick={()=>handleRotateSelected(-90)} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-bold hover:bg-gray-50">↺ 90°</button>
-              <button onClick={()=>handleRotateSelected(90)} className="px-3 py-2 rounded-xl border bg-white dark:bg-gray-800 text-xs font-bold hover:bg-gray-50">↻ 90°</button>
+              <button onClick={()=>handleRotateSelected(-90)} className="px-4 py-3 sm:px-3 sm:py-2 rounded-xl border bg-white dark:bg-gray-800 text-sm sm:text-xs font-bold hover:bg-gray-50 min-h-[44px] sm:min-h-0 touch-manipulation">↺ 90°</button>
+              <button onClick={()=>handleRotateSelected(90)} className="px-4 py-3 sm:px-3 sm:py-2 rounded-xl border bg-white dark:bg-gray-800 text-sm sm:text-xs font-bold hover:bg-gray-50 min-h-[44px] sm:min-h-0 touch-manipulation">↻ 90°</button>
               {Array.from(selected).some(i=> (rotations.get(i) ?? 0) !==0) && <span className="text-[11px] text-gray-400 self-center">{Array.from(selected).filter(i=> rotations.get(i)).length} con giro</span>}
             </div>
           )}
@@ -756,12 +756,12 @@ export default function PdfCropper() {
             </div>
             <p className="text-xs text-amber-800/70">Arrastra el <b>marco naranja</b> — el área dentro es el resultado. <b>Sin botón</b>: se aplica al <b>Descargar</b> en resolución original. Si hay varias seleccionadas, se mueven al unísono.</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button onClick={handleAutoCrop} disabled={isProcessing && !autoProgress} className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white text-xs font-bold flex items-center gap-2">
+              <button onClick={handleAutoCrop} disabled={isProcessing && !autoProgress} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white text-sm sm:text-xs font-bold flex items-center gap-2 min-h-[44px] sm:min-h-0 touch-manipulation">
                 {autoProgress ? `⏳ ${autoProgress.done}/${autoProgress.total} — Cancelar` : "✨ Recorte inteligente"}
               </button>
               {(cropRects.size + quads.size) > 0 && (
                 <>
-                  <button onClick={clearCropVisual} className="px-4 py-2 rounded-xl border bg-white text-xs font-semibold">↺ Quitar recorte {selected.size>0 ? "de seleccionadas" : "de todas"}</button>
+                  <button onClick={clearCropVisual} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl border bg-white text-sm sm:text-xs font-semibold min-h-[44px] sm:min-h-0 touch-manipulation">↺ Quitar recorte {selected.size>0 ? "de seleccionadas" : "de todas"}</button>
                   <span className="text-[11px] text-amber-800/60 self-center">{new Set([...cropRects.keys(), ...quads.keys()]).size} pág con recorte ({cropRects.size} rect · {quads.size} ◫)</span>
                 </>
               )}
@@ -777,7 +777,7 @@ export default function PdfCropper() {
               <div className="py-8 text-center text-xs text-gray-400 animate-pulse border border-dashed rounded-2xl">Generando miniaturas {thumbProgress ? `${thumbProgress.done}/${thumbProgress.total}` : "…"} — UI baja resolución, PDF original intacto</div>
             ) : (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-h-[120px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 min-h-[120px]">
                   {thumbnails.map((src, idx) => (
                     <PageCard
                       key={`${pdfName}-thumb-${idx}`}

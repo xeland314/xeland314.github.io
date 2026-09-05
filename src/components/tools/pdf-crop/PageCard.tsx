@@ -165,17 +165,17 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
             {["nw","ne","sw","se","n","s","e","w"].map((pos) => {
               const isCorner = ["nw","ne","sw","se"].includes(pos);
               const style: React.CSSProperties = isCorner
-                ? { width: 12, height: 12 }
-                : pos === "n" || pos === "s" ? { width: 28, height: 8, borderRadius: 9999 } : { width: 8, height: 28, borderRadius: 9999 };
+                ? { width: 20, height: 20 }
+                : pos === "n" || pos === "s" ? { width: 36, height: 14, borderRadius: 9999 } : { width: 14, height: 36, borderRadius: 9999 };
               const posStyle: Record<string, React.CSSProperties> = {
-                nw: { left: -6, top: -6, cursor: "nw-resize" },
-                ne: { right: -6, top: -6, cursor: "ne-resize" },
-                sw: { left: -6, bottom: -6, cursor: "sw-resize" },
-                se: { right: -6, bottom: -6, cursor: "se-resize" },
-                n: { left: "50%", top: -4, transform: "translateX(-50%)", cursor: "n-resize" },
-                s: { left: "50%", bottom: -4, transform: "translateX(-50%)", cursor: "s-resize" },
-                w: { left: -4, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
-                e: { right: -4, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
+                nw: { left: -10, top: -10, cursor: "nw-resize" },
+                ne: { right: -10, top: -10, cursor: "ne-resize" },
+                sw: { left: -10, bottom: -10, cursor: "sw-resize" },
+                se: { right: -10, bottom: -10, cursor: "se-resize" },
+                n: { left: "50%", top: -7, transform: "translateX(-50%)", cursor: "n-resize" },
+                s: { left: "50%", bottom: -7, transform: "translateX(-50%)", cursor: "s-resize" },
+                w: { left: -7, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
+                e: { right: -7, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
               };
               return (
                 <div
@@ -206,20 +206,20 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
                 key={i}
                 onPointerDown={e=>handleQuadPointerDown(e,i)}
                 title={`Esquina ${i+1} — arrastra`}
-                className="absolute w-3.5 h-3.5 bg-indigo-500 border-2 border-white rounded-full shadow -translate-x-1/2 -translate-y-1/2 cursor-move touch-none hover:scale-110 transition-transform"
+                className="absolute w-6 h-6 sm:w-7 sm:h-7 bg-indigo-500 border-2 border-white rounded-full shadow -translate-x-1/2 -translate-y-1/2 cursor-move touch-none hover:scale-110 active:scale-125 transition-transform touch-manipulation"
                 style={{ left: `${pt.x*100}%`, top: `${pt.y*100}%` }}
               />
             ))}
             <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[8px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full shadow pointer-events-none">Trapecio → rectángulo</span>
           </>
         )}
-          {/* botón flotante expandir — centrado sobre imagen (inner) */}
+          {/* botón flotante expandir — centrado sobre imagen (inner), siempre visible en móvil */}
           <button
             onClick={(e) => { e.stopPropagation(); onPreview(pageIndex); }}
             title="Previsualizar a pantalla completa (alta resolución)"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur border border-gray-200 dark:border-gray-700 shadow-lg flex items-center justify-center text-gray-700 dark:text-gray-200 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:scale-105 active:scale-95"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 sm:w-9 sm:h-9 rounded-full bg-white/95 dark:bg-gray-900/95 backdrop-blur border border-gray-200 dark:border-gray-700 shadow-lg flex items-center justify-center text-gray-700 dark:text-gray-200 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transition-opacity hover:scale-105 active:scale-95 touch-manipulation"
           >
-            <span className="text-[11px]">⛶</span>
+            <span className="text-sm sm:text-[11px]">⛶</span>
           </button>
         </div>
         <span className="absolute top-2 left-2 text-[11px] font-mono font-bold bg-gray-900 text-white px-2 py-1 rounded-full shadow pointer-events-none">{pageIndex + 1}{deg ? ` · ${deg}°` : ""}</span>
@@ -243,22 +243,22 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
           </>
         )}
       </div>
-      <div className="px-3 py-2 flex flex-col gap-1.5">
-        <div className="flex items-center justify-between gap-1">
+      <div className="px-3 py-3 sm:py-2 flex flex-col gap-2 sm:gap-1.5">
+        <div className="flex items-center justify-between gap-2">
           <span className="text-xs font-mono text-gray-600 dark:text-gray-400">Pág. {pageIndex + 1}{deg ? ` · ${deg}°` : ""}{quad ? " · ◫" : ""}</span>
-          <div className="flex items-center gap-1">
-            <button title="Rotar 90° antihorario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, -90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↺</button>
-            <button title="Rotar 90° horario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, 90); }} className="w-7 h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-[11px]">↻</button>
+          <div className="flex items-center gap-2 sm:gap-1">
+            <button title="Rotar 90° antihorario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, -90); }} className="w-9 h-9 sm:w-7 sm:h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-sm sm:text-[11px] active:scale-95 touch-manipulation">↺</button>
+            <button title="Rotar 90° horario" onClick={(e)=>{ e.stopPropagation(); onRotate(pageIndex, 90); }} className="w-9 h-9 sm:w-7 sm:h-7 rounded-full border bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center text-sm sm:text-[11px] active:scale-95 touch-manipulation">↻</button>
           </div>
         </div>
         <div className="flex items-center justify-between gap-2">
-          <label className={`flex items-center gap-1.5 text-[11px] font-semibold cursor-pointer select-none px-2 py-1 rounded-full border ${isSelected ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600"}`}>
-            <input type="checkbox" checked={isSelected} onChange={(e)=>{ e.stopPropagation(); onSelect(pageIndex); }} onClick={e=>e.stopPropagation()} className="rounded text-emerald-600" />
+          <label className={`flex items-center gap-2 text-xs sm:text-[11px] font-semibold cursor-pointer select-none px-3 py-2 sm:px-2 sm:py-1 rounded-full border min-h-[40px] sm:min-h-0 touch-manipulation ${isSelected ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600"}`}>
+            <input type="checkbox" checked={isSelected} onChange={(e)=>{ e.stopPropagation(); onSelect(pageIndex); }} onClick={e=>e.stopPropagation()} className="rounded text-emerald-600 w-4 h-4 sm:w-3 sm:h-3" />
             Seleccionar
           </label>
-          <button title="Borrar esta página" onClick={(e)=>{ e.stopPropagation(); onDelete(pageIndex); }} className="px-2.5 py-1 rounded-full border bg-white dark:bg-gray-900 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-gray-600 dark:text-gray-300 text-[11px] font-bold">🗑 Borrar</button>
+          <button title="Borrar esta página" onClick={(e)=>{ e.stopPropagation(); onDelete(pageIndex); }} className="px-3 py-2 sm:px-2.5 sm:py-1 rounded-full border bg-white dark:bg-gray-900 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-gray-600 dark:text-gray-300 text-xs sm:text-[11px] font-bold min-h-[40px] sm:min-h-0 touch-manipulation">🗑 Borrar</button>
         </div>
-        <button onClick={(e)=>{ e.stopPropagation(); onQuadToggle(pageIndex); }} className={`w-full text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-full border transition-colors ${quad ? "bg-indigo-500 text-white border-indigo-500 hover:bg-indigo-600" : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50"}`}>{quad ? "✕ Quitar trapecio" : "◫ Trapecio"}</button>
+        <button onClick={(e)=>{ e.stopPropagation(); onQuadToggle(pageIndex); }} className={`w-full text-xs sm:text-[10px] font-bold tracking-widest uppercase px-3 py-2.5 sm:px-2 sm:py-1 rounded-full border transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${quad ? "bg-indigo-500 text-white border-indigo-500 hover:bg-indigo-600" : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50"}`}>{quad ? "✕ Quitar trapecio" : "◫ Trapecio"}</button>
       </div>
     </div>
   );

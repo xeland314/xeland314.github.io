@@ -200,7 +200,7 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
                   <polygon points={quad.map(p=>`${p.x*100},${p.y*100}`).join(" ")} fill="rgba(99,102,241,0.14)" stroke="rgba(99,102,241,0.95)" strokeWidth={0.6} vectorEffect="non-scaling-stroke" />
                 </svg>
                 {quad.map((pt,i)=>(
-                  <div key={i} onPointerDown={e=>handleQuadPointerDown(e,i)} title={`Esquina ${i+1}`} className="absolute w-4 h-4 bg-indigo-500 border-2 border-white rounded-full shadow -translate-x-1/2 -translate-y-1/2 cursor-move hover:scale-110 transition-transform" style={{ left: `${pt.x*100}%`, top: `${pt.y*100}%` }} />
+                  <div key={i} onPointerDown={e=>handleQuadPointerDown(e,i)} title={`Esquina ${i+1}`} className="absolute w-7 h-7 sm:w-6 sm:h-6 bg-indigo-500 border-2 border-white rounded-full shadow -translate-x-1/2 -translate-y-1/2 cursor-move hover:scale-110 active:scale-125 transition-transform touch-manipulation" style={{ left: `${pt.x*100}%`, top: `${pt.y*100}%` }} />
                 ))}
                 <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow pointer-events-none">Trapecio → rectángulo</span>
               </>
@@ -225,18 +225,18 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
               >
                 {(["nw","ne","sw","se","n","s","e","w"] as const).map((pos) => {
                   const isCorner = ["nw","ne","sw","se"].includes(pos);
-                  const style: React.CSSProperties = isCorner ? { width: 14, height: 14 } : pos === "n" || pos === "s" ? { width: 32, height: 10, borderRadius: 9999 } : { width: 10, height: 32, borderRadius: 9999 };
+                  const style: React.CSSProperties = isCorner ? { width: 22, height: 22 } : pos === "n" || pos === "s" ? { width: 40, height: 16, borderRadius: 9999 } : { width: 16, height: 40, borderRadius: 9999 };
                   const posStyle: Record<string, React.CSSProperties> = {
-                    nw: { left: -7, top: -7, cursor: "nw-resize" },
-                    ne: { right: -7, top: -7, cursor: "ne-resize" },
-                    sw: { left: -7, bottom: -7, cursor: "sw-resize" },
-                    se: { right: -7, bottom: -7, cursor: "se-resize" },
-                    n: { left: "50%", top: -5, transform: "translateX(-50%)", cursor: "n-resize" },
-                    s: { left: "50%", bottom: -5, transform: "translateX(-50%)", cursor: "s-resize" },
-                    w: { left: -5, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
-                    e: { right: -5, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
+                    nw: { left: -11, top: -11, cursor: "nw-resize" },
+                    ne: { right: -11, top: -11, cursor: "ne-resize" },
+                    sw: { left: -11, bottom: -11, cursor: "sw-resize" },
+                    se: { right: -11, bottom: -11, cursor: "se-resize" },
+                    n: { left: "50%", top: -8, transform: "translateX(-50%)", cursor: "n-resize" },
+                    s: { left: "50%", bottom: -8, transform: "translateX(-50%)", cursor: "s-resize" },
+                    w: { left: -8, top: "50%", transform: "translateY(-50%)", cursor: "w-resize" },
+                    e: { right: -8, top: "50%", transform: "translateY(-50%)", cursor: "e-resize" },
                   };
-                  return <div key={pos} data-handle={pos} onPointerDown={(e) => handlePointerDown(e, "resize", pos)} className="absolute bg-amber-500 border-2 border-white rounded-sm shadow-md" style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties} />;
+                  return <div key={pos} data-handle={pos} onPointerDown={(e) => handlePointerDown(e, "resize", pos)} className="absolute bg-amber-500 border-2 border-white rounded-sm shadow-md touch-manipulation" style={{ ...style, ...(posStyle[pos] as any), position: "absolute" } as React.CSSProperties} />;
                 })}
                 <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow pointer-events-none">Conservar</span>
               </div>
