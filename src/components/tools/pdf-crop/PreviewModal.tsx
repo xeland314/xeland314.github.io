@@ -16,12 +16,16 @@ interface Props {
   rect: NormalizedRect;
   quad?: Quad | null;
   rotation?: PageRotation;
+  watermarkUrl?: string | null;
+  watermarkOpacity?: number;
+  watermarkScale?: number;
+  watermarkPosition?: string;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
   onQuadPoint?: (idx: number, pIdx: number, pt: { x: number; y: number }) => void;
   onClose: () => void;
 }
 
-export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, onRectChange, onQuadPoint, onClose }: Props) {
+export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, watermarkUrl=null, watermarkOpacity=0.18, watermarkScale=0.35, watermarkPosition="center", onRectChange, onQuadPoint, onClose }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [highResReady, setHighResReady] = useState(false);
@@ -193,6 +197,23 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
               {renderError && <div className="absolute inset-0 flex items-center justify-center text-xs text-red-500 bg-white/80 rounded-lg">Error al renderizar página</div>}
             </div>
 
+            {/* marca de agua preview */}
+            {watermarkUrl && (
+              watermarkPosition==="tile" ? (
+                <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:`url(${watermarkUrl})`, backgroundRepeat:"repeat", backgroundSize:`${watermarkScale*40}% auto`, opacity: watermarkOpacity }} />
+              ) : (
+                <img src={watermarkUrl} alt="" className="absolute pointer-events-none select-none" style={{
+                  opacity: watermarkOpacity,
+                  width: `${watermarkScale*100}%`,
+                  height: "auto",
+                  left: watermarkPosition==="center" ? "50%" : watermarkPosition.includes("left") ? "6%" : "auto",
+                  right: watermarkPosition.includes("right") ? "6%" : "auto",
+                  top: watermarkPosition==="center" ? "50%" : watermarkPosition.includes("top") ? "6%" : "auto",
+                  bottom: watermarkPosition.includes("bottom") ? "6%" : "auto",
+                  transform: watermarkPosition==="center" ? "translate(-50%,-50%)" : "none",
+                }} draggable={false} />
+              )
+            )}
             {/* overlay — quad trapecio si existe, si no rect naranja */}
             {quad ? (
               <>

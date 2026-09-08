@@ -11,6 +11,10 @@ interface Props {
   rotation?: PageRotation;
   isSelected: boolean;
   previewCrop: boolean;
+  watermarkUrl?: string | null;
+  watermarkOpacity?: number;
+  watermarkScale?: number;
+  watermarkPosition?: string;
   onSelect: (idx: number) => void;
   onDelete: (idx: number) => void;
   onRotate: (idx: number, delta: 90 | -90) => void;
@@ -20,7 +24,7 @@ interface Props {
   onPreview: (idx: number) => void;
 }
 
-const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, isSelected, previewCrop, onSelect, onDelete, onRotate, onQuadToggle, onQuadPoint, onRectChange, onPreview }: Props) => {
+const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, isSelected, previewCrop, watermarkUrl=null, watermarkOpacity=0.18, watermarkScale=0.35, watermarkPosition="center", onSelect, onDelete, onRotate, onQuadToggle, onQuadPoint, onRectChange, onPreview }: Props) => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -142,6 +146,23 @@ const PageCard = memo(({ pageIndex, thumbnailSrc, rect, quad = null, rotation = 
               draggable={false}
               onDoubleClick={() => onPreview(pageIndex)}
             />
+          )}
+          {/* marca de agua preview */}
+          {visible && watermarkUrl && (
+            watermarkPosition==="tile" ? (
+              <div className="absolute inset-0 pointer-events-none opacity-90" style={{ backgroundImage:`url(${watermarkUrl})`, backgroundRepeat:"repeat", backgroundSize:`${watermarkScale*35}% auto`, opacity: watermarkOpacity }} />
+            ) : (
+              <img src={watermarkUrl} alt="" className="absolute pointer-events-none select-none" style={{
+                opacity: watermarkOpacity,
+                width: `${watermarkScale*100}%`,
+                height: "auto",
+                left: watermarkPosition==="center" ? "50%" : watermarkPosition.includes("left") ? "6%" : "auto",
+                right: watermarkPosition.includes("right") ? "6%" : "auto",
+                top: watermarkPosition==="center" ? "50%" : watermarkPosition.includes("top") ? "6%" : "auto",
+                bottom: watermarkPosition.includes("bottom") ? "6%" : "auto",
+                transform: watermarkPosition==="center" ? "translate(-50%,-50%)" : watermarkPosition.includes("left") && watermarkPosition.includes("top") ? "none" : watermarkPosition.includes("right") && watermarkPosition.includes("top") ? "none" : watermarkPosition.includes("left") && watermarkPosition.includes("bottom") ? "none" : watermarkPosition.includes("right") && watermarkPosition.includes("bottom") ? "none" : "translate(-50%,-50%)",
+              }} draggable={false} />
+            )
           )}
         {visible && showBox && (
           <div

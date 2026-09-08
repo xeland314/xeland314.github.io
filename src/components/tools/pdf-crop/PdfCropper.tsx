@@ -86,6 +86,15 @@ export default function PdfCropper() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
+  // marca de agua: fondo blanco con logo -> quitar blanco y aplicar con transparencia a todas las páginas
+  const [watermarkDataUrl, setWatermarkDataUrl] = useState<string|null>(null);
+  const [watermarkImg, setWatermarkImg] = useState<HTMLImageElement|null>(null);
+  const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string|null>(null);
+  const [watermarkOpacity, setWatermarkOpacity] = useState(0.18);
+  const [watermarkScale, setWatermarkScale] = useState(0.35);
+  const [watermarkPosition, setWatermarkPosition] = useState<"center"|"top-left"|"top-right"|"bottom-left"|"bottom-right"|"tile">("center");
+  const watermarkInputRef = useRef<HTMLInputElement>(null);
+  const processedWatermarkRef = useRef<HTMLCanvasElement|null>(null);
 
   const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, sel: Set<number>, count: number, force=false) => {
     if (!bytes) return;
@@ -100,6 +109,45 @@ export default function PdfCropper() {
     // feedback breve
     const el=document.createElement("div"); el.textContent="✓ Guardado"; el.className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-full shadow z-[90]"; document.body.appendChild(el); setTimeout(()=>el.remove(),1500);
   }, [pdfBytes, pdfName, cropRects, rotations, quads, selected, pageCount, persist]);
+
+  // procesa marca: quita fondo blanco (tolerancia 240) y guarda canvas con alpha
+  useEffect(()=>{
+    if(!watermarkDataUrl){ setWatermarkImg(null); setWatermarkPreviewUrl(null); processedWatermarkRef.current=null; return; }
+    const img = new Image();
+    img.onload = ()=>{
+      const c = document.createElement("canvas");
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      const ctx=c.getContext("2d", { willReadFrequently:true } as any);
+      if(!ctx){ setWatermarkImg(img); setWatermarkPreviewUrl(watermarkDataUrl); return; }
+      ctx.drawImage(img,0,0);
+      try{
+        const id=ctx.getImageData(0,0,c.width,c.height);
+        const d=id.data;
+        for(let i=0;i<d.length;i+=4){
+          const r=d[i], g=d[i+1], b=d[i+2];
+          // blanco puro o casi blanco con poca saturación -> transparente
+          if(r>240 && g>240 && b>240 && Math.max(r,g,b)-Math.min(r,g,b) < 15){
+            d[i+3]=0;
+          } else if((r+g+b)/3 > 245) {
+            d[i+3]=0;
+          }
+        }
+        ctx.putImageData(id,0,0);
+      }catch{}
+      processedWatermarkRef.current=c;
+      try{ setWatermarkPreviewUrl(c.toDataURL("image/png")); }catch{ setWatermarkPreviewUrl(watermarkDataUrl); }
+      setWatermarkImg(img);
+    };
+    img.onerror=()=>{ setWatermarkImg(null); setWatermarkPreviewUrl(null); processedWatermarkRef.current=null; };
+    img.src=watermarkDataUrl;
+  }, [watermarkDataUrl]);
+
+  const handleWatermarkFile = useCallback(async (file: File)=>{
+    if(!file.type.startsWith("image/")){ alert("Solo imagen para marca"); return; }
+    const reader=new FileReader();
+    reader.onload=()=> setWatermarkDataUrl(reader.result as string);
+    reader.readAsDataURL(file);
+  }, []);
 
   const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, thumbs: string[]) => {
     setUndoStack(s => {
@@ -501,8 +549,29 @@ export default function PdfCropper() {
       const hasCrop = Array.from(cropRects.values()).some(r => !isFullRect(r));
       const hasRot = rotations.size > 0;
       const hasQuad = quads.size > 0;
-      // Si hay quads trapezoidales, rasteriza esas páginas con warp (rectángulo final)
-      if (hasQuad) {
+      const hasWatermark = !!watermarkDataUrl && !!processedWatermarkRef.current;
+      const applyWatermark = (c: HTMLCanvasElement)=>{
+        const wm = processedWatermarkRef.current;
+        if(!wm || !hasWatermark) return;
+        const ctx=c.getContext("2d")!;
+        const scaleW = c.width * watermarkScale;
+        const scaleH = (wm.height / wm.width) * scaleW;
+        ctx.globalAlpha = watermarkOpacity;
+        if(watermarkPosition==="tile"){
+          for(let y=0; y<c.height; y+=scaleH+40) for(let x=0; x<c.width; x+=scaleW+40) ctx.drawImage(wm, x, y, scaleW, scaleH);
+        } else {
+          let x=0,y=0;
+          if(watermarkPosition==="center"){ x=(c.width-scaleW)/2; y=(c.height-scaleH)/2; }
+          else if(watermarkPosition==="top-left"){ x=20; y=20; }
+          else if(watermarkPosition==="top-right"){ x=c.width-scaleW-20; y=20; }
+          else if(watermarkPosition==="bottom-left"){ x=20; y=c.height-scaleH-20; }
+          else if(watermarkPosition==="bottom-right"){ x=c.width-scaleW-20; y=c.height-scaleH-20; }
+          ctx.drawImage(wm, x, y, scaleW, scaleH);
+        }
+        ctx.globalAlpha=1;
+      };
+      // Si hay quads o marca, rasteriza todas las páginas para poder aplicar warp/marca
+      if (hasQuad || hasWatermark) {
         const srcDoc = await PDFDocument.load(pdfBytes);
         const dstDoc = await PDFDocument.create();
         // para no recargar pdfjs por cada página, usa un doc pdfjs
@@ -533,14 +602,52 @@ export default function PdfCropper() {
             outCanvas.width = warped.width; outCanvas.height = warped.height;
             const octx = outCanvas.getContext("2d")!;
             octx.putImageData(warped, 0, 0);
+            if(hasWatermark) applyWatermark(outCanvas);
             const dataUrl = outCanvas.toDataURL("image/jpeg", 0.85);
             const b64 = dataUrl.split(",")[1];
             const jpgBytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
             const jpg = await dstDoc.embedJpg(jpgBytes);
             const pg = dstDoc.addPage([warped.width, warped.height]);
             pg.drawImage(jpg, { x: 0, y: 0, width: warped.width, height: warped.height });
+          } else if (hasWatermark || (cropRects.get(idx) && !isFullRect(cropRects.get(idx)!))) {
+            // página sin quad pero con marca o recorte: rasteriza con pdfjs para poder componer
+            const rot = (rotations.get(idx) ?? 0) as PageRotation;
+            const page = await pdfjsDoc.getPage(idx + 1);
+            const vp1 = page.getViewport({ scale: 1, rotation: rot as number });
+            const targetW = 1200;
+            const scale = targetW / vp1.width;
+            const vp = page.getViewport({ scale, rotation: rot as number });
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.ceil(vp.width);
+            canvas.height = Math.ceil(vp.height);
+            const ctx = canvas.getContext("2d", { willReadFrequently: true } as any);
+            if(!ctx) continue;
+            ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,canvas.width,canvas.height);
+            await page.render({ canvasContext: ctx as any, viewport: vp, canvas } as any).promise;
+            try{ page.cleanup(); }catch{}
+            // recorte rectangular si aplica: recorta canvas via drawImage
+            const rect = cropRects.get(idx);
+            let outCanvas: HTMLCanvasElement = canvas;
+            if(rect && !isFullRect(rect)){
+              const origRect = visualToOriginalRect(rect, rot);
+              const sx = Math.round(origRect.x * canvas.width);
+              const sy = Math.round((1-origRect.y-origRect.h) * canvas.height);
+              const sw = Math.round(origRect.w * canvas.width);
+              const sh = Math.round(origRect.h * canvas.height);
+              const tmp=document.createElement("canvas");
+              tmp.width=sw; tmp.height=sh;
+              tmp.getContext("2d")!.drawImage(canvas, sx, sy, sw, sh, 0,0,sw,sh);
+              outCanvas=tmp;
+            }
+            if(hasWatermark) applyWatermark(outCanvas);
+            const dataUrl = outCanvas.toDataURL("image/jpeg", 0.85);
+            const b64 = dataUrl.split(",")[1];
+            const jpgBytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
+            const jpg = await dstDoc.embedJpg(jpgBytes);
+            const pg = dstDoc.addPage([outCanvas.width, outCanvas.height]);
+            pg.drawImage(jpg, { x:0,y:0,width:outCanvas.width,height:outCanvas.height });
           } else {
-            // página sin quad: preserva vectorial con crop/rot si aplica
+            // página sin quad ni marca: preserva vectorial con crop/rot si aplica
             const [copied] = await dstDoc.copyPages(srcDoc, [idx]);
             const media = copied.getMediaBox();
             const mw = media.width || copied.getSize().width;
@@ -589,7 +696,7 @@ export default function PdfCropper() {
       setTimeout(()=>URL.revokeObjectURL(url),2000);
     } catch(e){ console.error(e); alert("Error al generar PDF recortado"); }
     setIsProcessing(false);
-  }, [pdfBytes, pdfName, cropRects, rotations, quads, pageCount]);
+  }, [pdfBytes, pdfName, cropRects, rotations, quads, pageCount, watermarkDataUrl, watermarkOpacity, watermarkScale, watermarkPosition]);
 
   const handleSaveProject = async ()=>{
     const name = projectNameInput.trim();
@@ -768,6 +875,44 @@ export default function PdfCropper() {
             </div>
           </div>
 
+          <div className="p-4 sm:p-5 bg-sky-50/60 dark:bg-sky-950/20 border border-sky-200 rounded-2xl">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-bold tracking-widest uppercase text-sky-800">Marca de agua · fondo blanco con logo</h3>
+              {watermarkDataUrl && <button onClick={()=>{setWatermarkDataUrl(null); if(watermarkInputRef.current) watermarkInputRef.current.value="";}} className="text-[11px] px-2.5 py-1 rounded-full border bg-white text-sky-700">✕ Quitar</button>}
+            </div>
+            <p className="text-xs text-sky-800/70">Carga imagen con fondo blanco y logo. Se quita el blanco, se ajusta transparencia y se aplica a <b>todas</b> las páginas al Descargar.</p>
+            <input ref={watermarkInputRef} type="file" accept="image/*" className="hidden" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleWatermarkFile(f); }} />
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button onClick={()=>watermarkInputRef.current?.click()} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-sm sm:text-xs font-bold min-h-[44px] sm:min-h-0 touch-manipulation">{watermarkDataUrl ? "Cambiar imagen" : "Cargar marca"}</button>
+              {watermarkDataUrl && <span className="text-[11px] text-sky-700 self-center truncate max-w-[180px]">{watermarkImg ? `${watermarkImg.naturalWidth}×${watermarkImg.naturalHeight}` : "procesando..."}</span>}
+            </div>
+            {watermarkDataUrl && (
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white/70 dark:bg-gray-900/40 rounded-xl p-3 border flex flex-col gap-2">
+                  <span className="text-[11px] font-bold text-gray-500">Vista previa</span>
+                  <div className="relative w-full h-20 bg-white border rounded-lg overflow-hidden flex items-center justify-center">
+                    {watermarkPreviewUrl && <img src={watermarkPreviewUrl} alt="marca" className="max-w-full max-h-full object-contain" style={{opacity: watermarkOpacity}} />}
+                  </div>
+                  <span className="text-[10px] text-gray-400">Fondo blanco se hace transparente</span>
+                </div>
+                <div className="sm:col-span-2 flex flex-col gap-3">
+                  <label className="flex flex-col gap-1 text-xs">Transparencia {Math.round(watermarkOpacity*100)}%<input type="range" min={0.05} max={0.9} step={0.05} value={watermarkOpacity} onChange={e=>setWatermarkOpacity(parseFloat(e.target.value))} /></label>
+                  <label className="flex flex-col gap-1 text-xs">Tamaño {Math.round(watermarkScale*100)}% del ancho<input type="range" min={0.1} max={0.6} step={0.05} value={watermarkScale} onChange={e=>setWatermarkScale(parseFloat(e.target.value))} /></label>
+                  <label className="flex flex-col gap-1 text-xs">Posición
+                    <select value={watermarkPosition} onChange={e=>setWatermarkPosition(e.target.value as any)} className="bg-white dark:bg-gray-800 border rounded-lg px-2 py-2 text-sm">
+                      <option value="center">Centro</option>
+                      <option value="top-left">Arriba izq</option>
+                      <option value="top-right">Arriba der</option>
+                      <option value="bottom-left">Abajo izq</option>
+                      <option value="bottom-right">Abajo der</option>
+                      <option value="tile">Mosaico</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold tracking-widest uppercase text-gray-500">Páginas — arrastra el marco naranja</h3>
@@ -788,6 +933,10 @@ export default function PdfCropper() {
                       rotation={rotations.get(idx) ?? 0}
                       isSelected={selected.has(idx)}
                       previewCrop={previewCrop}
+                      watermarkUrl={watermarkPreviewUrl}
+                      watermarkOpacity={watermarkOpacity}
+                      watermarkScale={watermarkScale}
+                      watermarkPosition={watermarkPosition}
                       onSelect={handleSelect}
                       onDelete={handleDeleteOne}
                       onRotate={handleRotateOne}
@@ -806,6 +955,10 @@ export default function PdfCropper() {
                     rect={cropRects.get(previewIdx) ?? FULL_RECT}
                     quad={quads.get(previewIdx) ?? null}
                     rotation={rotations.get(previewIdx) ?? 0}
+                    watermarkUrl={watermarkPreviewUrl}
+                    watermarkOpacity={watermarkOpacity}
+                    watermarkScale={watermarkScale}
+                    watermarkPosition={watermarkPosition}
                     onRectChange={handleRectChange}
                     onQuadPoint={handleQuadPoint}
                     onClose={() => setPreviewIdx(null)}
