@@ -171,6 +171,9 @@ export const MapMaker = () => {
   const [newProjectName, setNewProjectName] = useState("");
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
+  const [pointSearchQuery, setPointSearchQuery] = useState<Record<string, string>>({});
+  const [pointSearchResults, setPointSearchResults] = useState<Record<string, any[]>>({});
+  const [pointSearchLoading, setPointSearchLoading] = useState<Record<string, boolean>>({});
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -502,6 +505,37 @@ export const MapMaker = () => {
     } finally {
       setSearchLoading(false);
     }
+  };
+
+  const handlePointSearch = async (id: string) => {
+    const q = (pointSearchQuery[id] || "").trim();
+    if (!q) return;
+    setPointSearchLoading((prev) => ({ ...prev, [id]: true }));
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(q)}`,
+        { headers: { Accept: "application/json" } }
+      );
+      const data = await res.json();
+      setPointSearchResults((prev) => ({ ...prev, [id]: data }));
+    } catch (e) {
+      console.error(e);
+      setPointSearchResults((prev) => ({ ...prev, [id]: [] }));
+    } finally {
+      setPointSearchLoading((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
+  const handlePointSelect = (id: string, result: any) => {
+    const lat = parseFloat(result.lat);
+    const lon = parseFloat(result.lon);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) return;
+    setMarkers((prev) => prev.map((m) => m.id === id ? { ...m, lat: Number(lat.toFixed(6)), lng: Number(lon.toFixed(6)) } : m));
+    setPointSearchResults((prev) => ({ ...prev, [id]: [] }));
+    setPointSearchQuery((prev) => ({ ...prev, [id]: "" }));
+    setRouteCoords([]);
+    setRouteInfo(null);
+    if (mapRef.current) mapRef.current.flyTo([lat, lon], 15);
   };
 
   const exportJSON = () => {
@@ -918,6 +952,30 @@ export const MapMaker = () => {
                     <button onClick={() => handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg hover:bg-red-100">Eliminar</button>
                   </div>
                   <p className="text-[10px] text-slate-400 mt-1">Orden: {idx + 1} de {markers.length} · usa ↑↓ para reordenar ruta</p>
+                  <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Corregir ubicación sin borrar</label>
+                    <div className="flex gap-1.5 mt-1">
+                      <input
+                        value={pointSearchQuery[m.id] || ""}
+                        onChange={(e) => setPointSearchQuery((prev) => ({ ...prev, [m.id]: e.target.value }))}
+                        onKeyDown={(e) => { if (e.key === "Enter") handlePointSearch(m.id); }}
+                        placeholder="Ej: Av. Shyris, Quito"
+                        className="flex-1 text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                      />
+                      <button onClick={() => handlePointSearch(m.id)} disabled={pointSearchLoading[m.id]} className="text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-2.5 py-1.5 rounded-lg">{pointSearchLoading[m.id] ? "…" : "Buscar"}</button>
+                    </div>
+                    {(pointSearchResults[m.id]?.length || 0) > 0 && (
+                      <ul className="mt-1.5 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 max-h-40 overflow-y-auto">
+                        {pointSearchResults[m.id]!.slice(0, 5).map((r: any) => (
+                          <li key={r.place_id} onClick={() => handlePointSelect(m.id, r)} className="px-2.5 py-2 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 cursor-pointer">
+                            <p className="text-[11px] font-semibold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">{r.display_name}</p>
+                            <p className="text-[10px] text-slate-500">{r.type} · {parseFloat(r.lat).toFixed(4)},{parseFloat(r.lon).toFixed(4)} · click para mover aquí</p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <p className="text-[10px] text-slate-400 mt-1">Nominatim devuelve hasta 5 sugerencias (OSM). Elige una para mover este punto.</p>
+                  </div>
                 </div>
               </div>
             ))}
