@@ -178,3 +178,20 @@ export function createDivIconHtml(iconId: IconId, colorHex: string) {
     </div>
   </div>`;
 }
+
+export function createNumberIconHtml(order: number, colorHex: string) {
+  return `
+  <div style="
+    width:38px;height:38px;
+    background:${colorHex};
+    border-radius:50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border:2.5px solid white;
+    box-shadow:0 2px 8px rgba(0,0,0,0.35);
+    display:flex;align-items:center;justify-content:center;
+  ">
+    <div style="transform: rotate(45deg); color:white; font-weight:900; font-size:16px; font-family:ui-monospace,monospace; line-height:1; display:flex; align-items:center; justify-content:center;">
+      ${order}
+    </div>
+  </div>`;
+}

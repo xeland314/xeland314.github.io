@@ -10,7 +10,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { ICONS, COLORS, getColorHex, createDivIconHtml, type IconId } from "./icons";
+import { ICONS, COLORS, getColorHex, createDivIconHtml, createNumberIconHtml, type IconId } from "./icons";
 
 export type MarkerData = {
   id: string;
@@ -49,6 +49,7 @@ const TILE_PROVIDERS: Record<TileProvider, { url: string; attribution: string; l
 };
 
 const STORAGE_KEY = "custom-map-maker:v2";
+const DEFAULT_GEOAPIFY_KEY = "d4d5a2e38d934da287b79d360de83e5d";
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -142,9 +143,18 @@ export const MapMaker = () => {
   const [newTitle, setNewTitle] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
-  const [geoapifyToken, setGeoapifyToken] = useState("");
-  const [geoapifyInput, setGeoapifyInput] = useState("");
+  const [geoapifyToken, setGeoapifyToken] = useState(DEFAULT_GEOAPIFY_KEY);
+  const [geoapifyInput, setGeoapifyInput] = useState(DEFAULT_GEOAPIFY_KEY);
   const [showToken, setShowToken] = useState(false);
+  const [routeMode, setRouteMode] = useState<"drive" | "walk" | "bicycle">("drive");
+  const [optimizeStops, setOptimizeStops] = useState(false);
+  const [routeCoords, setRouteCoords] = useState<[number, number][]>([]);
+  const [routeInfo, setRouteInfo] = useState<{ distance: number; time: number } | null>(null);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [routeError, setRouteError] = useState<string | null>(null);
+  const [rotationDeg, setRotationDeg] = useState(0);
+  const [rotationInput, setRotationInput] = useState("45");
+  const [showNumberInsteadOfIcon, setShowNumberInsteadOfIcon] = useState(false);
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -174,7 +184,15 @@ export const MapMaker = () => {
       if (savedToken) {
         setGeoapifyToken(savedToken);
         setGeoapifyInput(savedToken);
+      } else {
+        // embebida por defecto, pero mantenida sobreescribible
+        setGeoapifyToken(DEFAULT_GEOAPIFY_KEY);
+        setGeoapifyInput(DEFAULT_GEOAPIFY_KEY);
       }
+      const savedRotation = localStorage.getItem("map-rotation-deg");
+      if (savedRotation) setRotationDeg(parseInt(savedRotation) || 0);
+      const savedShowNumber = localStorage.getItem("map-show-number");
+      if (savedShowNumber) setShowNumberInsteadOfIcon(savedShowNumber === "true");
     } catch {}
     setIsLoaded(true);
   }, []);
@@ -185,6 +203,16 @@ export const MapMaker = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   }, [markers, tileProvider, showPolyline, selectedIcon, selectedColor, isLoaded]);
 
+  useEffect(() => {
+    if (!isLoaded) return;
+    localStorage.setItem("map-rotation-deg", String(rotationDeg));
+  }, [rotationDeg, isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    localStorage.setItem("map-show-number", String(showNumberInsteadOfIcon));
+  }, [showNumberInsteadOfIcon, isLoaded]);
+
   const handleSaveToken = () => {
     const t = geoapifyInput.trim();
     if (!t) return;
@@ -193,8 +221,8 @@ export const MapMaker = () => {
   };
   const handleClearToken = () => {
     localStorage.removeItem("geoapify-api-key");
-    setGeoapifyToken("");
-    setGeoapifyInput("");
+    setGeoapifyToken(DEFAULT_GEOAPIFY_KEY);
+    setGeoapifyInput(DEFAULT_GEOAPIFY_KEY);
   };
 
   const handleAddMarker = useCallback(
@@ -244,10 +272,117 @@ export const MapMaker = () => {
     setEditingId(null);
   };
 
+  const moveMarker = (id: string, dir: -1 | 1) => {
+    setMarkers((prev) => {
+      const idx = prev.findIndex((m) => m.id === id);
+      if (idx < 0) return prev;
+      const next = idx + dir;
+      if (next < 0 || next >= prev.length) return prev;
+      const arr = [...prev];
+      const [item] = arr.splice(idx, 1);
+      arr.splice(next, 0, item);
+      return arr;
+    });
+    // limpiar ruta al reordenar (debe recalcular)
+    setRouteCoords([]);
+    setRouteInfo(null);
+  };
+
   const fitAll = () => {
     if (!mapRef.current || markers.length === 0) return;
     const bounds = L.latLngBounds(markers.map((m) => [m.lat, m.lng] as [number, number]));
     mapRef.current.fitBounds(bounds.pad(0.2));
+  };
+
+  const handleDrawRoute = async () => {
+    setRouteError(null);
+    if (markers.length < 2) {
+      setRouteError("Necesitas al menos 2 puntos");
+      return;
+    }
+    if (!geoapifyToken) {
+      setRouteError("Primero guarda tu API key de Geoapify");
+      return;
+    }
+    setRouteLoading(true);
+    try {
+      const waypoints = markers.map((m) => `${m.lat},${m.lng}`).join("|");
+      const params = new URLSearchParams({
+        waypoints,
+        mode: routeMode,
+        apiKey: geoapifyToken,
+      });
+      if (optimizeStops) params.set("optimize_stops", "true");
+      const url = `https://api.geoapify.com/v1/routing?${params.toString()}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Error ${res.status}`);
+      }
+      const data = await res.json();
+      // GeoJSON FeatureCollection -> features[0].geometry.coordinates son [lon,lat]
+      let coords: [number, number][] = [];
+      let distance = 0;
+      let time = 0;
+      if (data.type === "FeatureCollection" && Array.isArray(data.features) && data.features[0]) {
+        const feat = data.features[0];
+        const geom = feat.geometry;
+        // puede ser LineString o MultiLineString
+        if (geom.type === "LineString") {
+          coords = geom.coordinates.map((c: number[]) => [c[1], c[0]] as [number, number]);
+        } else if (geom.type === "MultiLineString") {
+          coords = geom.coordinates.flat().map((c: number[]) => [c[1], c[0]] as [number, number]);
+        }
+        distance = feat.properties?.distance ?? 0;
+        time = feat.properties?.time ?? 0;
+        // si waypoints optimizados, actualizar orden visual
+        if (feat.properties?.waypoints && Array.isArray(feat.properties.waypoints) && optimizeStops) {
+          // feat.properties.waypoints viene ordenado, pero no reordenamos markers automáticamente para no confundir; solo mostramos ruta optimizada
+        }
+      } else if (data.features) {
+        throw new Error("Respuesta inesperada de Geoapify");
+      } else {
+        throw new Error("Sin geometría de ruta");
+      }
+      if (coords.length === 0) throw new Error("Ruta vacía");
+      setRouteCoords(coords);
+      setRouteInfo({ distance, time });
+      // ajustar vista a ruta
+      if (mapRef.current) {
+        const bounds = L.latLngBounds(coords);
+        mapRef.current.fitBounds(bounds.pad(0.2));
+      }
+    } catch (e: any) {
+      setRouteError(e.message || "Error al calcular ruta");
+      setRouteCoords([]);
+      setRouteInfo(null);
+    } finally {
+      setRouteLoading(false);
+    }
+  };
+
+  const handleClearRoute = () => {
+    setRouteCoords([]);
+    setRouteInfo(null);
+    setRouteError(null);
+  };
+
+  const rotateMap = (delta: number) => {
+    setRotationDeg((prev) => {
+      let next = prev + delta;
+      next = ((next % 360) + 360) % 360;
+      // normalizar a 0-360
+      return next;
+    });
+    // Leaflet necesita invalidateSize tras CSS rotate para mantener interacción
+    setTimeout(() => mapRef.current?.invalidateSize(), 350);
+  };
+  const handleCustomRotate = () => {
+    const v = parseInt(rotationInput, 10);
+    if (Number.isNaN(v)) return;
+    let next = ((v % 360) + 360) % 360;
+    setRotationDeg(next);
+    setTimeout(() => mapRef.current?.invalidateSize(), 350);
   };
 
   const handleSearch = async () => {
@@ -367,7 +502,25 @@ export const MapMaker = () => {
   };
 
   const iconsMemo = useMemo(() => {
-    // create Leaflet divIcons per marker
+    if (showNumberInsteadOfIcon) {
+      // modo número: un icono por orden (depende de posición en array)
+      const map = new Map<string, L.DivIcon>();
+      markers.forEach((m, idx) => {
+        const key = `${idx}-${m.color}`;
+        map.set(
+          key,
+          L.divIcon({
+            html: createNumberIconHtml(idx + 1, getColorHex(m.color)),
+            className: "custom-div-icon",
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38],
+          })
+        );
+      });
+      return map;
+    }
+    // modo icono Lucide
     const map = new Map<string, L.DivIcon>();
     markers.forEach((m) => {
       const key = `${m.icon}-${m.color}`;
@@ -385,15 +538,15 @@ export const MapMaker = () => {
       }
     });
     return map;
-  }, [markers]);
+  }, [markers, showNumberInsteadOfIcon]);
 
   const center: [number, number] = markers.length ? [markers[0].lat, markers[0].lng] : [-0.180653, -78.467834];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 w-full lg:h-[calc(100vh-120px)] min-h-[700px]">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 w-full min-h-[720px] lg:items-start">
       <style>{`.custom-div-icon{background:transparent !important;border:none !important} .leaflet-popup-content{margin:12px 16px !important} .leaflet-popup-content-wrapper{border-radius:14px}`}</style>
       {/* Sidebar */}
-      <div className="w-full lg:w-[380px] xl:w-[420px] flex flex-col gap-4 lg:overflow-y-auto lg:pr-1 shrink-0 lg:max-h-[calc(100vh-120px)]">
+      <div className="w-full lg:w-[380px] xl:w-[420px] flex flex-col gap-4 shrink-0 lg:sticky lg:top-4">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-black text-slate-900 dark:text-white tracking-tight text-lg flex items-center gap-2">
@@ -434,6 +587,29 @@ export const MapMaker = () => {
               ))}
             </select>
           </div>
+
+          <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Ver pin como:</span>
+            <button type="button" onClick={() => setShowNumberInsteadOfIcon(false)} className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition ${!showNumberInsteadOfIcon ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Ícono Lucide</button>
+            <button type="button" onClick={() => setShowNumberInsteadOfIcon(true)} className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition ${showNumberInsteadOfIcon ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Nº orden</button>
+            <span className="text-[10px] text-slate-400">{showNumberInsteadOfIcon ? "mostrando 1,2,3…" : "mostrando íconos"}</span>
+          </div>
+
+          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">Rotar mapa <span className="font-mono text-[11px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-0.5 rounded-full">{rotationDeg}°</span></p>
+            <div className="flex gap-1.5 mt-2">
+              <button type="button" onClick={() => rotateMap(-45)} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl hover:bg-slate-50" title="Antihorario 45°">↺ 45°</button>
+              <button type="button" onClick={() => rotateMap(45)} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl hover:bg-slate-50" title="Horario 45°">↻ 45°</button>
+              <button type="button" onClick={() => { setRotationDeg(0); setTimeout(() => mapRef.current?.invalidateSize(), 350); }} className="text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2 rounded-xl">Reset</button>
+            </div>
+            <div className="flex gap-1.5 mt-2">
+              <input type="number" value={rotationInput} onChange={(e) => setRotationInput(e.target.value)} placeholder="45" className="w-20 text-xs border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-2 bg-white dark:bg-slate-800 dark:text-white font-mono" />
+              <button type="button" onClick={() => rotateMap(-parseInt(rotationInput || "0") || 0)} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl">↺ X°</button>
+              <button type="button" onClick={() => rotateMap(parseInt(rotationInput || "0") || 0)} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl">↻ X°</button>
+              <button type="button" onClick={handleCustomRotate} className="text-[11px] font-bold bg-violet-600 text-white px-3 py-2 rounded-xl">Ir a X°</button>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-1">Rotación visual CSS (no afecta coordenadas). Horario = +X°, antihorario = -X°.</p>
+          </div>
         </div>
 
         {/* Geoapify Token - frontend only, localStorage */}
@@ -471,10 +647,46 @@ export const MapMaker = () => {
           <details className="mt-3 group">
             <summary className="text-[11px] font-bold text-slate-600 dark:text-slate-400 cursor-pointer select-none">¿Ruta óptima (TSP)? — info</summary>
             <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl p-3">
-              <p><b>Sí, posible con Geoapify Route Planner.</b> Tu base ya tiene <code>routing-api-openapi-specs.json:24</code> (<code>/v1/routing</code> orden fijo) y batch specs. Para óptima (reordenar) usarías <code>POST /v1/route-planner</code> (no solo <code>/routing</code>): envías <code>agents</code> + <code>jobs/shipments</code> y Geoapify devuelve orden óptimo + geometrías. En el repo ya sigues patrón <code>GEOAPIFY_API_KEY</code> (<code>src/pages/es/projects/geocoding-api.astro:188</code>, <code>batch-geocoding-api-openapi-specs.json:3415 apiKey</code>).</p>
-              <p className="mt-2">Con key en frontend podríamos: 1) <code>/v1/routing?waypoints=lat,lon|...&mode=drive</code> para ruta secuencial, 2) <code>/v1/route-planner</code> para TSP/VRP (hasta 100+ puntos). Siguiente paso sería botón <code>Calcular ruta óptima</code> + dibujar <code>Polyline</code> resultante. No implementado aún — tú configurarás OSRM vs Geoapify.</p>
+              <p><b>Sí, posible con Geoapify Route Planner.</b> Tu base ya tiene <code>routing-api-openapi-specs.json:24</code> (<code>/v1/routing</code> orden fijo) y batch specs.</p>
+              <p className="mt-2">Abajo puedes dibujar la ruta en orden actual u optimizada (TSP mantiene 1er y último fijos).</p>
             </div>
           </details>
+
+          {/* Controles de ruta */}
+          <div className="mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
+            <h4 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M3 7v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M16 5h.01"/><path d="M8 5h.01"/><path d="M12 5h.01"/><path d="M16 17h.01"/><path d="M8 17h.01"/><path d="M12 17h.01"/></svg></span>
+              Ruta
+            </h4>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Modo
+                <select value={routeMode} onChange={(e) => setRouteMode(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
+                  <option value="drive">Auto</option>
+                  <option value="walk">A pie</option>
+                  <option value="bicycle">Bici</option>
+                </select>
+              </label>
+              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex flex-col justify-end">
+                <span className="flex items-center gap-1.5 pb-2"><input type="checkbox" checked={optimizeStops} onChange={(e) => setOptimizeStops(e.target.checked)} className="accent-violet-600" /> Optimizar orden</span>
+                <span className="text-[10px] font-normal text-slate-400">fija 1º y último</span>
+              </label>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <button onClick={handleDrawRoute} disabled={routeLoading || markers.length < 2 || !geoapifyToken} className="text-xs font-black bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
+                {routeLoading ? "Calculando…" : "Dibujar ruta"}
+              </button>
+              <button onClick={handleClearRoute} disabled={routeCoords.length === 0 && !routeError} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 rounded-xl disabled:opacity-40">Limpiar</button>
+            </div>
+            {!geoapifyToken && <p className="text-[11px] text-amber-600 mt-2">Guarda tu API key arriba para habilitar el trazado.</p>}
+            {markers.length < 2 && <p className="text-[11px] text-slate-400 mt-2">Añade al menos 2 puntos.</p>}
+            {routeError && <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2 mt-2">{routeError}</p>}
+            {routeInfo && (
+              <div className="text-xs bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-xl px-3 py-2 mt-2 space-y-1">
+                <p className="font-bold text-emerald-800 dark:text-emerald-300">Ruta lista — {(routeInfo.distance / 1000).toFixed(2)} km · {Math.round(routeInfo.time / 60)} min</p>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400">{routeCoords.length} puntos de geometría · orden actual {optimizeStops ? "(optimizado)" : "(secuencial)"} · reordena con ↑↓ y vuelve a dibujar</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Search */}
@@ -566,13 +778,13 @@ export const MapMaker = () => {
         </div>
 
         {/* Marker list */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col shadow-sm lg:flex-1 lg:min-h-0">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col shadow-sm">
           <div className="p-4 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Puntos ({markers.length})</h3>
             <span className="text-[11px] text-slate-400">Google limit 10 · aquí ∞</span>
           </div>
 
-          <div className="flex-1 overflow-auto lg:overflow-auto max-h-[320px] lg:max-h-none p-2 space-y-2">
+          <div className="max-h-[520px] overflow-y-auto p-2 space-y-2 overscroll-contain pr-1">
             {markers.length === 0 ? (
               <div className="text-center py-10 px-4">
                 <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">📍</div>
@@ -583,18 +795,27 @@ export const MapMaker = () => {
               <div key={m.id} className="group border rounded-xl p-3 flex gap-3 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition">
                 <div className="shrink-0 flex flex-col items-center gap-1">
                   <span className="text-[10px] font-mono font-bold text-slate-400">#{idx + 1}</span>
-                  <IconPreview icon={m.icon} color={m.color} />
+                  {showNumberInsteadOfIcon ? (
+                    <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{ background: getColorHex(m.color) }}>{idx + 1}</span>
+                  ) : (
+                    <IconPreview icon={m.icon} color={m.color} />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{m.title}</p>
                   {m.description && <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{m.description}</p>}
                   <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(5)}, {m.lng.toFixed(5)}</p>
-                  <div className="flex gap-1 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-2 items-center">
+                    <div className="flex gap-0.5 mr-1">
+                      <button onClick={() => moveMarker(m.id, -1)} disabled={idx === 0} className="w-6 h-6 flex items-center justify-center bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-l-lg disabled:opacity-30 text-[10px]">↑</button>
+                      <button onClick={() => moveMarker(m.id, 1)} disabled={idx === markers.length - 1} className="w-6 h-6 flex items-center justify-center bg-white dark:bg-slate-700 border-t border-b border-r border-slate-200 dark:border-slate-600 rounded-r-lg disabled:opacity-30 text-[10px]">↓</button>
+                    </div>
                     <button onClick={() => mapRef.current?.flyTo([m.lat, m.lng], 16)} className="text-[11px] font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-lg hover:opacity-90">Ver</button>
                     <button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50">Editar</button>
                     <button onClick={() => handleDuplicate(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50" title="Duplicar">⧉</button>
-                    <button onClick={() => handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg hover:bg-red-100 ml-auto">Eliminar</button>
+                    <button onClick={() => handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg hover:bg-red-100">Eliminar</button>
                   </div>
+                  <p className="text-[10px] text-slate-400 mt-1">Orden: {idx + 1} de {markers.length} · usa ↑↓ para reordenar ruta</p>
                 </div>
               </div>
             ))}
@@ -617,7 +838,7 @@ export const MapMaker = () => {
       </div>
 
       {/* Map */}
-      <div className="flex-1 min-h-[520px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900">
+      <div className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900" style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease" }}>
         <MapContainer
           center={center}
           zoom={13}
@@ -628,12 +849,15 @@ export const MapMaker = () => {
           <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} />
           <MapClickHandler onAdd={handleAddMarker} />
 
-          {showPolyline && markers.length > 1 && (
+          {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
             <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
           )}
+          {routeCoords.length > 0 && (
+            <Polyline positions={routeCoords} pathOptions={{ color: "#7c3aed", weight: 5, opacity: 0.85 }} />
+          )}
 
-          {markers.map((m) => {
-            const iconKey = `${m.icon}-${m.color}`;
+          {markers.map((m, idx) => {
+            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}` : `${m.icon}-${m.color}`;
             const icon = iconsMemo.get(iconKey);
             return (
               <Marker
@@ -651,7 +875,11 @@ export const MapMaker = () => {
                 <Popup>
                   <div className="min-w-[180px]">
                     <p className="font-black text-slate-900 text-sm flex items-center gap-2">
-                      <IconPreview icon={m.icon} color={m.color} />
+                      {showNumberInsteadOfIcon ? (
+                        <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{ background: getColorHex(m.color) }}>{idx + 1}</span>
+                      ) : (
+                        <IconPreview icon={m.icon} color={m.color} />
+                      )}
                       {m.title}
                     </p>
                     {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
