@@ -17,13 +17,13 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       headers: {
-        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Cross-Origin-Embedder-Policy": "credentialless",
         "Cross-Origin-Opener-Policy": "same-origin",
       },
     },
     preview: {
       headers: {
-        "Cross-Origin-Embedder-Policy": "require-corp",
+        "Cross-Origin-Embedder-Policy": "credentialless",
         "Cross-Origin-Opener-Policy": "same-origin",
       },
     },
@@ -34,7 +34,7 @@ export default defineConfig({
       hooks: {
         "astro:server:setup": ({ server }) => {
           server.middlewares.use((_req, res, next) => {
-            res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+            res.setHeader("Cross-Origin-Embedder-Policy", "credentialless");
             res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
             next();
           });
@@ -51,6 +51,7 @@ export default defineConfig({
         `${MY_SITE}/advent-calendar/`,
         `${MY_SITE}/memory-game/`,
         `${MY_SITE}/encriptador-de-texto/`,
+        `${MY_SITE}/mapa-personalizado/`,
       ],
       i18n: {
         defaultLocale: "es",

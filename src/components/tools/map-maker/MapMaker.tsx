@@ -1,0 +1,779 @@
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  useMapEvents,
+  useMap,
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { ICONS, COLORS, getColorHex, createDivIconHtml, type IconId } from "./icons";
+
+export type MarkerData = {
+  id: string;
+  lat: number;
+  lng: number;
+  title: string;
+  description: string;
+  icon: IconId;
+  color: string; // color id
+  category?: string;
+};
+
+type TileProvider = "osm" | "voyager" | "dark" | "satellite";
+
+const TILE_PROVIDERS: Record<TileProvider, { url: string; attribution: string; label: string }> = {
+  osm: {
+    label: "OpenStreetMap",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  },
+  voyager: {
+    label: "Claro (Voyager)",
+    url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    attribution: '&copy; CARTO & OSM',
+  },
+  dark: {
+    label: "Oscuro",
+    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    attribution: '&copy; CARTO & OSM',
+  },
+  satellite: {
+    label: "Satélite",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attribution: "Esri &mdash; &copy; Esri",
+  },
+};
+
+const STORAGE_KEY = "custom-map-maker:v2";
+
+function generateId() {
+  return Math.random().toString(36).slice(2, 9);
+}
+
+function MapClickHandler({ onAdd }: { onAdd: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click(e) {
+      onAdd(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
+function FitBounds({ markers }: { markers: MarkerData[] }) {
+  const map = useMap();
+  const prevRef = useRef<string>("");
+  // expose fit function via custom event? we will call manually from parent via map instance
+  useEffect(() => {
+    // no auto fit, only when requested
+  }, []);
+  return null;
+}
+
+function IconPreview({ icon, color }: { icon: IconId; color: string }) {
+  const def = ICONS.find((i) => i.id === icon) ?? ICONS[0];
+  const hex = getColorHex(color);
+  return (
+    <span
+      className="w-8 h-8 rounded-full flex items-center justify-center border-2 border-white shadow"
+      style={{ background: hex }}
+      title={def.label}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* eslint-disable-next-line react/no-danger */}
+        <g dangerouslySetInnerHTML={{ __html: def.svg }} />
+      </svg>
+    </span>
+  );
+}
+
+export const MapMaker = () => {
+  const [markers, setMarkers] = useState<MarkerData[]>(() => {
+    // sample 2 markers: Quito
+    return [
+      {
+        id: "1",
+        lat: -0.180653,
+        lng: -78.467834,
+        title: "Mitad del Mundo",
+        description: "Monumento ecuatorial - ejemplo",
+        icon: "landmark",
+        color: "red",
+      },
+      {
+        id: "2",
+        lat: -0.209,
+        lng: -78.489,
+        title: "Parque La Carolina",
+        description: "Parque urbano ideal para correr",
+        icon: "tree",
+        color: "emerald",
+      },
+    ];
+  });
+
+  const [selectedIcon, setSelectedIcon] = useState<IconId>("map-pin");
+  const [selectedColor, setSelectedColor] = useState<string>("blue");
+  const [tileProvider, setTileProvider] = useState<TileProvider>("osm");
+  const [showPolyline, setShowPolyline] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draftTitle, setDraftTitle] = useState("");
+  const [draftDesc, setDraftDesc] = useState("");
+  const [draftIcon, setDraftIcon] = useState<IconId>("map-pin");
+  const [draftColor, setDraftColor] = useState<string>("blue");
+  const [draftLat, setDraftLat] = useState<string>("");
+  const [draftLng, setDraftLng] = useState<string>("");
+  const [newTitle, setNewTitle] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [geoapifyToken, setGeoapifyToken] = useState("");
+  const [geoapifyInput, setGeoapifyInput] = useState("");
+  const [showToken, setShowToken] = useState(false);
+
+  const mapRef = useRef<L.Map | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Load from storage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.markers) && parsed.markers.length > 0) {
+          setMarkers(parsed.markers);
+        }
+        if (parsed.tileProvider) setTileProvider(parsed.tileProvider);
+        if (typeof parsed.showPolyline === "boolean") setShowPolyline(parsed.showPolyline);
+        if (parsed.selectedIcon) setSelectedIcon(parsed.selectedIcon);
+        if (parsed.selectedColor) setSelectedColor(parsed.selectedColor);
+      } else {
+        // try URL hash share
+        const hash = window.location.hash.slice(1);
+        if (hash.startsWith("map=")) {
+          const data = JSON.parse(decodeURIComponent(atob(hash.slice(4))));
+          if (Array.isArray(data) && data.length) setMarkers(data);
+        }
+      }
+      const savedToken = localStorage.getItem("geoapify-api-key");
+      if (savedToken) {
+        setGeoapifyToken(savedToken);
+        setGeoapifyInput(savedToken);
+      }
+    } catch {}
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const payload = { markers, tileProvider, showPolyline, selectedIcon, selectedColor };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [markers, tileProvider, showPolyline, selectedIcon, selectedColor, isLoaded]);
+
+  const handleSaveToken = () => {
+    const t = geoapifyInput.trim();
+    if (!t) return;
+    localStorage.setItem("geoapify-api-key", t);
+    setGeoapifyToken(t);
+  };
+  const handleClearToken = () => {
+    localStorage.removeItem("geoapify-api-key");
+    setGeoapifyToken("");
+    setGeoapifyInput("");
+  };
+
+  const handleAddMarker = useCallback(
+    (lat: number, lng: number, titleOverride?: string) => {
+      const newMarker: MarkerData = {
+        id: generateId(),
+        lat: Number(lat.toFixed(6)),
+        lng: Number(lng.toFixed(6)),
+        title: (titleOverride ?? (newTitle.trim() || `Punto ${markers.length + 1}`)),
+        description: "",
+        icon: selectedIcon,
+        color: selectedColor,
+      };
+      setMarkers((prev) => [...prev, newMarker]);
+      setNewTitle("");
+    },
+    [markers.length, newTitle, selectedIcon, selectedColor]
+  );
+
+  const handleDelete = (id: string) => setMarkers((prev) => prev.filter((m) => m.id !== id));
+  const handleDuplicate = (m: MarkerData) =>
+    setMarkers((prev) => [...prev, { ...m, id: generateId(), title: m.title + " (copia)" }]);
+
+  const startEdit = (m: MarkerData) => {
+    setEditingId(m.id);
+    setDraftTitle(m.title);
+    setDraftDesc(m.description);
+    setDraftIcon(m.icon);
+    setDraftColor(m.color);
+    setDraftLat(String(m.lat));
+    setDraftLng(String(m.lng));
+    // cerrar popup de Leaflet para que el modal quede visible
+    mapRef.current?.closePopup();
+  };
+  const saveEdit = () => {
+    if (!editingId) return;
+    const latNum = parseFloat(draftLat);
+    const lngNum = parseFloat(draftLng);
+    if (Number.isNaN(latNum) || Number.isNaN(lngNum)) return alert("Coordenadas inválidas");
+    setMarkers((prev) =>
+      prev.map((m) =>
+        m.id === editingId
+          ? { ...m, title: draftTitle, description: draftDesc, icon: draftIcon, color: draftColor, lat: latNum, lng: lngNum }
+          : m
+      )
+    );
+    setEditingId(null);
+  };
+
+  const fitAll = () => {
+    if (!mapRef.current || markers.length === 0) return;
+    const bounds = L.latLngBounds(markers.map((m) => [m.lat, m.lng] as [number, number]));
+    mapRef.current.fitBounds(bounds.pad(0.2));
+  };
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    setSearchLoading(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(searchQuery)}`,
+        { headers: { Accept: "application/json" } }
+      );
+      const data = await res.json();
+      setSearchResults(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(markers, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mapa-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const exportGeoJSON = () => {
+    const geojson = {
+      type: "FeatureCollection",
+      features: markers.map((m) => ({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [m.lng, m.lat] },
+        properties: { title: m.title, description: m.description, icon: m.icon, color: m.color },
+      })),
+    };
+    const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mapa-${new Date().toISOString().slice(0, 10)}.geojson`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const exportCSV = () => {
+    const head = "title,description,lat,lng,icon,color";
+    const rows = markers.map((m) => `"${m.title.replace(/"/g, '""')}","${m.description.replace(/"/g, '""')}",${m.lat},${m.lng},${m.icon},${m.color}`);
+    const csv = [head, ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mapa-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result as string);
+        let imported: MarkerData[] = [];
+        if (Array.isArray(parsed)) {
+          imported = parsed;
+        } else if (parsed.type === "FeatureCollection" && Array.isArray(parsed.features)) {
+          imported = parsed.features.map((f: any) => ({
+            id: generateId(),
+            lat: f.geometry.coordinates[1],
+            lng: f.geometry.coordinates[0],
+            title: f.properties?.title ?? f.properties?.name ?? "Importado",
+            description: f.properties?.description ?? "",
+            icon: (f.properties?.icon as IconId) ?? "map-pin",
+            color: f.properties?.color ?? "blue",
+          }));
+        } else {
+          throw new Error("Formato no reconocido");
+        }
+        // validate
+        imported = imported.filter((m) => typeof m.lat === "number" && typeof m.lng === "number");
+        if (imported.length === 0) throw new Error("Sin marcadores válidos");
+        // ensure id/icon/color
+        imported = imported.map((m) => ({
+          id: m.id ?? generateId(),
+          lat: Number(m.lat),
+          lng: Number(m.lng),
+          title: String(m.title ?? "Sin título"),
+          description: String(m.description ?? ""),
+          icon: (m.icon as IconId) ?? "map-pin",
+          color: m.color ?? "blue",
+        }));
+        if (confirm(`Importar ${imported.length} puntos? Reemplazará los ${markers.length} actuales. Acepta para reemplazar, Cancela para añadir.`)) {
+          setMarkers(imported);
+        } else {
+          setMarkers((prev) => [...prev, ...imported]);
+        }
+      } catch (err) {
+        alert("Error importando: " + (err as Error).message);
+      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+    reader.readAsText(file);
+  };
+
+  const shareUrl = () => {
+    try {
+      const encoded = btoa(encodeURIComponent(JSON.stringify(markers)));
+      const url = `${window.location.origin}${window.location.pathname}#map=${encoded}`;
+      navigator.clipboard.writeText(url).then(() => {
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      });
+    } catch {}
+  };
+
+  const iconsMemo = useMemo(() => {
+    // create Leaflet divIcons per marker
+    const map = new Map<string, L.DivIcon>();
+    markers.forEach((m) => {
+      const key = `${m.icon}-${m.color}`;
+      if (!map.has(key)) {
+        map.set(
+          key,
+          L.divIcon({
+            html: createDivIconHtml(m.icon, getColorHex(m.color)),
+            className: "custom-div-icon",
+            iconSize: [38, 38],
+            iconAnchor: [19, 38],
+            popupAnchor: [0, -38],
+          })
+        );
+      }
+    });
+    return map;
+  }, [markers]);
+
+  const center: [number, number] = markers.length ? [markers[0].lat, markers[0].lng] : [-0.180653, -78.467834];
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 w-full lg:h-[calc(100vh-120px)] min-h-[700px]">
+      <style>{`.custom-div-icon{background:transparent !important;border:none !important} .leaflet-popup-content{margin:12px 16px !important} .leaflet-popup-content-wrapper{border-radius:14px}`}</style>
+      {/* Sidebar */}
+      <div className="w-full lg:w-[380px] xl:w-[420px] flex flex-col gap-4 lg:overflow-y-auto lg:pr-1 shrink-0 lg:max-h-[calc(100vh-120px)]">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-black text-slate-900 dark:text-white tracking-tight text-lg flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              </span>
+              Mapa Personalizado
+            </h2>
+            <span className="text-xs font-mono font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2.5 py-1 rounded-full">
+              {markers.length} puntos
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+            Haz clic en el mapa para añadir puntos. <b className="text-emerald-600">Sin límite de 10</b> como en Google My Maps. Arrastra los marcadores para reposicionar.
+          </p>
+
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            <button onClick={fitAll} disabled={markers.length === 0} className="text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2 rounded-xl disabled:opacity-40 hover:opacity-90 transition">
+              Ajustar vista
+            </button>
+            <button
+              onClick={() => { if (confirm(`¿Borrar ${markers.length} puntos?`)) setMarkers([]); }}
+              disabled={markers.length === 0}
+              className="text-xs font-bold bg-red-50 dark:bg-red-950/30 text-red-600 border border-red-200 dark:border-red-900 px-3 py-2 rounded-xl disabled:opacity-40 hover:bg-red-100 transition"
+            >
+              Limpiar todo
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 mt-3 text-xs">
+            <label className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
+              <input type="checkbox" checked={showPolyline} onChange={(e) => setShowPolyline(e.target.checked)} className="accent-emerald-600" />
+              Unir con línea
+            </label>
+            <select value={tileProvider} onChange={(e) => setTileProvider(e.target.value as TileProvider)} className="ml-auto text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 bg-white dark:bg-slate-800 dark:text-white">
+              {Object.entries(TILE_PROVIDERS).map(([k, v]) => (
+                <option key={k} value={k}>{v.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Geoapify Token - frontend only, localStorage */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${geoapifyToken ? "bg-emerald-500" : "bg-amber-500"}`}></span>
+              Geoapify API Key
+            </h3>
+            <a href="https://myprojects.geoapify.com" target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-emerald-600 hover:underline">Obtener key →</a>
+          </div>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+            Token se guarda solo en tu navegador (<code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">localStorage: geoapify-api-key</code>). No se envía a nuestro servidor — fetch directo a <code>api.geoapify.com</code>.
+            {geoapifyToken ? <span className="text-emerald-600 font-bold"> · listo para Routing & Route Planner (ruta óptima)</span> : <span className="text-amber-600"> · sin key, ruteo deshabilitado</span>}
+          </p>
+          <div className="flex gap-2 mt-3">
+            <div className="relative flex-1">
+              <input
+                type={showToken ? "text" : "password"}
+                value={geoapifyInput}
+                onChange={(e) => setGeoapifyInput(e.target.value)}
+                placeholder="Ej: 3b7a... (pega tu apiKey)"
+                className="w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 pr-9 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+              />
+              <button type="button" onClick={() => setShowToken(!showToken)} className="absolute right-1 top-1 bottom-1 w-7 flex items-center justify-center text-slate-400 hover:text-slate-600" title={showToken ? "Ocultar" : "Mostrar"}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={showToken ? "M9.88 9.88a3 3 0 1 0 4.24 4.24" : "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"} /><circle cx="12" cy="12" r="3" /></svg>
+              </button>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <button onClick={handleSaveToken} disabled={!geoapifyInput.trim() || geoapifyInput.trim() === geoapifyToken} className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2 rounded-xl transition">Guardar</button>
+            <button onClick={handleClearToken} disabled={!geoapifyToken} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl disabled:opacity-40">Borrar</button>
+            <span className={`text-[11px] font-mono px-2 py-1 rounded-full border self-center ${geoapifyToken ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 border-emerald-200" : "bg-amber-50 dark:bg-amber-950/30 text-amber-700 border-amber-200"}`}>{geoapifyToken ? "✓ configurado" : "○ falta key"}</span>
+          </div>
+          <details className="mt-3 group">
+            <summary className="text-[11px] font-bold text-slate-600 dark:text-slate-400 cursor-pointer select-none">¿Ruta óptima (TSP)? — info</summary>
+            <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl p-3">
+              <p><b>Sí, posible con Geoapify Route Planner.</b> Tu base ya tiene <code>routing-api-openapi-specs.json:24</code> (<code>/v1/routing</code> orden fijo) y batch specs. Para óptima (reordenar) usarías <code>POST /v1/route-planner</code> (no solo <code>/routing</code>): envías <code>agents</code> + <code>jobs/shipments</code> y Geoapify devuelve orden óptimo + geometrías. En el repo ya sigues patrón <code>GEOAPIFY_API_KEY</code> (<code>src/pages/es/projects/geocoding-api.astro:188</code>, <code>batch-geocoding-api-openapi-specs.json:3415 apiKey</code>).</p>
+              <p className="mt-2">Con key en frontend podríamos: 1) <code>/v1/routing?waypoints=lat,lon|...&mode=drive</code> para ruta secuencial, 2) <code>/v1/route-planner</code> para TSP/VRP (hasta 100+ puntos). Siguiente paso sería botón <code>Calcular ruta óptima</code> + dibujar <code>Polyline</code> resultante. No implementado aún — tú configurarás OSRM vs Geoapify.</p>
+            </div>
+          </details>
+        </div>
+
+        {/* Search */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Buscar dirección</label>
+          <div className="flex gap-2 mt-2">
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Ej: Av. Amazonas, Quito"
+              className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <button onClick={handleSearch} disabled={searchLoading} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold px-4 rounded-xl transition">
+              {searchLoading ? "…" : "Buscar"}
+            </button>
+          </div>
+          {searchResults.length > 0 && (
+            <ul className="mt-3 max-h-48 overflow-auto divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+              {searchResults.map((r: any) => (
+                <li key={r.place_id} className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex gap-2 items-start" onClick={() => {
+                  const lat = parseFloat(r.lat), lon = parseFloat(r.lon);
+                  handleAddMarker(lat, lon, r.display_name.split(",").slice(0,2).join(","));
+                  if (mapRef.current) mapRef.current.flyTo([lat, lon], 15);
+                  setSearchResults([]);
+                  setSearchQuery("");
+                }}>
+                  <span className="mt-0.5 text-emerald-600"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{r.display_name}</p>
+                    <p className="text-[11px] text-slate-500">{r.type} · {parseFloat(r.lat).toFixed(4)}, {parseFloat(r.lon).toFixed(4)}</p>
+                  </div>
+                  <span className="text-[11px] font-bold text-emerald-600 shrink-0">+ Añadir</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="text-[11px] text-slate-400 mt-2">Usa Nominatim (OSM). Clic en un resultado para añadirlo como punto.</p>
+        </div>
+
+        {/* Add marker controls */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Nuevo punto</h3>
+          <div className="flex gap-2 mt-2">
+            <input
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="Título del próximo punto (opcional)"
+              className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+
+          <div className="mt-3">
+            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Ícono</p>
+            <div className="grid grid-cols-7 gap-1.5 max-h-36 overflow-y-auto pr-1 py-1">
+              {ICONS.map((ic) => (
+                <button
+                  key={ic.id}
+                  type="button"
+                  onClick={() => setSelectedIcon(ic.id)}
+                  className={`w-9 h-9 rounded-xl border-2 flex items-center justify-center transition shrink-0 ${selectedIcon === ic.id ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300"}`}
+                  title={ic.label}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={selectedIcon === ic.id ? "#059669" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={selectedIcon === ic.id ? "" : "text-slate-600 dark:text-slate-300"}>
+                    <g dangerouslySetInnerHTML={{ __html: ic.svg }} />
+                  </svg>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Color</p>
+            <div className="flex flex-wrap gap-1.5">
+              {COLORS.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setSelectedColor(c.id)}
+                  className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition ${selectedColor === c.id ? "border-slate-900 dark:border-white scale-110" : "border-white dark:border-slate-700"}`}
+                  style={{ background: c.hex }}
+                  title={c.label}
+                >
+                  {selectedColor === c.id && <span className="text-white text-[10px]">✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-2">Tip: selecciona ícono y color, luego haz clic en el mapa. También puedes arrastrar los puntos.</p>
+        </div>
+
+        {/* Marker list */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col shadow-sm lg:flex-1 lg:min-h-0">
+          <div className="p-4 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Puntos ({markers.length})</h3>
+            <span className="text-[11px] text-slate-400">Google limit 10 · aquí ∞</span>
+          </div>
+
+          <div className="flex-1 overflow-auto lg:overflow-auto max-h-[320px] lg:max-h-none p-2 space-y-2">
+            {markers.length === 0 ? (
+              <div className="text-center py-10 px-4">
+                <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">📍</div>
+                <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Sin puntos aún</p>
+                <p className="text-xs text-slate-400 mt-1">Haz clic en el mapa o usa el buscador para empezar. Puedes añadir cientos.</p>
+              </div>
+            ) : markers.map((m, idx) => (
+              <div key={m.id} className="group border rounded-xl p-3 flex gap-3 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition">
+                <div className="shrink-0 flex flex-col items-center gap-1">
+                  <span className="text-[10px] font-mono font-bold text-slate-400">#{idx + 1}</span>
+                  <IconPreview icon={m.icon} color={m.color} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{m.title}</p>
+                  {m.description && <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{m.description}</p>}
+                  <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(5)}, {m.lng.toFixed(5)}</p>
+                  <div className="flex gap-1 mt-2">
+                    <button onClick={() => mapRef.current?.flyTo([m.lat, m.lng], 16)} className="text-[11px] font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-lg hover:opacity-90">Ver</button>
+                    <button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50">Editar</button>
+                    <button onClick={() => handleDuplicate(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50" title="Duplicar">⧉</button>
+                    <button onClick={() => handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg hover:bg-red-100 ml-auto">Eliminar</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2">
+            <button onClick={exportJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">Exportar JSON</button>
+            <button onClick={exportGeoJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">GeoJSON</button>
+            <button onClick={exportCSV} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">CSV</button>
+            <button onClick={shareUrl} className="text-xs font-bold bg-emerald-600 text-white px-3 py-2 rounded-xl hover:bg-emerald-700">{shareCopied ? "¡Copiado!" : "Compartir link"}</button>
+          </div>
+
+          <div className="px-3 pb-3 flex gap-2">
+            <button onClick={() => fileInputRef.current?.click()} className="flex-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">
+              Importar JSON/GeoJSON
+            </button>
+            <input ref={fileInputRef} type="file" accept=".json,.geojson" className="hidden" onChange={importFile} />
+          </div>
+        </div>
+      </div>
+
+      {/* Map */}
+      <div className="flex-1 min-h-[520px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900">
+        <MapContainer
+          center={center}
+          zoom={13}
+          style={{ height: "100%", width: "100%" }}
+          ref={mapRef as any}
+          zoomControl={false}
+        >
+          <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} />
+          <MapClickHandler onAdd={handleAddMarker} />
+
+          {showPolyline && markers.length > 1 && (
+            <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
+          )}
+
+          {markers.map((m) => {
+            const iconKey = `${m.icon}-${m.color}`;
+            const icon = iconsMemo.get(iconKey);
+            return (
+              <Marker
+                key={m.id}
+                position={[m.lat, m.lng]}
+                icon={icon}
+                draggable
+                eventHandlers={{
+                  dragend: (e) => {
+                    const { lat, lng } = e.target.getLatLng();
+                    setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
+                  },
+                }}
+              >
+                <Popup>
+                  <div className="min-w-[180px]">
+                    <p className="font-black text-slate-900 text-sm flex items-center gap-2">
+                      <IconPreview icon={m.icon} color={m.color} />
+                      {m.title}
+                    </p>
+                    {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
+                    <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)}</p>
+                    <div className="flex gap-1 mt-2">
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] font-bold bg-slate-900 text-white px-2 py-1 rounded-lg"
+                      >
+                        Google Maps
+                      </a>
+                      <button
+                        onClick={() => startEdit(m)}
+                        className="text-[11px] font-bold bg-white border border-slate-200 px-2 py-1 rounded-lg"
+                      >
+                        Editar
+                      </button>
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+
+        {/* zoom controls custom */}
+        <div className="absolute top-3 right-3 z-[400] flex flex-col gap-2">
+          <button
+            onClick={() => mapRef.current?.zoomIn()}
+            className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center font-black text-slate-700 dark:text-white hover:bg-slate-50"
+            aria-label="Zoom in"
+          >
+            +
+          </button>
+          <button
+            onClick={() => mapRef.current?.zoomOut()}
+            className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center font-black text-slate-700 dark:text-white hover:bg-slate-50"
+            aria-label="Zoom out"
+          >
+            −
+          </button>
+          <button
+            onClick={fitAll}
+            className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center text-slate-700 dark:text-white hover:bg-slate-50"
+            title="Ajustar a todos"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+          </button>
+        </div>
+
+        <div className="absolute bottom-3 left-3 z-[400] bg-white/95 dark:bg-slate-800/95 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-[11px] font-mono text-slate-600 dark:text-slate-300 shadow">
+          Clic para añadir · Arrastra para mover
+        </div>
+      </div>
+
+      {/* Modal edición - funciona desde lista y desde popup */}
+      {editingId && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setEditingId(null)} />
+          <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+              <h3 className="font-black text-slate-900 dark:text-white">Editar punto</h3>
+              <button onClick={() => setEditingId(null)} className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700">✕</button>
+            </div>
+            <div className="p-5 space-y-4 overflow-auto">
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Título</label>
+                <input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} placeholder="Ej: Mitad del Mundo" className="mt-1 w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Descripción</label>
+                <textarea value={draftDesc} onChange={(e) => setDraftDesc(e.target.value)} placeholder="Notas, horario, etc." rows={3} className="mt-1 w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Latitud</label>
+                  <input value={draftLat} onChange={(e) => setDraftLat(e.target.value)} className="mt-1 w-full text-sm font-mono border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Longitud</label>
+                  <input value={draftLng} onChange={(e) => setDraftLng(e.target.value)} className="mt-1 w-full text-sm font-mono border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 bg-white dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2 block">Ícono ({ICONS.length} opciones)</label>
+                <div className="grid grid-cols-7 sm:grid-cols-8 gap-1.5">
+                  {ICONS.map((ic) => (
+                    <button key={ic.id} type="button" onClick={() => setDraftIcon(ic.id)} className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center transition ${draftIcon === ic.id ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300"}`} title={ic.label}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={draftIcon === ic.id ? "#059669" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={draftIcon === ic.id ? "" : "text-slate-600 dark:text-slate-300"}>
+                        <g dangerouslySetInnerHTML={{ __html: ic.svg }} />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2 block">Color</label>
+                <div className="flex flex-wrap gap-2">
+                  {COLORS.map((c) => (
+                    <button key={c.id} type="button" onClick={() => setDraftColor(c.id)} className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition ${draftColor === c.id ? "border-slate-900 dark:border-white scale-110" : "border-white dark:border-slate-700 shadow-sm"}`} style={{ background: c.hex }} title={c.label}>
+                      {draftColor === c.id && <span className="text-white text-xs font-bold">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 pt-2">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  Vista previa: <span className="w-8 h-8 rounded-full flex items-center justify-center border-2 border-white shadow" style={{ background: getColorHex(draftColor) }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: (ICONS.find(i=>i.id===draftIcon)?.svg ?? ICONS[0].svg) }} /></svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-800 flex gap-3 shrink-0 bg-slate-50 dark:bg-slate-800/50">
+              <button onClick={() => setEditingId(null)} className="flex-1 text-sm font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-4 py-2.5 rounded-xl hover:bg-slate-50">Cancelar</button>
+              <button onClick={saveEdit} className="flex-1 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl">Guardar cambios</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
