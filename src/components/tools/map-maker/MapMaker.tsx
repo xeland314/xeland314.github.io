@@ -49,7 +49,18 @@ const TILE_PROVIDERS: Record<TileProvider, { url: string; attribution: string; l
 };
 
 const STORAGE_KEY = "custom-map-maker:v2";
+const PROJECTS_KEY = "custom-map-projects:v1";
 const DEFAULT_GEOAPIFY_KEY = "d4d5a2e38d934da287b79d360de83e5d";
+
+export type MapProject = {
+  id: string;
+  name: string;
+  createdAt: number;
+  updatedAt: number;
+  markers: MarkerData[];
+  tileProvider: TileProvider;
+  showPolyline: boolean;
+};
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -155,6 +166,11 @@ export const MapMaker = () => {
   const [rotationDeg, setRotationDeg] = useState(0);
   const [rotationInput, setRotationInput] = useState("45");
   const [showNumberInsteadOfIcon, setShowNumberInsteadOfIcon] = useState(false);
+  const [projects, setProjects] = useState<MapProject[]>([]);
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState("");
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -193,6 +209,15 @@ export const MapMaker = () => {
       if (savedRotation) setRotationDeg(parseInt(savedRotation) || 0);
       const savedShowNumber = localStorage.getItem("map-show-number");
       if (savedShowNumber) setShowNumberInsteadOfIcon(savedShowNumber === "true");
+      const savedProjects = localStorage.getItem(PROJECTS_KEY);
+      if (savedProjects) {
+        try {
+          const parsed = JSON.parse(savedProjects);
+          if (Array.isArray(parsed)) setProjects(parsed);
+        } catch {}
+      }
+      const savedCurrentId = localStorage.getItem("custom-map-current-project");
+      if (savedCurrentId) setCurrentProjectId(savedCurrentId);
     } catch {}
     setIsLoaded(true);
   }, []);
@@ -212,6 +237,83 @@ export const MapMaker = () => {
     if (!isLoaded) return;
     localStorage.setItem("map-show-number", String(showNumberInsteadOfIcon));
   }, [showNumberInsteadOfIcon, isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+  }, [projects, isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (currentProjectId) localStorage.setItem("custom-map-current-project", currentProjectId);
+    else localStorage.removeItem("custom-map-current-project");
+  }, [currentProjectId, isLoaded]);
+
+  const handleSaveProject = () => {
+    const name = newProjectName.trim();
+    if (!name) return alert("Ponle un nombre al mapa");
+    if (markers.length === 0) return alert("Añade al menos 1 punto antes de guardar");
+    const newProj: MapProject = {
+      id: generateId(),
+      name,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      markers: [...markers],
+      tileProvider,
+      showPolyline,
+    };
+    setProjects((prev) => [newProj, ...prev]);
+    setCurrentProjectId(newProj.id);
+    setNewProjectName("");
+  };
+
+  const handleLoadProject = (id: string) => {
+    const proj = projects.find((p) => p.id === id);
+    if (!proj) return;
+    setMarkers(proj.markers);
+    setTileProvider(proj.tileProvider);
+    setShowPolyline(proj.showPolyline);
+    setCurrentProjectId(id);
+    setRouteCoords([]);
+    setRouteInfo(null);
+    setTimeout(() => {
+      if (proj.markers.length > 0 && mapRef.current) {
+        const bounds = L.latLngBounds(proj.markers.map((m) => [m.lat, m.lng] as [number, number]));
+        mapRef.current.fitBounds(bounds.pad(0.2));
+      }
+    }, 200);
+  };
+
+  const handleUpdateCurrentProject = () => {
+    if (!currentProjectId) return alert("Carga primero un mapa guardado");
+    const proj = projects.find((p) => p.id === currentProjectId);
+    if (!proj) return;
+    if (!confirm(`¿Actualizar "${proj.name}" con ${markers.length} puntos actuales?`)) return;
+    setProjects((prev) => prev.map((p) => p.id === currentProjectId ? { ...p, markers: [...markers], tileProvider, showPolyline, updatedAt: Date.now() } : p));
+  };
+
+  const handleDeleteProject = (id: string) => {
+    const proj = projects.find((p) => p.id === id);
+    if (!proj) return;
+    if (!confirm(`¿Eliminar mapa "${proj.name}"?`)) return;
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+    if (currentProjectId === id) setCurrentProjectId(null);
+  };
+
+  const handleDuplicateProject = (id: string) => {
+    const proj = projects.find((p) => p.id === id);
+    if (!proj) return;
+    const dup: MapProject = { ...proj, id: generateId(), name: `${proj.name} (copia)`, createdAt: Date.now(), updatedAt: Date.now(), markers: [...proj.markers] };
+    setProjects((prev) => [dup, ...prev]);
+  };
+
+  const handleRenameProject = (id: string) => {
+    const newName = renameDraft.trim();
+    if (!newName) return;
+    setProjects((prev) => prev.map((p) => p.id === id ? { ...p, name: newName, updatedAt: Date.now() } : p));
+    setRenamingId(null);
+    setRenameDraft("");
+  };
 
   const handleSaveToken = () => {
     const t = geoapifyInput.trim();
@@ -834,6 +936,67 @@ export const MapMaker = () => {
             </button>
             <input ref={fileInputRef} type="file" accept=".json,.geojson" className="hidden" onChange={importFile} />
           </div>
+        </div>
+
+        {/* Mini proyectos - agrupar varios puntos con nombre */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+              <span className="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6l2 2h8a2 2 0 0 1 2 2z"/></svg></span>
+              Mapas guardados
+            </h3>
+            <span className="text-[11px] font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-full">{projects.length}</span>
+          </div>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Agrupa los puntos actuales en un proyecto con nombre. Se guarda en <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">localStorage {PROJECTS_KEY}</code>.</p>
+
+          <div className="flex gap-2 mt-3">
+            <input value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSaveProject()} placeholder="Nombre ej: Ruta Quito Centro" className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <button onClick={handleSaveProject} disabled={markers.length === 0} className="text-xs font-black bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white px-4 py-2 rounded-xl transition">Guardar</button>
+          </div>
+          {currentProjectId && (
+            <button onClick={handleUpdateCurrentProject} className="w-full mt-2 text-xs font-bold bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-900 text-amber-700 dark:text-amber-300 px-3 py-2 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/30">
+              Actualizar "{projects.find(p=>p.id===currentProjectId)?.name}" con {markers.length} puntos
+            </button>
+          )}
+
+          <div className="mt-3 max-h-[320px] overflow-y-auto space-y-2 pr-1 overscroll-contain">
+            {projects.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-6 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">Sin mapas guardados aún. Guarda el actual con un nombre arriba.</p>
+            ) : projects.slice().sort((a,b)=>b.updatedAt-a.updatedAt).map((proj) => (
+              <div key={proj.id} className={`group border rounded-xl p-3 flex flex-col gap-2 ${currentProjectId===proj.id ? "border-amber-400 bg-amber-50/50 dark:bg-amber-950/20" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    {renamingId===proj.id ? (
+                      <div className="flex gap-1.5">
+                        <input value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onKeyDown={(e)=>{ if(e.key==="Enter") handleRenameProject(proj.id); if(e.key==="Escape") setRenamingId(null);}} autoFocus className="flex-1 text-sm border border-amber-300 dark:border-amber-700 rounded-lg px-2 py-1 bg-white dark:bg-slate-900 dark:text-white" />
+                        <button onClick={()=>handleRenameProject(proj.id)} className="text-xs font-bold bg-emerald-600 text-white px-2 py-1 rounded-lg">OK</button>
+                        <button onClick={()=>setRenamingId(null)} className="text-xs font-bold bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-lg">X</button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm font-black text-slate-900 dark:text-white truncate">{proj.name}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">{proj.markers.length} puntos · {new Date(proj.updatedAt).toLocaleDateString()} {new Date(proj.updatedAt).toLocaleTimeString().slice(0,5)} {currentProjectId===proj.id && "· activo"}</p>
+                      </>
+                    )}
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${currentProjectId===proj.id ? "bg-amber-500 text-white border-amber-500" : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600"}`}>{proj.markers.length}</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  <button onClick={()=>handleLoadProject(proj.id)} className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${currentProjectId===proj.id ? "bg-amber-500 text-white" : "bg-slate-900 dark:bg-white text-white dark:text-slate-900"}`}>Cargar</button>
+                  <button onClick={()=>{ setRenamingId(proj.id); setRenameDraft(proj.name);}} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">Renombrar</button>
+                  <button onClick={()=>handleDuplicateProject(proj.id)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">Duplicar</button>
+                  <button onClick={()=>handleDeleteProject(proj.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg">Eliminar</button>
+                </div>
+                <details className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <summary className="cursor-pointer font-semibold">Ver puntos</summary>
+                  <ul className="mt-1 space-y-0.5 max-h-24 overflow-y-auto font-mono text-[11px] bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 border border-slate-100 dark:border-slate-700">
+                    {proj.markers.map((m,i)=>(<li key={m.id} className="truncate">{i+1}. {m.title} — {m.lat.toFixed(4)},{m.lng.toFixed(4)}</li>))}
+                  </ul>
+                </details>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-slate-400 mt-2">Tip: carga un proyecto, edita puntos/orden, luego <b>Actualizar</b> para guardar cambios en el mismo grupo.</p>
         </div>
       </div>
 
