@@ -11,6 +11,7 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ICONS, COLORS, getColorHex, createDivIconHtml, createNumberIconHtml, type IconId } from "./icons";
+import { toPng, toJpeg } from "html-to-image";
 
 export type MarkerData = {
   id: string;
@@ -181,6 +182,8 @@ export const MapMaker = () => {
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const mapExportRef = useRef<HTMLDivElement | null>(null);
+  const knobRef = useRef<HTMLDivElement | null>(null);
   const historyRef = useRef<MarkerData[][]>([]);
   const [historyIdx, setHistoryIdx] = useState(-1);
   const isUndoRedoRef = useRef(false);
@@ -556,6 +559,23 @@ export const MapMaker = () => {
     setRouteError(null);
   };
 
+  const handleExportMapImage = async (format: "png" | "jpeg" = "png") => {
+    const node = mapExportRef.current;
+    if (!node) return alert("Mapa no listo");
+    try {
+      // Forzar crossOrigin en tiles para html-to-image
+      const opts = { cacheBust: true, pixelRatio: 2, backgroundColor: "#f8fafc" } as any;
+      const dataUrl = format === "png" ? await toPng(node, opts) : await toJpeg(node, { ...opts, quality: 0.92 });
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts.${format === "png" ? "png" : "jpg"}`;
+      a.click();
+    } catch (e: any) {
+      console.error(e);
+      alert("Error exportando imagen: " + (e.message || e));
+    }
+  };
+
   const rotateMap = (delta: number) => {
     setRotationDeg((prev) => {
       let next = prev + delta;
@@ -572,6 +592,44 @@ export const MapMaker = () => {
     let next = ((v % 360) + 360) % 360;
     setRotationDeg(next);
     setTimeout(() => mapRef.current?.invalidateSize(), 350);
+  };
+
+  const updateRotationFromPointer = (clientX: number, clientY: number) => {
+    const el = knobRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = clientX - cx;
+    const dy = clientY - cy;
+    let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    angle = ((angle % 360) + 360) % 360;
+    setRotationDeg(Math.round(angle));
+  };
+
+  const handleKnobPointerDown = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const getXY = (ev: any) => {
+      if (ev.touches) return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+      return { x: ev.clientX, y: ev.clientY };
+    };
+    const onMove = (ev: MouseEvent | TouchEvent) => {
+      const { x, y } = (ev as any).touches ? { x: (ev as TouchEvent).touches[0].clientX, y: (ev as TouchEvent).touches[0].clientY } : { x: (ev as MouseEvent).clientX, y: (ev as MouseEvent).clientY };
+      updateRotationFromPointer(x, y);
+    };
+    const onUp = () => {
+      window.removeEventListener("mousemove", onMove as any);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onMove as any);
+      window.removeEventListener("touchend", onUp);
+      setTimeout(() => mapRef.current?.invalidateSize(), 350);
+    };
+    window.addEventListener("mousemove", onMove as any);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onMove as any, { passive: false } as any);
+    window.addEventListener("touchend", onUp);
+    const { x, y } = getXY(e as any);
+    updateRotationFromPointer(x, y);
   };
 
   const normalizeGeocodeResults = (data: any, provider: string) => {
@@ -878,6 +936,24 @@ export const MapMaker = () => {
               <button type="button" onClick={() => rotateMap(parseInt(rotationInput || "0") || 0)} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl">↻ X°</button>
               <button type="button" onClick={handleCustomRotate} className="text-[11px] font-bold bg-violet-600 text-white px-3 py-2 rounded-xl">Ir a X°</button>
             </div>
+            <div className="flex items-center gap-3 mt-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+              <div
+                ref={knobRef}
+                onMouseDown={handleKnobPointerDown}
+                onTouchStart={handleKnobPointerDown}
+                className="w-20 h-20 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 relative shadow-inner cursor-grab active:cursor-grabbing select-none shrink-0 touch-none"
+                title="Arrastra para rotar 360°"
+              >
+                <div className="absolute inset-1 rounded-full border border-slate-200 dark:border-slate-700 pointer-events-none"></div>
+                <div className="absolute left-1/2 top-1/2 w-1 h-1 bg-slate-900 dark:bg-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div className="absolute left-1/2 top-1 w-1.5 h-7 bg-emerald-500 rounded-full -translate-x-1/2 origin-bottom pointer-events-none" style={{ transform: `translateX(-50%) rotate(${rotationDeg}deg)` }}></div>
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold text-slate-500 pointer-events-none mt-5">{rotationDeg}°</span>
+              </div>
+              <div className="flex-1 text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+                <p className="font-bold text-slate-700 dark:text-slate-300">Perilla 360°</p>
+                <p>Arrastra la aguja verde. Gira solo el contenido del mapa; el contenedor queda fijo con bordes redondeados (<code>overflow-hidden</code>), por eso ves recorte en esquinas a 45°.</p>
+              </div>
+            </div>
             <p className="text-[10px] text-slate-400 mt-1">Rotación visual CSS (no afecta coordenadas). Horario = +X°, antihorario = -X°.</p>
           </div>
         </div>
@@ -1142,6 +1218,14 @@ export const MapMaker = () => {
             </button>
             <input ref={fileInputRef} type="file" accept=".json,.geojson" className="hidden" onChange={importFile} />
           </div>
+          <div className="p-3 border-t border-slate-100 dark:border-slate-800">
+            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Exportar mapa como imagen</p>
+            <p className="text-[11px] text-slate-400 mt-1">Captura el mapa con sus {markers.length} puntos (incluye tiles y pins). Respeta rotación {rotationDeg}°.</p>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button onClick={() => handleExportMapImage("png")} className="text-xs font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2.5 rounded-xl hover:opacity-90">PNG</button>
+              <button onClick={() => handleExportMapImage("jpeg")} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 rounded-xl">JPEG</button>
+            </div>
+          </div>
         </div>
 
         {/* Mini proyectos - agrupar varios puntos con nombre */}
@@ -1207,7 +1291,7 @@ export const MapMaker = () => {
       </div>
 
       {/* Map */}
-      <div className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900" style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease" }}>
+      <div ref={mapExportRef} className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900" style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease" }}>
         <MapContainer
           center={center}
           zoom={13}
@@ -1215,7 +1299,7 @@ export const MapMaker = () => {
           ref={mapRef as any}
           zoomControl={false}
         >
-          <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} />
+          <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} />
           <MapClickHandler onAdd={handleAddMarker} />
 
           {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
