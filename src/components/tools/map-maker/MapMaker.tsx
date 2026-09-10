@@ -69,6 +69,8 @@ function generateId() {
 function MapClickHandler({ onAdd }: { onAdd: (lat: number, lng: number) => void }) {
   useMapEvents({
     click(e) {
+      const target = e.originalEvent?.target as HTMLElement | null;
+      if (target?.closest?.(".leaflet-marker-icon, .leaflet-popup, .leaflet-control, .leaflet-interactive")) return;
       onAdd(e.latlng.lat, e.latlng.lng);
     },
   });
