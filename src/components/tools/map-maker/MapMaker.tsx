@@ -174,9 +174,13 @@ export const MapMaker = () => {
   const [pointSearchQuery, setPointSearchQuery] = useState<Record<string, string>>({});
   const [pointSearchResults, setPointSearchResults] = useState<Record<string, any[]>>({});
   const [pointSearchLoading, setPointSearchLoading] = useState<Record<string, boolean>>({});
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const historyRef = useRef<MarkerData[][]>([]);
+  const [historyIdx, setHistoryIdx] = useState(-1);
+  const isUndoRedoRef = useRef(false);
 
   // Load from storage
   useEffect(() => {
@@ -251,6 +255,76 @@ export const MapMaker = () => {
     if (currentProjectId) localStorage.setItem("custom-map-current-project", currentProjectId);
     else localStorage.removeItem("custom-map-current-project");
   }, [currentProjectId, isLoaded]);
+
+  // Historial para undo/redo (Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z / Ctrl+X)
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (historyRef.current.length === 0) {
+      historyRef.current = [markers.map((m) => ({ ...m }))];
+      setHistoryIdx(0);
+      return;
+    }
+    if (isUndoRedoRef.current) {
+      isUndoRedoRef.current = false;
+      return;
+    }
+    const last = historyRef.current[historyIdx];
+    if (last && JSON.stringify(last) === JSON.stringify(markers)) return;
+    const nextStack = [...historyRef.current.slice(0, historyIdx + 1), markers.map((m) => ({ ...m }))];
+    if (nextStack.length > 50) nextStack.shift();
+    historyRef.current = nextStack;
+    setHistoryIdx(nextStack.length - 1);
+  }, [markers, isLoaded]);
+
+  const handleUndo = useCallback(() => {
+    if (historyIdx <= 0) return;
+    const prevIdx = historyIdx - 1;
+    const prevMarkers = historyRef.current[prevIdx];
+    if (!prevMarkers) return;
+    isUndoRedoRef.current = true;
+    setMarkers(prevMarkers.map((m) => ({ ...m })));
+    setHistoryIdx(prevIdx);
+    setRouteCoords([]);
+    setRouteInfo(null);
+  }, [historyIdx]);
+
+  const handleRedo = useCallback(() => {
+    if (historyIdx >= historyRef.current.length - 1) return;
+    const nextIdx = historyIdx + 1;
+    const nextMarkers = historyRef.current[nextIdx];
+    if (!nextMarkers) return;
+    isUndoRedoRef.current = true;
+    setMarkers(nextMarkers.map((m) => ({ ...m })));
+    setHistoryIdx(nextIdx);
+    setRouteCoords([]);
+    setRouteInfo(null);
+  }, [historyIdx]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.ctrlKey || e.metaKey;
+      if (!isMod) return;
+      // evitar cuando se escribe en input/textarea
+      const target = e.target as HTMLElement | null;
+      const isTyping = !!target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+      if (isTyping) {
+        // permitir undo/redo incluso en inputs? lo bloqueamos para no interferir con edición de texto estándar
+        // solo permitir si no hay selección? por simplicidad, dejar que el navegador maneje
+        return;
+      }
+      const key = e.key.toLowerCase();
+      if (key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      } else if ((key === "z" && e.shiftKey) || key === "y" || key === "x") {
+        // Ctrl+Shift+Z / Ctrl+Y / Ctrl+X para rehacer (X pedido por usuario)
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handleUndo, handleRedo]);
 
   const handleSaveProject = () => {
     const name = newProjectName.trim();
@@ -530,7 +604,10 @@ export const MapMaker = () => {
     const lat = parseFloat(result.lat);
     const lon = parseFloat(result.lon);
     if (Number.isNaN(lat) || Number.isNaN(lon)) return;
-    setMarkers((prev) => prev.map((m) => m.id === id ? { ...m, lat: Number(lat.toFixed(6)), lng: Number(lon.toFixed(6)) } : m));
+    // copiar nombre desde Nominatim para reemplazar "Punto X"
+    const newName = result.display_name ? String(result.display_name).split(",").slice(0, 3).join(", ").trim() : result.name || result.display_name || "";
+    setMarkers((prev) => prev.map((m) => m.id === id ? { ...m, lat: Number(lat.toFixed(6)), lng: Number(lon.toFixed(6)), title: newName || m.title, description: m.description || result.type || "" } : m));
+    setSelectedId(id);
     setPointSearchResults((prev) => ({ ...prev, [id]: [] }));
     setPointSearchQuery((prev) => ({ ...prev, [id]: "" }));
     setRouteCoords([]);
@@ -915,9 +992,16 @@ export const MapMaker = () => {
 
         {/* Marker list */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col shadow-sm">
-          <div className="p-4 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Puntos ({markers.length})</h3>
-            <span className="text-[11px] text-slate-400">Google limit 10 · aquí ∞</span>
+          <div className="p-4 pb-3 border-b border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Puntos ({markers.length})</h3>
+              <span className="text-[11px] text-slate-400">Google limit 10 · aquí ∞</span>
+            </div>
+            <div className="flex gap-1.5">
+              <button onClick={(e) => { e.stopPropagation(); handleUndo(); }} disabled={historyIdx <= 0} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-xl disabled:opacity-30 flex items-center justify-center gap-1" title="Ctrl+Z">↩ Deshacer</button>
+              <button onClick={(e) => { e.stopPropagation(); handleRedo(); }} disabled={historyIdx >= historyRef.current.length - 1} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-xl disabled:opacity-30 flex items-center justify-center gap-1" title="Ctrl+Y / Ctrl+Shift+Z / Ctrl+X">↪ Rehacer</button>
+            </div>
+            <p className="text-[10px] text-slate-400">Ctrl+Z deshacer · Ctrl+Y / Ctrl+Shift+Z / Ctrl+X rehacer · {historyIdx + 1}/{historyRef.current.length}</p>
           </div>
 
           <div className="max-h-[520px] overflow-y-auto p-2 space-y-2 overscroll-contain pr-1">
@@ -928,7 +1012,7 @@ export const MapMaker = () => {
                 <p className="text-xs text-slate-400 mt-1">Haz clic en el mapa o usa el buscador para empezar. Puedes añadir cientos.</p>
               </div>
             ) : markers.map((m, idx) => (
-              <div key={m.id} className="group border rounded-xl p-3 flex gap-3 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition">
+              <div key={m.id} onClick={() => setSelectedId(m.id)} className={`group border rounded-xl p-3 flex gap-3 cursor-pointer transition ${selectedId === m.id ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/30 shadow-md" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600"}`}>
                 <div className="shrink-0 flex flex-col items-center gap-1">
                   <span className="text-[10px] font-mono font-bold text-slate-400">#{idx + 1}</span>
                   {showNumberInsteadOfIcon ? (
@@ -946,7 +1030,7 @@ export const MapMaker = () => {
                       <button onClick={() => moveMarker(m.id, -1)} disabled={idx === 0} className="w-6 h-6 flex items-center justify-center bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-l-lg disabled:opacity-30 text-[10px]">↑</button>
                       <button onClick={() => moveMarker(m.id, 1)} disabled={idx === markers.length - 1} className="w-6 h-6 flex items-center justify-center bg-white dark:bg-slate-700 border-t border-b border-r border-slate-200 dark:border-slate-600 rounded-r-lg disabled:opacity-30 text-[10px]">↓</button>
                     </div>
-                    <button onClick={() => mapRef.current?.flyTo([m.lat, m.lng], 16)} className="text-[11px] font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-lg hover:opacity-90">Ver</button>
+                    <button onClick={(e) => { e.stopPropagation(); setSelectedId(m.id); mapRef.current?.flyTo([m.lat, m.lng], 16); }} className="text-[11px] font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-lg hover:opacity-90">Ver</button>
                     <button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50">Editar</button>
                     <button onClick={() => handleDuplicate(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50" title="Duplicar">⧉</button>
                     <button onClick={() => handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg hover:bg-red-100">Eliminar</button>
@@ -1090,7 +1174,9 @@ export const MapMaker = () => {
                   dragend: (e) => {
                     const { lat, lng } = e.target.getLatLng();
                     setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
+                    setSelectedId(m.id);
                   },
+                  click: () => setSelectedId(m.id),
                 }}
               >
                 <Popup>
