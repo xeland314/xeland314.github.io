@@ -158,9 +158,10 @@ export function getColorHex(id: string) {
   return COLORS.find((c) => c.id === id)?.hex ?? COLORS[0].hex;
 }
 
-export function createDivIconHtml(iconId: IconId, colorHex: string) {
+export function createDivIconHtml(iconId: IconId, colorHex: string, rotationDeg = 0) {
   const def = ICONS.find((i) => i.id === iconId) ?? ICONS[0];
-  // rounded pin with tail
+  // outer pin rotate -45 + map rotation, inner counter-rotates to keep icon upright (45 - rotation)
+  const innerRotate = 45 - rotationDeg;
   return `
   <div style="
     width:38px;height:38px;
@@ -171,7 +172,7 @@ export function createDivIconHtml(iconId: IconId, colorHex: string) {
     box-shadow:0 2px 8px rgba(0,0,0,0.35);
     display:flex;align-items:center;justify-content:center;
   ">
-    <div style="transform: rotate(45deg); display:flex; align-items:center; justify-content:center;">
+    <div style="transform: rotate(${innerRotate}deg); display:flex; align-items:center; justify-content:center;">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         ${def.svg}
       </svg>
@@ -179,7 +180,8 @@ export function createDivIconHtml(iconId: IconId, colorHex: string) {
   </div>`;
 }
 
-export function createNumberIconHtml(order: number, colorHex: string) {
+export function createNumberIconHtml(order: number, colorHex: string, rotationDeg = 0) {
+  const innerRotate = 45 - rotationDeg;
   return `
   <div style="
     width:38px;height:38px;
@@ -190,7 +192,7 @@ export function createNumberIconHtml(order: number, colorHex: string) {
     box-shadow:0 2px 8px rgba(0,0,0,0.35);
     display:flex;align-items:center;justify-content:center;
   ">
-    <div style="transform: rotate(45deg); color:white; font-weight:900; font-size:16px; font-family:ui-monospace,monospace; line-height:1; display:flex; align-items:center; justify-content:center;">
+    <div style="transform: rotate(${innerRotate}deg); color:white; font-weight:900; font-size:16px; font-family:ui-monospace,monospace; line-height:1; display:flex; align-items:center; justify-content:center;">
       ${order}
     </div>
   </div>`;

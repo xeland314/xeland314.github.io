@@ -562,17 +562,22 @@ export const MapMaker = () => {
   const handleExportMapImage = async (format: "png" | "jpeg" = "png") => {
     const node = mapExportRef.current;
     if (!node) return alert("Mapa no listo");
+    // ocultar controles y footer solo para la captura (nuestros + controles Leaflet)
+    const toHide = Array.from(node.querySelectorAll("[data-no-export], .leaflet-control")) as HTMLElement[];
+    const prevDisplays = toHide.map((el) => el.style.display);
+    toHide.forEach((el) => (el.style.display = "none"));
     try {
-      // Forzar crossOrigin en tiles para html-to-image
       const opts = { cacheBust: true, pixelRatio: 2, backgroundColor: "#f8fafc" } as any;
       const dataUrl = format === "png" ? await toPng(node, opts) : await toJpeg(node, { ...opts, quality: 0.92 });
       const a = document.createElement("a");
       a.href = dataUrl;
-      a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts.${format === "png" ? "png" : "jpg"}`;
+      a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts-${rotationDeg}deg.${format === "png" ? "png" : "jpg"}`;
       a.click();
     } catch (e: any) {
       console.error(e);
       alert("Error exportando imagen: " + (e.message || e));
+    } finally {
+      toHide.forEach((el, i) => (el.style.display = prevDisplays[i] || ""));
     }
   };
 
@@ -831,14 +836,13 @@ export const MapMaker = () => {
 
   const iconsMemo = useMemo(() => {
     if (showNumberInsteadOfIcon) {
-      // modo número: un icono por orden (depende de posición en array)
       const map = new Map<string, L.DivIcon>();
       markers.forEach((m, idx) => {
-        const key = `${idx}-${m.color}`;
+        const key = `${idx}-${m.color}-${rotationDeg}`;
         map.set(
           key,
           L.divIcon({
-            html: createNumberIconHtml(idx + 1, getColorHex(m.color)),
+            html: createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg),
             className: "custom-div-icon",
             iconSize: [38, 38],
             iconAnchor: [19, 38],
@@ -848,15 +852,14 @@ export const MapMaker = () => {
       });
       return map;
     }
-    // modo icono Lucide
     const map = new Map<string, L.DivIcon>();
     markers.forEach((m) => {
-      const key = `${m.icon}-${m.color}`;
+      const key = `${m.icon}-${m.color}-${rotationDeg}`;
       if (!map.has(key)) {
         map.set(
           key,
           L.divIcon({
-            html: createDivIconHtml(m.icon, getColorHex(m.color)),
+            html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg),
             className: "custom-div-icon",
             iconSize: [38, 38],
             iconAnchor: [19, 38],
@@ -866,7 +869,7 @@ export const MapMaker = () => {
       }
     });
     return map;
-  }, [markers, showNumberInsteadOfIcon]);
+  }, [markers, showNumberInsteadOfIcon, rotationDeg]);
 
   const center: [number, number] = markers.length ? [markers[0].lat, markers[0].lng] : [-0.180653, -78.467834];
 
@@ -1290,24 +1293,25 @@ export const MapMaker = () => {
         </div>
       </div>
 
-      {/* Map */}
-      <div ref={mapExportRef} className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900" style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease" }}>
-        <MapContainer
-          center={center}
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
-          ref={mapRef as any}
-          zoomControl={false}
-        >
-          <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} />
-          <MapClickHandler onAdd={handleAddMarker} />
+      {/* Map - rectángulo fijo horizontal, interior rota */}
+      <div ref={mapExportRef} className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900">
+        <div style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease", width: "150%", height: "150%", marginLeft: "-25%", marginTop: "-25%" }}>
+          <MapContainer
+            center={center}
+            zoom={13}
+            style={{ height: "100%", width: "100%" }}
+            ref={mapRef as any}
+            zoomControl={false}
+          >
+            <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} />
+            <MapClickHandler onAdd={handleAddMarker} />
 
-          {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
-            <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
-          )}
-          {routeCoords.length > 0 && (
-            <Polyline positions={routeCoords} pathOptions={{ color: "#7c3aed", weight: 5, opacity: 0.85 }} />
-          )}
+            {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
+              <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
+            )}
+            {routeCoords.length > 0 && (
+              <Polyline positions={routeCoords} pathOptions={{ color: "#7c3aed", weight: 5, opacity: 0.85 }} />
+            )}
 
           {markers.map((m, idx) => {
             const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}` : `${m.icon}-${m.color}`;
@@ -1361,9 +1365,10 @@ export const MapMaker = () => {
             );
           })}
         </MapContainer>
+        </div>
 
-        {/* zoom controls custom */}
-        <div className="absolute top-3 right-3 z-[400] flex flex-col gap-2">
+        {/* zoom controls custom - fijos, no rotan ni se exportan */}
+        <div data-no-export className="absolute top-3 right-3 z-[400] flex flex-col gap-2">
           <button
             onClick={() => mapRef.current?.zoomIn()}
             className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center font-black text-slate-700 dark:text-white hover:bg-slate-50"
@@ -1387,7 +1392,7 @@ export const MapMaker = () => {
           </button>
         </div>
 
-        <div className="absolute bottom-3 left-3 z-[400] bg-white/95 dark:bg-slate-800/95 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-[11px] font-mono text-slate-600 dark:text-slate-300 shadow">
+        <div data-no-export className="absolute bottom-3 left-3 z-[400] bg-white/95 dark:bg-slate-800/95 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-[11px] font-mono text-slate-600 dark:text-slate-300 shadow">
           Clic para añadir · Arrastra para mover
         </div>
       </div>
