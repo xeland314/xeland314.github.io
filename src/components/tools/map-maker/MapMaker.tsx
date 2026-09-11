@@ -176,6 +176,7 @@ export const MapMaker = () => {
   const [showToken, setShowToken] = useState(false);
   const [routeMode, setRouteMode] = useState<"drive" | "walk" | "bicycle">("drive");
   const [optimizeStops, setOptimizeStops] = useState(false);
+  const [routeColor, setRouteColor] = useState("#7c3aed");
   const [routeCoords, setRouteCoords] = useState<[number, number][]>([]);
   const [routeInfo, setRouteInfo] = useState<{ distance: number; time: number } | null>(null);
   const [routeLoading, setRouteLoading] = useState(false);
@@ -725,15 +726,15 @@ export const MapMaker = () => {
       const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold);
       const pageSize = PDF_PAGE_SIZES[pdfPageSize] || PDF_PAGE_SIZES["A4"];
       const margin = 36;
-      // Página 1: portada mapa
+      const projName = (projects.find(p=>p.id===currentProjectId)?.name?.trim()) || "Mapa";
+      // Página 1: portada mapa (solo nombre proyecto)
       const page1 = pdf.addPage([pageSize.wPt, pageSize.hPt]);
       const { width: pw, height: ph } = page1.getSize();
-      // título header
-      const title = `Mapa Personalizado — ${markers.length} puntos — ${new Date().toLocaleDateString()}`;
-      page1.drawText(title, { x: margin, y: ph - 28, size: 10, font: fontBold, color: rgb(0.1,0.1,0.1) });
-      page1.drawText(`Rotación ${rotationDeg}° · ${TILE_PROVIDERS[tileProvider].label} · ${exportSize}`, { x: margin, y: ph - 42, size: 7, font, color: rgb(0.4,0.4,0.4) });
+      // título header: solo nombre proyecto (centrado)
+      const titleSize = 14;
+      const titleW = fontBold.widthOfTextAtSize(projName, titleSize);
+      page1.drawText(projName, { x: (pw - titleW)/2, y: ph - 32, size: titleSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
       // embed map image
-      const isJpegPreview = false;
       // fetch bytes from dataUrl
       const res = await fetch(raw);
       const buf = await res.arrayBuffer();
@@ -745,19 +746,18 @@ export const MapMaker = () => {
       }
       const imgDims = imgEmbed.scale(1);
       const availW = pw - margin*2;
-      const availH = ph - 70 - 30; // header + footer
+      const availH = ph - 55 - 20; // solo header título
       const scale = Math.min(availW / imgDims.width, availH / imgDims.height);
       const imgW = imgDims.width * scale;
       const imgH = imgDims.height * scale;
       const imgX = (pw - imgW)/2;
-      const imgY = ph - 55 - imgH;
+      const imgY = ph - 50 - imgH;
       page1.drawImage(imgEmbed, { x: imgX, y: imgY, width: imgW, height: imgH });
       // borde
       page1.drawRectangle({ x: imgX-1, y: imgY-1, width: imgW+2, height: imgH+2, borderColor: rgb(0.8,0.8,0.8), borderWidth: 0.5 });
-      page1.drawText(`Exportado desde xeland314.github.io/mapa-personalizado · ${markers.length} puntos`, { x: margin, y: margin - 8, size: 6, font, color: rgb(0.5,0.5,0.5) });
-      // Páginas de tabla
-      const headers = ["#", "Título", "Descripción", "Lat", "Lng", "Ícono", "Color"];
-      const colWidths = [22, 110, 150, 62, 62, 52, 48];
+      // Páginas de tabla (sin descripción/icon/color, solo # Título Lat Lng)
+      const headers = ["#", "Título", "Lat", "Lng"];
+      const colWidths = [28, 280, 75, 75];
       // ajustar a ancho disponible
       const tableAvailW = pw - margin*2;
       const totalW = colWidths.reduce((a,b)=>a+b,0);
@@ -768,8 +768,10 @@ export const MapMaker = () => {
       const rowsPerPage = Math.floor((ph - margin*2 - headerH - 18) / rowH);
       let page = pdf.addPage([pageSize.wPt, pageSize.hPt]);
       let y = page.getSize().height - margin;
-      page.drawText(`Detalle de puntos — ${markers.length} registros — Fuente ${pdfFontSize}pt`, { x: margin, y, size: pdfFontSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
-      y -= 14;
+      // header tabla: solo nombre proyecto (centrado)
+      const tabTitleW = fontBold.widthOfTextAtSize(projName, pdfFontSize);
+      page.drawText(projName, { x: (pw - tabTitleW)/2, y, size: pdfFontSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
+      y -= 16;
       const drawHeader = (pg: any, yy: number) => {
         let x = margin;
         pg.drawRectangle({ x: margin, y: yy - headerH + 4, width: tableAvailW, height: headerH, color: rgb(0.95,0.95,0.95) });
@@ -785,12 +787,9 @@ export const MapMaker = () => {
         let x = margin;
         const cells = [
           String(idx+1),
-          (m.title||"").slice(0,28),
-          (m.description||"—").slice(0,42),
+          (m.title||"").slice(0,48),
           m.lat.toFixed(5),
           m.lng.toFixed(5),
-          m.icon,
-          m.color
         ];
         cells.forEach((c,i)=>{
           // truncate if overflow
@@ -806,7 +805,8 @@ export const MapMaker = () => {
         if (y - rowH < margin) {
           page = pdf.addPage([pageSize.wPt, pageSize.hPt]);
           y = page.getSize().height - margin;
-          page.drawText(`Detalle de puntos (cont.) — pág ${pdf.getPageCount()}`, { x: margin, y, size: pdfFontSize -1, font, color: rgb(0.4,0.4,0.4) });
+          const contW = font.widthOfTextAtSize(projName, pdfFontSize-1);
+          page.drawText(projName, { x: (pw - contW)/2, y, size: pdfFontSize -1, font, color: rgb(0.4,0.4,0.4) });
           y -= 14;
           drawHeader(page, y);
           y -= headerH;
@@ -825,7 +825,8 @@ export const MapMaker = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts-${pdfPageSize}-${pdfFontSize}pt.pdf`;
+      const safe = projName.replace(/[^a-zA-Z0-9\u00C0-\u024F]+/g,"-").replace(/^-|-$/g,"").slice(0,30) || "mapa";
+      a.download = `${safe}-${new Date().toISOString().slice(0,10)}-${markers.length}pts-${pdfPageSize}-${pdfFontSize}pt.pdf`;
       a.click();
       setTimeout(()=> URL.revokeObjectURL(url), 3000);
     } catch (e: any) {
@@ -1294,6 +1295,17 @@ export const MapMaker = () => {
                 <span className="text-[10px] font-normal text-slate-400">fija 1º y último</span>
               </label>
             </div>
+            <div className="flex items-center gap-2 mt-3">
+              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">Color ruta
+                <input type="color" value={routeColor} onChange={(e)=> setRouteColor(e.target.value)} className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5 bg-white dark:bg-slate-800" title="Elige color de la ruta" />
+                <span className="text-[11px] font-mono px-2 py-1 rounded-full border bg-white dark:bg-slate-800" style={{ color: routeColor, borderColor: routeColor }}>{routeColor}</span>
+              </label>
+              <div className="ml-auto flex gap-1">
+                {["#7c3aed","#059669","#dc2626","#ea580c","#2563eb","#000000"].map(c=>(
+                  <button key={c} onClick={()=> setRouteColor(c)} className={`w-6 h-6 rounded-full border-2 ${routeColor===c ? "border-slate-900 dark:border-white scale-110" : "border-white dark:border-slate-600"}`} style={{ background: c }} title={c} />
+                ))}
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-2 mt-3">
               <button onClick={handleDrawRoute} disabled={routeLoading || markers.length < 2 || !geoapifyToken} className="text-xs font-black bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
                 {routeLoading ? "Calculando…" : "Dibujar ruta"}
@@ -1540,37 +1552,34 @@ export const MapMaker = () => {
                     <div className="p-3 space-y-4 max-h-[520px] overflow-auto overscroll-contain">
                       {/* Portada preview */}
                       <div>
-                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Pág 1 — Portada mapa ({PDF_PAGE_SIZES[pdfPageSize].label})</p>
+                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Pág 1 — Portada mapa ({PDF_PAGE_SIZES[pdfPageSize].label}) · <span className="text-violet-600">{projects.find(p=>p.id===currentProjectId)?.name || "Mapa"}</span></p>
                         <div className="mt-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex flex-col items-center">
                           {pdfPreviewUrl ? <img src={pdfPreviewUrl} alt="preview mapa" className="max-w-full h-auto rounded-lg border border-slate-200 dark:border-slate-700" style={{ aspectRatio: EXPORT_PRESETS[exportSize].aspect === "auto" ? undefined : EXPORT_PRESETS[exportSize].aspect as any }} /> : <span className="text-xs text-slate-400 py-10">Genera vista previa para ver el mapa</span>}
-                          <span className="text-[10px] text-slate-400 mt-1">Título + mapa centrado + margen {36}pt — rotación {rotationDeg}° respetada</span>
+                          <span className="text-[10px] text-slate-400 mt-1">Solo título proyecto “{projects.find(p=>p.id===currentProjectId)?.name || "Mapa"}” + mapa centrado — sin rotación/fuente en portada</span>
                         </div>
                       </div>
                       {/* Tabla preview */}
                       <div>
-                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Págs 2+ — Tabla detalle ({markers.length} filas · {pdfFontSize}pt)</p>
+                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Págs 2+ — Tabla detalle ({markers.length} filas · {pdfFontSize}pt) · <span className="text-violet-600">{projects.find(p=>p.id===currentProjectId)?.name || "Mapa"}</span></p>
                         <div className="mt-1 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden overflow-x-auto">
                           <table className="w-full text-left border-collapse" style={{ fontSize: `${pdfFontSize}px` }}>
                             <thead className="bg-slate-900 dark:bg-white text-white dark:text-slate-900">
-                              <tr>{["#","Título","Descripción","Lat","Lng","Ícono","Color"].map(h=> <th key={h} className="px-2 py-1 font-bold whitespace-nowrap">{h}</th>)}</tr>
+                              <tr>{["#","Título","Lat","Lng"].map(h=> <th key={h} className="px-2 py-1 font-bold whitespace-nowrap">{h}</th>)}</tr>
                             </thead>
                             <tbody>
                               {markers.slice(0, Math.min(markers.length, 8)).map((m,i)=> (
                                 <tr key={m.id} className={i%2===1 ? "bg-slate-50 dark:bg-slate-800/50" : "bg-white dark:bg-slate-900"}>
                                   <td className="px-2 py-1 font-mono">{i+1}</td>
-                                  <td className="px-2 py-1 truncate max-w-[110px]">{m.title}</td>
-                                  <td className="px-2 py-1 truncate max-w-[120px]">{m.description || "—"}</td>
-                                  <td className="px-2 py-1 font-mono">{m.lat.toFixed(4)}</td>
-                                  <td className="px-2 py-1 font-mono">{m.lng.toFixed(4)}</td>
-                                  <td className="px-2 py-1">{m.icon}</td>
-                                  <td className="px-2 py-1"><span className="w-3 h-3 rounded-full inline-block border border-white shadow" style={{ background: getColorHex(m.color)}}></span></td>
+                                  <td className="px-2 py-1 truncate max-w-[180px]">{m.title}</td>
+                                  <td className="px-2 py-1 font-mono">{m.lat.toFixed(5)}</td>
+                                  <td className="px-2 py-1 font-mono">{m.lng.toFixed(5)}</td>
                                 </tr>
                               ))}
-                              {markers.length>8 && <tr><td colSpan={7} className="text-center text-[11px] text-slate-400 py-1">… +{markers.length-8} filas más (se paginan automáticamente)</td></tr>}
+                              {markers.length>8 && <tr><td colSpan={4} className="text-center text-[11px] text-slate-400 py-1">… +{markers.length-8} filas más (se paginan automáticamente)</td></tr>}
                             </tbody>
                           </table>
                         </div>
-                        <p className="text-[10px] text-slate-400 mt-1">{Math.ceil(markers.length / Math.max(1, Math.floor((PDF_PAGE_SIZES[pdfPageSize].hPt - 72 - 18)/ (Math.max(14, pdfFontSize+6)))))} pág(s) estimadas para tabla · {pdfFontSize}pt</p>
+                        <p className="text-[10px] text-slate-400 mt-1">{Math.ceil(markers.length / Math.max(1, Math.floor((PDF_PAGE_SIZES[pdfPageSize].hPt - 72 - 18)/ (Math.max(14, pdfFontSize+6)))))} pág(s) estimadas para tabla · {pdfFontSize}pt · columnas #/Título/Lat/Lng</p>
                       </div>
                     </div>
                   </div>
@@ -1667,7 +1676,7 @@ export const MapMaker = () => {
               <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
             )}
             {routeCoords.length > 0 && (
-              <Polyline positions={routeCoords} pathOptions={{ color: "#7c3aed", weight: 5, opacity: 0.85 }} />
+              <Polyline positions={routeCoords} pathOptions={{ color: routeColor, weight: 5, opacity: 0.85 }} />
             )}
 
           {markers.map((m, idx) => {
