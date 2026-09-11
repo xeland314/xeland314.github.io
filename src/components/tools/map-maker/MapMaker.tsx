@@ -11,7 +11,6 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ICONS, COLORS, getColorHex, createDivIconHtml, createNumberIconHtml, type IconId } from "./icons";
-import { toPng, toJpeg } from "html-to-image";
 
 export type MarkerData = {
   id: string;
@@ -562,13 +561,13 @@ export const MapMaker = () => {
   const handleExportMapImage = async (format: "png" | "jpeg" = "png") => {
     const node = mapExportRef.current;
     if (!node) return alert("Mapa no listo");
-    // ocultar controles y footer solo para la captura (nuestros + controles Leaflet)
     const toHide = Array.from(node.querySelectorAll("[data-no-export], .leaflet-control")) as HTMLElement[];
     const prevDisplays = toHide.map((el) => el.style.display);
     toHide.forEach((el) => (el.style.display = "none"));
     try {
+      const { toPng: toPngFn, toJpeg: toJpegFn } = await import("html-to-image");
       const opts = { cacheBust: true, pixelRatio: 2, backgroundColor: "#f8fafc" } as any;
-      const dataUrl = format === "png" ? await toPng(node, opts) : await toJpeg(node, { ...opts, quality: 0.92 });
+      const dataUrl = format === "png" ? await toPngFn(node, opts) : await toJpegFn(node, { ...opts, quality: 0.92 });
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts-${rotationDeg}deg.${format === "png" ? "png" : "jpg"}`;
@@ -1295,7 +1294,7 @@ export const MapMaker = () => {
 
       {/* Map - rectángulo fijo horizontal, interior rota */}
       <div ref={mapExportRef} className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900">
-        <div style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease", width: "150%", height: "150%", marginLeft: "-25%", marginTop: "-25%" }}>
+        <div style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease", position: "absolute", inset: "-25%", width: "150%", height: "150%" }}>
           <MapContainer
             center={center}
             zoom={13}
@@ -1314,8 +1313,8 @@ export const MapMaker = () => {
             )}
 
           {markers.map((m, idx) => {
-            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}` : `${m.icon}-${m.color}`;
-            const icon = iconsMemo.get(iconKey);
+            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
+            const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon as IconId, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
             return (
               <Marker
                 key={m.id}
