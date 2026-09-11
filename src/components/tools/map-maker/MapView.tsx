@@ -13,19 +13,15 @@ function MapClickHandler({ onAdd, rotationDeg }: { onAdd: (lat: number, lng: num
     click(e) {
       const target = e.originalEvent?.target as HTMLElement | null;
       if (target?.closest?.(".leaflet-marker-icon, .leaflet-popup, .leaflet-control, .leaflet-interactive")) return;
-      let lat = e.latlng.lat;
-      let lng = e.latlng.lng;
-      if (rotationDeg % 360 !== 0) {
-        try {
-          const orig = e.originalEvent as MouseEvent;
-          if (orig?.clientX != null && orig?.clientY != null) {
-            const corrected = getCorrectedLatLng(map, orig.clientX, orig.clientY, rotationDeg);
-            lat = corrected.lat;
-            lng = corrected.lng;
-          }
-        } catch {}
-      }
-      onAdd(lat, lng);
+      try {
+        const orig = e.originalEvent as MouseEvent;
+        if (orig?.clientX != null && orig?.clientY != null) {
+          const corrected = getCorrectedLatLng(map, orig.clientX, orig.clientY, rotationDeg);
+          onAdd(corrected.lat, corrected.lng);
+          return;
+        }
+      } catch {}
+      onAdd(e.latlng.lat, e.latlng.lng);
     },
   });
   return null;
@@ -105,12 +101,12 @@ export function MapView({
                 eventHandlers={{
                   dragend: (e: any) => {
                     let { lat, lng } = e.target.getLatLng();
-                    if (rotationDeg % 360 !== 0 && e.originalEvent) {
+                    if (e.originalEvent && mapRef.current) {
                       try {
                         const orig = e.originalEvent as unknown as MouseEvent;
                         const cx = (orig as any).clientX ?? (e as any).originalEvent?.clientX;
                         const cy = (orig as any).clientY ?? (e as any).originalEvent?.clientY;
-                        if (cx != null && cy != null && mapRef.current) {
+                        if (cx != null && cy != null) {
                           const corrected = getCorrectedLatLng(mapRef.current, cx, cy, rotationDeg);
                           lat = corrected.lat;
                           lng = corrected.lng;
@@ -120,9 +116,19 @@ export function MapView({
                     onMarkerDragEnd(m.id, lat, lng);
                   },
                   click: () => onMarkerClick(m.id),
+                  popupopen: (e: any) => {
+                    const map = e.target._map as L.Map;
+                    if (!map) return;
+                    try {
+                      const px = map.project(e.target.getLatLng(), map.getZoom());
+                      px.y -= 110;
+                      const offsetLatLng = map.unproject(px, map.getZoom());
+                      map.panTo(offsetLatLng, { animate: true, duration: 0.4 });
+                    } catch {}
+                  },
                 }}
               >
-                <Popup>
+                <Popup autoPan={false}>
                   <div className="min-w-[180px]">
                     <p className="font-black text-slate-900 text-sm flex items-center gap-2">
                       {showNumberInsteadOfIcon ? (
