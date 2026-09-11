@@ -11,6 +11,8 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ICONS, COLORS, getColorHex, createDivIconHtml, createNumberIconHtml, type IconId } from "./icons";
+import { getCorrectedLatLng } from "./rotation";
+import { RotationControl } from "./RotationControl";
 
 export type MarkerData = {
   id: string;
@@ -81,11 +83,21 @@ function generateId() {
   return Math.random().toString(36).slice(2, 9);
 }
 
-function MapClickHandler({ onAdd }: { onAdd: (lat: number, lng: number) => void }) {
+function MapClickHandler({ onAdd, rotationDeg }: { onAdd: (lat: number, lng: number) => void; rotationDeg: number }) {
+  const map = useMap();
   useMapEvents({
     click(e) {
       const target = e.originalEvent?.target as HTMLElement | null;
       if (target?.closest?.(".leaflet-marker-icon, .leaflet-popup, .leaflet-control, .leaflet-interactive")) return;
+      // Siempre corrige por el wrapper 200% (incluso a 0° el contenedor está desplazado)
+      try {
+        const orig = e.originalEvent as MouseEvent;
+        if (orig?.clientX != null && orig?.clientY != null) {
+          const corrected = getCorrectedLatLng(map, orig.clientX, orig.clientY, rotationDeg);
+          onAdd(corrected.lat, corrected.lng);
+          return;
+        }
+      } catch {}
       onAdd(e.latlng.lat, e.latlng.lng);
     },
   });
@@ -280,10 +292,17 @@ export const MapMaker = () => {
           try {
             const b = L.latLngBounds(hm.map(m=>[m.lat,m.lng] as [number,number]));
             mapRef.current.invalidateSize();
-            const rad = (parseInt(localStorage.getItem("map-rotation-deg")||"0")*Math.PI/180);
-            const f = Math.abs(Math.sin(rad))+Math.abs(Math.cos(rad));
-            const pad = 0.2 + (f-1)*0.55;
-            mapRef.current.fitBounds(b.pad(pad), { animate:true, duration:0.6 });
+            const rot = parseInt(localStorage.getItem("map-rotation-deg")||"0");
+            const norm = ((rot % 360) + 360) % 360;
+            const dist0 = Math.min(norm, 360 - norm);
+            if (dist0 <= 35) {
+              mapRef.current.fitBounds(b, { padding: [40, 40], animate: true, duration: 0.6 });
+            } else {
+              const rad = (rot * Math.PI) / 180;
+              const f = Math.abs(Math.sin(rad)) + Math.abs(Math.cos(rad));
+              const pad = 0.2 + (f - 1) * 0.55;
+              mapRef.current.fitBounds(b.pad(pad), { animate: true, duration: 0.6 });
+            }
             setTimeout(()=> mapRef.current?.invalidateSize(), 700);
           } catch {}
         }, 800);
@@ -546,17 +565,22 @@ export const MapMaker = () => {
   };
   const fitAdjusted = (bounds: L.LatLngBounds, opts?: L.FitBoundsOptions) => {
     if (!mapRef.current) return;
-    // invalida tamaño antes (por el wrapper 200% rotado)
     mapRef.current.invalidateSize();
+    // cuando está casi derecho (±35°) usa padding simple para que el ajuste sea exacto
+    // fuera de ese rango el contenedor 200% rotado necesita compensar con factor |sin|+|cos|
+    const norm = ((rotationDeg % 360) + 360) % 360;
+    const dist0 = Math.min(norm, 360 - norm); // 0..180 distancia a 0°
+    if (dist0 <= 35) {
+      mapRef.current.fitBounds(bounds, { padding: [40, 40], animate: true, duration: 0.45, maxZoom: 16, ...opts });
+      setTimeout(() => mapRef.current?.invalidateSize(), 200);
+      return;
+    }
     const factor = getRotationFactor();
-    // expandir padding proporcional al factor para que al rotar no se corte
     const basePad = 0.2;
-    const adjustedPad = basePad + (factor - 1) * 0.55; // 0.2→0.43 a 45°
+    const adjustedPad = basePad + (factor - 1) * 0.55;
     const padded = bounds.pad(adjustedPad);
-    // si factor>1, ampliar padding en pixeles además (por si bounds pequeño)
     const extraPadding: [number, number] = factor > 1.05 ? [Math.round(20 * (factor - 1) * 2), Math.round(20 * (factor - 1) * 2)] : [0, 0];
     mapRef.current.fitBounds(padded, { padding: extraPadding, animate: true, duration: 0.45, ...opts });
-    // doble invalidate post-animación para tiles de esquinas
     setTimeout(() => mapRef.current?.invalidateSize(), 100);
     setTimeout(() => mapRef.current?.invalidateSize(), 500);
   };
@@ -1723,7 +1747,7 @@ export const MapMaker = () => {
             zoomControl={false}
           >
             <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} keepBuffer={2} updateWhenZooming={false} />
-            <MapClickHandler onAdd={handleAddMarker} />
+            <MapClickHandler onAdd={handleAddMarker} rotationDeg={rotationDeg} />
 
             {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
               <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
@@ -1742,8 +1766,21 @@ export const MapMaker = () => {
                 icon={icon}
                 draggable
                 eventHandlers={{
-                  dragend: (e) => {
-                    const { lat, lng } = e.target.getLatLng();
+                  dragend: (e: any) => {
+                    let { lat, lng } = e.target.getLatLng();
+                    // corrige siempre por wrapper 200% (0° también está desplazado)
+                    if (e.originalEvent && mapRef.current) {
+                      try {
+                        const orig = e.originalEvent as unknown as MouseEvent;
+                        const cx = (orig as any).clientX ?? (e as any).originalEvent?.clientX;
+                        const cy = (orig as any).clientY ?? (e as any).originalEvent?.clientY;
+                        if (cx != null && cy != null) {
+                          const corrected = getCorrectedLatLng(mapRef.current, cx, cy, rotationDeg);
+                          lat = corrected.lat;
+                          lng = corrected.lng;
+                        }
+                      } catch {}
+                    }
                     setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
                     setSelectedId(m.id);
                   },
