@@ -158,16 +158,19 @@ export function getColorHex(id: string) {
   return COLORS.find((c) => c.id === id)?.hex ?? COLORS[0].hex;
 }
 
-export function createDivIconHtml(iconId: IconId, colorHex: string, mapRotationDeg = 0, markerRotationDeg = 0) {
+export type MarkerShape = "pin" | "square" | "circle";
+
+export function createDivIconHtml(iconId: IconId, colorHex: string, mapRotationDeg = 0, shape: MarkerShape = "pin") {
   const def = ICONS.find((i) => i.id === iconId) ?? ICONS[0];
-  // outer pin rota -45 + markerRotation, inner contra-rota para quedar legible (45 - marker - map)
-  const outerRotate = -45 + (markerRotationDeg || 0);
-  const innerRotate = 45 - (markerRotationDeg || 0) - mapRotationDeg;
+  const isPin = shape === "pin";
+  const outerRotate = isPin ? -45 : 0;
+  const outerRadius = shape === "circle" ? "50%" : shape === "square" ? "10px" : "50% 50% 50% 0";
+  const innerRotate = isPin ? 45 - mapRotationDeg : -mapRotationDeg;
   return `
   <div style="
     width:38px;height:38px;
     background:${colorHex};
-    border-radius:50% 50% 50% 0;
+    border-radius:${outerRadius};
     transform: rotate(${outerRotate}deg);
     border:2.5px solid white;
     box-shadow:0 2px 8px rgba(0,0,0,0.35);
@@ -181,14 +184,16 @@ export function createDivIconHtml(iconId: IconId, colorHex: string, mapRotationD
   </div>`;
 }
 
-export function createNumberIconHtml(order: number, colorHex: string, mapRotationDeg = 0, markerRotationDeg = 0) {
-  const outerRotate = -45 + (markerRotationDeg || 0);
-  const innerRotate = 45 - (markerRotationDeg || 0) - mapRotationDeg;
+export function createNumberIconHtml(order: number, colorHex: string, mapRotationDeg = 0, shape: MarkerShape = "pin") {
+  const isPin = shape === "pin";
+  const outerRotate = isPin ? -45 : 0;
+  const outerRadius = shape === "circle" ? "50%" : shape === "square" ? "10px" : "50% 50% 50% 0";
+  const innerRotate = isPin ? 45 - mapRotationDeg : -mapRotationDeg;
   return `
   <div style="
     width:38px;height:38px;
     background:${colorHex};
-    border-radius:50% 50% 50% 0;
+    border-radius:${outerRadius};
     transform: rotate(${outerRotate}deg);
     border:2.5px solid white;
     box-shadow:0 2px 8px rgba(0,0,0,0.35);
