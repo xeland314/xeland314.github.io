@@ -215,6 +215,7 @@ export const MapMaker = () => {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
   const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -345,6 +346,22 @@ export const MapMaker = () => {
     if (currentProjectId) localStorage.setItem("custom-map-current-project", currentProjectId);
     else localStorage.removeItem("custom-map-current-project");
   }, [currentProjectId, isLoaded]);
+
+  // Sidebar colapsable: persistencia + invalidateSize al plegar/desplegar
+  useEffect(() => {
+    if (!isLoaded) return;
+    const saved = localStorage.getItem("map-sidebar-open");
+    if (saved !== null) setSidebarOpen(saved === "true");
+    else if (window.innerWidth < 1024) setSidebarOpen(false);
+  }, [isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    localStorage.setItem("map-sidebar-open", String(sidebarOpen));
+    const t1 = setTimeout(() => mapRef.current?.invalidateSize(), 80);
+    const t2 = setTimeout(() => mapRef.current?.invalidateSize(), 380);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [sidebarOpen, isLoaded]);
 
   // Historial para undo/redo (Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z / Ctrl+X)
   useEffect(() => {
@@ -1335,10 +1352,53 @@ export const MapMaker = () => {
   const center: [number, number] = markers.length ? [markers[0].lat, markers[0].lng] : [-0.180653, -78.467834];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 w-full min-h-[720px] lg:items-start">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 w-full min-h-[720px] lg:items-start relative">
       <style>{`.custom-div-icon{background:transparent !important;border:none !important} .leaflet-popup-content{margin:12px 16px !important} .leaflet-popup-content-wrapper{border-radius:14px}`}</style>
+      {/* Botón flotante hamburguesa: siempre visible sobre el mapa cuando el menú está cerrado, y como toggle cuando está abierto */}
+      <button
+        type="button"
+        data-no-export
+        onClick={() => setSidebarOpen((o) => !o)}
+        aria-label={sidebarOpen ? "Ocultar menú" : "Mostrar menú"}
+        title={sidebarOpen ? "Ocultar menú (ver mapa completo)" : "Mostrar menú"}
+        className={`hidden lg:flex absolute z-[600] w-10 h-10 rounded-xl shadow-lg border items-center justify-center transition hover:scale-105 ${sidebarOpen ? "left-[388px] xl:left-[428px] top-4 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white" : "left-4 top-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white"}`}
+      >
+        {sidebarOpen ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
+        )}
+      </button>
+      {/* Botón hamburguesa mobile: fijo dentro del header flotante */}
+      <button
+        type="button"
+        data-no-export
+        onClick={() => setSidebarOpen((o) => !o)}
+        aria-label={sidebarOpen ? "Ocultar menú" : "Mostrar menú"}
+        className={`lg:hidden fixed bottom-5 right-5 z-[650] w-14 h-14 rounded-full shadow-xl border-2 flex items-center justify-center transition active:scale-95 ${sidebarOpen ? "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white" : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900"}`}
+      >
+        {sidebarOpen ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
+        )}
+      </button>
+      {/* Backdrop mobile cuando sidebar abierto */}
+      {sidebarOpen && (
+        <button
+          aria-label="Cerrar menú"
+          onClick={() => setSidebarOpen(false)}
+          className="lg:hidden fixed inset-0 z-[500] bg-black/30 backdrop-blur-[1px]"
+        />
+      )}
       {/* Sidebar */}
-      <div className="w-full lg:w-[380px] xl:w-[420px] flex flex-col gap-4 shrink-0 lg:sticky lg:top-4">
+      <div className={`${sidebarOpen ? "flex" : "hidden lg:hidden"} w-full lg:w-[380px] xl:w-[420px] flex-col gap-4 shrink-0 lg:sticky lg:top-4 ${sidebarOpen ? "fixed lg:static inset-0 lg:inset-auto z-[550] lg:z-auto overflow-y-auto lg:overflow-visible bg-[#f8fafc] dark:bg-[#060a0f] lg:bg-transparent p-4 lg:p-0 pt-12 lg:pt-0" : ""}`}>
+        {sidebarOpen && (
+          <div className="lg:hidden flex items-center justify-between -mt-2 mb-1">
+            <span className="text-xs font-black tracking-widest uppercase text-slate-600 dark:text-slate-300 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/> Menú</span>
+            <button type="button" onClick={() => setSidebarOpen(false)} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl">Ocultar ▲</button>
+          </div>
+        )}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-black text-slate-900 dark:text-white tracking-tight text-lg flex items-center gap-2">
