@@ -177,7 +177,7 @@ export const MapMaker = () => {
   const [pointSearchResults, setPointSearchResults] = useState<Record<string, any[]>>({});
   const [pointSearchLoading, setPointSearchLoading] = useState<Record<string, boolean>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [geocodeProvider, setGeocodeProvider] = useState<"nominatim" | "geoapify">("nominatim");
+  const [geocodeProvider, setGeocodeProvider] = useState<"nominatim" | "geoapify" | "both">("both");
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -222,7 +222,7 @@ export const MapMaker = () => {
       const savedShowNumber = localStorage.getItem("map-show-number");
       if (savedShowNumber) setShowNumberInsteadOfIcon(savedShowNumber === "true");
       const savedProvider = localStorage.getItem("map-geocode-provider");
-      if (savedProvider === "geoapify" || savedProvider === "nominatim") setGeocodeProvider(savedProvider as any);
+      if (savedProvider === "geoapify" || savedProvider === "nominatim" || savedProvider === "both") setGeocodeProvider(savedProvider as any);
       const savedProjects = localStorage.getItem(PROJECTS_KEY);
       if (savedProjects) {
         try {
@@ -669,17 +669,27 @@ export const MapMaker = () => {
     setSearchLoading(true);
     try {
       let data: any;
-      if (geocodeProvider === "geoapify") {
-        if (!geoapifyToken) { setSearchResults([]); throw new Error("Falta API key Geoapify"); }
-        const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&format=json&limit=5&apiKey=${geoapifyToken}&filter=countrycode:ec&lang=es&bias=proximity:-78.5,-0.2`;
+      const fetchNominatim = async (q: string) => {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(q)}`, { headers: { Accept: "application/json" } });
+        return normalizeGeocodeResults(await res.json(), "nominatim").map((r: any) => ({ ...r, source: "nominatim" }));
+      };
+      const fetchGeoapify = async (q: string) => {
+        if (!geoapifyToken) return [];
+        const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(q)}&format=json&limit=5&apiKey=${geoapifyToken}&filter=countrycode:ec&lang=es&bias=proximity:-78.5,-0.2`;
         const res = await fetch(url);
-        data = normalizeGeocodeResults(await res.json(), "geoapify");
+        return normalizeGeocodeResults(await res.json(), "geoapify").map((r: any) => ({ ...r, source: "geoapify" }));
+      };
+      if (geocodeProvider === "both") {
+        const [nom, geo] = await Promise.all([fetchNominatim(searchQuery).catch(() => []), fetchGeoapify(searchQuery).catch(() => [])]);
+        const merged = [...geo, ...nom];
+        const seen = new Set<string>();
+        data = merged.filter((r: any) => { const k = `${r.lat},${r.lon}`; if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 10);
+        if (geo.length === 0 && geoapifyToken) console.warn("Geoapify sin resultados, usando Nominatim");
+      } else if (geocodeProvider === "geoapify") {
+        if (!geoapifyToken) { setSearchResults([]); throw new Error("Falta API key Geoapify"); }
+        data = await fetchGeoapify(searchQuery);
       } else {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(searchQuery)}`,
-          { headers: { Accept: "application/json" } }
-        );
-        data = normalizeGeocodeResults(await res.json(), "nominatim");
+        data = await fetchNominatim(searchQuery);
       }
       setSearchResults(data);
     } catch (e) {
@@ -697,17 +707,26 @@ export const MapMaker = () => {
     setPointSearchLoading((prev) => ({ ...prev, [id]: true }));
     try {
       let data: any;
-      if (geocodeProvider === "geoapify") {
-        if (!geoapifyToken) throw new Error("Falta API key Geoapify");
-        const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(q)}&format=json&limit=5&apiKey=${geoapifyToken}&filter=countrycode:ec&lang=es&bias=proximity:-78.5,-0.2`;
+      const fetchNominatim = async (qq: string) => {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(qq)}`, { headers: { Accept: "application/json" } });
+        return normalizeGeocodeResults(await res.json(), "nominatim").map((r: any) => ({ ...r, source: "nominatim" }));
+      };
+      const fetchGeoapify = async (qq: string) => {
+        if (!geoapifyToken) return [];
+        const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(qq)}&format=json&limit=5&apiKey=${geoapifyToken}&filter=countrycode:ec&lang=es&bias=proximity:-78.5,-0.2`;
         const res = await fetch(url);
-        data = normalizeGeocodeResults(await res.json(), "geoapify");
+        return normalizeGeocodeResults(await res.json(), "geoapify").map((r: any) => ({ ...r, source: "geoapify" }));
+      };
+      if (geocodeProvider === "both") {
+        const [nom, geo] = await Promise.all([fetchNominatim(q).catch(() => []), fetchGeoapify(q).catch(() => [])]);
+        const merged = [...geo, ...nom];
+        const seen = new Set<string>();
+        data = merged.filter((r: any) => { const k = `${r.lat},${r.lon}`; if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 10);
+      } else if (geocodeProvider === "geoapify") {
+        if (!geoapifyToken) throw new Error("Falta API key Geoapify");
+        data = await fetchGeoapify(q);
       } else {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(q)}`,
-          { headers: { Accept: "application/json" } }
-        );
-        data = normalizeGeocodeResults(await res.json(), "nominatim");
+        data = await fetchNominatim(q);
       }
       setPointSearchResults((prev) => ({ ...prev, [id]: data }));
     } catch (e: any) {
@@ -1041,21 +1060,22 @@ export const MapMaker = () => {
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Buscar dirección</label>
-            <div className="flex gap-1">
-              <button onClick={() => setGeocodeProvider("nominatim")} className={`text-[11px] font-bold px-2.5 py-1 rounded-full border transition ${geocodeProvider === "nominatim" ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Nominatim</button>
-              <button onClick={() => setGeocodeProvider("geoapify")} className={`text-[11px] font-bold px-2.5 py-1 rounded-full border transition ${geocodeProvider === "geoapify" ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`} title={!geoapifyToken ? "Requiere API key arriba" : ""}>Geoapify</button>
-            </div>
+            <select value={geocodeProvider} onChange={(e) => setGeocodeProvider(e.target.value as any)} className="text-xs border border-slate-200 dark:border-slate-700 rounded-full px-2.5 py-1 bg-white dark:bg-slate-800 dark:text-white font-bold">
+              <option value="nominatim">Nominatim (OSM)</option>
+              <option value="geoapify">Geoapify</option>
+              <option value="both">Ambas (10 máx)</option>
+            </select>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Proveedor: <b className={geocodeProvider==="geoapify" ? "text-violet-600" : "text-emerald-600"}>{geocodeProvider}</b> · {geocodeProvider==="geoapify" ? "usa tu key embebida + reverse ok" : "OSM libre"} · hasta 5 sugerencias</p>
+          <p className="text-[11px] text-slate-400 mt-1">Proveedor: <b className={geocodeProvider==="both" ? "text-indigo-600" : geocodeProvider==="geoapify" ? "text-violet-600" : "text-emerald-600"}>{geocodeProvider==="both" ? "ambas" : geocodeProvider}</b> · {geocodeProvider==="both" ? "combina Geoapify + Nominatim (hasta 10)" : geocodeProvider==="geoapify" ? "usa tu key embebida" : "OSM libre"} · {geocodeProvider==="both" ? "5+5" : "hasta 5"} sugerencias</p>
           <div className="flex gap-2 mt-2">
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder={geocodeProvider==="geoapify" ? "Ej: Av. Orellana, Quito (Geoapify)" : "Ej: Av. Amazonas, Quito (Nominatim)"}
+              placeholder={geocodeProvider==="both" ? "Ej: Av. Amazonas, Quito (Ambas)" : geocodeProvider==="geoapify" ? "Ej: Av. Orellana, Quito (Geoapify)" : "Ej: Av. Amazonas, Quito (Nominatim)"}
               className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
-            <button onClick={handleSearch} disabled={searchLoading || (geocodeProvider==="geoapify" && !geoapifyToken)} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold px-4 rounded-xl transition">
+            <button onClick={handleSearch} disabled={searchLoading || (geocodeProvider==="geoapify" && !geoapifyToken) || (geocodeProvider==="both" && !geoapifyToken)} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold px-4 rounded-xl transition" title={geocodeProvider!=="nominatim" && !geoapifyToken ? "Falta API key Geoapify" : ""}>
               {searchLoading ? "…" : "Buscar"}
             </button>
           </div>
@@ -1072,14 +1092,14 @@ export const MapMaker = () => {
                   <span className="mt-0.5 text-emerald-600"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{r.display_name}</p>
-                    <p className="text-[11px] text-slate-500">{r.type} · {parseFloat(r.lat).toFixed(4)}, {parseFloat(r.lon).toFixed(4)}</p>
+                    <p className="text-[11px] text-slate-500 flex items-center gap-1.5"><span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full border ${r.source==="geoapify" ? "bg-violet-600 text-white border-violet-600" : r.source==="nominatim" ? "bg-emerald-600 text-white border-emerald-600" : "bg-slate-200"}`}>{r.source || geocodeProvider}</span>{r.type} · {parseFloat(r.lat).toFixed(4)}, {parseFloat(r.lon).toFixed(4)}</p>
                   </div>
                   <span className="text-[11px] font-bold text-emerald-600 shrink-0">+ Añadir</span>
                 </li>
               ))}
             </ul>
           )}
-          <p className="text-[11px] text-slate-400 mt-2">Usa <b className={geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider}</b> (hasta 5). Clic en un resultado para añadirlo como punto. Cambia proveedor arriba.</p>
+          <p className="text-[11px] text-slate-400 mt-2">Usa <b className={geocodeProvider==="both" ? "text-indigo-600" : geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider==="both" ? "ambas" : geocodeProvider}</b> ({geocodeProvider==="both" ? "hasta 10 · 5 Geoapify + 5 Nominatim" : "hasta 5"}). Clic para añadir. Cambia arriba (combobox).</p>
         </div>
 
         {/* Add marker controls */}
@@ -1179,28 +1199,28 @@ export const MapMaker = () => {
                   </div>
                   <p className="text-[10px] text-slate-400 mt-1">Orden: {idx + 1} de {markers.length} · usa ↑↓ para reordenar ruta</p>
                   <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
-                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Corregir ubicación sin borrar · <span className={geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider}</span></label>
+                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Corregir ubicación sin borrar · <span className={geocodeProvider==="both" ? "text-indigo-600" : geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider==="both" ? "ambas" : geocodeProvider}</span></label>
                     <div className="flex gap-1.5 mt-1">
                       <input
                         value={pointSearchQuery[m.id] || ""}
                         onChange={(e) => setPointSearchQuery((prev) => ({ ...prev, [m.id]: e.target.value }))}
                         onKeyDown={(e) => { if (e.key === "Enter") handlePointSearch(m.id); }}
-                        placeholder={geocodeProvider==="geoapify" ? "Ej: Quicentro, Quito (Geoapify)" : "Ej: Av. Shyris, Quito (Nominatim)"}
+                        placeholder={geocodeProvider==="both" ? "Ej: Av. Shyris, Quito (Ambas)" : geocodeProvider==="geoapify" ? "Ej: Quicentro, Quito (Geoapify)" : "Ej: Av. Shyris, Quito (Nominatim)"}
                         className="flex-1 text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
                       />
-                      <button onClick={() => handlePointSearch(m.id)} disabled={pointSearchLoading[m.id] || (geocodeProvider==="geoapify" && !geoapifyToken)} className="text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-2.5 py-1.5 rounded-lg">{pointSearchLoading[m.id] ? "…" : "Buscar"}</button>
+                      <button onClick={() => handlePointSearch(m.id)} disabled={pointSearchLoading[m.id] || (geocodeProvider!=="nominatim" && !geoapifyToken)} className="text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-2.5 py-1.5 rounded-lg">{pointSearchLoading[m.id] ? "…" : "Buscar"}</button>
                     </div>
                     {(pointSearchResults[m.id]?.length || 0) > 0 && (
-                      <ul className="mt-1.5 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 max-h-40 overflow-y-auto">
-                        {pointSearchResults[m.id]!.slice(0, 5).map((r: any) => (
+                      <ul className="mt-1.5 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 max-h-48 overflow-y-auto">
+                        {pointSearchResults[m.id]!.slice(0, 10).map((r: any) => (
                           <li key={r.place_id} onClick={() => handlePointSelect(m.id, r)} className="px-2.5 py-2 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 cursor-pointer">
                             <p className="text-[11px] font-semibold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">{r.display_name}</p>
-                            <p className="text-[10px] text-slate-500">{r.type} · {parseFloat(r.lat).toFixed(4)},{parseFloat(r.lon).toFixed(4)} · click para mover aquí</p>
+                            <p className="text-[10px] text-slate-500 flex items-center gap-1.5"><span className={`text-[9px] font-black px-1 py-0.5 rounded-full border ${r.source==="geoapify" ? "bg-violet-600 text-white border-violet-600" : "bg-emerald-600 text-white border-emerald-600"}`}>{r.source || geocodeProvider}</span>{r.type} · {parseFloat(r.lat).toFixed(4)},{parseFloat(r.lon).toFixed(4)} · click para mover</p>
                           </li>
                         ))}
                       </ul>
                     )}
-                    <p className="text-[10px] text-slate-400 mt-1">{geocodeProvider==="geoapify" ? "Geoapify" : "Nominatim"} devuelve hasta 5 sugerencias · usa el toggle arriba para cambiar proveedor.</p>
+                    <p className="text-[10px] text-slate-400 mt-1">{geocodeProvider==="both" ? "Ambas: hasta 10 (5 Geoapify + 5 Nominatim)" : geocodeProvider==="geoapify" ? "Geoapify hasta 5" : "Nominatim hasta 5"} · usa el combobox arriba para cambiar.</p>
                   </div>
                 </div>
               </div>
