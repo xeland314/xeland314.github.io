@@ -138,6 +138,7 @@ function ClusteredMarkers({
   getColorHex,
   createDivIconHtml,
   createNumberIconHtml,
+  globalMarkerSize,
 }: {
   markers: MarkerData[];
   clusterEnabled: boolean;
@@ -153,6 +154,7 @@ function ClusteredMarkers({
   getColorHex: (c: string) => string;
   createDivIconHtml: any;
   createNumberIconHtml: any;
+  globalMarkerSize: number;
 }) {
   const map = useMap();
   const [tick, setTick] = useState(0);
@@ -2384,6 +2386,7 @@ export const MapMaker = () => {
             getColorHex={getColorHex as any}
             createDivIconHtml={createDivIconHtml as any}
             createNumberIconHtml={createNumberIconHtml as any}
+            globalMarkerSize={globalMarkerSize}
           />
         </MapContainer>
         </div>
