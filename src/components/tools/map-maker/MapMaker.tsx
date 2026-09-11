@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -115,6 +115,291 @@ function FitBounds({ markers }: { markers: MarkerData[] }) {
   return null;
 }
 
+function createClusterIconHtml(count: number) {
+  const bg = count > 20 ? "#dc2626" : count > 10 ? "#ea580c" : count > 5 ? "#7c3aed" : "#059669";
+  return `<div style="width:42px;height:42px;border-radius:50%;background:${bg};border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:13px;font-family:monospace;transform:translate(-1px,-1px)">${count}</div>`;
+}
+
+function ClusteredMarkers({
+  markers,
+  clusterEnabled,
+  spiderClusterId,
+  setSpiderClusterId,
+  iconsMemo,
+  showNumberInsteadOfIcon,
+  rotationDeg,
+  mapRef,
+  setMarkers,
+  setSelectedId,
+  startEdit,
+  getColorHex,
+  createDivIconHtml,
+  createNumberIconHtml,
+}: {
+  markers: MarkerData[];
+  clusterEnabled: boolean;
+  spiderClusterId: string | null;
+  setSpiderClusterId: (id: string | null) => void;
+  iconsMemo: Map<string, L.DivIcon>;
+  showNumberInsteadOfIcon: boolean;
+  rotationDeg: number;
+  mapRef: React.MutableRefObject<L.Map | null>;
+  setMarkers: React.Dispatch<React.SetStateAction<MarkerData[]>>;
+  setSelectedId: (id: string | null) => void;
+  startEdit: (m: MarkerData) => void;
+  getColorHex: (c: string) => string;
+  createDivIconHtml: any;
+  createNumberIconHtml: any;
+}) {
+  const map = useMap();
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const upd = () => setTick((t) => t + 1);
+    map.on("zoomend", upd);
+    map.on("moveend", upd);
+    upd();
+    return () => { try { map.off("zoomend", upd); map.off("moveend", upd); } catch {} };
+  }, [map]);
+
+  // si clustering desactivado o pocos puntos, render simple
+  if (!clusterEnabled || markers.length <= 1) {
+    // fallback render sin cluster (usará misma lógica que abajo pero sin agrupar)
+    return (
+      <>
+        {markers.map((m, idx) => {
+          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
+          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
+          return (
+            <Marker
+              key={m.id}
+              position={[m.lat, m.lng]}
+              icon={icon}
+              draggable
+              eventHandlers={{
+                dragend: (e: any) => {
+                  let { lat, lng } = e.target.getLatLng();
+                  if (e.originalEvent && mapRef.current) {
+                    try {
+                      const orig = e.originalEvent as unknown as MouseEvent;
+                      const cx = (orig as any).clientX ?? (e as any).originalEvent?.clientX;
+                      const cy = (orig as any).clientY ?? (e as any).originalEvent?.clientY;
+                      if (cx != null && cy != null) {
+                        const c = getCorrectedLatLng(mapRef.current, cx, cy, rotationDeg);
+                        lat = c.lat; lng = c.lng;
+                      }
+                    } catch {}
+                  }
+                  setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
+                  setSelectedId(m.id);
+                },
+                click: () => setSelectedId(m.id),
+                popupopen: (e: any) => {
+                  const mp = e.target._map as L.Map; if (!mp) return;
+                  try { const px = mp.project(e.target.getLatLng(), mp.getZoom()); px.y -= 110; const ll = mp.unproject(px, mp.getZoom()); mp.panTo(ll, { animate: true, duration: 0.4 }); } catch {}
+                },
+              }}
+            >
+              <Popup autoPan={false}>
+                <div className="min-w-[180px]">
+                  <p className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    {showNumberInsteadOfIcon ? <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{ background: getColorHex(m.color) }}>{idx + 1}</span> : <span className="w-7 h-7 rounded-full flex items-center justify-center border-2 border-white shadow" style={{ background: getColorHex(m.color) }}><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: (ICONS.find((x) => x.id === m.icon)?.svg ?? ICONS[0].svg) }} /></svg></span>}
+                    {m.title}
+                  </p>
+                  {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
+                  <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)}</p>
+                  <div className="flex gap-1 mt-2">
+                    <a href={`https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lng}`} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold bg-slate-900 text-white px-2 py-1 rounded-lg">Google Maps</a>
+                    <button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white border border-slate-200 px-2 py-1 rounded-lg">Editar</button>
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </>
+    );
+  }
+
+  // clustering por distancia pixel (no altera lat/lng original)
+  const threshold = 56;
+  let clusters: { id: string; lat: number; lng: number; members: { m: MarkerData; idx: number }[] }[] = [];
+  const visited = new Set<string>();
+  // usar tick para forzar recompute en zoom/move (map.project depende de zoom)
+  void tick;
+  try {
+    for (let i = 0; i < markers.length; i++) {
+      const mi = markers[i];
+      if (visited.has(mi.id)) continue;
+      const pi = map.latLngToContainerPoint([mi.lat, mi.lng] as any);
+      const group: { m: MarkerData; idx: number }[] = [{ m: mi, idx: i }];
+      visited.add(mi.id);
+      for (let j = i + 1; j < markers.length; j++) {
+        const mj = markers[j];
+        if (visited.has(mj.id)) continue;
+        const pj = map.latLngToContainerPoint([mj.lat, mj.lng] as any);
+        const dist = Math.hypot(pi.x - pj.x, pi.y - pj.y);
+        if (dist < threshold) {
+          // también considera distancia geográfica muy pequeña aunque en pixel lejos por zoom bajo -> igual agrupa
+          group.push({ m: mj, idx: j });
+          visited.add(mj.id);
+        }
+      }
+      if (group.length === 1) {
+        clusters.push({ id: mi.id, lat: mi.lat, lng: mi.lng, members: group });
+      } else {
+        const avgLat = group.reduce((s, g) => s + g.m.lat, 0) / group.length;
+        const avgLng = group.reduce((s, g) => s + g.m.lng, 0) / group.length;
+        const cid = `c-${group.map((g) => g.m.id).join("-")}`;
+        clusters.push({ id: cid, lat: avgLat, lng: avgLng, members: group });
+      }
+    }
+  } catch {
+    clusters = markers.map((m, idx) => ({ id: m.id, lat: m.lat, lng: m.lng, members: [{ m, idx }] }));
+  }
+
+  return (
+    <>
+      {clusters.map((c) => {
+        if (c.members.length === 1) {
+          const { m, idx } = c.members[0];
+          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
+          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
+          return (
+            <Marker
+              key={m.id}
+              position={[m.lat, m.lng]}
+              icon={icon}
+              draggable
+              eventHandlers={{
+                dragend: (e: any) => {
+                  let { lat, lng } = e.target.getLatLng();
+                  if (e.originalEvent && mapRef.current) {
+                    try {
+                      const orig = e.originalEvent as unknown as MouseEvent;
+                      const cx = (orig as any).clientX ?? (e as any).originalEvent?.clientX;
+                      const cy = (orig as any).clientY ?? (e as any).originalEvent?.clientY;
+                      if (cx != null && cy != null) { const corr = getCorrectedLatLng(mapRef.current, cx, cy, rotationDeg); lat = corr.lat; lng = corr.lng; }
+                    } catch {}
+                  }
+                  setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
+                  setSelectedId(m.id);
+                },
+                click: () => setSelectedId(m.id),
+                popupopen: (e: any) => { const mp = e.target._map as L.Map; if (!mp) return; try { const px = mp.project(e.target.getLatLng(), mp.getZoom()); px.y -= 110; const ll = mp.unproject(px, mp.getZoom()); mp.panTo(ll, { animate: true, duration: 0.4 }); } catch {} },
+              }}
+            >
+              <Popup autoPan={false}>
+                <div className="min-w-[180px]">
+                  <p className="font-black text-slate-900 text-sm flex items-center gap-2">
+                    {showNumberInsteadOfIcon ? <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{ background: getColorHex(m.color) }}>{idx + 1}</span> : <span className="w-7 h-7 rounded-full flex items-center justify-center border-2 border-white shadow" style={{ background: getColorHex(m.color) }}><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: (ICONS.find((x) => x.id === m.icon)?.svg ?? ICONS[0].svg) }} /></svg></span>}
+                    {m.title}
+                  </p>
+                  {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
+                  <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)}</p>
+                  <div className="flex gap-1 mt-2"><a href={`https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lng}`} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold bg-slate-900 text-white px-2 py-1 rounded-lg">Google Maps</a><button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white border border-slate-200 px-2 py-1 rounded-lg">Editar</button></div>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        }
+        // cluster con >1
+        if (spiderClusterId === c.id) {
+          // spiderfy: distribuir en círculo sin alterar coordenadas originales (solo visual)
+          const n = c.members.length;
+          const radiusDeg = 0.00018 + n * 0.00003; // ~20m + por cada punto
+          const spiderMarkers = c.members.map(({ m, idx }, i) => {
+            const angle = (2 * Math.PI * i) / n - Math.PI / 2;
+            const latOff = Math.cos(angle) * radiusDeg;
+            const lngOff = Math.sin(angle) * radiusDeg / Math.cos((c.lat * Math.PI) / 180 || 1);
+            const sLat = c.lat + latOff;
+            const sLng = c.lng + lngOff;
+            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
+            const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
+            return (
+              <Marker
+                key={`${c.id}-${m.id}`}
+                position={[sLat, sLng]}
+                icon={icon}
+                draggable
+                eventHandlers={{
+                  dragend: (e: any) => {
+                    let { lat, lng } = e.target.getLatLng();
+                    if (e.originalEvent && mapRef.current) {
+                      try { const orig = e.originalEvent as unknown as MouseEvent; const cx = (orig as any).clientX ?? (e as any).originalEvent?.clientX; const cy = (orig as any).clientY ?? (e as any).originalEvent?.clientY; if (cx != null && cy != null) { const corr = getCorrectedLatLng(mapRef.current, cx, cy, rotationDeg); lat = corr.lat; lng = corr.lng; } } catch {}
+                    }
+                    setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
+                    setSelectedId(m.id); setSpiderClusterId(null);
+                  },
+                  click: () => setSelectedId(m.id),
+                }}
+              >
+                <Popup autoPan={false}>
+                  <div className="min-w-[180px]">
+                    <p className="text-[10px] font-mono text-amber-600">Desagrupado visual • original: {m.lat.toFixed(6)}, {m.lng.toFixed(6)}</p>
+                    <p className="font-black text-slate-900 text-sm flex items-center gap-2">
+                      {showNumberInsteadOfIcon ? <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{ background: getColorHex(m.color) }}>{idx + 1}</span> : <span className="w-7 h-7 rounded-full flex items-center justify-center border-2 border-white shadow" style={{ background: getColorHex(m.color) }}><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: (ICONS.find((x) => x.id === m.icon)?.svg ?? ICONS[0].svg) }} /></svg></span>}
+                      {m.title}
+                    </p>
+                    {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
+                    <div className="flex gap-1 mt-2"><a href={`https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lng}`} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold bg-slate-900 text-white px-2 py-1 rounded-lg">Google Maps</a><button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white border border-slate-200 px-2 py-1 rounded-lg">Editar</button></div>
+                  </div>
+                </Popup>
+                <Polyline positions={[[c.lat, c.lng] as any, [sLat, sLng] as any]} pathOptions={{ color: "#64748b", weight: 1.5, opacity: 0.6, dashArray: "4 4" }} />
+              </Marker>
+            );
+          });
+          // also show center dot
+          return (
+            <React.Fragment key={c.id}>
+              <Marker position={[c.lat, c.lng]} icon={L.divIcon({ html: `<div style="width:10px;height:10px;border-radius:50%;background:#334155;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`, className: "custom-div-icon", iconSize: [10, 10], iconAnchor: [5, 5] })} eventHandlers={{ click: () => setSpiderClusterId(null) } as any} />
+              {spiderMarkers}
+            </React.Fragment>
+          );
+        }
+        const clusterIcon = L.divIcon({ html: createClusterIconHtml(c.members.length), className: "custom-div-icon", iconSize: [42, 42], iconAnchor: [21, 21] });
+        return (
+          <Marker
+            key={c.id}
+            position={[c.lat, c.lng]}
+            icon={clusterIcon}
+            eventHandlers={{
+              click: () => {
+                const z = map.getZoom();
+                const maxZ = map.getMaxZoom ? map.getMaxZoom() : 18;
+                if (z >= 18 || z >= maxZ - 1) {
+                  setSpiderClusterId(c.id);
+                } else {
+                  try {
+                    const bounds = L.latLngBounds(c.members.map(({ m }) => [m.lat, m.lng] as any));
+                    // si bounds es punto, haz zoom
+                    if (bounds.getSouthWest().equals(bounds.getNorthEast())) {
+                      map.setView([c.lat, c.lng], Math.min(z + 3, 18), { animate: true });
+                    } else {
+                      map.fitBounds(bounds.pad(0.35), { animate: true, maxZoom: 18 });
+                    }
+                  } catch {}
+                }
+              },
+            }}
+          >
+            <Popup autoPan={false}>
+              <div className="min-w-[200px]">
+                <p className="font-black text-slate-900 text-sm">{c.members.length} puntos amontonados</p>
+                <p className="text-xs text-slate-500">Haz clic para ampliar {map.getZoom() >= 18 ? "• desagrupar visual" : "• zoom"} — sin mover coordenadas originales</p>
+                <ul className="mt-2 max-h-32 overflow-auto divide-y divide-slate-100 text-xs">
+                  {c.members.map(({ m, idx }) => (
+                    <li key={m.id} className="py-1 flex items-center gap-2"><span className="font-mono text-[11px] bg-slate-900 text-white px-1.5 py-0.5 rounded-full">{idx + 1}</span><span className="truncate flex-1">{m.title}</span><button onClick={() => { map.setView([m.lat, m.lng], 18); setSelectedId(m.id); }} className="text-[11px] font-bold text-emerald-600">Ver</button></li>
+                  ))}
+                </ul>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
+    </>
+  );
+}
+
 function IconPreview({ icon, color }: { icon: IconId; color: string }) {
   const def = ICONS.find((i) => i.id === icon) ?? ICONS[0];
   const hex = getColorHex(color);
@@ -216,6 +501,8 @@ export const MapMaker = () => {
   const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [clusterEnabled, setClusterEnabled] = useState(true);
+  const [spiderClusterId, setSpiderClusterId] = useState<string | null>(null);
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -353,6 +640,8 @@ export const MapMaker = () => {
     const saved = localStorage.getItem("map-sidebar-open");
     if (saved !== null) setSidebarOpen(saved === "true");
     else if (window.innerWidth < 1024) setSidebarOpen(false);
+    const savedCluster = localStorage.getItem("map-cluster-enabled");
+    if (savedCluster !== null) setClusterEnabled(savedCluster === "true");
   }, [isLoaded]);
 
   useEffect(() => {
@@ -362,6 +651,22 @@ export const MapMaker = () => {
     const t2 = setTimeout(() => mapRef.current?.invalidateSize(), 380);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [sidebarOpen, isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    localStorage.setItem("map-cluster-enabled", String(clusterEnabled));
+    setSpiderClusterId(null);
+  }, [clusterEnabled, isLoaded]);
+
+  // limpiar spider al mover/zoom
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const map: any = mapRef.current;
+    const clear = () => setSpiderClusterId(null);
+    map.on("zoomstart", clear);
+    map.on("movestart", clear);
+    return () => { try { map.off("zoomstart", clear); map.off("movestart", clear); } catch {} };
+  }, [isLoaded]);
 
   // Historial para undo/redo (Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z / Ctrl+X)
   useEffect(() => {
@@ -1440,6 +1745,15 @@ export const MapMaker = () => {
             </select>
           </div>
 
+          <div className="flex items-center gap-2 mt-3 text-xs bg-amber-50/60 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900 rounded-xl px-3 py-2">
+            <label className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+              <input type="checkbox" checked={clusterEnabled} onChange={(e) => setClusterEnabled(e.target.checked)} className="accent-amber-600" />
+              Agrupar amontonados
+            </label>
+            <span className="text-[10px] text-slate-500 ml-auto">{clusterEnabled ? "evita solapamiento • clic para expandir" : "todos visibles"}</span>
+            <button type="button" onClick={() => setSpiderClusterId(null)} disabled={!spiderClusterId} className="text-[10px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg disabled:opacity-30">Cerrar spider</button>
+          </div>
+
           <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
             <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Ver pin como:</span>
             <button type="button" onClick={() => setShowNumberInsteadOfIcon(false)} className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition ${!showNumberInsteadOfIcon ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Ícono Lucide</button>
@@ -1925,80 +2239,22 @@ export const MapMaker = () => {
               <Polyline positions={routeCoords} pathOptions={{ color: routeColor, weight: 5, opacity: 0.85 }} />
             )}
 
-          {markers.map((m, idx) => {
-            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
-            const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon as IconId, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
-            return (
-              <Marker
-                key={m.id}
-                position={[m.lat, m.lng]}
-                icon={icon}
-                draggable
-                eventHandlers={{
-                  dragend: (e: any) => {
-                    let { lat, lng } = e.target.getLatLng();
-                    // corrige siempre por wrapper 200% (0° también desplazado)
-                    if (e.originalEvent && mapRef.current) {
-                      try {
-                        const orig = e.originalEvent as unknown as MouseEvent;
-                        const cx = (orig as any).clientX ?? (e as any).originalEvent?.clientX;
-                        const cy = (orig as any).clientY ?? (e as any).originalEvent?.clientY;
-                        if (cx != null && cy != null) {
-                          const corrected = getCorrectedLatLng(mapRef.current, cx, cy, rotationDeg);
-                          lat = corrected.lat;
-                          lng = corrected.lng;
-                        }
-                      } catch {}
-                    }
-                    setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
-                    setSelectedId(m.id);
-                  },
-                  click: () => setSelectedId(m.id),
-                  popupopen: (e: any) => {
-                    const map = e.target._map as L.Map;
-                    if (!map) return;
-                    try {
-                      const px = map.project(e.target.getLatLng(), map.getZoom());
-                      px.y -= 110;
-                      const offsetLatLng = map.unproject(px, map.getZoom());
-                      map.panTo(offsetLatLng, { animate: true, duration: 0.4 });
-                    } catch {}
-                  },
-                }}
-              >
-                <Popup autoPan={false}>
-                  <div className="min-w-[180px]">
-                    <p className="font-black text-slate-900 text-sm flex items-center gap-2">
-                      {showNumberInsteadOfIcon ? (
-                        <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{ background: getColorHex(m.color) }}>{idx + 1}</span>
-                      ) : (
-                        <IconPreview icon={m.icon} color={m.color} />
-                      )}
-                      {m.title}
-                    </p>
-                    {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
-                    <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)}</p>
-                    <div className="flex gap-1 mt-2">
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lng}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] font-bold bg-slate-900 text-white px-2 py-1 rounded-lg"
-                      >
-                        Google Maps
-                      </a>
-                      <button
-                        onClick={() => startEdit(m)}
-                        className="text-[11px] font-bold bg-white border border-slate-200 px-2 py-1 rounded-lg"
-                      >
-                        Editar
-                      </button>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+          <ClusteredMarkers
+            markers={markers}
+            clusterEnabled={clusterEnabled}
+            spiderClusterId={spiderClusterId}
+            setSpiderClusterId={setSpiderClusterId}
+            iconsMemo={iconsMemo}
+            showNumberInsteadOfIcon={showNumberInsteadOfIcon}
+            rotationDeg={rotationDeg}
+            mapRef={mapRef}
+            setMarkers={setMarkers}
+            setSelectedId={setSelectedId}
+            startEdit={startEdit}
+            getColorHex={getColorHex as any}
+            createDivIconHtml={createDivIconHtml as any}
+            createNumberIconHtml={createNumberIconHtml as any}
+          />
         </MapContainer>
         </div>
 
