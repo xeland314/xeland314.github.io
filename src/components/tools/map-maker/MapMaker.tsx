@@ -211,8 +211,9 @@ export const MapMaker = () => {
   const [historyIdx, setHistoryIdx] = useState(-1);
   const isUndoRedoRef = useRef(false);
 
-  // Load from storage
+  // Load from storage + hash share (hash prioriza y auto-ajusta vista)
   useEffect(() => {
+    let hashMarkers: MarkerData[] | null = null;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -224,13 +225,28 @@ export const MapMaker = () => {
         if (typeof parsed.showPolyline === "boolean") setShowPolyline(parsed.showPolyline);
         if (parsed.selectedIcon) setSelectedIcon(parsed.selectedIcon);
         if (parsed.selectedColor) setSelectedColor(parsed.selectedColor);
-      } else {
-        // try URL hash share
-        const hash = window.location.hash.slice(1);
-        if (hash.startsWith("map=")) {
+      }
+      // try URL hash share siempre (prioriza link compartido sobre storage)
+      const hash = window.location.hash.slice(1);
+      if (hash.startsWith("map=")) {
+        try {
           const data = JSON.parse(decodeURIComponent(atob(hash.slice(4))));
-          if (Array.isArray(data) && data.length) setMarkers(data);
-        }
+          if (Array.isArray(data) && data.length) {
+            const valid = data.filter((m: any) => typeof m.lat === "number" && typeof m.lng === "number");
+            if (valid.length) {
+              hashMarkers = valid.map((m: any) => ({
+                id: m.id || generateId(),
+                lat: Number(m.lat),
+                lng: Number(m.lng),
+                title: String(m.title || "Sin título"),
+                description: String(m.description || ""),
+                icon: (m.icon as IconId) || "map-pin",
+                color: m.color || "blue",
+              }));
+              setMarkers(hashMarkers);
+            }
+          }
+        } catch {}
       }
       const savedToken = localStorage.getItem("geoapify-api-key");
       if (savedToken) {
@@ -256,6 +272,22 @@ export const MapMaker = () => {
       }
       const savedCurrentId = localStorage.getItem("custom-map-current-project");
       if (savedCurrentId) setCurrentProjectId(savedCurrentId);
+      // si vino por hash, ajustar vista tras montar mapa (con compensacion rotacion)
+      if (hashMarkers && hashMarkers.length) {
+        const hm = hashMarkers;
+        setTimeout(() => {
+          if (!mapRef.current) return;
+          try {
+            const b = L.latLngBounds(hm.map(m=>[m.lat,m.lng] as [number,number]));
+            mapRef.current.invalidateSize();
+            const rad = (parseInt(localStorage.getItem("map-rotation-deg")||"0")*Math.PI/180);
+            const f = Math.abs(Math.sin(rad))+Math.abs(Math.cos(rad));
+            const pad = 0.2 + (f-1)*0.55;
+            mapRef.current.fitBounds(b.pad(pad), { animate:true, duration:0.6 });
+            setTimeout(()=> mapRef.current?.invalidateSize(), 700);
+          } catch {}
+        }, 800);
+      }
     } catch {}
     setIsLoaded(true);
   }, []);
@@ -753,8 +785,29 @@ export const MapMaker = () => {
       const imgX = (pw - imgW)/2;
       const imgY = ph - 50 - imgH;
       page1.drawImage(imgEmbed, { x: imgX, y: imgY, width: imgW, height: imgH });
-      // borde
+      // borde mapa
       page1.drawRectangle({ x: imgX-1, y: imgY-1, width: imgW+2, height: imgH+2, borderColor: rgb(0.8,0.8,0.8), borderWidth: 0.5 });
+      // QR share link (misma URL que Copiar link #map=)
+      try {
+        const QRCode = (await import("qrcode")).default;
+        const shareLink = `${window.location.origin}${window.location.pathname}#map=${btoa(encodeURIComponent(JSON.stringify(markers)))}`;
+        const qrDataUrl = await QRCode.toDataURL(shareLink, { width: 320, margin: 1, errorCorrectionLevel: "M" });
+        const qrRes = await fetch(qrDataUrl);
+        const qrBuf = await qrRes.arrayBuffer();
+        let qrEmbed: any;
+        try { qrEmbed = await pdf.embedPng(qrBuf); } catch { qrEmbed = await pdf.embedJpg(qrBuf); }
+        const qrSize = 78;
+        const qrX = pw - margin - qrSize;
+        const qrY = margin + 10;
+        // fondo blanco para QR
+        page1.drawRectangle({ x: qrX-2, y: qrY-2, width: qrSize+4, height: qrSize+4, color: rgb(1,1,1), borderColor: rgb(0.85,0.85,0.85), borderWidth: 0.5 });
+        page1.drawImage(qrEmbed, { x: qrX, y: qrY, width: qrSize, height: qrSize });
+        page1.drawText("Escanea para abrir", { x: qrX - 1, y: qrY + qrSize + 9, size: 6, font, color: rgb(0.3,0.3,0.3) });
+        page1.drawText("mapa interactivo", { x: qrX - 1, y: qrY + qrSize + 2, size: 6, font, color: rgb(0.3,0.3,0.3) });
+        // link texto pequeño debajo mapa a la izquierda (recortado)
+        const linkTxt = shareLink.length > 62 ? shareLink.slice(0,61) + "…" : shareLink;
+        page1.drawText(linkTxt, { x: margin, y: margin + 4, size: 5, font, color: rgb(0.4,0.45,0.65) });
+      } catch (e) { console.warn("QR pdf fail", e); }
       // Páginas de tabla (sin descripción/icon/color, solo # Título Lat Lng)
       const headers = ["#", "Título", "Lat", "Lng"];
       const colWidths = [28, 280, 75, 75];
