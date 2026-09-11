@@ -51,6 +51,21 @@ const TILE_PROVIDERS: Record<TileProvider, { url: string; attribution: string; l
 const STORAGE_KEY = "custom-map-maker:v2";
 const PROJECTS_KEY = "custom-map-projects:v1";
 const DEFAULT_GEOAPIFY_KEY = "d4d5a2e38d934da287b79d360de83e5d";
+const EXPORT_PRESETS: Record<string, { label: string; w: number | null; h: number | null; aspect: string }> = {
+  "1920x1080": { label: "Full HD 1920×1080 (16:9)", w: 1920, h: 1080, aspect: "16/9" },
+  "1350x1080": { label: "1350×1080 (5:4)", w: 1350, h: 1080, aspect: "5/4" },
+  "A4": { label: "A4 2480×3508 (300dpi) vertical", w: 2480, h: 3508, aspect: "210/297" },
+  "A4-land": { label: "A4 horizontal 3508×2480", w: 3508, h: 2480, aspect: "297/210" },
+  "1080x1080": { label: "Cuadrado 1080×1080 (1:1)", w: 1080, h: 1080, aspect: "1/1" },
+  "actual": { label: "Tamaño actual del mapa", w: null, h: null, aspect: "auto" },
+};
+const PDF_PAGE_SIZES: Record<string, { wPt: number; hPt: number; label: string }> = {
+  "1920x1080": { wPt: 1440, hPt: 810, label: "1920×1080 px → 1440×810 pt (16:9)" },
+  "1350x1080": { wPt: 1012.5, hPt: 810, label: "1350×1080 px → 1013×810 pt (5:4)" },
+  "A4": { wPt: 595.28, hPt: 841.89, label: "A4 vertical 595×842 pt" },
+  "A4-land": { wPt: 841.89, hPt: 595.28, label: "A4 horizontal 842×595 pt" },
+  "1080x1080": { wPt: 810, hPt: 810, label: "Cuadrado 810×810 pt" },
+};
 
 export type MapProject = {
   id: string;
@@ -178,6 +193,14 @@ export const MapMaker = () => {
   const [pointSearchLoading, setPointSearchLoading] = useState<Record<string, boolean>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [geocodeProvider, setGeocodeProvider] = useState<"nominatim" | "geoapify" | "both">("both");
+  const [exportSize, setExportSize] = useState<keyof typeof EXPORT_PRESETS>("1920x1080");
+  const [exportFormat, setExportFormat] = useState<"png" | "jpeg" | "pdf">("png");
+  const [pdfFontSize, setPdfFontSize] = useState(9);
+  const [pdfPageSize, setPdfPageSize] = useState<keyof typeof PDF_PAGE_SIZES>("A4");
+  const [exportLoading, setExportLoading] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -372,7 +395,7 @@ export const MapMaker = () => {
     setTimeout(() => {
       if (proj.markers.length > 0 && mapRef.current) {
         const bounds = L.latLngBounds(proj.markers.map((m) => [m.lat, m.lng] as [number, number]));
-        mapRef.current.fitBounds(bounds.pad(0.2));
+        fitAdjusted(bounds);
       }
     }, 200);
   };
@@ -483,10 +506,31 @@ export const MapMaker = () => {
     setRouteInfo(null);
   };
 
+  const getRotationFactor = () => {
+    const rad = (rotationDeg % 360) * Math.PI / 180;
+    const f = Math.abs(Math.sin(rad)) + Math.abs(Math.cos(rad)); // 1..1.414
+    return f;
+  };
+  const fitAdjusted = (bounds: L.LatLngBounds, opts?: L.FitBoundsOptions) => {
+    if (!mapRef.current) return;
+    // invalida tamaño antes (por el wrapper 200% rotado)
+    mapRef.current.invalidateSize();
+    const factor = getRotationFactor();
+    // expandir padding proporcional al factor para que al rotar no se corte
+    const basePad = 0.2;
+    const adjustedPad = basePad + (factor - 1) * 0.55; // 0.2→0.43 a 45°
+    const padded = bounds.pad(adjustedPad);
+    // si factor>1, ampliar padding en pixeles además (por si bounds pequeño)
+    const extraPadding: [number, number] = factor > 1.05 ? [Math.round(20 * (factor - 1) * 2), Math.round(20 * (factor - 1) * 2)] : [0, 0];
+    mapRef.current.fitBounds(padded, { padding: extraPadding, animate: true, duration: 0.45, ...opts });
+    // doble invalidate post-animación para tiles de esquinas
+    setTimeout(() => mapRef.current?.invalidateSize(), 100);
+    setTimeout(() => mapRef.current?.invalidateSize(), 500);
+  };
   const fitAll = () => {
     if (!mapRef.current || markers.length === 0) return;
     const bounds = L.latLngBounds(markers.map((m) => [m.lat, m.lng] as [number, number]));
-    mapRef.current.fitBounds(bounds.pad(0.2));
+    fitAdjusted(bounds, { maxZoom: 16 });
   };
 
   const handleDrawRoute = async () => {
@@ -542,10 +586,10 @@ export const MapMaker = () => {
       if (coords.length === 0) throw new Error("Ruta vacía");
       setRouteCoords(coords);
       setRouteInfo({ distance, time });
-      // ajustar vista a ruta
+      // ajustar vista a ruta (compensando rotación)
       if (mapRef.current) {
         const bounds = L.latLngBounds(coords);
-        mapRef.current.fitBounds(bounds.pad(0.2));
+        fitAdjusted(bounds);
       }
     } catch (e: any) {
       setRouteError(e.message || "Error al calcular ruta");
@@ -562,25 +606,233 @@ export const MapMaker = () => {
     setRouteError(null);
   };
 
-  const handleExportMapImage = async (format: "png" | "jpeg" = "png") => {
+  // Helpers exportación
+  const captureMapRaw = async (): Promise<string> => {
     const node = mapExportRef.current;
-    if (!node) return alert("Mapa no listo");
+    if (!node) throw new Error("Mapa no listo");
     const toHide = Array.from(node.querySelectorAll("[data-no-export], .leaflet-control")) as HTMLElement[];
-    const prevDisplays = toHide.map((el) => el.style.display);
+    const prev = toHide.map((el) => el.style.display);
     toHide.forEach((el) => (el.style.display = "none"));
     try {
-      const { toPng: toPngFn, toJpeg: toJpegFn } = await import("html-to-image");
-      const opts = { cacheBust: true, pixelRatio: 2, backgroundColor: "#f8fafc" } as any;
-      const dataUrl = format === "png" ? await toPngFn(node, opts) : await toJpegFn(node, { ...opts, quality: 0.92 });
+      const { toPng } = await import("html-to-image");
+      const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 2, backgroundColor: "#f8fafc" } as any);
+      return dataUrl;
+    } finally {
+      toHide.forEach((el, i) => (el.style.display = prev[i] || ""));
+    }
+  };
+  const resizeDataUrl = (dataUrl: string, targetW: number, targetH: number, mime: "image/png" | "image/jpeg" = "image/png"): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = targetW;
+        canvas.height = targetH;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas no soportado"));
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillRect(0, 0, targetW, targetH);
+        // contain: escalar preservando aspecto, centrado
+        const scale = Math.min(targetW / img.width, targetH / img.height);
+        const w = img.width * scale;
+        const h = img.height * scale;
+        const x = (targetW - w) / 2;
+        const y = (targetH - h) / 2;
+        ctx.drawImage(img, x, y, w, h);
+        resolve(canvas.toDataURL(mime, mime === "image/jpeg" ? 0.92 : undefined));
+      };
+      img.onerror = () => reject(new Error("Error cargando imagen para resize"));
+      img.src = dataUrl;
+    });
+  };
+  const handleExportMapImage = async (format: "png" | "jpeg" = "png") => {
+    // legacy: actual size
+    try {
+      setExportLoading(true);
+      const raw = await captureMapRaw();
+      let out = raw;
+      const preset = EXPORT_PRESETS[exportSize];
+      if (preset.w && preset.h && exportSize !== "actual") {
+        const mime = format === "png" ? "image/png" : "image/jpeg";
+        out = await resizeDataUrl(raw, preset.w, preset.h, mime);
+      } else if (format === "jpeg") {
+        // converter png raw to jpeg if needed via resize trick (1:1)
+        const img = new Image();
+        // quick convert via canvas 1:1
+        out = await new Promise<string>((res, rej) => {
+          const i = new Image();
+          i.onload = () => {
+            const c = document.createElement("canvas");
+            c.width = i.width; c.height = i.height;
+            const cx = c.getContext("2d")!;
+            cx.drawImage(i, 0, 0);
+            res(c.toDataURL("image/jpeg", 0.92));
+          };
+          i.onerror = rej; i.src = raw;
+        });
+      }
       const a = document.createElement("a");
-      a.href = dataUrl;
-      a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts-${rotationDeg}deg.${format === "png" ? "png" : "jpg"}`;
+      a.href = out;
+      const ext = format === "png" ? "png" : "jpg";
+      const sizeTag = exportSize === "actual" ? "actual" : `${EXPORT_PRESETS[exportSize].w}x${EXPORT_PRESETS[exportSize].h}`;
+      a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts-${rotationDeg}deg-${sizeTag}.${ext}`;
       a.click();
     } catch (e: any) {
       console.error(e);
       alert("Error exportando imagen: " + (e.message || e));
     } finally {
-      toHide.forEach((el, i) => (el.style.display = prevDisplays[i] || ""));
+      setExportLoading(false);
+    }
+  };
+  const handleExportPreset = async () => {
+    if (exportFormat === "pdf") {
+      await handleExportPdf();
+    } else {
+      await handleExportMapImage(exportFormat as "png" | "jpeg");
+    }
+  };
+  const handleGeneratePdfPreview = async () => {
+    if (markers.length === 0) return alert("Añade al menos 1 punto");
+    try {
+      setPdfPreviewLoading(true);
+      const raw = await captureMapRaw();
+      const preset = EXPORT_PRESETS[exportSize];
+      let out = raw;
+      if (preset.w && preset.h) {
+        // preview usa tamaño moderado para no saturar memoria: escalar a max 800 en lado mayor
+        const maxSide = 800;
+        const scale = Math.min(maxSide / preset.w, maxSide / preset.h, 1);
+        const pw = Math.round(preset.w * scale);
+        const ph = Math.round(preset.h * scale);
+        out = await resizeDataUrl(raw, pw, ph, "image/png");
+      }
+      setPdfPreviewUrl(out);
+      setShowPdfPreview(true);
+    } catch (e: any) {
+      alert("Error preview: " + (e.message || e));
+    } finally {
+      setPdfPreviewLoading(false);
+    }
+  };
+  const handleExportPdf = async () => {
+    if (markers.length === 0) return alert("Añade al menos 1 punto");
+    try {
+      setExportLoading(true);
+      const raw = await captureMapRaw();
+      const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
+      const pdf = await PDFDocument.create();
+      const font = await pdf.embedFont(StandardFonts.Helvetica);
+      const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold);
+      const pageSize = PDF_PAGE_SIZES[pdfPageSize] || PDF_PAGE_SIZES["A4"];
+      const margin = 36;
+      // Página 1: portada mapa
+      const page1 = pdf.addPage([pageSize.wPt, pageSize.hPt]);
+      const { width: pw, height: ph } = page1.getSize();
+      // título header
+      const title = `Mapa Personalizado — ${markers.length} puntos — ${new Date().toLocaleDateString()}`;
+      page1.drawText(title, { x: margin, y: ph - 28, size: 10, font: fontBold, color: rgb(0.1,0.1,0.1) });
+      page1.drawText(`Rotación ${rotationDeg}° · ${TILE_PROVIDERS[tileProvider].label} · ${exportSize}`, { x: margin, y: ph - 42, size: 7, font, color: rgb(0.4,0.4,0.4) });
+      // embed map image
+      const isJpegPreview = false;
+      // fetch bytes from dataUrl
+      const res = await fetch(raw);
+      const buf = await res.arrayBuffer();
+      let imgEmbed: any;
+      try {
+        imgEmbed = await pdf.embedPng(buf);
+      } catch {
+        imgEmbed = await pdf.embedJpg(buf);
+      }
+      const imgDims = imgEmbed.scale(1);
+      const availW = pw - margin*2;
+      const availH = ph - 70 - 30; // header + footer
+      const scale = Math.min(availW / imgDims.width, availH / imgDims.height);
+      const imgW = imgDims.width * scale;
+      const imgH = imgDims.height * scale;
+      const imgX = (pw - imgW)/2;
+      const imgY = ph - 55 - imgH;
+      page1.drawImage(imgEmbed, { x: imgX, y: imgY, width: imgW, height: imgH });
+      // borde
+      page1.drawRectangle({ x: imgX-1, y: imgY-1, width: imgW+2, height: imgH+2, borderColor: rgb(0.8,0.8,0.8), borderWidth: 0.5 });
+      page1.drawText(`Exportado desde xeland314.github.io/mapa-personalizado · ${markers.length} puntos`, { x: margin, y: margin - 8, size: 6, font, color: rgb(0.5,0.5,0.5) });
+      // Páginas de tabla
+      const headers = ["#", "Título", "Descripción", "Lat", "Lng", "Ícono", "Color"];
+      const colWidths = [22, 110, 150, 62, 62, 52, 48];
+      // ajustar a ancho disponible
+      const tableAvailW = pw - margin*2;
+      const totalW = colWidths.reduce((a,b)=>a+b,0);
+      const colScale = tableAvailW / totalW;
+      const scaledWidths = colWidths.map(w=> w*colScale);
+      const rowH = Math.max(14, pdfFontSize + 6);
+      const headerH = rowH;
+      const rowsPerPage = Math.floor((ph - margin*2 - headerH - 18) / rowH);
+      let page = pdf.addPage([pageSize.wPt, pageSize.hPt]);
+      let y = page.getSize().height - margin;
+      page.drawText(`Detalle de puntos — ${markers.length} registros — Fuente ${pdfFontSize}pt`, { x: margin, y, size: pdfFontSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
+      y -= 14;
+      const drawHeader = (pg: any, yy: number) => {
+        let x = margin;
+        pg.drawRectangle({ x: margin, y: yy - headerH + 4, width: tableAvailW, height: headerH, color: rgb(0.95,0.95,0.95) });
+        headers.forEach((h,i)=>{
+          pg.drawText(h, { x: x+3, y: yy - 2, size: pdfFontSize -1, font: fontBold, color: rgb(0.2,0.2,0.2) });
+          x += scaledWidths[i];
+        });
+      };
+      drawHeader(page, y);
+      y -= headerH;
+      const drawRow = (pg: any, m: MarkerData, idx: number, yy: number, isOdd: boolean) => {
+        if (isOdd) pg.drawRectangle({ x: margin, y: yy - rowH + 4, width: tableAvailW, height: rowH, color: rgb(0.98,0.98,0.98) });
+        let x = margin;
+        const cells = [
+          String(idx+1),
+          (m.title||"").slice(0,28),
+          (m.description||"—").slice(0,42),
+          m.lat.toFixed(5),
+          m.lng.toFixed(5),
+          m.icon,
+          m.color
+        ];
+        cells.forEach((c,i)=>{
+          // truncate if overflow
+          let txt = c;
+          const maxChars = Math.floor(scaledWidths[i] / (pdfFontSize*0.55));
+          if (txt.length > maxChars) txt = txt.slice(0, maxChars-1)+"…";
+          pg.drawText(txt, { x: x+3, y: yy - 1, size: pdfFontSize -1, font, color: rgb(0.15,0.15,0.15) });
+          x += scaledWidths[i];
+        });
+        pg.drawLine({ start:{x:margin, y: yy - rowH +4}, end:{x: margin+tableAvailW, y: yy - rowH +4}, thickness: 0.25, color: rgb(0.85,0.85,0.85) });
+      };
+      for (let i=0;i<markers.length;i++) {
+        if (y - rowH < margin) {
+          page = pdf.addPage([pageSize.wPt, pageSize.hPt]);
+          y = page.getSize().height - margin;
+          page.drawText(`Detalle de puntos (cont.) — pág ${pdf.getPageCount()}`, { x: margin, y, size: pdfFontSize -1, font, color: rgb(0.4,0.4,0.4) });
+          y -= 14;
+          drawHeader(page, y);
+          y -= headerH;
+        }
+        drawRow(page, markers[i], i, y, i%2===1);
+        y -= rowH;
+      }
+      // footer páginas tabla
+      pdf.getPages().forEach((p, idx)=>{
+        if (idx===0) return;
+        const { width, height } = p.getSize();
+        p.drawText(`Pág ${idx+1}/${pdf.getPageCount()}`, { x: width - margin - 45, y: 12, size: 6, font, color: rgb(0.5,0.5,0.5) });
+      });
+      const bytes = await pdf.save();
+      const blob = new Blob([bytes as any], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mapa-${new Date().toISOString().slice(0,10)}-${markers.length}pts-${pdfPageSize}-${pdfFontSize}pt.pdf`;
+      a.click();
+      setTimeout(()=> URL.revokeObjectURL(url), 3000);
+    } catch (e: any) {
+      console.error(e);
+      alert("Error exportando PDF: " + (e.message||e));
+    } finally {
+      setExportLoading(false);
     }
   };
 
@@ -1245,12 +1497,94 @@ export const MapMaker = () => {
             <input ref={fileInputRef} type="file" accept=".json,.geojson" className="hidden" onChange={importFile} />
           </div>
           <div className="p-3 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Exportar mapa como imagen</p>
-            <p className="text-[11px] text-slate-400 mt-1">Captura el mapa con sus {markers.length} puntos (incluye tiles y pins). Respeta rotación {rotationDeg}°.</p>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <button onClick={() => handleExportMapImage("png")} className="text-xs font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2.5 rounded-xl hover:opacity-90">PNG</button>
-              <button onClick={() => handleExportMapImage("jpeg")} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 rounded-xl">JPEG</button>
+            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">Exportar en alta resolución <span className="text-[10px] font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-0.5 rounded-full">{markers.length} pts · {rotationDeg}°</span></p>
+            <p className="text-[11px] text-slate-400 mt-1">Ajusta vista primero (respeta rotación). Luego elige tamaño y formato.</p>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Tamaño
+                <select value={exportSize} onChange={(e)=>{ setExportSize(e.target.value as any); if(e.target.value!=="actual") setPdfPageSize(e.target.value as any); }} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
+                  {Object.entries(EXPORT_PRESETS).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
+                </select>
+              </label>
+              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Formato
+                <select value={exportFormat} onChange={(e)=> setExportFormat(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white font-bold">
+                  <option value="png">PNG</option>
+                  <option value="jpeg">JPG</option>
+                  <option value="pdf">PDF (portada+tabla)</option>
+                </select>
+              </label>
             </div>
+            {exportFormat === "pdf" && (
+              <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Página PDF
+                    <select value={pdfPageSize} onChange={(e)=> setPdfPageSize(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
+                      {Object.entries(PDF_PAGE_SIZES).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
+                    </select>
+                  </label>
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Letra tabla: {pdfFontSize}pt
+                    <input type="range" min={7} max={12} step={0.5} value={pdfFontSize} onChange={(e)=> setPdfFontSize(parseFloat(e.target.value))} className="w-full mt-1 accent-violet-600" />
+                    <span className="text-[10px] text-slate-400">7–12 pt · afecta filas por página</span>
+                  </label>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={handleGeneratePdfPreview} disabled={pdfPreviewLoading} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-300 px-3 py-2 rounded-xl disabled:opacity-40">{pdfPreviewLoading ? "Generando…" : "Vista previa"}</button>
+                  <button onClick={handleExportPdf} disabled={exportLoading || markers.length===0} className="flex-1 text-xs font-black bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3 py-2 rounded-xl">{exportLoading ? "Generando PDF…" : "Exportar PDF"}</button>
+                </div>
+                <p className="text-[10px] text-slate-500 leading-tight">PDF: pág 1 mapa ajustado (todos los puntos visibles) + siguientes páginas tabla detallada. Cambia letra y genera vista previa para elegir mejor vista.</p>
+                {showPdfPreview && (
+                  <div className="mt-2 border border-violet-200 dark:border-violet-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+                    <div className="flex items-center justify-between px-3 py-2 bg-violet-50 dark:bg-violet-950/30 border-b border-violet-200 dark:border-violet-800">
+                      <span className="text-xs font-black text-violet-700 dark:text-violet-300">Vista previa PDF</span>
+                      <button onClick={()=> setShowPdfPreview(false)} className="text-xs font-bold bg-white dark:bg-slate-800 border px-2 py-1 rounded-lg">Cerrar</button>
+                    </div>
+                    <div className="p-3 space-y-4 max-h-[520px] overflow-auto overscroll-contain">
+                      {/* Portada preview */}
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Pág 1 — Portada mapa ({PDF_PAGE_SIZES[pdfPageSize].label})</p>
+                        <div className="mt-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex flex-col items-center">
+                          {pdfPreviewUrl ? <img src={pdfPreviewUrl} alt="preview mapa" className="max-w-full h-auto rounded-lg border border-slate-200 dark:border-slate-700" style={{ aspectRatio: EXPORT_PRESETS[exportSize].aspect === "auto" ? undefined : EXPORT_PRESETS[exportSize].aspect as any }} /> : <span className="text-xs text-slate-400 py-10">Genera vista previa para ver el mapa</span>}
+                          <span className="text-[10px] text-slate-400 mt-1">Título + mapa centrado + margen {36}pt — rotación {rotationDeg}° respetada</span>
+                        </div>
+                      </div>
+                      {/* Tabla preview */}
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Págs 2+ — Tabla detalle ({markers.length} filas · {pdfFontSize}pt)</p>
+                        <div className="mt-1 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden overflow-x-auto">
+                          <table className="w-full text-left border-collapse" style={{ fontSize: `${pdfFontSize}px` }}>
+                            <thead className="bg-slate-900 dark:bg-white text-white dark:text-slate-900">
+                              <tr>{["#","Título","Descripción","Lat","Lng","Ícono","Color"].map(h=> <th key={h} className="px-2 py-1 font-bold whitespace-nowrap">{h}</th>)}</tr>
+                            </thead>
+                            <tbody>
+                              {markers.slice(0, Math.min(markers.length, 8)).map((m,i)=> (
+                                <tr key={m.id} className={i%2===1 ? "bg-slate-50 dark:bg-slate-800/50" : "bg-white dark:bg-slate-900"}>
+                                  <td className="px-2 py-1 font-mono">{i+1}</td>
+                                  <td className="px-2 py-1 truncate max-w-[110px]">{m.title}</td>
+                                  <td className="px-2 py-1 truncate max-w-[120px]">{m.description || "—"}</td>
+                                  <td className="px-2 py-1 font-mono">{m.lat.toFixed(4)}</td>
+                                  <td className="px-2 py-1 font-mono">{m.lng.toFixed(4)}</td>
+                                  <td className="px-2 py-1">{m.icon}</td>
+                                  <td className="px-2 py-1"><span className="w-3 h-3 rounded-full inline-block border border-white shadow" style={{ background: getColorHex(m.color)}}></span></td>
+                                </tr>
+                              ))}
+                              {markers.length>8 && <tr><td colSpan={7} className="text-center text-[11px] text-slate-400 py-1">… +{markers.length-8} filas más (se paginan automáticamente)</td></tr>}
+                            </tbody>
+                          </table>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1">{Math.ceil(markers.length / Math.max(1, Math.floor((PDF_PAGE_SIZES[pdfPageSize].hPt - 72 - 18)/ (Math.max(14, pdfFontSize+6)))))} pág(s) estimadas para tabla · {pdfFontSize}pt</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {exportFormat !== "pdf" && (
+              <div className="mt-3 flex gap-2">
+                <button onClick={handleExportPreset} disabled={exportLoading} className="flex-1 text-xs font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2.5 rounded-xl hover:opacity-90 disabled:opacity-40">
+                  {exportLoading ? "Exportando…" : `Exportar ${exportFormat.toUpperCase()} ${EXPORT_PRESETS[exportSize].w ? `${EXPORT_PRESETS[exportSize].w}×${EXPORT_PRESETS[exportSize].h}` : "actual"}`}
+                </button>
+                <button onClick={()=> { setExportFormat("pdf"); handleGeneratePdfPreview(); }} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 rounded-xl">Ver PDF</button>
+              </div>
+            )}
           </div>
         </div>
 
