@@ -13,6 +13,7 @@ import "leaflet/dist/leaflet.css";
 import { ICONS, COLORS, getColorHex, createDivIconHtml, createNumberIconHtml, type IconId } from "./icons";
 import { getCorrectedLatLng } from "./rotation";
 import { RotationControl } from "./RotationControl";
+import QRCode from "qrcode";
 
 export type MarkerData = {
   id: string;
@@ -284,26 +285,24 @@ export const MapMaker = () => {
       }
       const savedCurrentId = localStorage.getItem("custom-map-current-project");
       if (savedCurrentId) setCurrentProjectId(savedCurrentId);
-      // si vino por hash, ajustar vista tras montar mapa (con compensacion rotacion)
+      // si vino por hash, ajustar vista tras montar mapa (compensa 200% + rotación)
       if (hashMarkers && hashMarkers.length) {
         const hm = hashMarkers;
         setTimeout(() => {
           if (!mapRef.current) return;
           try {
-            const b = L.latLngBounds(hm.map(m=>[m.lat,m.lng] as [number,number]));
-            mapRef.current.invalidateSize();
-            const rot = parseInt(localStorage.getItem("map-rotation-deg")||"0");
-            const norm = ((rot % 360) + 360) % 360;
-            const dist0 = Math.min(norm, 360 - norm);
-            if (dist0 <= 35) {
-              mapRef.current.fitBounds(b, { padding: [40, 40], animate: true, duration: 0.6 });
-            } else {
-              const rad = (rot * Math.PI) / 180;
-              const f = Math.abs(Math.sin(rad)) + Math.abs(Math.cos(rad));
-              const pad = 0.2 + (f - 1) * 0.55;
-              mapRef.current.fitBounds(b.pad(pad), { animate: true, duration: 0.6 });
-            }
-            setTimeout(()=> mapRef.current?.invalidateSize(), 700);
+            const b = L.latLngBounds(hm.map((m) => [m.lat, m.lng] as [number, number]));
+            const map = mapRef.current;
+            map.invalidateSize();
+            const rot = parseInt(localStorage.getItem("map-rotation-deg") || "0", 10) || 0;
+            const size = map.getSize();
+            const padX = size.x * 0.29;
+            const padY = size.y * 0.29;
+            const rad = (rot % 360) * (Math.PI / 180);
+            const factor = Math.abs(Math.sin(rad)) + Math.abs(Math.cos(rad));
+            const expanded = b.pad((factor - 1) / 2 + 0.06);
+            map.fitBounds(expanded, { paddingTopLeft: [padX, padY], paddingBottomRight: [padX, padY], animate: true, duration: 0.6 });
+            setTimeout(() => map.invalidateSize(), 700);
           } catch {}
         }, 800);
       }
@@ -558,31 +557,38 @@ export const MapMaker = () => {
     setRouteInfo(null);
   };
 
-  const getRotationFactor = () => {
-    const rad = (rotationDeg % 360) * Math.PI / 180;
-    const f = Math.abs(Math.sin(rad)) + Math.abs(Math.cos(rad)); // 1..1.414
-    return f;
-  };
   const fitAdjusted = (bounds: L.LatLngBounds, opts?: L.FitBoundsOptions) => {
     if (!mapRef.current) return;
-    mapRef.current.invalidateSize();
-    // cuando está casi derecho (±35°) usa padding simple para que el ajuste sea exacto
-    // fuera de ese rango el contenedor 200% rotado necesita compensar con factor |sin|+|cos|
-    const norm = ((rotationDeg % 360) + 360) % 360;
-    const dist0 = Math.min(norm, 360 - norm); // 0..180 distancia a 0°
-    if (dist0 <= 35) {
-      mapRef.current.fitBounds(bounds, { padding: [40, 40], animate: true, duration: 0.45, maxZoom: 16, ...opts });
-      setTimeout(() => mapRef.current?.invalidateSize(), 200);
-      return;
-    }
-    const factor = getRotationFactor();
-    const basePad = 0.2;
-    const adjustedPad = basePad + (factor - 1) * 0.55;
-    const padded = bounds.pad(adjustedPad);
-    const extraPadding: [number, number] = factor > 1.05 ? [Math.round(20 * (factor - 1) * 2), Math.round(20 * (factor - 1) * 2)] : [0, 0];
-    mapRef.current.fitBounds(padded, { padding: extraPadding, animate: true, duration: 0.45, ...opts });
-    setTimeout(() => mapRef.current?.invalidateSize(), 100);
-    setTimeout(() => mapRef.current?.invalidateSize(), 500);
+    const map = mapRef.current;
+
+    // 1. Refrescar para garantizar medidas actualizadas
+    map.invalidateSize();
+
+    // 2. Obtener dimensiones del mapa interno (que mide el 200% del contenedor visible)
+    const size = map.getSize();
+
+    // 3. Compensar el lienzo gigante: 25% invisible + 2% margen pins + ~2% holgura (ajustado para no alejar demasiado)
+    const padX = size.x * 0.29;
+    const padY = size.y * 0.29;
+
+    // 4. Calcular el crecimiento de la caja al rotar (varía de 1 a 1.414)
+    const rad = (rotationDeg % 360) * (Math.PI / 180);
+    const factor = Math.abs(Math.sin(rad)) + Math.abs(Math.cos(rad));
+
+    // 5. Expandir los límites geográficos proporcionalmente + 6% holgura (retrocede poco, pero más cerca que 12%)
+    const expandedBounds = bounds.pad((factor - 1) / 2 + 0.06);
+
+    // 6. Ejecutar el ajuste obligando a Leaflet a renderizar en el centro exacto
+    map.fitBounds(expandedBounds, {
+      paddingTopLeft: [padX, padY],
+      paddingBottomRight: [padX, padY],
+      animate: true,
+      duration: 0.5,
+      ...opts,
+    });
+
+    // Refrescar tamaño tras la animación por seguridad
+    setTimeout(() => map.invalidateSize(), 500);
   };
   const fitAll = () => {
     if (!mapRef.current || markers.length === 0) return;
@@ -783,15 +789,33 @@ export const MapMaker = () => {
       const pageSize = PDF_PAGE_SIZES[pdfPageSize] || PDF_PAGE_SIZES["A4"];
       const margin = 36;
       const projName = (projects.find(p=>p.id===currentProjectId)?.name?.trim()) || "Mapa";
+      const toWinAnsi = (s: string) => s.replace(/\u2026/g,"...").replace(/\u2014/g,"-").replace(/\u2191/g,"^").replace(/\u2192/g,"->").replace(/[^\x20-\x7E\xA0-\xFF]/g, (c)=> c.normalize ? c.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\x20-\x7E\xA0-\xFF]/g,"?") : "?");
+      const safeProjName = toWinAnsi(projName);
+      // — generar shareLink + QR una vez (import estatico, sin await import) —
+      const shareLink = `${window.location.origin}${window.location.pathname}#map=${btoa(encodeURIComponent(JSON.stringify(markers)))}`;
+      let qrEmbed: any = null;
+      try {
+        const qrDataUrl = await QRCode.toDataURL(shareLink, { width: 420, margin: 1, errorCorrectionLevel: "M" });
+        const qrRes = await fetch(qrDataUrl);
+        const qrBuf = await qrRes.arrayBuffer();
+        try { qrEmbed = await pdf.embedPng(qrBuf); } catch { qrEmbed = await pdf.embedJpg(qrBuf); }
+      } catch (e) { console.warn("QR pdf gen fail", e); }
+
       // Página 1: portada mapa (solo nombre proyecto)
       const page1 = pdf.addPage([pageSize.wPt, pageSize.hPt]);
       const { width: pw, height: ph } = page1.getSize();
-      // título header: solo nombre proyecto (centrado)
+      // título header: solo nombre proyecto (centrado) — truncado si excede ancho para no desbordar
       const titleSize = 14;
-      const titleW = fontBold.widthOfTextAtSize(projName, titleSize);
-      page1.drawText(projName, { x: (pw - titleW)/2, y: ph - 32, size: titleSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
-      // embed map image
-      // fetch bytes from dataUrl
+      let safeTitle = safeProjName;
+      const maxTitleW = pw - margin*2;
+      if (fontBold.widthOfTextAtSize(safeTitle, titleSize) > maxTitleW) {
+        const ell = "...";
+        while (safeTitle.length > 0 && fontBold.widthOfTextAtSize(safeTitle + ell, titleSize) > maxTitleW) safeTitle = safeTitle.slice(0,-1);
+        safeTitle += ell;
+      }
+      const titleW = fontBold.widthOfTextAtSize(safeTitle, titleSize);
+      page1.drawText(safeTitle, { x: (pw - titleW)/2, y: ph - 32, size: titleSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
+      // embed map image — reservar 110px abajo para QR+link en portada para que no solape
       const res = await fetch(raw);
       const buf = await res.arrayBuffer();
       let imgEmbed: any;
@@ -802,7 +826,8 @@ export const MapMaker = () => {
       }
       const imgDims = imgEmbed.scale(1);
       const availW = pw - margin*2;
-      const availH = ph - 55 - 20; // solo header título
+      const qrReserveH = 110;
+      const availH = ph - 55 - qrReserveH - 10;
       const scale = Math.min(availW / imgDims.width, availH / imgDims.height);
       const imgW = imgDims.width * scale;
       const imgH = imgDims.height * scale;
@@ -811,51 +836,78 @@ export const MapMaker = () => {
       page1.drawImage(imgEmbed, { x: imgX, y: imgY, width: imgW, height: imgH });
       // borde mapa
       page1.drawRectangle({ x: imgX-1, y: imgY-1, width: imgW+2, height: imgH+2, borderColor: rgb(0.8,0.8,0.8), borderWidth: 0.5 });
-      // QR share link (misma URL que Copiar link #map=)
-      try {
-        const QRCode = (await import("qrcode")).default;
-        const shareLink = `${window.location.origin}${window.location.pathname}#map=${btoa(encodeURIComponent(JSON.stringify(markers)))}`;
-        const qrDataUrl = await QRCode.toDataURL(shareLink, { width: 320, margin: 1, errorCorrectionLevel: "M" });
-        const qrRes = await fetch(qrDataUrl);
-        const qrBuf = await qrRes.arrayBuffer();
-        let qrEmbed: any;
-        try { qrEmbed = await pdf.embedPng(qrBuf); } catch { qrEmbed = await pdf.embedJpg(qrBuf); }
+      // QR + link en portada (arriba de margen, garantizado visible)
+      if (qrEmbed) {
         const qrSize = 78;
         const qrX = pw - margin - qrSize;
-        const qrY = margin + 10;
-        // fondo blanco para QR
+        const qrY = margin + 14;
         page1.drawRectangle({ x: qrX-2, y: qrY-2, width: qrSize+4, height: qrSize+4, color: rgb(1,1,1), borderColor: rgb(0.85,0.85,0.85), borderWidth: 0.5 });
         page1.drawImage(qrEmbed, { x: qrX, y: qrY, width: qrSize, height: qrSize });
         page1.drawText("Escanea para abrir", { x: qrX - 1, y: qrY + qrSize + 9, size: 6, font, color: rgb(0.3,0.3,0.3) });
         page1.drawText("mapa interactivo", { x: qrX - 1, y: qrY + qrSize + 2, size: 6, font, color: rgb(0.3,0.3,0.3) });
-        // link texto pequeño debajo mapa a la izquierda (recortado)
-        const linkTxt = shareLink.length > 62 ? shareLink.slice(0,61) + "…" : shareLink;
-        page1.drawText(linkTxt, { x: margin, y: margin + 4, size: 5, font, color: rgb(0.4,0.45,0.65) });
-      } catch (e) { console.warn("QR pdf fail", e); }
-      // Páginas de tabla (sin descripción/icon/color, solo # Título Lat Lng)
-      const headers = ["#", "Título", "Lat", "Lng"];
-      const colWidths = [28, 280, 75, 75];
-      // ajustar a ancho disponible
+      }
+      // link completo en portada — envuelto en 2 líneas para que no se recorte
+      {
+        const linkFontSize = 6.5;
+        const maxCharsPerLine = Math.floor((pw - margin*2 - 90) / (linkFontSize * 0.55)); // deja hueco QR 78+gap
+        const words = shareLink;
+        // simple wrap por longitud
+        let lx = margin, ly = margin + 6;
+        let remaining = words;
+        let lines = 0;
+        while (remaining.length > 0 && lines < 3) {
+          const chunk = remaining.slice(0, maxCharsPerLine);
+          page1.drawText(chunk, { x: lx, y: ly, size: linkFontSize, font, color: rgb(0.2,0.35,0.8) });
+          remaining = remaining.slice(maxCharsPerLine);
+          ly -= linkFontSize + 2;
+          lines++;
+          if (remaining.length > 0 && lines === 3) {
+            // ellipsis en última línea
+            page1.drawText("...", { x: lx + font.widthOfTextAtSize(chunk, linkFontSize), y: ly + linkFontSize + 2, size: linkFontSize, font, color: rgb(0.2,0.35,0.8) });
+            break;
+          }
+        }
+        page1.drawText("Link interactivo ^", { x: margin, y: margin - 4, size: 5, font, color: rgb(0.5,0.5,0.5) });
+      }
+      // Páginas de tabla (sin descripción/icon/color, solo # Título Lat Lng) — anchos por ratio para evitar desborde
+      const headers = ["#", "Titulo", "Lat", "Lng"];
+      const colRatios = [0.07, 0.61, 0.16, 0.16];
       const tableAvailW = pw - margin*2;
-      const totalW = colWidths.reduce((a,b)=>a+b,0);
-      const colScale = tableAvailW / totalW;
-      const scaledWidths = colWidths.map(w=> w*colScale);
-      const rowH = Math.max(14, pdfFontSize + 6);
+      const scaledWidths = colRatios.map(r => tableAvailW * r);
+      const rowH = Math.max(18, Math.ceil(pdfFontSize * 1.45 + 7));
       const headerH = rowH;
       const rowsPerPage = Math.floor((ph - margin*2 - headerH - 18) / rowH);
       let page = pdf.addPage([pageSize.wPt, pageSize.hPt]);
       let y = page.getSize().height - margin;
       // header tabla: solo nombre proyecto (centrado)
-      const tabTitleW = fontBold.widthOfTextAtSize(projName, pdfFontSize);
-      page.drawText(projName, { x: (pw - tabTitleW)/2, y, size: pdfFontSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
+      const tabTitleW = fontBold.widthOfTextAtSize(safeProjName, pdfFontSize);
+      page.drawText(safeProjName, { x: (pw - tabTitleW)/2, y, size: pdfFontSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
       y -= 16;
+      // — tabla: truncado preciso por ancho real de fuente (evita desborde con letra grande) —
+      const fitText = (text: string, colW: number, fnt: any, size: number) => {
+        const safe = toWinAnsi(text);
+        const avail = colW - 6; // 3px padding cada lado
+        if (fnt.widthOfTextAtSize(safe, size) <= avail) return safe;
+        let txt = safe;
+        const ell = "...";
+        const ellW = fnt.widthOfTextAtSize(ell, size);
+        while (txt.length > 0 && fnt.widthOfTextAtSize(txt, size) + ellW > avail) {
+          txt = txt.slice(0, -1);
+        }
+        return txt + ell;
+      };
       const drawHeader = (pg: any, yy: number) => {
         let x = margin;
         pg.drawRectangle({ x: margin, y: yy - headerH + 4, width: tableAvailW, height: headerH, color: rgb(0.95,0.95,0.95) });
         headers.forEach((h,i)=>{
-          pg.drawText(h, { x: x+3, y: yy - 2, size: pdfFontSize -1, font: fontBold, color: rgb(0.2,0.2,0.2) });
+          const txt = fitText(h, scaledWidths[i], fontBold, pdfFontSize -1);
+          const ty = yy - headerH/2 + 2;
+          pg.drawText(txt, { x: x+3, y: ty, size: pdfFontSize -1, font: fontBold, color: rgb(0.2,0.2,0.2) });
           x += scaledWidths[i];
         });
+        // borde vertical separador de columnas en header
+        let vx = margin;
+        for (let i=0;i<headers.length-1;i++){ vx+=scaledWidths[i]; pg.drawLine({ start:{x:vx, y: yy - headerH +4}, end:{x:vx, y: yy+4}, thickness:0.25, color: rgb(0.85,0.85,0.85)}); }
       };
       drawHeader(page, y);
       y -= headerH;
@@ -864,26 +916,29 @@ export const MapMaker = () => {
         let x = margin;
         const cells = [
           String(idx+1),
-          (m.title||"").slice(0,48),
+          (m.title||"").trim(),
           m.lat.toFixed(5),
           m.lng.toFixed(5),
         ];
         cells.forEach((c,i)=>{
-          // truncate if overflow
-          let txt = c;
-          const maxChars = Math.floor(scaledWidths[i] / (pdfFontSize*0.55));
-          if (txt.length > maxChars) txt = txt.slice(0, maxChars-1)+"…";
-          pg.drawText(txt, { x: x+3, y: yy - 1, size: pdfFontSize -1, font, color: rgb(0.15,0.15,0.15) });
+          const txt = fitText(c, scaledWidths[i], font, pdfFontSize -1);
+          const ty = yy - rowH/2 + 2;
+          pg.drawText(txt, { x: x+3, y: ty, size: pdfFontSize -1, font, color: rgb(0.15,0.15,0.15) });
           x += scaledWidths[i];
         });
         pg.drawLine({ start:{x:margin, y: yy - rowH +4}, end:{x: margin+tableAvailW, y: yy - rowH +4}, thickness: 0.25, color: rgb(0.85,0.85,0.85) });
+        // líneas verticales para que no "asome" contenido entre columnas
+        let vx = margin;
+        for (let i=0;i<cells.length-1;i++){ vx+=scaledWidths[i]; pg.drawLine({ start:{x:vx, y: yy - rowH +4}, end:{x:vx, y: yy+4}, thickness:0.25, color: rgb(0.92,0.92,0.92)}); }
+        // borde exterior tabla por fila (evita desborde visual)
+        pg.drawRectangle({ x: margin, y: yy - rowH +4, width: tableAvailW, height: rowH, borderColor: rgb(0.85,0.85,0.85), borderWidth: 0.25 });
       };
       for (let i=0;i<markers.length;i++) {
         if (y - rowH < margin) {
           page = pdf.addPage([pageSize.wPt, pageSize.hPt]);
           y = page.getSize().height - margin;
-          const contW = font.widthOfTextAtSize(projName, pdfFontSize-1);
-          page.drawText(projName, { x: (pw - contW)/2, y, size: pdfFontSize -1, font, color: rgb(0.4,0.4,0.4) });
+          const contW = font.widthOfTextAtSize(safeProjName, pdfFontSize-1);
+          page.drawText(safeProjName, { x: (pw - contW)/2, y, size: pdfFontSize -1, font, color: rgb(0.4,0.4,0.4) });
           y -= 14;
           drawHeader(page, y);
           y -= headerH;
@@ -891,11 +946,65 @@ export const MapMaker = () => {
         drawRow(page, markers[i], i, y, i%2===1);
         y -= rowH;
       }
-      // footer páginas tabla
+      // — PÁGINA FINAL OBLIGATORIA: QR grande + link completo (siempre al final) —
+      {
+        const last = pdf.addPage([pageSize.wPt, pageSize.hPt]);
+        const { width: lw, height: lh } = last.getSize();
+        const tSize = 16;
+        const t = "Acceso al mapa interactivo";
+        const tw = fontBold.widthOfTextAtSize(t, tSize);
+        last.drawText(t, { x: (lw - tw)/2, y: lh - 48, size: tSize, font: fontBold, color: rgb(0.1,0.1,0.1) });
+        const sub = safeProjName;
+        const sw = font.widthOfTextAtSize(sub, 10);
+        last.drawText(sub, { x: (lw - sw)/2, y: lh - 64, size: 10, font, color: rgb(0.35,0.35,0.35) });
+        last.drawLine({ start: { x: margin, y: lh - 72 }, end: { x: lw - margin, y: lh - 72 }, thickness: 0.5, color: rgb(0.9,0.9,0.9) });
+
+        if (qrEmbed) {
+          const qSize = Math.min(220, lw - margin*2 - 20);
+          const qX = (lw - qSize)/2;
+          const qY = lh/2 - qSize/2 - 10;
+          // fondo + borde
+          last.drawRectangle({ x: qX-8, y: qY-8, width: qSize+16, height: qSize+16, color: rgb(1,1,1), borderColor: rgb(0.8,0.8,0.8), borderWidth: 1 });
+          last.drawImage(qrEmbed, { x: qX, y: qY, width: qSize, height: qSize });
+          last.drawText("Escanea con la cámara para abrir el mapa", { x: (lw - font.widthOfTextAtSize("Escanea con la cámara para abrir el mapa", 8))/2, y: qY - 14, size: 8, font, color: rgb(0.3,0.3,0.3) });
+        } else {
+          last.drawText("QR no disponible (error de generación)", { x: margin, y: lh/2, size: 9, font, color: rgb(0.8,0,0) });
+        }
+
+        // link completo envuelto — cortado en líneas de ~70 chars, centrado
+        const linkSize = 8;
+        const availLinkW = lw - margin*2;
+        const charsPerLine = Math.max(40, Math.floor(availLinkW / (linkSize * 0.58)));
+        const linkLines: string[] = [];
+        for (let i = 0; i < shareLink.length; i += charsPerLine) linkLines.push(shareLink.slice(i, i+charsPerLine));
+        // limitar a 6 líneas para que quepa; si sobra, truncar última con ...
+        if (linkLines.length > 6) {
+          linkLines.length = 6;
+          linkLines[5] = linkLines[5].slice(0, -1) + "...";
+        }
+        // dibujar líneas centradas, empezando arriba del margen inferior
+        let ly = 92;
+        last.drawText("Link:", { x: margin, y: ly + 14, size: 7, font: fontBold, color: rgb(0.2,0.2,0.2) });
+        linkLines.forEach((line) => {
+          const lwLine = font.widthOfTextAtSize(line, linkSize);
+          last.drawText(line, { x: (lw - lwLine)/2, y: ly, size: linkSize, font, color: rgb(0.12,0.35,0.85) });
+          ly -= linkSize + 3;
+        });
+        last.drawText("Copia el link o escanea el QR - ambos abren el mismo mapa interactivo", { x: (lw - font.widthOfTextAtSize("Copia el link o escanea el QR - ambos abren el mismo mapa interactivo", 6))/2, y: 22, size: 6, font, color: rgb(0.5,0.5,0.5) });
+
+        // link clickeable (anotación) — rect invisible sobre el bloque de link
+        try {
+          const linkAnno = (last as any).doc?.context?.obj ? null : null;
+          // pdf-lib no expone link annotation fácil; fallback: texto ya visible garantiza exigencia "asomen"
+        } catch {}
+      }
+
+      // footer páginas tabla + final (numeración)
       pdf.getPages().forEach((p, idx)=>{
-        if (idx===0) return;
         const { width, height } = p.getSize();
-        p.drawText(`Pág ${idx+1}/${pdf.getPageCount()}`, { x: width - margin - 45, y: 12, size: 6, font, color: rgb(0.5,0.5,0.5) });
+        // numeración en todas excepto portada
+        if (idx===0) return;
+        p.drawText(`Pag ${idx+1}/${pdf.getPageCount()}`, { x: width - margin - 45, y: 12, size: 6, font, color: rgb(0.5,0.5,0.5) });
       });
       const bytes = await pdf.save();
       const blob = new Blob([bytes as any], { type: "application/pdf" });
@@ -1768,7 +1877,7 @@ export const MapMaker = () => {
                 eventHandlers={{
                   dragend: (e: any) => {
                     let { lat, lng } = e.target.getLatLng();
-                    // corrige siempre por wrapper 200% (0° también está desplazado)
+                    // corrige siempre por wrapper 200% (0° también desplazado)
                     if (e.originalEvent && mapRef.current) {
                       try {
                         const orig = e.originalEvent as unknown as MouseEvent;
@@ -1785,9 +1894,19 @@ export const MapMaker = () => {
                     setSelectedId(m.id);
                   },
                   click: () => setSelectedId(m.id),
+                  popupopen: (e: any) => {
+                    const map = e.target._map as L.Map;
+                    if (!map) return;
+                    try {
+                      const px = map.project(e.target.getLatLng(), map.getZoom());
+                      px.y -= 110;
+                      const offsetLatLng = map.unproject(px, map.getZoom());
+                      map.panTo(offsetLatLng, { animate: true, duration: 0.4 });
+                    } catch {}
+                  },
                 }}
               >
-                <Popup>
+                <Popup autoPan={false}>
                   <div className="min-w-[180px]">
                     <p className="font-black text-slate-900 text-sm flex items-center gap-2">
                       {showNumberInsteadOfIcon ? (
