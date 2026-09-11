@@ -245,6 +245,10 @@ export const MapMaker = () => {
   useEffect(() => {
     if (!isLoaded) return;
     localStorage.setItem("map-rotation-deg", String(rotationDeg));
+    // recarga tiles tras rotar: el contenedor 200% necesita invalidateSize tras transición
+    const t1 = setTimeout(() => mapRef.current?.invalidateSize(), 50);
+    const t2 = setTimeout(() => mapRef.current?.invalidateSize(), 400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [rotationDeg, isLoaded]);
 
   useEffect(() => {
@@ -972,7 +976,7 @@ export const MapMaker = () => {
               </div>
               <div className="flex-1 text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
                 <p className="font-bold text-slate-700 dark:text-slate-300">Perilla 360°</p>
-                <p>Arrastra la aguja verde. Gira solo el contenido del mapa; el contenedor queda fijo con bordes redondeados (<code>overflow-hidden</code>), por eso ves recorte en esquinas a 45°.</p>
+                <p>Arrastra la aguja verde. Gira el mapa completo (tiles + marcadores). El contenedor queda fijo; interior sobredimensionado 200% cubre esquinas sin blanco.</p>
               </div>
             </div>
             <p className="text-[10px] text-slate-400 mt-1">Rotación visual CSS (no afecta coordenadas). Horario = +X°, antihorario = -X°.</p>
@@ -1312,9 +1316,9 @@ export const MapMaker = () => {
         </div>
       </div>
 
-      {/* Map - rectángulo fijo horizontal, interior rota */}
+      {/* Map - rectángulo fijo horizontal, interior rota con sobredimensionado para cubrir esquinas */}
       <div ref={mapExportRef} className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900">
-        <div style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease", position: "absolute", inset: "-25%", width: "150%", height: "150%" }}>
+        <div style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease", position: "absolute", inset: "-50%", width: "200%", height: "200%" }}>
           <MapContainer
             center={center}
             zoom={13}
@@ -1322,7 +1326,7 @@ export const MapMaker = () => {
             ref={mapRef as any}
             zoomControl={false}
           >
-            <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} />
+            <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} keepBuffer={2} updateWhenZooming={false} />
             <MapClickHandler onAdd={handleAddMarker} />
 
             {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
