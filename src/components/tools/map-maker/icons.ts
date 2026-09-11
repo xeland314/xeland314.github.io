@@ -158,16 +158,17 @@ export function getColorHex(id: string) {
   return COLORS.find((c) => c.id === id)?.hex ?? COLORS[0].hex;
 }
 
-export function createDivIconHtml(iconId: IconId, colorHex: string, rotationDeg = 0) {
+export function createDivIconHtml(iconId: IconId, colorHex: string, mapRotationDeg = 0, markerRotationDeg = 0) {
   const def = ICONS.find((i) => i.id === iconId) ?? ICONS[0];
-  // outer pin rotate -45 + map rotation, inner counter-rotates to keep icon upright (45 - rotation)
-  const innerRotate = 45 - rotationDeg;
+  // outer pin rota -45 + markerRotation, inner contra-rota para quedar legible (45 - marker - map)
+  const outerRotate = -45 + (markerRotationDeg || 0);
+  const innerRotate = 45 - (markerRotationDeg || 0) - mapRotationDeg;
   return `
   <div style="
     width:38px;height:38px;
     background:${colorHex};
     border-radius:50% 50% 50% 0;
-    transform: rotate(-45deg);
+    transform: rotate(${outerRotate}deg);
     border:2.5px solid white;
     box-shadow:0 2px 8px rgba(0,0,0,0.35);
     display:flex;align-items:center;justify-content:center;
@@ -180,14 +181,15 @@ export function createDivIconHtml(iconId: IconId, colorHex: string, rotationDeg 
   </div>`;
 }
 
-export function createNumberIconHtml(order: number, colorHex: string, rotationDeg = 0) {
-  const innerRotate = 45 - rotationDeg;
+export function createNumberIconHtml(order: number, colorHex: string, mapRotationDeg = 0, markerRotationDeg = 0) {
+  const outerRotate = -45 + (markerRotationDeg || 0);
+  const innerRotate = 45 - (markerRotationDeg || 0) - mapRotationDeg;
   return `
   <div style="
     width:38px;height:38px;
     background:${colorHex};
     border-radius:50% 50% 50% 0;
-    transform: rotate(-45deg);
+    transform: rotate(${outerRotate}deg);
     border:2.5px solid white;
     box-shadow:0 2px 8px rgba(0,0,0,0.35);
     display:flex;align-items:center;justify-content:center;

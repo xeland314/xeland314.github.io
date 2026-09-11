@@ -24,6 +24,7 @@ export type MarkerData = {
   icon: IconId;
   color: string; // color id
   category?: string;
+  rotation?: number; // grados 0-360, rotación del pin externo; el número interior queda legible (counter-rotate)
 };
 
 type TileProvider = "osm" | "voyager" | "dark" | "satellite";
@@ -167,8 +168,9 @@ function ClusteredMarkers({
     return (
       <>
         {markers.map((m, idx) => {
-          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
-          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
+          const rot = m.rotation ?? 0;
+          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${rot}` : `${m.icon}-${m.color}-${rotationDeg}-${rot}`;
+          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, rot) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, rot), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
           return (
             <Marker
               key={m.id}
@@ -262,8 +264,9 @@ function ClusteredMarkers({
       {clusters.map((c) => {
         if (c.members.length === 1) {
           const { m, idx } = c.members[0];
-          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
-          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
+          const rot = m.rotation ?? 0;
+          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${rot}` : `${m.icon}-${m.color}-${rotationDeg}-${rot}`;
+          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, rot) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, rot), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
           return (
             <Marker
               key={m.id}
@@ -313,8 +316,9 @@ function ClusteredMarkers({
             const lngOff = Math.sin(angle) * radiusDeg / Math.cos((c.lat * Math.PI) / 180 || 1);
             const sLat = c.lat + latOff;
             const sLng = c.lng + lngOff;
-            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}` : `${m.icon}-${m.color}-${rotationDeg}`;
-            const icon = iconsMemo.get(iconKey) || L.divIcon({ html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
+            const rot = m.rotation ?? 0;
+            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${rot}` : `${m.icon}-${m.color}-${rotationDeg}-${rot}`;
+            const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, rot) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, rot), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
             return (
               <Marker
                 key={`${c.id}-${m.id}`}
@@ -439,6 +443,7 @@ export const MapMaker = () => {
         description: "Monumento ecuatorial - ejemplo",
         icon: "landmark",
         color: "red",
+        rotation: 0,
       },
       {
         id: "2",
@@ -448,6 +453,7 @@ export const MapMaker = () => {
         description: "Parque urbano ideal para correr",
         icon: "tree",
         color: "emerald",
+        rotation: 0,
       },
     ];
   });
@@ -466,6 +472,7 @@ export const MapMaker = () => {
   const [draftColor, setDraftColor] = useState<string>("blue");
   const [draftLat, setDraftLat] = useState<string>("");
   const [draftLng, setDraftLng] = useState<string>("");
+  const [draftRotation, setDraftRotation] = useState<string>("0");
   const [newTitle, setNewTitle] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
@@ -543,6 +550,7 @@ export const MapMaker = () => {
                 description: String(m.description || ""),
                 icon: (m.icon as IconId) || "map-pin",
                 color: m.color || "blue",
+                rotation: typeof m.rotation === "number" ? ((m.rotation % 360) + 360) % 360 : 0,
               }));
               setMarkers(hashMarkers);
             }
@@ -826,6 +834,7 @@ export const MapMaker = () => {
         description: "",
         icon: selectedIcon,
         color: selectedColor,
+        rotation: 0,
       };
       setMarkers((prev) => [...prev, newMarker]);
       setNewTitle("");
@@ -845,6 +854,7 @@ export const MapMaker = () => {
     setDraftColor(m.color);
     setDraftLat(String(m.lat));
     setDraftLng(String(m.lng));
+    setDraftRotation(String(m.rotation ?? 0));
     // cerrar popup de Leaflet para que el modal quede visible
     mapRef.current?.closePopup();
   };
@@ -853,10 +863,12 @@ export const MapMaker = () => {
     const latNum = parseFloat(draftLat);
     const lngNum = parseFloat(draftLng);
     if (Number.isNaN(latNum) || Number.isNaN(lngNum)) return alert("Coordenadas inválidas");
+    const rotNum = parseFloat(draftRotation);
+    const safeRot = Number.isNaN(rotNum) ? 0 : ((rotNum % 360) + 360) % 360;
     setMarkers((prev) =>
       prev.map((m) =>
         m.id === editingId
-          ? { ...m, title: draftTitle, description: draftDesc, icon: draftIcon, color: draftColor, lat: latNum, lng: lngNum }
+          ? { ...m, title: draftTitle, description: draftDesc, icon: draftIcon, color: draftColor, lat: latNum, lng: lngNum, rotation: safeRot }
           : m
       )
     );
@@ -877,6 +889,54 @@ export const MapMaker = () => {
     // limpiar ruta al reordenar (debe recalcular)
     setRouteCoords([]);
     setRouteInfo(null);
+  };
+
+  const updateMarkerRotation = (id: string, deg: number) => {
+    const safe = ((deg % 360) + 360) % 360;
+    setMarkers((prev) => prev.map((m) => (m.id === id ? { ...m, rotation: safe } : m)));
+  };
+
+  const handleResetRotations = () => {
+    setMarkers((prev) => prev.map((m) => ({ ...m, rotation: 0 })));
+  };
+
+  const handleAutoRotateMarkers = () => {
+    if (!mapRef.current || markers.length < 2) return;
+    const map = mapRef.current;
+    const threshold = 56;
+    const visited = new Set<string>();
+    const rotationMap = new Map<string, number>();
+    try {
+      for (let i = 0; i < markers.length; i++) {
+        const mi = markers[i];
+        if (visited.has(mi.id)) continue;
+        const pi = map.latLngToContainerPoint([mi.lat, mi.lng] as any);
+        const group: typeof markers = [mi];
+        visited.add(mi.id);
+        for (let j = i + 1; j < markers.length; j++) {
+          const mj = markers[j];
+          if (visited.has(mj.id)) continue;
+          const pj = map.latLngToContainerPoint([mj.lat, mj.lng] as any);
+          if (Math.hypot(pi.x - pj.x, pi.y - pj.y) < threshold) {
+            group.push(mj);
+            visited.add(mj.id);
+          }
+        }
+        if (group.length > 1) {
+          // distribuir 360° equiespaciado, con offset aleatorio ligero para variedad
+          const base = Math.floor(Math.random() * 30);
+          group.forEach((gm, idx) => {
+            const ang = (base + (360 / group.length) * idx) % 360;
+            rotationMap.set(gm.id, Math.round(ang));
+          });
+        }
+      }
+    } catch {}
+    if (rotationMap.size === 0) {
+      alert("No hay puntos amontonados para auto-rotar (umbral 56px). Acerca el zoom o junta más puntos.");
+      return;
+    }
+    setMarkers((prev) => prev.map((m) => (rotationMap.has(m.id) ? { ...m, rotation: rotationMap.get(m.id)! } : m)));
   };
 
   const fitAdjusted = (bounds: L.LatLngBounds, opts?: L.FitBoundsOptions) => {
@@ -1533,7 +1593,7 @@ export const MapMaker = () => {
       features: markers.map((m) => ({
         type: "Feature",
         geometry: { type: "Point", coordinates: [m.lng, m.lat] },
-        properties: { title: m.title, description: m.description, icon: m.icon, color: m.color },
+        properties: { title: m.title, description: m.description, icon: m.icon, color: m.color, rotation: m.rotation ?? 0 },
       })),
     };
     const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: "application/json" });
@@ -1545,8 +1605,8 @@ export const MapMaker = () => {
     URL.revokeObjectURL(url);
   };
   const exportCSV = () => {
-    const head = "title,description,lat,lng,icon,color";
-    const rows = markers.map((m) => `"${m.title.replace(/"/g, '""')}","${m.description.replace(/"/g, '""')}",${m.lat},${m.lng},${m.icon},${m.color}`);
+    const head = "title,description,lat,lng,icon,color,rotation";
+    const rows = markers.map((m) => `"${m.title.replace(/"/g, '""')}","${m.description.replace(/"/g, '""')}",${m.lat},${m.lng},${m.icon},${m.color},${m.rotation ?? 0}`);
     const csv = [head, ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -1576,6 +1636,7 @@ export const MapMaker = () => {
             description: f.properties?.description ?? "",
             icon: (f.properties?.icon as IconId) ?? "map-pin",
             color: f.properties?.color ?? "blue",
+            rotation: typeof f.properties?.rotation === "number" ? f.properties.rotation : 0,
           }));
         } else {
           throw new Error("Formato no reconocido");
@@ -1583,7 +1644,7 @@ export const MapMaker = () => {
         // validate
         imported = imported.filter((m) => typeof m.lat === "number" && typeof m.lng === "number");
         if (imported.length === 0) throw new Error("Sin marcadores válidos");
-        // ensure id/icon/color
+        // ensure id/icon/color/rotation
         imported = imported.map((m) => ({
           id: m.id ?? generateId(),
           lat: Number(m.lat),
@@ -1592,6 +1653,7 @@ export const MapMaker = () => {
           description: String(m.description ?? ""),
           icon: (m.icon as IconId) ?? "map-pin",
           color: m.color ?? "blue",
+          rotation: typeof (m as any).rotation === "number" ? ((m as any).rotation % 360 + 360) % 360 : 0,
         }));
         if (confirm(`Importar ${imported.length} puntos? Reemplazará los ${markers.length} actuales. Acepta para reemplazar, Cancela para añadir.`)) {
           setMarkers(imported);
@@ -1621,11 +1683,12 @@ export const MapMaker = () => {
     if (showNumberInsteadOfIcon) {
       const map = new Map<string, L.DivIcon>();
       markers.forEach((m, idx) => {
-        const key = `${idx}-${m.color}-${rotationDeg}`;
+        const rot = m.rotation ?? 0;
+        const key = `${idx}-${m.color}-${rotationDeg}-${rot}`;
         map.set(
           key,
           L.divIcon({
-            html: createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg),
+            html: createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, rot),
             className: "custom-div-icon",
             iconSize: [38, 38],
             iconAnchor: [19, 38],
@@ -1637,12 +1700,13 @@ export const MapMaker = () => {
     }
     const map = new Map<string, L.DivIcon>();
     markers.forEach((m) => {
-      const key = `${m.icon}-${m.color}-${rotationDeg}`;
+      const rot = m.rotation ?? 0;
+      const key = `${m.icon}-${m.color}-${rotationDeg}-${rot}`;
       if (!map.has(key)) {
         map.set(
           key,
           L.divIcon({
-            html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg),
+            html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, rot),
             className: "custom-div-icon",
             iconSize: [38, 38],
             iconAnchor: [19, 38],
@@ -1752,6 +1816,19 @@ export const MapMaker = () => {
             </label>
             <span className="text-[10px] text-slate-500 ml-auto">{clusterEnabled ? "evita solapamiento • clic para expandir" : "todos visibles"}</span>
             <button type="button" onClick={() => setSpiderClusterId(null)} disabled={!spiderClusterId} className="text-[10px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg disabled:opacity-30">Cerrar spider</button>
+          </div>
+
+          <div className="flex flex-col gap-2 mt-3 p-3 bg-sky-50/70 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-xl">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1.5">↻ Rotar pins (anti-solape)</span>
+              <span className="text-[10px] font-mono bg-sky-600 text-white px-2 py-0.5 rounded-full">{markers.filter((m) => (m.rotation ?? 0) !== 0).length} rotados</span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Gira el pin externo; el número/ícono interior queda siempre legible (counter-rotate). Útil cuando varios puntos comparten la misma zona sin mover coordenadas.</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" onClick={handleAutoRotateMarkers} disabled={markers.length < 2} className="text-xs font-black bg-sky-600 hover:bg-sky-700 disabled:opacity-40 text-white px-3 py-2 rounded-xl">Auto-rotar amontonados</button>
+              <button type="button" onClick={handleResetRotations} disabled={markers.every((m) => (m.rotation ?? 0) === 0)} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl disabled:opacity-40">Reset 0°</button>
+            </div>
+            <p className="text-[10px] text-slate-400">Auto detecta grupos &lt;56px y reparte 360° equiespaciado. Ajuste manual por pin en lista/modal.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -2026,6 +2103,17 @@ export const MapMaker = () => {
                     <button onClick={() => handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg hover:bg-red-100">Eliminar</button>
                   </div>
                   <p className="text-[10px] text-slate-400 mt-1">Orden: {idx + 1} de {markers.length} · usa ↑↓ para reordenar ruta</p>
+                  <div className="mt-2 bg-sky-50/60 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-lg px-2 py-2 flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">↻ Pin {m.rotation ?? 0}° <span className="font-normal text-slate-500 normal-case">• nº legible</span></span>
+                      <button type="button" onClick={() => updateMarkerRotation(m.id, 0)} className="text-[10px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">0°</button>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button type="button" onClick={() => updateMarkerRotation(m.id, (m.rotation ?? 0) - 15)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">↺</button>
+                      <input type="range" min={0} max={360} step={5} value={m.rotation ?? 0} onChange={(e) => updateMarkerRotation(m.id, parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
+                      <button type="button" onClick={() => updateMarkerRotation(m.id, (m.rotation ?? 0) + 15)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">↻</button>
+                    </div>
+                  </div>
                   <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
                     <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Corregir ubicación sin borrar · <span className={geocodeProvider==="both" ? "text-indigo-600" : geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider==="both" ? "ambas" : geocodeProvider}</span></label>
                     <div className="flex gap-1.5 mt-1">
@@ -2336,6 +2424,19 @@ export const MapMaker = () => {
                       {draftColor === c.id && <span className="text-white text-xs font-bold">✓</span>}
                     </button>
                   ))}
+                </div>
+              </div>
+              <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-xl p-3">
+                <label className="text-xs font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center justify-between">↻ Rotación pin <span className="font-mono text-[11px] bg-sky-600 text-white px-2 py-0.5 rounded-full">{draftRotation}°</span></label>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Gira solo el pin; el número/ícono queda legible.</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <button type="button" onClick={() => setDraftRotation(String(((parseInt(draftRotation || "0") - 15 + 360) % 360)))} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">↺</button>
+                  <input type="range" min={0} max={360} step={5} value={parseInt(draftRotation || "0")} onChange={(e) => setDraftRotation(e.target.value)} className="flex-1 accent-sky-600" />
+                  <button type="button" onClick={() => setDraftRotation(String(((parseInt(draftRotation || "0") + 15) % 360)))} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">↻</button>
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <input type="number" value={draftRotation} onChange={(e) => setDraftRotation(e.target.value)} className="flex-1 text-sm font-mono border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white" placeholder="0-360" />
+                  <button type="button" onClick={() => setDraftRotation("0")} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">Reset 0°</button>
                 </div>
               </div>
               <div className="flex items-center gap-2 pt-2">
