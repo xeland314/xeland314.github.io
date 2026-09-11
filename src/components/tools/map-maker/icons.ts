@@ -160,15 +160,17 @@ export function getColorHex(id: string) {
 
 export type MarkerShape = "pin" | "square" | "circle";
 
-export function createDivIconHtml(iconId: IconId, colorHex: string, mapRotationDeg = 0, shape: MarkerShape = "pin") {
+export function createDivIconHtml(iconId: IconId, colorHex: string, mapRotationDeg = 0, shape: MarkerShape = "pin", size = 38) {
   const def = ICONS.find((i) => i.id === iconId) ?? ICONS[0];
   const isPin = shape === "pin";
   const outerRotate = isPin ? -45 : 0;
   const outerRadius = shape === "circle" ? "50%" : shape === "square" ? "10px" : "50% 50% 50% 0";
   const innerRotate = isPin ? 45 - mapRotationDeg : -mapRotationDeg;
+  const s = Math.max(24, Math.min(52, size));
+  const svgSize = Math.round(s * 0.53);
   return `
   <div style="
-    width:38px;height:38px;
+    width:${s}px;height:${s}px;
     background:${colorHex};
     border-radius:${outerRadius};
     transform: rotate(${outerRotate}deg);
@@ -177,21 +179,23 @@ export function createDivIconHtml(iconId: IconId, colorHex: string, mapRotationD
     display:flex;align-items:center;justify-content:center;
   ">
     <div style="transform: rotate(${innerRotate}deg); display:flex; align-items:center; justify-content:center;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg xmlns="http://www.w3.org/2000/svg" width="${svgSize}" height="${svgSize}" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         ${def.svg}
       </svg>
     </div>
   </div>`;
 }
 
-export function createNumberIconHtml(order: number, colorHex: string, mapRotationDeg = 0, shape: MarkerShape = "pin") {
+export function createNumberIconHtml(order: number, colorHex: string, mapRotationDeg = 0, shape: MarkerShape = "pin", size = 38) {
   const isPin = shape === "pin";
   const outerRotate = isPin ? -45 : 0;
   const outerRadius = shape === "circle" ? "50%" : shape === "square" ? "10px" : "50% 50% 50% 0";
   const innerRotate = isPin ? 45 - mapRotationDeg : -mapRotationDeg;
+  const s = Math.max(24, Math.min(52, size));
+  const fontSize = Math.max(11, Math.round(s * 0.42));
   return `
   <div style="
-    width:38px;height:38px;
+    width:${s}px;height:${s}px;
     background:${colorHex};
     border-radius:${outerRadius};
     transform: rotate(${outerRotate}deg);
@@ -199,7 +203,7 @@ export function createNumberIconHtml(order: number, colorHex: string, mapRotatio
     box-shadow:0 2px 8px rgba(0,0,0,0.35);
     display:flex;align-items:center;justify-content:center;
   ">
-    <div style="transform: rotate(${innerRotate}deg); color:white; font-weight:900; font-size:16px; font-family:ui-monospace,monospace; line-height:1; display:flex; align-items:center; justify-content:center;">
+    <div style="transform: rotate(${innerRotate}deg); color:white; font-weight:900; font-size:${fontSize}px; font-family:ui-monospace,monospace; line-height:1; display:flex; align-items:center; justify-content:center;">
       ${order}
     </div>
   </div>`;

@@ -25,8 +25,8 @@ export type MarkerData = {
   icon: IconId;
   color: string; // color id
   category?: string;
-  rotation?: number; // grados 0-360, órbita alrededor de la ubicación (no gira el pin, desplaza visualmente)
   shape?: MarkerShape; // pin (lágrima), square, circle
+  size?: number; // px 24-52, tamaño visual del marker
 };
 
 type TileProvider = "osm" | "voyager" | "dark" | "satellite";
@@ -170,23 +170,15 @@ function ClusteredMarkers({
     return (
       <>
         {markers.map((m, idx) => {
-          const shape = (m.shape ?? "pin") as any;
-          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${shape}` : `${m.icon}-${m.color}-${rotationDeg}-${shape}`;
-          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
-          const ang = m.rotation ?? 0;
-          const isOrbital = ang !== 0;
-          let displayLat = m.lat;
-          let displayLng = m.lng;
-          if (isOrbital) {
-            const rad = (ang * Math.PI) / 180;
-            const r = 0.00014;
-            displayLat = m.lat + Math.cos(rad) * r;
-            displayLng = m.lng + Math.sin(rad) * r / Math.cos((m.lat * Math.PI) / 180 || 1);
-          }
+          const shape = (m.shape ?? "pin") as MarkerShape;
+          const size = Math.max(24, Math.min(52, m.size ?? globalMarkerSize ?? 38));
+          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${shape}-${size}` : `${m.icon}-${m.color}-${rotationDeg}-${shape}-${size}`;
+          const anchor = shape === "pin" ? [size / 2, size] : [size / 2, size / 2];
+          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape, size) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape, size), className: "custom-div-icon", iconSize: [size, size], iconAnchor: anchor as any, popupAnchor: shape === "pin" ? [0, -size] : [0, -size / 2] });
           return (
-            <React.Fragment key={m.id}>
             <Marker
-              position={[displayLat, displayLng]}
+              key={m.id}
+              position={[m.lat, m.lng]}
               icon={icon}
               draggable
               eventHandlers={{
@@ -203,8 +195,7 @@ function ClusteredMarkers({
                       }
                     } catch {}
                   }
-                  // si tenía órbita, coloca el ancla en el drop y resetea órbita para que no doble-desplace
-                  setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)), rotation: 0 } : x)));
+                  setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
                   setSelectedId(m.id);
                 },
                 click: () => setSelectedId(m.id),
@@ -221,7 +212,7 @@ function ClusteredMarkers({
                     {m.title}
                   </p>
                   {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
-                  <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)} {isOrbital ? `• órbita ${ang}°` : ""}</p>
+                  <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)}</p>
                   <div className="flex gap-1 mt-2">
                     <a href={`https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lng}`} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold bg-slate-900 text-white px-2 py-1 rounded-lg">Google Maps</a>
                     <button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white border border-slate-200 px-2 py-1 rounded-lg">Editar</button>
@@ -229,8 +220,6 @@ function ClusteredMarkers({
                 </div>
               </Popup>
             </Marker>
-            {isOrbital && <Polyline positions={[[m.lat, m.lng] as any, [displayLat, displayLng] as any]} pathOptions={{ color: "#94a3b8", weight: 1.2, opacity: 0.5, dashArray: "4 4" }} />}
-            </React.Fragment>
           );
         })}
       </>
@@ -279,23 +268,15 @@ function ClusteredMarkers({
       {clusters.map((c) => {
         if (c.members.length === 1) {
           const { m, idx } = c.members[0];
-          const shape = (m.shape ?? "pin") as any;
-          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${shape}` : `${m.icon}-${m.color}-${rotationDeg}-${shape}`;
-          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
-          const ang = m.rotation ?? 0;
-          const isOrbital = ang !== 0;
-          let displayLat = m.lat;
-          let displayLng = m.lng;
-          if (isOrbital) {
-            const rad = (ang * Math.PI) / 180;
-            const r = 0.00014;
-            displayLat = m.lat + Math.cos(rad) * r;
-            displayLng = m.lng + Math.sin(rad) * r / Math.cos((m.lat * Math.PI) / 180 || 1);
-          }
+          const shape = (m.shape ?? "pin") as MarkerShape;
+          const size = Math.max(24, Math.min(52, m.size ?? globalMarkerSize ?? 38));
+          const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${shape}-${size}` : `${m.icon}-${m.color}-${rotationDeg}-${shape}-${size}`;
+          const anchor = shape === "pin" ? [size / 2, size] : [size / 2, size / 2];
+          const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape, size) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape, size), className: "custom-div-icon", iconSize: [size, size], iconAnchor: anchor as any, popupAnchor: shape === "pin" ? [0, -size] : [0, -size / 2] });
           return (
-            <React.Fragment key={m.id}>
-              <Marker
-                position={[displayLat, displayLng]}
+            <Marker
+              key={m.id}
+              position={[m.lat, m.lng]}
                 icon={icon}
                 draggable
                 eventHandlers={{
@@ -309,7 +290,7 @@ function ClusteredMarkers({
                         if (cx != null && cy != null) { const corr = getCorrectedLatLng(mapRef.current, cx, cy, rotationDeg); lat = corr.lat; lng = corr.lng; }
                       } catch {}
                     }
-                    setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)), rotation: 0 } : x)));
+                    setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) } : x)));
                     setSelectedId(m.id);
                   },
                   click: () => setSelectedId(m.id),
@@ -323,13 +304,11 @@ function ClusteredMarkers({
                       {m.title}
                     </p>
                     {m.description && <p className="text-xs text-slate-600 mt-1">{m.description}</p>}
-                    <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)} {isOrbital ? `• órbita ${ang}°` : ""}</p>
+                    <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(6)}, {m.lng.toFixed(6)}</p>
                     <div className="flex gap-1 mt-2"><a href={`https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lng}`} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold bg-slate-900 text-white px-2 py-1 rounded-lg">Google Maps</a><button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white border border-slate-200 px-2 py-1 rounded-lg">Editar</button></div>
                   </div>
                 </Popup>
               </Marker>
-              {isOrbital && <Polyline positions={[[m.lat, m.lng] as any, [displayLat, displayLng] as any]} pathOptions={{ color: "#94a3b8", weight: 1.2, opacity: 0.5, dashArray: "4 4" }} />}
-            </React.Fragment>
           );
         }
         // cluster con >1
@@ -343,9 +322,11 @@ function ClusteredMarkers({
             const lngOff = Math.sin(angle) * radiusDeg / Math.cos((c.lat * Math.PI) / 180 || 1);
             const sLat = c.lat + latOff;
             const sLng = c.lng + lngOff;
-            const shape = (m.shape ?? "pin") as any;
-            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${shape}` : `${m.icon}-${m.color}-${rotationDeg}-${shape}`;
-            const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape), className: "custom-div-icon", iconSize: [38, 38], iconAnchor: [19, 38], popupAnchor: [0, -38] });
+            const shape = (m.shape ?? "pin") as MarkerShape;
+            const size = Math.max(24, Math.min(52, (m as any).size ?? globalMarkerSize ?? 38));
+            const iconKey = showNumberInsteadOfIcon ? `${idx}-${m.color}-${rotationDeg}-${shape}-${size}` : `${m.icon}-${m.color}-${rotationDeg}-${shape}-${size}`;
+            const anchor = shape === "pin" ? [size / 2, size] : [size / 2, size / 2];
+            const icon = iconsMemo.get(iconKey) || L.divIcon({ html: showNumberInsteadOfIcon ? createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape, size) : createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape, size), className: "custom-div-icon", iconSize: [size, size], iconAnchor: anchor as any, popupAnchor: shape === "pin" ? [0, -size] : [0, -size / 2] });
             return (
               <Marker
                 key={`${c.id}-${m.id}`}
@@ -470,8 +451,8 @@ export const MapMaker = () => {
         description: "Monumento ecuatorial - ejemplo",
         icon: "landmark",
         color: "red",
-        rotation: 0,
         shape: "pin",
+        size: 38,
       },
       {
         id: "2",
@@ -481,8 +462,8 @@ export const MapMaker = () => {
         description: "Parque urbano ideal para correr",
         icon: "tree",
         color: "emerald",
-        rotation: 0,
         shape: "pin",
+        size: 38,
       },
     ];
   });
@@ -490,6 +471,8 @@ export const MapMaker = () => {
   const [selectedIcon, setSelectedIcon] = useState<IconId>("map-pin");
   const [selectedColor, setSelectedColor] = useState<string>("blue");
   const [selectedShape, setSelectedShape] = useState<MarkerShape>("pin");
+  const [selectedSize, setSelectedSize] = useState<number>(38);
+  const [globalMarkerSize, setGlobalMarkerSize] = useState<number>(38);
   const [tileProvider, setTileProvider] = useState<TileProvider>("osm");
   const [showPolyline, setShowPolyline] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -502,8 +485,8 @@ export const MapMaker = () => {
   const [draftColor, setDraftColor] = useState<string>("blue");
   const [draftLat, setDraftLat] = useState<string>("");
   const [draftLng, setDraftLng] = useState<string>("");
-  const [draftRotation, setDraftRotation] = useState<string>("0");
   const [draftShape, setDraftShape] = useState<MarkerShape>("pin");
+  const [draftSize, setDraftSize] = useState<string>("38");
   const [newTitle, setNewTitle] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
@@ -581,8 +564,8 @@ export const MapMaker = () => {
                 description: String(m.description || ""),
                 icon: (m.icon as IconId) || "map-pin",
                 color: m.color || "blue",
-                rotation: typeof m.rotation === "number" ? ((m.rotation % 360) + 360) % 360 : 0,
                 shape: (m.shape === "square" || m.shape === "circle" ? m.shape : "pin") as MarkerShape,
+                size: typeof m.size === "number" ? Math.max(24, Math.min(52, Math.round(m.size))) : 38,
               }));
               setMarkers(hashMarkers);
             }
@@ -866,13 +849,13 @@ export const MapMaker = () => {
         description: "",
         icon: selectedIcon,
         color: selectedColor,
-        rotation: 0,
         shape: selectedShape,
+        size: selectedSize,
       };
       setMarkers((prev) => [...prev, newMarker]);
       setNewTitle("");
     },
-    [markers.length, newTitle, selectedIcon, selectedColor, selectedShape]
+    [markers.length, newTitle, selectedIcon, selectedColor, selectedShape, selectedSize]
   );
 
   const handleDelete = (id: string) => setMarkers((prev) => prev.filter((m) => m.id !== id));
@@ -887,8 +870,8 @@ export const MapMaker = () => {
     setDraftColor(m.color);
     setDraftLat(String(m.lat));
     setDraftLng(String(m.lng));
-    setDraftRotation(String(m.rotation ?? 0));
     setDraftShape((m.shape as MarkerShape) ?? "pin");
+    setDraftSize(String(m.size ?? 38));
     // cerrar popup de Leaflet para que el modal quede visible
     mapRef.current?.closePopup();
   };
@@ -897,12 +880,12 @@ export const MapMaker = () => {
     const latNum = parseFloat(draftLat);
     const lngNum = parseFloat(draftLng);
     if (Number.isNaN(latNum) || Number.isNaN(lngNum)) return alert("Coordenadas inválidas");
-    const rotNum = parseFloat(draftRotation);
-    const safeRot = Number.isNaN(rotNum) ? 0 : ((rotNum % 360) + 360) % 360;
+    const sizeNum = parseInt(draftSize, 10);
+    const safeSize = Number.isNaN(sizeNum) ? 38 : Math.max(24, Math.min(52, sizeNum));
     setMarkers((prev) =>
       prev.map((m) =>
         m.id === editingId
-          ? { ...m, title: draftTitle, description: draftDesc, icon: draftIcon, color: draftColor, lat: latNum, lng: lngNum, rotation: safeRot, shape: draftShape }
+          ? { ...m, title: draftTitle, description: draftDesc, icon: draftIcon, color: draftColor, lat: latNum, lng: lngNum, shape: draftShape, size: safeSize }
           : m
       )
     );
@@ -925,52 +908,22 @@ export const MapMaker = () => {
     setRouteInfo(null);
   };
 
-  const updateMarkerRotation = (id: string, deg: number) => {
-    const safe = ((deg % 360) + 360) % 360;
-    setMarkers((prev) => prev.map((m) => (m.id === id ? { ...m, rotation: safe } : m)));
+  const updateMarkerSize = (id: string, size: number) => {
+    const safe = Math.max(24, Math.min(52, Math.round(size)));
+    setMarkers((prev) => prev.map((m) => (m.id === id ? { ...m, size: safe } : m)));
   };
 
-  const handleResetRotations = () => {
-    setMarkers((prev) => prev.map((m) => ({ ...m, rotation: 0 })));
+  const handleGlobalSize = (size: number) => {
+    const safe = Math.max(24, Math.min(52, Math.round(size)));
+    setGlobalMarkerSize(safe);
+    setSelectedSize(safe);
+    setMarkers((prev) => prev.map((m) => ({ ...m, size: safe })));
   };
 
-  const handleAutoRotateMarkers = () => {
-    if (!mapRef.current || markers.length < 2) return;
-    const map = mapRef.current;
-    const threshold = 56;
-    const visited = new Set<string>();
-    const rotationMap = new Map<string, number>();
-    try {
-      for (let i = 0; i < markers.length; i++) {
-        const mi = markers[i];
-        if (visited.has(mi.id)) continue;
-        const pi = map.latLngToContainerPoint([mi.lat, mi.lng] as any);
-        const group: typeof markers = [mi];
-        visited.add(mi.id);
-        for (let j = i + 1; j < markers.length; j++) {
-          const mj = markers[j];
-          if (visited.has(mj.id)) continue;
-          const pj = map.latLngToContainerPoint([mj.lat, mj.lng] as any);
-          if (Math.hypot(pi.x - pj.x, pi.y - pj.y) < threshold) {
-            group.push(mj);
-            visited.add(mj.id);
-          }
-        }
-        if (group.length > 1) {
-          // distribuir 360° equiespaciado, con offset aleatorio ligero para variedad
-          const base = Math.floor(Math.random() * 30);
-          group.forEach((gm, idx) => {
-            const ang = (base + (360 / group.length) * idx) % 360;
-            rotationMap.set(gm.id, Math.round(ang));
-          });
-        }
-      }
-    } catch {}
-    if (rotationMap.size === 0) {
-      alert("No hay puntos amontonados para auto-rotar (umbral 56px). Acerca el zoom o junta más puntos.");
-      return;
-    }
-    setMarkers((prev) => prev.map((m) => (rotationMap.has(m.id) ? { ...m, rotation: rotationMap.get(m.id)! } : m)));
+  const handleResetSizes = () => {
+    setGlobalMarkerSize(38);
+    setSelectedSize(38);
+    setMarkers((prev) => prev.map((m) => ({ ...m, size: 38 })));
   };
 
   const fitAdjusted = (bounds: L.LatLngBounds, opts?: L.FitBoundsOptions) => {
@@ -1627,7 +1580,7 @@ export const MapMaker = () => {
       features: markers.map((m) => ({
         type: "Feature",
         geometry: { type: "Point", coordinates: [m.lng, m.lat] },
-        properties: { title: m.title, description: m.description, icon: m.icon, color: m.color, rotation: m.rotation ?? 0, shape: m.shape ?? "pin" },
+        properties: { title: m.title, description: m.description, icon: m.icon, color: m.color, shape: m.shape ?? "pin", size: m.size ?? 38 },
       })),
     };
     const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: "application/json" });
@@ -1639,8 +1592,8 @@ export const MapMaker = () => {
     URL.revokeObjectURL(url);
   };
   const exportCSV = () => {
-    const head = "title,description,lat,lng,icon,color,rotation,shape";
-    const rows = markers.map((m) => `"${m.title.replace(/"/g, '""')}","${m.description.replace(/"/g, '""')}",${m.lat},${m.lng},${m.icon},${m.color},${m.rotation ?? 0},${m.shape ?? "pin"}`);
+    const head = "title,description,lat,lng,icon,color,shape,size";
+    const rows = markers.map((m) => `"${m.title.replace(/"/g, '""')}","${m.description.replace(/"/g, '""')}",${m.lat},${m.lng},${m.icon},${m.color},${m.shape ?? "pin"},${m.size ?? 38}`);
     const csv = [head, ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -1670,8 +1623,8 @@ export const MapMaker = () => {
             description: f.properties?.description ?? "",
             icon: (f.properties?.icon as IconId) ?? "map-pin",
             color: f.properties?.color ?? "blue",
-            rotation: typeof f.properties?.rotation === "number" ? f.properties.rotation : 0,
             shape: (f.properties?.shape === "square" || f.properties?.shape === "circle" ? f.properties.shape : "pin") as MarkerShape,
+            size: typeof f.properties?.size === "number" ? Math.max(24, Math.min(52, Math.round(f.properties.size))) : 38,
           }));
         } else {
           throw new Error("Formato no reconocido");
@@ -1679,7 +1632,7 @@ export const MapMaker = () => {
         // validate
         imported = imported.filter((m) => typeof m.lat === "number" && typeof m.lng === "number");
         if (imported.length === 0) throw new Error("Sin marcadores válidos");
-        // ensure id/icon/color/rotation/shape
+        // ensure id/icon/color/shape/size
         imported = imported.map((m) => ({
           id: m.id ?? generateId(),
           lat: Number(m.lat),
@@ -1688,8 +1641,8 @@ export const MapMaker = () => {
           description: String(m.description ?? ""),
           icon: (m.icon as IconId) ?? "map-pin",
           color: m.color ?? "blue",
-          rotation: typeof (m as any).rotation === "number" ? ((m as any).rotation % 360 + 360) % 360 : 0,
           shape: ((m as any).shape === "square" || (m as any).shape === "circle" ? (m as any).shape : "pin") as MarkerShape,
+          size: typeof (m as any).size === "number" ? Math.max(24, Math.min(52, Math.round((m as any).size))) : 38,
         }));
         if (confirm(`Importar ${imported.length} puntos? Reemplazará los ${markers.length} actuales. Acepta para reemplazar, Cancela para añadir.`)) {
           setMarkers(imported);
@@ -1720,15 +1673,17 @@ export const MapMaker = () => {
       const map = new Map<string, L.DivIcon>();
       markers.forEach((m, idx) => {
         const shape = (m.shape ?? "pin") as MarkerShape;
-        const key = `${idx}-${m.color}-${rotationDeg}-${shape}`;
+        const size = Math.max(24, Math.min(52, m.size ?? globalMarkerSize ?? 38));
+        const key = `${idx}-${m.color}-${rotationDeg}-${shape}-${size}`;
+        const anchor = shape === "pin" ? [size / 2, size] : [size / 2, size / 2];
         map.set(
           key,
           L.divIcon({
-            html: createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape),
+            html: createNumberIconHtml(idx + 1, getColorHex(m.color), rotationDeg, shape, size),
             className: "custom-div-icon",
-            iconSize: [38, 38],
-            iconAnchor: [19, 38],
-            popupAnchor: [0, -38],
+            iconSize: [size, size],
+            iconAnchor: anchor as any,
+            popupAnchor: shape === "pin" ? [0, -size] : [0, -size / 2],
           })
         );
       });
@@ -1737,22 +1692,24 @@ export const MapMaker = () => {
     const map = new Map<string, L.DivIcon>();
     markers.forEach((m) => {
       const shape = (m.shape ?? "pin") as MarkerShape;
-      const key = `${m.icon}-${m.color}-${rotationDeg}-${shape}`;
+      const size = Math.max(24, Math.min(52, m.size ?? globalMarkerSize ?? 38));
+      const key = `${m.icon}-${m.color}-${rotationDeg}-${shape}-${size}`;
       if (!map.has(key)) {
+        const anchor = shape === "pin" ? [size / 2, size] : [size / 2, size / 2];
         map.set(
           key,
           L.divIcon({
-            html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape),
+            html: createDivIconHtml(m.icon, getColorHex(m.color), rotationDeg, shape, size),
             className: "custom-div-icon",
-            iconSize: [38, 38],
-            iconAnchor: [19, 38],
-            popupAnchor: [0, -38],
+            iconSize: [size, size],
+            iconAnchor: anchor as any,
+            popupAnchor: shape === "pin" ? [0, -size] : [0, -size / 2],
           })
         );
       }
     });
     return map;
-  }, [markers, showNumberInsteadOfIcon, rotationDeg]);
+  }, [markers, showNumberInsteadOfIcon, rotationDeg, globalMarkerSize]);
 
   const center: [number, number] = markers.length ? [markers[0].lat, markers[0].lng] : [-0.180653, -78.467834];
 
@@ -1856,15 +1813,21 @@ export const MapMaker = () => {
 
           <div className="flex flex-col gap-2 mt-3 p-3 bg-sky-50/70 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-xl">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1.5">↻ Rotar pins (anti-solape)</span>
-              <span className="text-[10px] font-mono bg-sky-600 text-white px-2 py-0.5 rounded-full">{markers.filter((m) => (m.rotation ?? 0) !== 0).length} rotados</span>
+              <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1.5">⤢ Tamaño markers</span>
+              <span className="text-[10px] font-mono bg-sky-600 text-white px-2 py-0.5 rounded-full">{globalMarkerSize}px</span>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Desplaza cada pin en órbita alrededor de su ubicación real (sin mover coordenadas). El número/ícono queda siempre legible; línea punteada une ancla y visual.</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Ajusta tamaño global o por pin individual. Reduce para ver mapa completo, agranda para destacar.</p>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold">24</span>
+              <input type="range" min={24} max={52} step={2} value={globalMarkerSize} onChange={(e) => setGlobalMarkerSize(parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
+              <span className="text-[10px] font-bold">52</span>
+              <span className="text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg">{globalMarkerSize}px</span>
+            </div>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={handleAutoRotateMarkers} disabled={markers.length < 2} className="text-xs font-black bg-sky-600 hover:bg-sky-700 disabled:opacity-40 text-white px-3 py-2 rounded-xl">Auto-órbita amontonados</button>
-              <button type="button" onClick={handleResetRotations} disabled={markers.every((m) => (m.rotation ?? 0) === 0)} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl disabled:opacity-40">Reset órbita 0°</button>
+              <button type="button" onClick={() => handleGlobalSize(globalMarkerSize)} className="text-xs font-black bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-xl">Aplicar a todos</button>
+              <button type="button" onClick={handleResetSizes} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">Reset 38px</button>
             </div>
-            <p className="text-[10px] text-slate-400">Auto detecta grupos &lt;56px y reparte 360° en círculo. Ajuste fino por pin con slider órbita en lista/modal (el pin no gira sobre sí mismo).</p>
+            <p className="text-[10px] text-slate-400">Global afecta visual inmediato; por pin usa slider en lista/modal para ajuste fino.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -2110,7 +2073,16 @@ export const MapMaker = () => {
               ))}
             </div>
           </div>
-          <p className="text-[11px] text-slate-400 mt-2">Tip: elige forma (pin/cuadrado/círculo) + ícono y color, luego haz clic en el mapa. El pin cuadrado/círculo puede solaparse menos.</p>
+
+          <div className="mt-3">
+            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">Tamaño próximo <span className="font-mono text-[11px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-0.5 rounded-full">{selectedSize}px</span></p>
+            <div className="flex items-center gap-1.5">
+              <button type="button" onClick={() => setSelectedSize((s) => Math.max(24, s - 4))} className="w-8 h-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">−</button>
+              <input type="range" min={24} max={52} step={2} value={selectedSize} onChange={(e) => setSelectedSize(parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
+              <button type="button" onClick={() => setSelectedSize((s) => Math.min(52, s + 4))} className="w-8 h-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">+</button>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-2">Tip: forma + tamaño + ícono/color, luego clic mapa. Cuadrado/círculo y tamaño pequeño ayuda con amontonados.</p>
         </div>
 
         {/* Marker list */}
@@ -2161,13 +2133,13 @@ export const MapMaker = () => {
                   <p className="text-[10px] text-slate-400 mt-1">Orden: {idx + 1} de {markers.length} · usa ↑↓ para reordenar ruta</p>
                   <div className="mt-2 bg-sky-50/60 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-lg px-2 py-2 flex flex-col gap-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">↻ Pin {m.rotation ?? 0}° <span className="font-normal text-slate-500 normal-case">• nº legible</span></span>
-                      <button type="button" onClick={() => updateMarkerRotation(m.id, 0)} className="text-[10px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">0°</button>
+                      <span className="text-[10px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">⤢ Tamaño {m.size ?? globalMarkerSize ?? 38}px</span>
+                      <button type="button" onClick={() => updateMarkerSize(m.id, 38)} className="text-[10px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">38px</button>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <button type="button" onClick={() => updateMarkerRotation(m.id, (m.rotation ?? 0) - 15)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">↺</button>
-                      <input type="range" min={0} max={360} step={5} value={m.rotation ?? 0} onChange={(e) => updateMarkerRotation(m.id, parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
-                      <button type="button" onClick={() => updateMarkerRotation(m.id, (m.rotation ?? 0) + 15)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">↻</button>
+                      <button type="button" onClick={() => updateMarkerSize(m.id, (m.size ?? globalMarkerSize ?? 38) - 4)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">−</button>
+                      <input type="range" min={24} max={52} step={2} value={m.size ?? globalMarkerSize ?? 38} onChange={(e) => updateMarkerSize(m.id, parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
+                      <button type="button" onClick={() => updateMarkerSize(m.id, (m.size ?? globalMarkerSize ?? 38) + 4)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">+</button>
                     </div>
                     <div className="mt-2 flex gap-1.5">
                       {(["pin", "square", "circle"] as const).map((sh) => (
@@ -2513,16 +2485,16 @@ export const MapMaker = () => {
                 </div>
               </div>
               <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-xl p-3">
-                <label className="text-xs font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center justify-between">↻ Órbita alrededor ubicación <span className="font-mono text-[11px] bg-sky-600 text-white px-2 py-0.5 rounded-full">{draftRotation}°</span></label>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Desplaza visualmente en círculo sin mover coordenada real (línea punteada al ancla). Número siempre legible.</p>
+                <label className="text-xs font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center justify-between">⤢ Tamaño marker <span className="font-mono text-[11px] bg-sky-600 text-white px-2 py-0.5 rounded-full">{draftSize}px</span></label>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">24 pequeño (más mapa visible) — 52 grande (más destacado).</p>
                 <div className="flex items-center gap-2 mt-2">
-                  <button type="button" onClick={() => setDraftRotation(String(((parseInt(draftRotation || "0") - 15 + 360) % 360)))} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">↺</button>
-                  <input type="range" min={0} max={360} step={5} value={parseInt(draftRotation || "0")} onChange={(e) => setDraftRotation(e.target.value)} className="flex-1 accent-sky-600" />
-                  <button type="button" onClick={() => setDraftRotation(String(((parseInt(draftRotation || "0") + 15) % 360)))} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">↻</button>
+                  <button type="button" onClick={() => setDraftSize(String(Math.max(24, parseInt(draftSize || "38") - 4)))} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">−</button>
+                  <input type="range" min={24} max={52} step={2} value={parseInt(draftSize || "38")} onChange={(e) => setDraftSize(e.target.value)} className="flex-1 accent-sky-600" />
+                  <button type="button" onClick={() => setDraftSize(String(Math.min(52, parseInt(draftSize || "38") + 4)))} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">+</button>
                 </div>
                 <div className="flex gap-2 mt-2">
-                  <input type="number" value={draftRotation} onChange={(e) => setDraftRotation(e.target.value)} className="flex-1 text-sm font-mono border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white" placeholder="0-360" />
-                  <button type="button" onClick={() => setDraftRotation("0")} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">Reset 0°</button>
+                  <input type="number" value={draftSize} onChange={(e) => setDraftSize(e.target.value)} className="flex-1 text-sm font-mono border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white" placeholder="24-52" />
+                  <button type="button" onClick={() => setDraftSize("38")} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">Reset 38px</button>
                 </div>
               </div>
               <div className="flex items-center gap-2 pt-2">

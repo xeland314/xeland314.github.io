@@ -1,4 +1,4 @@
-import type { IconId } from "./icons";
+import type { IconId, MarkerShape } from "./icons";
 
 export type MarkerData = {
   id: string;
@@ -9,6 +9,8 @@ export type MarkerData = {
   icon: IconId;
   color: string;
   category?: string;
+  shape?: MarkerShape;
+  size?: number;
 };
 
 export type TileProvider = "osm" | "voyager" | "dark" | "satellite";
