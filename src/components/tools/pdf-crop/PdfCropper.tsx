@@ -11,6 +11,8 @@ import { generateThumbnails, thumbKey } from "./thumbnail";
 import { detectCropBatchRects, detectSmartBatchWithQuads } from "./autoCrop";
 import { warpImageData } from "./warp";
 import type { Quad as WarpQuad, Point } from "./warp";
+import { COMPRESSION_PRESETS, compressPdf, formatSaved } from "./pdfCompress";
+import type { CompressionLevel, CompressStats } from "./pdfCompress";
 import * as pdfjsLib from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -95,6 +97,12 @@ export default function PdfCropper() {
   const [watermarkPosition, setWatermarkPosition] = useState<"center"|"top-left"|"top-right"|"bottom-left"|"bottom-right"|"tile">("center");
   const watermarkInputRef = useRef<HTMLInputElement>(null);
   const processedWatermarkRef = useRef<HTMLCanvasElement|null>(null);
+  // compresión
+  const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>("medium");
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressProgress, setCompressProgress] = useState<{done:number,total:number}|null>(null);
+  const [compressStats, setCompressStats] = useState<CompressStats|null>(null);
+  const compressAbort = useRef<AbortController|null>(null);
 
   const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, sel: Set<number>, count: number, force=false) => {
     if (!bytes) return;
@@ -541,6 +549,44 @@ export default function PdfCropper() {
     return ()=> window.removeEventListener("keydown", handler);
   }, [undo, redo, pdfBytes, manualSave]);
 
+  const handleCompressApply = useCallback(async ()=>{
+    if(!pdfBytes) return;
+    if(isCompressing) { compressAbort.current?.abort(); return; }
+    const ac = new AbortController(); compressAbort.current = ac;
+    setIsCompressing(true); setCompressProgress({done:0,total:pageCount}); setCompressStats(null);
+    try{
+      const { bytes: out, stats } = await compressPdf(pdfBytes, { level: compressionLevel }, (done,total)=> setCompressProgress({done,total}), ac.signal);
+      if(ac.signal.aborted) return;
+      pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects), cloneRots(rotations), cloneQuads(quads), [...thumbnails]);
+      setPdfBytes(out);
+      setCompressStats(stats);
+      // regenera miniaturas desde bytes comprimidos
+      thumbAbort.current?.abort();
+      setThumbnails([]); setPageCount(stats ? out.length : pageCount);
+      await ensureThumbnails(out, pdfName);
+      if(stats.savedPercent < 1) alert(`Compresión ${stats.level}: ${formatSaved(stats)} — PDF ya optimizado, ahorro mínimo.`);
+    }catch(e:any){ if(e?.name!=="AbortError") {console.error(e); alert("Error al comprimir: "+(e?.message||e));}}
+    setIsCompressing(false); setCompressProgress(null); compressAbort.current=null;
+  }, [pdfBytes, compressionLevel, pageCount, cropRects, rotations, quads, thumbnails, pdfName, ensureThumbnails, pushUndo, isCompressing]);
+
+  const handleCompressDownload = useCallback(async ()=>{
+    if(!pdfBytes) return;
+    if(isCompressing) { compressAbort.current?.abort(); return; }
+    const ac = new AbortController(); compressAbort.current = ac;
+    setIsCompressing(true); setCompressProgress({done:0,total:pageCount}); 
+    try{
+      const { bytes: out, stats } = await compressPdf(pdfBytes, { level: compressionLevel }, (done,total)=> setCompressProgress({done,total}), ac.signal);
+      if(ac.signal.aborted) return;
+      setCompressStats(stats);
+      const blob = new Blob([out.slice(0) as any], {type:"application/pdf"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href=url; a.download=`${pdfName.replace(/\.pdf$/i,"")}-comprimido-${compressionLevel}.pdf`; a.click();
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+    }catch(e:any){ if(e?.name!=="AbortError"){console.error(e); alert("Error al comprimir");}}
+    setIsCompressing(false); setCompressProgress(null); compressAbort.current=null;
+  }, [pdfBytes, pdfName, compressionLevel, pageCount, isCompressing]);
+
   const download = useCallback(async ()=>{
     if(!pdfBytes) return;
     setIsProcessing(true);
@@ -911,6 +957,32 @@ export default function PdfCropper() {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="p-4 sm:p-5 bg-violet-50/60 dark:bg-violet-950/20 border border-violet-200 rounded-2xl">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-bold tracking-widest uppercase text-violet-800">Comprimir PDF · 4 niveles offline</h3>
+              {compressStats && <span className="text-[11px] font-mono px-2 py-1 rounded-full bg-white border text-violet-700">{formatSaved(compressStats)}</span>}
+            </div>
+            <p className="text-xs text-violet-800/70">Reduce peso rasterizando páginas a JPEG. <b>Baja</b> solo reescribe (sin pérdida). <b>Media/Alta/Extrema</b> rasterizan con menos calidad/escala; extrema pasa a gris. 100% en tu navegador.</p>
+            <div className="mt-3 flex flex-col sm:flex-row gap-3">
+              <select value={compressionLevel} onChange={e=>setCompressionLevel(e.target.value as CompressionLevel)} className="flex-1 min-w-0 bg-white dark:bg-gray-900 border border-violet-200 rounded-xl px-3 py-3 sm:py-2.5 text-sm">
+                {(Object.entries(COMPRESSION_PRESETS) as [CompressionLevel, typeof COMPRESSION_PRESETS[CompressionLevel]][]).map(([k, v])=> (
+                  <option key={k} value={k}>{v.label} — {v.description}</option>
+                ))}
+              </select>
+            </div>
+            {pdfBytes && (
+              <div className="mt-2 text-[11px] text-violet-700/70 font-mono">Original {(pdfBytes.length/1024).toFixed(1)} KB · {pageCount} pág · nivel {compressionLevel} {COMPRESSION_PRESETS[compressionLevel].requiresRaster ? `(~${COMPRESSION_PRESETS[compressionLevel].scale}px, q${COMPRESSION_PRESETS[compressionLevel].quality}${COMPRESSION_PRESETS[compressionLevel].grayscale ? ", gris" : ""})` : "(vectorial)"} </div>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button onClick={handleCompressApply} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm sm:text-xs font-bold flex items-center gap-2 min-h-[44px] sm:min-h-0 touch-manipulation">
+                {isCompressing && compressProgress ? `⏳ ${compressProgress.done}/${compressProgress.total} — Cancelar` : "🗜 Aplicar compresión (reemplaza)"}
+              </button>
+              <button onClick={handleCompressDownload} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl border bg-white text-sm sm:text-xs font-semibold disabled:opacity-40 min-h-[44px] sm:min-h-0 touch-manipulation">⬇ Descargar comprimido</button>
+              {compressStats && <span className="text-[11px] text-violet-600 self-center">{compressStats.savedPercent.toFixed(1)}% · {(compressStats.compressedBytes/1024).toFixed(1)} KB</span>}
+            </div>
+            {isCompressing && compressProgress && <div className="mt-2 w-full bg-violet-100 rounded-full h-1.5 overflow-hidden"><div className="bg-violet-600 h-1.5 transition-all" style={{width: `${(compressProgress.done/compressProgress.total)*100}%`}} /></div>}
           </div>
 
           <div>
