@@ -875,6 +875,45 @@ export default function PdfCropper() {
             </div>
           </div>
 
+          <div className="p-4 sm:p-5 bg-violet-50 dark:bg-violet-950/20 border border-violet-300 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-bold tracking-widest uppercase text-violet-900 dark:text-violet-200">🗜 Comprimir PDF · 4 niveles offline</h3>
+              {compressStats && <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white border border-violet-200 text-violet-700">{formatSaved(compressStats)}</span>}
+            </div>
+            <p className="text-xs text-violet-800/70 dark:text-violet-300/70 leading-relaxed">Elige nivel y comprime sin subir nada. <b>Baja</b> = sin pérdida (solo reescribe). <b>Media/Alta/Extrema</b> = rasterizan a JPEG (extrema en gris). | Original: {pdfBytes ? `${(pdfBytes.length/1024).toFixed(1)} KB · ${pageCount} pág` : "— carga un PDF para ver tamaño"}</p>
+
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {(Object.entries(COMPRESSION_PRESETS) as [CompressionLevel, typeof COMPRESSION_PRESETS[CompressionLevel]][]).map(([k, v])=> {
+                const sel = compressionLevel===k;
+                return (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={()=>setCompressionLevel(k)}
+                  className={`text-left p-3 rounded-xl border-2 transition-all ${sel ? "bg-white dark:bg-gray-900 border-violet-500 shadow-sm" : "bg-white/60 dark:bg-gray-900/40 border-violet-100 dark:border-violet-900 hover:border-violet-300"}`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className={`text-xs font-black ${sel ? "text-violet-700" : "text-gray-700 dark:text-gray-300"}`}>{v.label}</span>
+                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sel ? "border-violet-600 bg-violet-600" : "border-gray-300"}`}>{sel && <span className="w-1.5 h-1.5 bg-white rounded-full" />}</span>
+                  </div>
+                  <div className="text-[11px] leading-snug text-gray-500 dark:text-gray-400 mt-1">{v.description}</div>
+                  <div className="text-[10px] font-mono text-violet-600 dark:text-violet-400 mt-1.5">{v.requiresRaster ? `~${v.scale}px · JPEG q${v.quality}${v.grayscale ? " · gris" : ""}` : "vectorial · sin raster"}</div>
+                </button>
+              )})}
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button onClick={handleCompressApply} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-5 sm:py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-bold flex items-center gap-2 min-h-[44px] touch-manipulation shadow-sm">
+                {isCompressing && compressProgress ? `⏳ ${compressProgress.done}/${compressProgress.total} — Cancelar` : "🗜 Aplicar compresión"}
+              </button>
+              <button onClick={handleCompressDownload} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-5 sm:py-2.5 rounded-xl bg-white dark:bg-gray-900 border-2 border-violet-200 text-violet-700 dark:text-violet-300 text-sm font-bold disabled:opacity-40 min-h-[44px] touch-manipulation">⬇ Descargar comprimido</button>
+              {!pdfBytes && <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl">Carga un PDF arriba para activar compresión</span>}
+              {pdfBytes && compressStats && <span className="text-xs font-mono text-violet-700 self-center bg-white border px-2.5 py-1 rounded-full">{compressStats.savedPercent.toFixed(1)}% ahorrado · {(compressStats.compressedBytes/1024).toFixed(1)} KB</span>}
+            </div>
+            {isCompressing && compressProgress && <div className="mt-3 w-full bg-violet-100 dark:bg-violet-900/30 rounded-full h-2 overflow-hidden"><div className="bg-violet-600 h-2 transition-all" style={{width: `${(compressProgress.done/compressProgress.total)*100}%`}} /></div>}
+            {pdfBytes && !isCompressing && <div className="mt-2 text-[11px] text-violet-700/60">Nivel actual: <b>{compressionLevel}</b> — tras comprimir puedes deshacer con Ctrl+Z. “Aplicar” reemplaza el PDF en el editor; “Descargar” no lo reemplaza.</div>}
+          </div>
+
           <div className="p-4 bg-white dark:bg-gray-900 border rounded-2xl">
             <label className="block text-xs font-bold tracking-widest uppercase text-gray-500 mb-3">Selección por intervalos</label>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -957,32 +996,6 @@ export default function PdfCropper() {
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="p-4 sm:p-5 bg-violet-50/60 dark:bg-violet-950/20 border border-violet-200 rounded-2xl">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold tracking-widest uppercase text-violet-800">Comprimir PDF · 4 niveles offline</h3>
-              {compressStats && <span className="text-[11px] font-mono px-2 py-1 rounded-full bg-white border text-violet-700">{formatSaved(compressStats)}</span>}
-            </div>
-            <p className="text-xs text-violet-800/70">Reduce peso rasterizando páginas a JPEG. <b>Baja</b> solo reescribe (sin pérdida). <b>Media/Alta/Extrema</b> rasterizan con menos calidad/escala; extrema pasa a gris. 100% en tu navegador.</p>
-            <div className="mt-3 flex flex-col sm:flex-row gap-3">
-              <select value={compressionLevel} onChange={e=>setCompressionLevel(e.target.value as CompressionLevel)} className="flex-1 min-w-0 bg-white dark:bg-gray-900 border border-violet-200 rounded-xl px-3 py-3 sm:py-2.5 text-sm">
-                {(Object.entries(COMPRESSION_PRESETS) as [CompressionLevel, typeof COMPRESSION_PRESETS[CompressionLevel]][]).map(([k, v])=> (
-                  <option key={k} value={k}>{v.label} — {v.description}</option>
-                ))}
-              </select>
-            </div>
-            {pdfBytes && (
-              <div className="mt-2 text-[11px] text-violet-700/70 font-mono">Original {(pdfBytes.length/1024).toFixed(1)} KB · {pageCount} pág · nivel {compressionLevel} {COMPRESSION_PRESETS[compressionLevel].requiresRaster ? `(~${COMPRESSION_PRESETS[compressionLevel].scale}px, q${COMPRESSION_PRESETS[compressionLevel].quality}${COMPRESSION_PRESETS[compressionLevel].grayscale ? ", gris" : ""})` : "(vectorial)"} </div>
-            )}
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button onClick={handleCompressApply} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm sm:text-xs font-bold flex items-center gap-2 min-h-[44px] sm:min-h-0 touch-manipulation">
-                {isCompressing && compressProgress ? `⏳ ${compressProgress.done}/${compressProgress.total} — Cancelar` : "🗜 Aplicar compresión (reemplaza)"}
-              </button>
-              <button onClick={handleCompressDownload} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl border bg-white text-sm sm:text-xs font-semibold disabled:opacity-40 min-h-[44px] sm:min-h-0 touch-manipulation">⬇ Descargar comprimido</button>
-              {compressStats && <span className="text-[11px] text-violet-600 self-center">{compressStats.savedPercent.toFixed(1)}% · {(compressStats.compressedBytes/1024).toFixed(1)} KB</span>}
-            </div>
-            {isCompressing && compressProgress && <div className="mt-2 w-full bg-violet-100 rounded-full h-1.5 overflow-hidden"><div className="bg-violet-600 h-1.5 transition-all" style={{width: `${(compressProgress.done/compressProgress.total)*100}%`}} /></div>}
           </div>
 
           <div>
