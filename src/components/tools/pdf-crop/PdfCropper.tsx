@@ -11,8 +11,6 @@ import { generateThumbnails, thumbKey } from "./thumbnail";
 import { detectCropBatchRects, detectSmartBatchWithQuads } from "./autoCrop";
 import { warpImageData } from "./warp";
 import type { Quad as WarpQuad, Point } from "./warp";
-import { COMPRESSION_PRESETS, compressPdf, formatSaved } from "./pdfCompress";
-import type { CompressionLevel, CompressStats } from "./pdfCompress";
 import * as pdfjsLib from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -88,21 +86,6 @@ export default function PdfCropper() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
-  // marca de agua: fondo blanco con logo -> quitar blanco y aplicar con transparencia a todas las páginas
-  const [watermarkDataUrl, setWatermarkDataUrl] = useState<string|null>(null);
-  const [watermarkImg, setWatermarkImg] = useState<HTMLImageElement|null>(null);
-  const [watermarkPreviewUrl, setWatermarkPreviewUrl] = useState<string|null>(null);
-  const [watermarkOpacity, setWatermarkOpacity] = useState(0.18);
-  const [watermarkScale, setWatermarkScale] = useState(0.35);
-  const [watermarkPosition, setWatermarkPosition] = useState<"center"|"top-left"|"top-right"|"bottom-left"|"bottom-right"|"tile">("center");
-  const watermarkInputRef = useRef<HTMLInputElement>(null);
-  const processedWatermarkRef = useRef<HTMLCanvasElement|null>(null);
-  // compresión
-  const [compressionLevel, setCompressionLevel] = useState<CompressionLevel>("medium");
-  const [isCompressing, setIsCompressing] = useState(false);
-  const [compressProgress, setCompressProgress] = useState<{done:number,total:number}|null>(null);
-  const [compressStats, setCompressStats] = useState<CompressStats|null>(null);
-  const compressAbort = useRef<AbortController|null>(null);
 
   const persist = useCallback(async (bytes: Uint8Array|null, name: string, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, sel: Set<number>, count: number, force=false) => {
     if (!bytes) return;
@@ -117,45 +100,6 @@ export default function PdfCropper() {
     // feedback breve
     const el=document.createElement("div"); el.textContent="✓ Guardado"; el.className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-full shadow z-[90]"; document.body.appendChild(el); setTimeout(()=>el.remove(),1500);
   }, [pdfBytes, pdfName, cropRects, rotations, quads, selected, pageCount, persist]);
-
-  // procesa marca: quita fondo blanco (tolerancia 240) y guarda canvas con alpha
-  useEffect(()=>{
-    if(!watermarkDataUrl){ setWatermarkImg(null); setWatermarkPreviewUrl(null); processedWatermarkRef.current=null; return; }
-    const img = new Image();
-    img.onload = ()=>{
-      const c = document.createElement("canvas");
-      c.width = img.naturalWidth; c.height = img.naturalHeight;
-      const ctx=c.getContext("2d", { willReadFrequently:true } as any);
-      if(!ctx){ setWatermarkImg(img); setWatermarkPreviewUrl(watermarkDataUrl); return; }
-      ctx.drawImage(img,0,0);
-      try{
-        const id=ctx.getImageData(0,0,c.width,c.height);
-        const d=id.data;
-        for(let i=0;i<d.length;i+=4){
-          const r=d[i], g=d[i+1], b=d[i+2];
-          // blanco puro o casi blanco con poca saturación -> transparente
-          if(r>240 && g>240 && b>240 && Math.max(r,g,b)-Math.min(r,g,b) < 15){
-            d[i+3]=0;
-          } else if((r+g+b)/3 > 245) {
-            d[i+3]=0;
-          }
-        }
-        ctx.putImageData(id,0,0);
-      }catch{}
-      processedWatermarkRef.current=c;
-      try{ setWatermarkPreviewUrl(c.toDataURL("image/png")); }catch{ setWatermarkPreviewUrl(watermarkDataUrl); }
-      setWatermarkImg(img);
-    };
-    img.onerror=()=>{ setWatermarkImg(null); setWatermarkPreviewUrl(null); processedWatermarkRef.current=null; };
-    img.src=watermarkDataUrl;
-  }, [watermarkDataUrl]);
-
-  const handleWatermarkFile = useCallback(async (file: File)=>{
-    if(!file.type.startsWith("image/")){ alert("Solo imagen para marca"); return; }
-    const reader=new FileReader();
-    reader.onload=()=> setWatermarkDataUrl(reader.result as string);
-    reader.readAsDataURL(file);
-  }, []);
 
   const pushUndo = useCallback((bytes: Uint8Array, rects: Map<number, NormalizedRect>, rots: Map<number, PageRotation>, qds: Map<number, Quad>, thumbs: string[]) => {
     setUndoStack(s => {
@@ -549,44 +493,6 @@ export default function PdfCropper() {
     return ()=> window.removeEventListener("keydown", handler);
   }, [undo, redo, pdfBytes, manualSave]);
 
-  const handleCompressApply = useCallback(async ()=>{
-    if(!pdfBytes) return;
-    if(isCompressing) { compressAbort.current?.abort(); return; }
-    const ac = new AbortController(); compressAbort.current = ac;
-    setIsCompressing(true); setCompressProgress({done:0,total:pageCount}); setCompressStats(null);
-    try{
-      const { bytes: out, stats } = await compressPdf(pdfBytes, { level: compressionLevel }, (done,total)=> setCompressProgress({done,total}), ac.signal);
-      if(ac.signal.aborted) return;
-      pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects), cloneRots(rotations), cloneQuads(quads), [...thumbnails]);
-      setPdfBytes(out);
-      setCompressStats(stats);
-      // regenera miniaturas desde bytes comprimidos
-      thumbAbort.current?.abort();
-      setThumbnails([]); setPageCount(stats ? out.length : pageCount);
-      await ensureThumbnails(out, pdfName);
-      if(stats.savedPercent < 1) alert(`Compresión ${stats.level}: ${formatSaved(stats)} — PDF ya optimizado, ahorro mínimo.`);
-    }catch(e:any){ if(e?.name!=="AbortError") {console.error(e); alert("Error al comprimir: "+(e?.message||e));}}
-    setIsCompressing(false); setCompressProgress(null); compressAbort.current=null;
-  }, [pdfBytes, compressionLevel, pageCount, cropRects, rotations, quads, thumbnails, pdfName, ensureThumbnails, pushUndo, isCompressing]);
-
-  const handleCompressDownload = useCallback(async ()=>{
-    if(!pdfBytes) return;
-    if(isCompressing) { compressAbort.current?.abort(); return; }
-    const ac = new AbortController(); compressAbort.current = ac;
-    setIsCompressing(true); setCompressProgress({done:0,total:pageCount}); 
-    try{
-      const { bytes: out, stats } = await compressPdf(pdfBytes, { level: compressionLevel }, (done,total)=> setCompressProgress({done,total}), ac.signal);
-      if(ac.signal.aborted) return;
-      setCompressStats(stats);
-      const blob = new Blob([out.slice(0) as any], {type:"application/pdf"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href=url; a.download=`${pdfName.replace(/\.pdf$/i,"")}-comprimido-${compressionLevel}.pdf`; a.click();
-      setTimeout(()=>URL.revokeObjectURL(url),2000);
-    }catch(e:any){ if(e?.name!=="AbortError"){console.error(e); alert("Error al comprimir");}}
-    setIsCompressing(false); setCompressProgress(null); compressAbort.current=null;
-  }, [pdfBytes, pdfName, compressionLevel, pageCount, isCompressing]);
-
   const download = useCallback(async ()=>{
     if(!pdfBytes) return;
     setIsProcessing(true);
@@ -595,29 +501,8 @@ export default function PdfCropper() {
       const hasCrop = Array.from(cropRects.values()).some(r => !isFullRect(r));
       const hasRot = rotations.size > 0;
       const hasQuad = quads.size > 0;
-      const hasWatermark = !!watermarkDataUrl && !!processedWatermarkRef.current;
-      const applyWatermark = (c: HTMLCanvasElement)=>{
-        const wm = processedWatermarkRef.current;
-        if(!wm || !hasWatermark) return;
-        const ctx=c.getContext("2d")!;
-        const scaleW = c.width * watermarkScale;
-        const scaleH = (wm.height / wm.width) * scaleW;
-        ctx.globalAlpha = watermarkOpacity;
-        if(watermarkPosition==="tile"){
-          for(let y=0; y<c.height; y+=scaleH+40) for(let x=0; x<c.width; x+=scaleW+40) ctx.drawImage(wm, x, y, scaleW, scaleH);
-        } else {
-          let x=0,y=0;
-          if(watermarkPosition==="center"){ x=(c.width-scaleW)/2; y=(c.height-scaleH)/2; }
-          else if(watermarkPosition==="top-left"){ x=20; y=20; }
-          else if(watermarkPosition==="top-right"){ x=c.width-scaleW-20; y=20; }
-          else if(watermarkPosition==="bottom-left"){ x=20; y=c.height-scaleH-20; }
-          else if(watermarkPosition==="bottom-right"){ x=c.width-scaleW-20; y=c.height-scaleH-20; }
-          ctx.drawImage(wm, x, y, scaleW, scaleH);
-        }
-        ctx.globalAlpha=1;
-      };
-      // Si hay quads o marca, rasteriza todas las páginas para poder aplicar warp/marca
-      if (hasQuad || hasWatermark) {
+      // Si hay quads, rasteriza páginas con warp
+      if (hasQuad) {
         const srcDoc = await PDFDocument.load(pdfBytes);
         const dstDoc = await PDFDocument.create();
         // para no recargar pdfjs por cada página, usa un doc pdfjs
@@ -648,15 +533,14 @@ export default function PdfCropper() {
             outCanvas.width = warped.width; outCanvas.height = warped.height;
             const octx = outCanvas.getContext("2d")!;
             octx.putImageData(warped, 0, 0);
-            if(hasWatermark) applyWatermark(outCanvas);
             const dataUrl = outCanvas.toDataURL("image/jpeg", 0.85);
             const b64 = dataUrl.split(",")[1];
             const jpgBytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
             const jpg = await dstDoc.embedJpg(jpgBytes);
             const pg = dstDoc.addPage([warped.width, warped.height]);
             pg.drawImage(jpg, { x: 0, y: 0, width: warped.width, height: warped.height });
-          } else if (hasWatermark || (cropRects.get(idx) && !isFullRect(cropRects.get(idx)!))) {
-            // página sin quad pero con marca o recorte: rasteriza con pdfjs para poder componer
+          } else if (cropRects.get(idx) && !isFullRect(cropRects.get(idx)!)) {
+            // página sin quad pero con recorte rectangular: rasteriza
             const rot = (rotations.get(idx) ?? 0) as PageRotation;
             const page = await pdfjsDoc.getPage(idx + 1);
             const vp1 = page.getViewport({ scale: 1, rotation: rot as number });
@@ -685,7 +569,6 @@ export default function PdfCropper() {
               tmp.getContext("2d")!.drawImage(canvas, sx, sy, sw, sh, 0,0,sw,sh);
               outCanvas=tmp;
             }
-            if(hasWatermark) applyWatermark(outCanvas);
             const dataUrl = outCanvas.toDataURL("image/jpeg", 0.85);
             const b64 = dataUrl.split(",")[1];
             const jpgBytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
@@ -693,7 +576,7 @@ export default function PdfCropper() {
             const pg = dstDoc.addPage([outCanvas.width, outCanvas.height]);
             pg.drawImage(jpg, { x:0,y:0,width:outCanvas.width,height:outCanvas.height });
           } else {
-            // página sin quad ni marca: preserva vectorial con crop/rot si aplica
+            // página sin quad ni recorte raster: preserva vectorial con crop/rot si aplica
             const [copied] = await dstDoc.copyPages(srcDoc, [idx]);
             const media = copied.getMediaBox();
             const mw = media.width || copied.getSize().width;
@@ -742,7 +625,7 @@ export default function PdfCropper() {
       setTimeout(()=>URL.revokeObjectURL(url),2000);
     } catch(e){ console.error(e); alert("Error al generar PDF recortado"); }
     setIsProcessing(false);
-  }, [pdfBytes, pdfName, cropRects, rotations, quads, pageCount, watermarkDataUrl, watermarkOpacity, watermarkScale, watermarkPosition]);
+  }, [pdfBytes, pdfName, cropRects, rotations, quads, pageCount]);
 
   const handleSaveProject = async ()=>{
     const name = projectNameInput.trim();
@@ -875,45 +758,6 @@ export default function PdfCropper() {
             </div>
           </div>
 
-          <div className="p-4 sm:p-5 bg-violet-50 dark:bg-violet-950/20 border border-violet-300 rounded-2xl shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold tracking-widest uppercase text-violet-900 dark:text-violet-200">🗜 Comprimir PDF · 4 niveles offline</h3>
-              {compressStats && <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white border border-violet-200 text-violet-700">{formatSaved(compressStats)}</span>}
-            </div>
-            <p className="text-xs text-violet-800/70 dark:text-violet-300/70 leading-relaxed">Elige nivel y comprime sin subir nada. <b>Baja</b> = sin pérdida (solo reescribe). <b>Media/Alta/Extrema</b> = rasterizan a JPEG (extrema en gris). | Original: {pdfBytes ? `${(pdfBytes.length/1024).toFixed(1)} KB · ${pageCount} pág` : "— carga un PDF para ver tamaño"}</p>
-
-            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {(Object.entries(COMPRESSION_PRESETS) as [CompressionLevel, typeof COMPRESSION_PRESETS[CompressionLevel]][]).map(([k, v])=> {
-                const sel = compressionLevel===k;
-                return (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={()=>setCompressionLevel(k)}
-                  className={`text-left p-3 rounded-xl border-2 transition-all ${sel ? "bg-white dark:bg-gray-900 border-violet-500 shadow-sm" : "bg-white/60 dark:bg-gray-900/40 border-violet-100 dark:border-violet-900 hover:border-violet-300"}`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <span className={`text-xs font-black ${sel ? "text-violet-700" : "text-gray-700 dark:text-gray-300"}`}>{v.label}</span>
-                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sel ? "border-violet-600 bg-violet-600" : "border-gray-300"}`}>{sel && <span className="w-1.5 h-1.5 bg-white rounded-full" />}</span>
-                  </div>
-                  <div className="text-[11px] leading-snug text-gray-500 dark:text-gray-400 mt-1">{v.description}</div>
-                  <div className="text-[10px] font-mono text-violet-600 dark:text-violet-400 mt-1.5">{v.requiresRaster ? `~${v.scale}px · JPEG q${v.quality}${v.grayscale ? " · gris" : ""}` : "vectorial · sin raster"}</div>
-                </button>
-              )})}
-            </div>
-
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button onClick={handleCompressApply} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-5 sm:py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-bold flex items-center gap-2 min-h-[44px] touch-manipulation shadow-sm">
-                {isCompressing && compressProgress ? `⏳ ${compressProgress.done}/${compressProgress.total} — Cancelar` : "🗜 Aplicar compresión"}
-              </button>
-              <button onClick={handleCompressDownload} disabled={!pdfBytes || isCompressing} className="px-5 py-3 sm:px-5 sm:py-2.5 rounded-xl bg-white dark:bg-gray-900 border-2 border-violet-200 text-violet-700 dark:text-violet-300 text-sm font-bold disabled:opacity-40 min-h-[44px] touch-manipulation">⬇ Descargar comprimido</button>
-              {!pdfBytes && <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl">Carga un PDF arriba para activar compresión</span>}
-              {pdfBytes && compressStats && <span className="text-xs font-mono text-violet-700 self-center bg-white border px-2.5 py-1 rounded-full">{compressStats.savedPercent.toFixed(1)}% ahorrado · {(compressStats.compressedBytes/1024).toFixed(1)} KB</span>}
-            </div>
-            {isCompressing && compressProgress && <div className="mt-3 w-full bg-violet-100 dark:bg-violet-900/30 rounded-full h-2 overflow-hidden"><div className="bg-violet-600 h-2 transition-all" style={{width: `${(compressProgress.done/compressProgress.total)*100}%`}} /></div>}
-            {pdfBytes && !isCompressing && <div className="mt-2 text-[11px] text-violet-700/60">Nivel actual: <b>{compressionLevel}</b> — tras comprimir puedes deshacer con Ctrl+Z. “Aplicar” reemplaza el PDF en el editor; “Descargar” no lo reemplaza.</div>}
-          </div>
-
           <div className="p-4 bg-white dark:bg-gray-900 border rounded-2xl">
             <label className="block text-xs font-bold tracking-widest uppercase text-gray-500 mb-3">Selección por intervalos</label>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -960,44 +804,6 @@ export default function PdfCropper() {
             </div>
           </div>
 
-          <div className="p-4 sm:p-5 bg-sky-50/60 dark:bg-sky-950/20 border border-sky-200 rounded-2xl">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold tracking-widest uppercase text-sky-800">Marca de agua · fondo blanco con logo</h3>
-              {watermarkDataUrl && <button onClick={()=>{setWatermarkDataUrl(null); if(watermarkInputRef.current) watermarkInputRef.current.value="";}} className="text-[11px] px-2.5 py-1 rounded-full border bg-white text-sky-700">✕ Quitar</button>}
-            </div>
-            <p className="text-xs text-sky-800/70">Carga imagen con fondo blanco y logo. Se quita el blanco, se ajusta transparencia y se aplica a <b>todas</b> las páginas al Descargar.</p>
-            <input ref={watermarkInputRef} type="file" accept="image/*" className="hidden" onChange={e=>{ const f=e.target.files?.[0]; if(f) handleWatermarkFile(f); }} />
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button onClick={()=>watermarkInputRef.current?.click()} className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-sm sm:text-xs font-bold min-h-[44px] sm:min-h-0 touch-manipulation">{watermarkDataUrl ? "Cambiar imagen" : "Cargar marca"}</button>
-              {watermarkDataUrl && <span className="text-[11px] text-sky-700 self-center truncate max-w-[180px]">{watermarkImg ? `${watermarkImg.naturalWidth}×${watermarkImg.naturalHeight}` : "procesando..."}</span>}
-            </div>
-            {watermarkDataUrl && (
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white/70 dark:bg-gray-900/40 rounded-xl p-3 border flex flex-col gap-2">
-                  <span className="text-[11px] font-bold text-gray-500">Vista previa</span>
-                  <div className="relative w-full h-20 bg-white border rounded-lg overflow-hidden flex items-center justify-center">
-                    {watermarkPreviewUrl && <img src={watermarkPreviewUrl} alt="marca" className="max-w-full max-h-full object-contain" style={{opacity: watermarkOpacity}} />}
-                  </div>
-                  <span className="text-[10px] text-gray-400">Fondo blanco se hace transparente</span>
-                </div>
-                <div className="sm:col-span-2 flex flex-col gap-3">
-                  <label className="flex flex-col gap-1 text-xs">Transparencia {Math.round(watermarkOpacity*100)}%<input type="range" min={0.05} max={0.9} step={0.05} value={watermarkOpacity} onChange={e=>setWatermarkOpacity(parseFloat(e.target.value))} /></label>
-                  <label className="flex flex-col gap-1 text-xs">Tamaño {Math.round(watermarkScale*100)}% del ancho<input type="range" min={0.1} max={0.6} step={0.05} value={watermarkScale} onChange={e=>setWatermarkScale(parseFloat(e.target.value))} /></label>
-                  <label className="flex flex-col gap-1 text-xs">Posición
-                    <select value={watermarkPosition} onChange={e=>setWatermarkPosition(e.target.value as any)} className="bg-white dark:bg-gray-800 border rounded-lg px-2 py-2 text-sm">
-                      <option value="center">Centro</option>
-                      <option value="top-left">Arriba izq</option>
-                      <option value="top-right">Arriba der</option>
-                      <option value="bottom-left">Abajo izq</option>
-                      <option value="bottom-right">Abajo der</option>
-                      <option value="tile">Mosaico</option>
-                    </select>
-                  </label>
-                </div>
-              </div>
-            )}
-          </div>
-
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold tracking-widest uppercase text-gray-500">Páginas — arrastra el marco naranja</h3>
@@ -1018,10 +824,6 @@ export default function PdfCropper() {
                       rotation={rotations.get(idx) ?? 0}
                       isSelected={selected.has(idx)}
                       previewCrop={previewCrop}
-                      watermarkUrl={watermarkPreviewUrl}
-                      watermarkOpacity={watermarkOpacity}
-                      watermarkScale={watermarkScale}
-                      watermarkPosition={watermarkPosition}
                       onSelect={handleSelect}
                       onDelete={handleDeleteOne}
                       onRotate={handleRotateOne}
@@ -1040,10 +842,6 @@ export default function PdfCropper() {
                     rect={cropRects.get(previewIdx) ?? FULL_RECT}
                     quad={quads.get(previewIdx) ?? null}
                     rotation={rotations.get(previewIdx) ?? 0}
-                    watermarkUrl={watermarkPreviewUrl}
-                    watermarkOpacity={watermarkOpacity}
-                    watermarkScale={watermarkScale}
-                    watermarkPosition={watermarkPosition}
                     onRectChange={handleRectChange}
                     onQuadPoint={handleQuadPoint}
                     onClose={() => setPreviewIdx(null)}

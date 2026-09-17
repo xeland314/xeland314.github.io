@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PdfWatermarker from "../components/tools/pdf-watermark/PdfWatermarker";
+
+const siteTitle = "Marca de agua PDF — Aplica logo hoja por hoja sin subir nada";
+const siteDescription = "Herramienta offline para añadir marca de agua a PDFs y ZIPs: imagen con fondo blanco (se hace transparente), opacidad/escala/posición, vista previa hoja por hoja sin miniaturas.";
+const siteKeywords = "marca de agua pdf, watermark pdf, pdf zip marca, pdf offline";
+const siteUrl = "https://xeland314.github.io/marca-agua-pdf";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  showHeader={false}
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+  applicationName="Marca de agua PDF"
+>
+  <div class="min-h-screen py-8 sm:py-12 px-4 flex flex-col items-center bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+    <div class="w-full max-w-6xl">
+      <div class="mb-6 text-center sm:text-left">
+        <p class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-mono tracking-widest uppercase mb-4">Mini app específica · 100% en tu navegador · PDF o ZIP</p>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-3">Marca de agua PDF</h1>
+        <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed max-w-3xl">Añade tu logo a un <b>PDF</b> o <b>ZIP con PDFs</b>. Carga imagen con fondo blanco (se vuelve transparente), ajusta opacidad/escala/posición y <b>previsualiza hoja por hoja</b> sin miniaturas.</p>
+      </div>
+      <PdfWatermarker client:only="react" />
+      <div class="mt-8 p-4 rounded-2xl bg-gray-900 dark:bg-black border border-gray-800 text-xs leading-relaxed text-gray-400 max-w-6xl mx-auto">
+        <span class="font-bold text-white">Privado:</span> todo offline. Si el ZIP trae varios PDFs, la marca se aplica a cada uno y se descarga un nuevo ZIP.
+      </div>
+    </div>
+  </div>
+</BaseLayout>

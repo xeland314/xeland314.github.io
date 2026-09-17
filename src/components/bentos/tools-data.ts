@@ -76,6 +76,28 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/>`,
   },
   {
+    href: "/comprimir-pdf",
+    title: { es: "Comprimir PDF", en: "Compress PDF" },
+    description: {
+      es: "4 niveles + ZIP, vista hoja por hoja sin miniaturas",
+      en: "4 levels + ZIP, page-by-page preview no thumbs",
+    },
+    badge: { es: "PDF", en: "PDF" },
+    gradient: "from-violet-500 to-purple-600",
+    icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15h6"/><path d="M12 12v6"/><path d="M12 12a3 3 0 0 0 3 3"/>`,
+  },
+  {
+    href: "/marca-agua-pdf",
+    title: { es: "Marca de agua PDF", en: "Watermark PDF" },
+    description: {
+      es: "Logo en PDF/ZIP hoja por hoja, sin miniaturas",
+      en: "Logo on PDF/ZIP page by page, no thumbs",
+    },
+    badge: { es: "PDF", en: "PDF" },
+    gradient: "from-sky-500 to-blue-600",
+    icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="14" r="3"/><path d="M12 11a3 3 0 0 0-3 3"/>`,
+  },
+  {
     href: "/mapa-personalizado",
     title: { es: "Mapa Personalizado", en: "Custom Map" },
     description: {
