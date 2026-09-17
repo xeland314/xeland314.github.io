@@ -3,7 +3,6 @@ import * as pdfjsLib from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 import { PDFDocument } from "pdf-lib";
-import JSZip from "jszip";
 import { isZipBytes, extractPdfsFromZip, createZipFromPdfs } from "../shared/zipPdf";
 import type { ZipPdfEntry } from "../shared/zipPdf";
 import { processWatermarkImage, applyWatermarkToCanvas } from "./watermark";
