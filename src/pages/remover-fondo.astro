@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BgRemover from "../components/tools/bg-remover/BgRemover";
+
+const siteTitle = "Remover Fondo — Blanco y cuadriculado sin perder resolución";
+const siteDescription =
+  "Elimina fondos blancos o cuadriculados de tus imágenes sin re-escalar: 100% en tu navegador, resolución nativa preservada, exportación PNG con transparencia. Modo flood (bordes conectados) o global, tolerancia y recorte automático.";
+const siteKeywords =
+  "remover fondo, quitar fondo blanco, fondo cuadriculado, png transparente, sin perder resolucion, offline";
+const siteAuthor = "Christopher Alexander Villamarín Pila";
+const siteUrl = "https://xeland314.github.io/remover-fondo";
+const siteImage = "https://xeland314.github.io/assets/images/logo_v3.png";
+const siteAppName = "Remover Fondo";
+---
+
+<BaseLayout
+  showHeader={false}
+  title={siteTitle}
+  description={siteDescription}
+  keywords={siteKeywords}
+  author={siteAuthor}
+  url={siteUrl}
+  image={siteImage}
+  canonical={siteUrl}
+  applicationName={siteAppName}
+>
+  <div class="min-h-screen py-8 sm:py-12 px-4 flex flex-col items-center bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+    <div class="w-full max-w-6xl">
+      <div class="mb-6 text-center sm:text-left">
+        <p class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400 text-xs font-mono tracking-widest uppercase mb-4">
+          Herramienta offline · 100% en tu navegador
+        </p>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-3">Remover Fondo</h1>
+        <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed max-w-3xl">
+          Quita <b>fondos blancos</b> o <b>cuadriculados (gris claro)</b> sin re-escalar: la imagen de salida mantiene su <b>resolución nativa</b>. Todo con <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border text-xs">canvas</code> local, exportación <b>PNG con alfa</b> y opción de <b>trim</b> automático. Soporta lote (ZIP) y comparación con deslizador.
+        </p>
+      </div>
+      <BgRemover client:only="react" />
+      <div class="mt-8 p-4 rounded-2xl bg-gray-900 dark:bg-black border border-gray-800 text-xs leading-relaxed text-gray-400 max-w-6xl mx-auto">
+        <span class="font-bold text-white">Privado y sin re-escalado:</span> tu imagen nunca sale del navegador y no se reduce: el canvas procesado conserva <b>width × height</b> originales (solo cambia el canal alfa). Descarga PNG transparente y, si quieres, con bordes recortados.
+      </div>
+    </div>
+  </div>
+</BaseLayout>

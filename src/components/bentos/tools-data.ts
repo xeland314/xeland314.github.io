@@ -98,6 +98,17 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="14" r="3"/><path d="M12 11a3 3 0 0 0-3 3"/>`,
   },
   {
+    href: "/remover-fondo",
+    title: { es: "Remover Fondo", en: "Remove BG" },
+    description: {
+      es: "Blanco/cuadriculado → PNG transparente sin re-escalar",
+      en: "White/checker → transparent PNG keep resolution",
+    },
+    badge: { es: "Imagen", en: "Image" },
+    gradient: "from-violet-500 to-indigo-600",
+    icon: `<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/><circle cx="15" cy="13" r="2"/>`,
+  },
+  {
     href: "/mapa-personalizado",
     title: { es: "Mapa Personalizado", en: "Custom Map" },
     description: {
