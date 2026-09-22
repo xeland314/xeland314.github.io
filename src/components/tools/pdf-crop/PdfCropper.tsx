@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { PDFDocument, degrees } from "pdf-lib";
 import { parsePageIntervals, normalizedRectToCropBox, FULL_RECT, isFullRect, clampRect } from "./pdfOperations";
 import type { NormalizedRect } from "./pdfOperations";
-import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtract } from "./cropSync";
+import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtract, buildReorderOrder, reorderArray, reindexMapAfterReorder, reorderSelectedSet } from "./cropSync";
 import { saveSession, loadSession, clearSession, listProjects, saveProject, getProject, deleteProject, duplicateProject, exportProjectJson, importProjectJson, base64ToBytes } from "./storage";
 import type { PdfCropProject, PageRotation, Quad } from "./storage";
 import PageCard from "./PageCard";
@@ -83,6 +83,8 @@ export default function PdfCropper() {
   const [previewIdx, setPreviewIdx] = useState<number|null>(null);
   const [autoProgress, setAutoProgress] = useState<{done:number,total:number}|null>(null);
   const autoAbort = useRef<AbortController|null>(null);
+  const [dragFrom, setDragFrom] = useState<number|null>(null);
+  const [dragOver, setDragOver] = useState<number|null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -451,6 +453,54 @@ export default function PdfCropper() {
     setIsProcessing(false);
   }, [pdfBytes, pageCount, cropRects, rotations, quads, pushUndo, thumbnails, pdfName]);
 
+  const handleReorder = useCallback(async (from:number, to:number)=>{
+    if (!pdfBytes || from===to) return;
+    if (from<0||from>=pageCount||to<0||to>=pageCount) return;
+    const newOrder = buildReorderOrder(pageCount, from, to);
+    const thumbsSnap = [...thumbnails];
+    pushUndo(cloneBytes(pdfBytes), cloneRects(cropRects), cloneRots(rotations), cloneQuads(quads), thumbsSnap);
+    setIsProcessing(true);
+    try{
+      const src = await PDFDocument.load(pdfBytes);
+      const dst = await PDFDocument.create();
+      const copied = await dst.copyPages(src, newOrder);
+      copied.forEach(p=>dst.addPage(p));
+      const out = await dst.save();
+      const newThumbs = reorderArray(thumbnails, from, to);
+      const newRects = reindexMapAfterReorder(cropRects, newOrder);
+      const newRots = reindexMapAfterReorder(rotations, newOrder) as Map<number, PageRotation>;
+      const newQuads = reindexMapAfterReorder(quads, newOrder) as Map<number, Quad>;
+      const newSelected = reorderSelectedSet(selected, newOrder);
+      setPdfBytes(out);
+      setThumbnails(newThumbs);
+      setPageCount(newThumbs.length);
+      thumbCache.current.set(thumbKey(out, pdfName), newThumbs);
+      setCropRects(newRects);
+      setRotations(newRots);
+      setQuads(newQuads);
+      setSelected(newSelected);
+      // ajusta preview si estaba abierto
+      if (previewIdx !== null) {
+        const oldToNew = new Map(newOrder.map((old,ne)=>[old,ne] as const));
+        const mapped = oldToNew.get(previewIdx);
+        if (mapped !== undefined) setPreviewIdx(mapped);
+      }
+    }catch(e){ console.error(e); alert("Error al reordenar"); }
+    setIsProcessing(false);
+    setDragFrom(null); setDragOver(null);
+  }, [pdfBytes, pageCount, thumbnails, cropRects, rotations, quads, selected, pushUndo, pdfName, previewIdx]);
+
+  // usado por PreviewModal (eliminar con sí/no)
+  const handlePreviewDelete = useCallback(async (idx:number)=>{
+    const n = pageCount;
+    await handleDeleteOne(idx);
+    // ajusta preview según tamaño esperado n-1
+    if (n <= 1) setPreviewIdx(null);
+    else if (idx >= n - 1) setPreviewIdx(n - 2); // borró última -> anterior
+    else setPreviewIdx(idx); // mantiene índice, ahora apunta a siguiente página
+  }, [handleDeleteOne, pageCount]);
+  const handlePreviewNavigate = useCallback((newIdx:number)=> setPreviewIdx(newIdx), []);
+
   const undo = useCallback(async ()=>{
     if(undoStack.length===0) return;
     const prev = undoStack[undoStack.length-1];
@@ -813,37 +863,55 @@ export default function PdfCropper() {
               <div className="py-8 text-center text-xs text-gray-400 animate-pulse border border-dashed rounded-2xl">Generando miniaturas {thumbProgress ? `${thumbProgress.done}/${thumbProgress.total}` : "…"} — UI baja resolución, PDF original intacto</div>
             ) : (
               <>
+                <p className="text-[11px] text-gray-400 mb-2">↕ Arrastras las tarjetas para reordenar páginas — el orden se refleja al Descargar.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 min-h-[120px]">
                   {thumbnails.map((src, idx) => (
-                    <PageCard
+                    <div
                       key={`${pdfName}-thumb-${idx}`}
-                      pageIndex={idx}
-                      thumbnailSrc={src}
-                      rect={cropRects.get(idx) ?? FULL_RECT}
-                      quad={quads.get(idx) ?? null}
-                      rotation={rotations.get(idx) ?? 0}
-                      isSelected={selected.has(idx)}
-                      previewCrop={previewCrop}
-                      onSelect={handleSelect}
-                      onDelete={handleDeleteOne}
-                      onRotate={handleRotateOne}
-                      onQuadToggle={handleQuadToggle}
-                      onQuadPoint={handleQuadPoint}
-                      onRectChange={handleRectChange}
-                      onPreview={setPreviewIdx}
-                    />
+                      draggable
+                      onDragStart={(e) => { setDragFrom(idx); e.dataTransfer.effectAllowed = "move"; }}
+                      onDragEnd={() => { setDragFrom(null); setDragOver(null); }}
+                      onDragOver={(e) => { e.preventDefault(); if (dragOver !== idx) setDragOver(idx); }}
+                      onDragLeave={() => setDragOver((prev) => (prev === idx ? null : prev))}
+                      onDrop={(e) => { e.preventDefault(); if (dragFrom !== null && dragFrom !== idx) handleReorder(dragFrom, idx); setDragFrom(null); setDragOver(null); }}
+                      className={`relative rounded-2xl transition-all ${dragOver===idx && dragFrom!==null && dragFrom!==idx ? "ring-2 ring-emerald-500 ring-offset-2 scale-[1.02]" : ""} ${dragFrom===idx ? "opacity-40" : ""}`}
+                    >
+                      {/* handle visual */}
+                      <div className="absolute top-1 left-1/2 -translate-x-1/2 z-10 pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity">
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-widest uppercase bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 rounded-full px-2 py-0.5 shadow">↕ arrastrar</span>
+                      </div>
+                      <PageCard
+                        pageIndex={idx}
+                        thumbnailSrc={src}
+                        rect={cropRects.get(idx) ?? FULL_RECT}
+                        quad={quads.get(idx) ?? null}
+                        rotation={rotations.get(idx) ?? 0}
+                        isSelected={selected.has(idx)}
+                        previewCrop={previewCrop}
+                        onSelect={handleSelect}
+                        onDelete={handleDeleteOne}
+                        onRotate={handleRotateOne}
+                        onQuadToggle={handleQuadToggle}
+                        onQuadPoint={handleQuadPoint}
+                        onRectChange={handleRectChange}
+                        onPreview={setPreviewIdx}
+                      />
+                    </div>
                   ))}
                 </div>
                 {previewIdx !== null && pdfBytes && (
                   <PreviewModal
                     pdfBytes={pdfBytes}
                     pageIndex={previewIdx}
+                    pageCount={pageCount}
                     thumbnailSrc={thumbnails[previewIdx] ?? null}
                     rect={cropRects.get(previewIdx) ?? FULL_RECT}
                     quad={quads.get(previewIdx) ?? null}
                     rotation={rotations.get(previewIdx) ?? 0}
                     onRectChange={handleRectChange}
                     onQuadPoint={handleQuadPoint}
+                    onDelete={handlePreviewDelete}
+                    onNavigate={handlePreviewNavigate}
                     onClose={() => setPreviewIdx(null)}
                   />
                 )}

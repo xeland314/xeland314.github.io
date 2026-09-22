@@ -12,6 +12,7 @@ import type { PageRotation, Quad } from "./storage";
 interface Props {
   pdfBytes: Uint8Array;
   pageIndex: number;
+  pageCount?: number;
   thumbnailSrc: string | null;
   rect: NormalizedRect;
   quad?: Quad | null;
@@ -22,19 +23,29 @@ interface Props {
   watermarkPosition?: string;
   onRectChange: (idx: number, newRect: NormalizedRect, startRect: NormalizedRect) => void;
   onQuadPoint?: (idx: number, pIdx: number, pt: { x: number; y: number }) => void;
+  onDelete?: (idx: number) => void;
+  onNavigate?: (newIdx: number) => void;
   onClose: () => void;
 }
 
-export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, quad = null, rotation = 0, watermarkUrl=null, watermarkOpacity=0.18, watermarkScale=0.35, watermarkPosition="center", onRectChange, onQuadPoint, onClose }: Props) {
+export default function PreviewModal({ pdfBytes, pageIndex, pageCount, thumbnailSrc, rect, quad = null, rotation = 0, watermarkUrl=null, watermarkOpacity=0.18, watermarkScale=0.35, watermarkPosition="center", onRectChange, onQuadPoint, onDelete, onNavigate, onClose }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [highResReady, setHighResReady] = useState(false);
   const [renderError, setRenderError] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const dragRef = useRef<null | { type: "move" | "resize"; handle?: string; startX: number; startY: number; startRect: NormalizedRect }>(null);
   const quadDragRef = useRef<null | { pIdx: number; startX: number; startY: number; startQuad: Quad }>(null);
+  const total = pageCount ?? pageIndex + 1;
+  const hasPrev = pageIndex > 0;
+  const hasNext = pageCount !== undefined ? pageIndex < pageCount - 1 : false;
+  // reset confirm al cambiar página
+  useEffect(() => { setConfirmDelete(false); }, [pageIndex]);
 
   // high-res render solo de esta página, desde bytes originales
   useEffect(() => {
+    setHighResReady(false);
+    setRenderError(false);
     const ac = new AbortController();
     let doc: any = null;
     let pageProxy: any = null;
@@ -98,12 +109,16 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
     w.style.aspectRatio = isSwapped ? `${c.height} / ${c.width}` : `${c.width} / ${c.height}`;
   }, [rotation]);
 
-  // Esc para cerrar
+  // Esc para cerrar, flechas para navegar
   useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const h = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { if (confirmDelete) setConfirmDelete(false); else onClose(); }
+      if (e.key === "ArrowLeft" && hasPrev && onNavigate) { e.preventDefault(); onNavigate(pageIndex - 1); }
+      if (e.key === "ArrowRight" && hasNext && onNavigate) { e.preventDefault(); onNavigate(pageIndex + 1); }
+    };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [onClose]);
+  }, [onClose, hasPrev, hasNext, onNavigate, pageIndex, confirmDelete]);
 
   const handlePointerDown = (e: React.PointerEvent, type: "move" | "resize", handle?: string) => {
     e.preventDefault();
@@ -176,13 +191,30 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
       <div className="relative w-full max-w-[min(1200px,88vw)] max-h-[92vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2.5 py-1 rounded-full">Pág. {pageIndex + 1}{rotation ? ` · ${rotation}°` : ""}{quad ? " · ◫" : ""}</span>
-            <span className="text-xs text-gray-500 hidden sm:inline">{quad ? "Arrastra esquinas del trapecio — warp a rectángulo" : "Arrastra el marco naranja — precisión a nivel de píxel"} · <b>Esc</b> para cerrar</span>
+            <span className="text-xs font-mono font-bold bg-gray-900 text-white px-2.5 py-1 rounded-full">Pág. {pageIndex + 1}{pageCount ? ` / ${pageCount}` : ""}{rotation ? ` · ${rotation}°` : ""}{quad ? " · ◫" : ""}</span>
+            <span className="text-xs text-gray-500 hidden sm:inline">{quad ? "Arrastra esquinas del trapecio — warp a rectángulo" : "Arrastra el marco naranja — precisión a nivel de píxel"} · <b>Esc</b> · <b>← →</b> navegar</span>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300">✕</button>
         </div>
 
-        <div className="flex-1 overflow-auto bg-gray-50 dark:bg-black p-4 sm:p-6 flex items-center justify-center">
+        <div className="relative flex-1 overflow-auto bg-gray-50 dark:bg-black p-4 sm:p-6 flex items-center justify-center">
+          {/* botones laterales anterior/siguiente */}
+          {onNavigate && (
+            <>
+              <button
+                onClick={() => hasPrev && onNavigate(pageIndex - 1)}
+                disabled={!hasPrev}
+                aria-label="Página anterior"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-700 shadow-xl flex items-center justify-center text-lg sm:text-xl disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-transform"
+              >‹</button>
+              <button
+                onClick={() => hasNext && onNavigate(pageIndex + 1)}
+                disabled={!hasNext}
+                aria-label="Página siguiente"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-700 shadow-xl flex items-center justify-center text-lg sm:text-xl disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-transform"
+              >›</button>
+            </>
+          )}
           <div ref={wrapRef} className="relative inline-block max-w-full max-h-full">
             {/* imagen rotada sola — overlay queda fijo a pantalla */}
             <div className="transition-transform duration-200" style={{ transform: rotation ? `rotate(${rotation}deg)` : undefined, transformOrigin: "center center" }}>
@@ -265,9 +297,27 @@ export default function PreviewModal({ pdfBytes, pageIndex, thumbnailSrc, rect, 
           </div>
         </div>
 
-        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3 bg-white dark:bg-gray-900">
-          <span className="text-[11px] text-gray-500">Solo esta imagen en alta resolución · original intacto para Descargar</span>
-          <button onClick={onClose} className="px-5 py-2 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold">Listo</button>
+        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-gray-900">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-gray-500 hidden sm:inline">Solo esta imagen en alta resolución · original intacto para Descargar</span>
+            {onDelete && (
+              confirmDelete ? (
+                <span className="flex items-center gap-2 text-xs font-semibold">
+                  <span className="text-red-600">¿Eliminar pág. {pageIndex+1}?</span>
+                  <button onClick={() => { setConfirmDelete(false); onDelete(pageIndex); }} className="px-3 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold">Sí</button>
+                  <button onClick={() => setConfirmDelete(false)} className="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 border text-gray-700 dark:text-gray-200">No</button>
+                </span>
+              ) : (
+                <button onClick={() => setConfirmDelete(true)} className="px-3.5 py-1.5 rounded-full border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold flex items-center gap-1.5">🗑 Eliminar</button>
+              )
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {onNavigate && pageCount && pageCount>1 && (
+              <span className="text-[11px] font-mono text-gray-400 mr-1">{pageIndex+1} / {pageCount}</span>
+            )}
+            <button onClick={onClose} className="px-5 py-2 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold">Listo</button>
+          </div>
         </div>
       </div>
     </div>

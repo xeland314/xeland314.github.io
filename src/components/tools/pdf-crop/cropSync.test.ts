@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtract } from "./cropSync";
+import { syncRectsForSelection, reindexRectsAfterDelete, reindexRectsAfterExtract, buildReorderOrder, reorderArray, reindexMapAfterReorder, reorderSelectedSet } from "./cropSync";
 import type { NormalizedRect } from "./pdfOperations";
 
 describe("syncRectsForSelection", () => {
@@ -89,5 +89,32 @@ describe("reindex", () => {
     const out = reindexRectsAfterExtract(rects, [1, 3]);
     expect(out.get(0)).toEqual({ x: 0.1, y: 0.1, w: 0.3, h: 0.3 });
     expect(out.get(1)).toEqual({ x: 0.3, y: 0.3, w: 0.3, h: 0.3 });
+  });
+});
+
+describe("reorder helpers", () => {
+  it("buildReorderOrder mueve correctamente", () => {
+    expect(buildReorderOrder(4, 0, 2)).toEqual([1,2,0,3]);
+    expect(buildReorderOrder(4, 3, 0)).toEqual([3,0,1,2]);
+    expect(buildReorderOrder(3, 1, 1)).toEqual([0,1,2]);
+  });
+  it("reorderArray mueve elemento", () => {
+    expect(reorderArray(["a","b","c","d"],0,2)).toEqual(["b","c","a","d"]);
+    expect(reorderArray([1,2,3],2,0)).toEqual([3,1,2]);
+  });
+  it("reindexMapAfterReorder reubica rects", () => {
+    const m = new Map<number, NormalizedRect>([[0,{x:0,y:0,w:0.5,h:0.5}],[2,{x:0.2,y:0.2,w:0.5,h:0.5}]]);
+    const order = [1,2,0,3]; // 0->2, 2->1
+    const out = reindexMapAfterReorder(m, order);
+    expect(out.get(2)).toEqual({x:0,y:0,w:0.5,h:0.5});
+    expect(out.get(1)).toEqual({x:0.2,y:0.2,w:0.5,h:0.5});
+    expect(out.has(0)).toBe(false);
+  });
+  it("reorderSelectedSet remapea seleccion", () => {
+    const sel = new Set([0,2]);
+    const order = [1,2,0,3]; // new 1<-2, new2<-0
+    const out = reorderSelectedSet(sel, order);
+    expect(out).toEqual(new Set([1,2]));
+    expect(reorderSelectedSet(new Set([1]), [1,0,2])).toEqual(new Set([0]));
   });
 });

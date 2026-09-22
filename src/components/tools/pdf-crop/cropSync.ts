@@ -88,3 +88,42 @@ export function reindexRectsAfterExtract(
   });
   return next;
 }
+
+/** Construye nuevo orden al mover from -> to */
+export function buildReorderOrder(length: number, from: number, to: number): number[] {
+  const order = Array.from({ length }, (_, i) => i);
+  const [moved] = order.splice(from, 1);
+  order.splice(to, 0, moved);
+  return order;
+}
+
+export function reorderArray<T>(arr: T[], from: number, to: number): T[] {
+  if (from === to) return [...arr];
+  const next = [...arr];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
+  return next;
+}
+
+export function reindexMapAfterReorder<T>(map: Map<number, T>, newOrder: number[]): Map<number, T> {
+  const next = new Map<number, T>();
+  newOrder.forEach((oldIdx, newIdx) => {
+    const v = map.get(oldIdx);
+    if (v !== undefined) {
+      // clona si es objeto plano para no compartir referencia
+      const cloned = typeof v === "object" && v !== null ? Array.isArray(v) ? ([...v] as unknown as T) : ({ ...(v as object) } as T) : v;
+      next.set(newIdx, cloned);
+    }
+  });
+  return next;
+}
+
+export function reorderSelectedSet(selected: Set<number>, newOrder: number[]): Set<number> {
+  const oldToNew = new Map(newOrder.map((old, ne) => [old, ne] as const));
+  const next = new Set<number>();
+  for (const old of selected) {
+    const ne = oldToNew.get(old);
+    if (ne !== undefined) next.add(ne);
+  }
+  return next;
+}
