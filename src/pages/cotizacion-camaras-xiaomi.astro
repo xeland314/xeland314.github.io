@@ -142,8 +142,8 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
         </section>
 
         <section class="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-800 print:p-6">
-          <h2 class="text-xl font-black text-gray-900 dark:text-white">2. Informe comparativo de proveedores</h2>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">GadgetStore $45/$39 efectivo (DOMOTICA/CAMARAS Y SEGURIDAD). Sukasa meta <code>product:price:amount</code>. Ganacell listing + LD+JSON.</p>
+          <h2 class="text-xl font-black text-gray-900 dark:text-white">2. Informe comparativo de proveedores (actualizado con Mi Home Ec, La Victoria, MobileStore)</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">GadgetStore $45/$39 efectivo. Sukasa meta <code>product:price:amount</code>. Ganacell LD+JSON. <b>MiHomeEc</b> vía LD+JSON <code>price</code> + <code>availability</code> con <code>uv + BeautifulSoup</code>. LaVictoria y MobileStore verificados como <b>sin stock</b> (igual que IDC Mayorista).</p>
           <div class="mt-4 overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
             <table class="w-full text-sm">
               <thead class="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
@@ -184,17 +184,52 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
                   <td class="p-3">—</td>
                   <td class="p-3 text-xs">75% más caro que Sukasa. Solo respaldo.</td>
                 </tr>
+                <tr class="bg-blue-50/60 dark:bg-blue-950/20">
+                  <td class="p-3 font-bold">MiHomeEc</td>
+                  <td class="p-3"><span class="font-semibold">Outdoor AW200</span><br/><span class="text-xs text-gray-500">1080p · IP65 · color nocturna · Alexa/Google</span><br/><code class="text-xs">sku 295??</code></td>
+                  <td class="p-3 text-right font-black">$39.00<br/><span class="text-xs font-normal text-emerald-700">InStock</span></td>
+                  <td class="p-3">Exterior</td>
+                  <td class="p-3"><span class="bg-emerald-600 text-white px-2 py-1 rounded-full text-xs font-bold">EXTERIOR BARATA</span><br/><span class="text-xs">La más barata exterior con stock (vs C500 Pro $62.99). Ideal para las 3 exterior.</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-bold">MiHomeEc</td>
+                  <td class="p-3"><span class="font-semibold">360 2K Pro Rotación 360</span><br/><span class="text-xs text-gray-500">2K Pro · PTZ</span></td>
+                  <td class="p-3 text-right font-bold">$75.00<br/><span class="text-xs font-normal text-emerald-700">InStock</span></td>
+                  <td class="p-3">Interior</td>
+                  <td class="p-3 text-xs">Disponible pero 77% más cara que C300 $42.29. No recomendada.</td>
+                </tr>
+                <tr class="text-gray-400 bg-gray-50 dark:bg-gray-800/30">
+                  <td class="p-3 font-bold">MiHomeEc</td>
+                  <td class="p-3"><span class="font-semibold">2K Magnetic Mount</span><br/><span class="text-xs">LD price $35.00</span></td>
+                  <td class="p-3 text-right font-bold line-through">$35.00<br/><span class="text-xs font-normal text-red-600">OutOfStock</span></td>
+                  <td class="p-3">Interior fijo</td>
+                  <td class="p-3 text-xs"><span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs">SIN STOCK</span> Referencia. Como IDC Mayoristas. Usar GadgetStore $39 o Sukasa.</td>
+                </tr>
+                <tr class="text-gray-400 bg-gray-50 dark:bg-gray-800/30">
+                  <td class="p-3 font-bold">La Victoria</td>
+                  <td class="p-3"><span class="font-semibold">MBC20 (AW300 Outdoor)</span><br/><span class="text-xs">IP65 · 1080p</span></td>
+                  <td class="p-3 text-right font-bold line-through">$52.09<span class="text-xs font-normal"> sin IVA</span><br/><span class="text-xs font-normal">$59.90 INC IVA</span><br/><span class="text-xs font-normal text-red-600">OutOfStock</span></td>
+                  <td class="p-3">Exterior</td>
+                  <td class="p-3 text-xs"><span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs">SIN STOCK</span> Referencia. Precio sin IVA declarado. No comprar.</td>
+                </tr>
+                <tr class="text-gray-400 bg-gray-50 dark:bg-gray-800/30">
+                  <td class="p-3 font-bold">MobileStore</td>
+                  <td class="p-3"><span class="font-semibold">Smart Camera C100</span><br/><span class="text-xs">1080p · básica</span></td>
+                  <td class="p-3 text-right font-bold line-through">$26.99<br/><span class="text-xs font-normal text-red-600">OutOfStock</span></td>
+                  <td class="p-3">Interior</td>
+                  <td class="p-3 text-xs"><span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs">SIN STOCK</span> "Notificarme cuando esté nuevamente en stock". Referencia. Más básica que C300.</td>
+                </tr>
               </tbody>
             </table>
           </div>
-          <p class="text-xs text-gray-500 mt-2">IDC verificado sin CCTV. Sukasa InStock hasta 2026-10-24.</p>
+          <p class="text-xs text-gray-500 mt-2">IDC Mayorista sin CCTV (verificado). MiHomeEc LD+JSON: Magnetic $35 OutOfStock, 2K Pro $75 InStock, AW200 $39 InStock. LaVictoria $52.09 sin IVA → $59.90 INC IVA OutOfStock. MobileStore $26.99 OutOfStock. Sukasa InStock hasta 2026-10-24. Ventas MiHomeEc: ventas@mihomeec.com</p>
         </section>
 
         <section class="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 print:bg-white">
-          <h2 class="text-xl font-black text-gray-900 dark:text-white">3. Dónde comprar</h2>
+          <h2 class="text-xl font-black text-gray-900 dark:text-white">3. Dónde comprar (con stock / sin stock)</h2>
           <div class="mt-4 grid md:grid-cols-3 gap-4 text-sm">
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-              <h3 class="font-black">GADGETSTORE.EC</h3>
+              <h3 class="font-black">GADGETSTORE.EC <span class="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded-full">stock</span></h3>
               <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
                 <li>📍 Av. Shyris N36-120, Miraflores, Quito 170505</li>
                 <li>📞 099 280 0271</li>
@@ -204,7 +239,7 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
               </ul>
             </div>
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-              <h3 class="font-black">SUKASA</h3>
+              <h3 class="font-black">SUKASA <span class="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded-full">stock</span></h3>
               <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
                 <li>📍 Scala, Quicentro, Mall del Sol, Policentro</li>
                 <li>🌐 sukasa.com</li>
@@ -213,14 +248,43 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
               </ul>
             </div>
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+              <h3 class="font-black">MI HOME EC <span class="text-xs bg-emerald-600 text-white px-2 py-0.5 rounded-full">stock parcial</span></h3>
+              <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
+                <li>🌐 mihomeec.com/camaras-seguridad/</li>
+                <li>✉️ ventas@mihomeec.com</li>
+                <li>✅ AW200 $39 InStock - exterior barata</li>
+                <li>✅ 2K Pro $75 InStock</li>
+                <li>❌ Magnetic $35 OutOfStock (ref.)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="mt-4 grid md:grid-cols-3 gap-4 text-sm">
+            <div class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl p-4 opacity-75">
+              <h3 class="font-black text-gray-600 dark:text-gray-400">LA VICTORIA <span class="text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">sin stock</span></h3>
+              <ul class="mt-2 space-y-1 text-gray-600 dark:text-gray-400">
+                <li>🌐 lavictoria.ec - MBC20 $52.09 sin IVA ($59.90 INC IVA)</li>
+                <li>❌ OutOfStock - solo referencia como IDC</li>
+                <li>📞 098 388 9277</li>
+              </ul>
+            </div>
+            <div class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl p-4 opacity-75">
+              <h3 class="font-black text-gray-600 dark:text-gray-400">MOBILESTORE <span class="text-xs bg-gray-500 text-white px-2 py-0.5 rounded-full">sin stock</span></h3>
+              <ul class="mt-2 space-y-1 text-gray-600 dark:text-gray-400">
+                <li>🌐 mobilestore.ec - C100 $26.99 INC IVA</li>
+                <li>❌ OutOfStock - "Notificarme cuando esté nuevamente en stock"</li>
+              </ul>
+            </div>
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
               <h3 class="font-black">GANACELL</h3>
               <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
                 <li>📍 GYE/UIO/CUE/Manta etc.</li>
                 <li>✉️ ventas@ganacell.com</li>
                 <li>🌐 ganacell.com/tiendas</li>
+                <li>💰 C300 Dual $74 / CW100 $75 / BW300 $91</li>
               </ul>
             </div>
           </div>
+          <p class="text-xs text-gray-500 mt-3">MiHomeEc es tienda oficial Xiaomi Ecuador (ventas@mihomeec.com). Precios extraídos vía LD+JSON con uv. Sin stock se deja como referencia igual que IDC Mayorista sin CCTV.</p>
         </section>
 
         <section class="p-6 sm:p-8 print:break-inside-avoid">
@@ -275,19 +339,21 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
 
           <div class="mt-4 flex flex-wrap gap-2 print:hidden">
             <button id="btn-add-row" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-xl font-bold">+ Añadir fila</button>
-            <button id="btn-preset-real-reco" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold">Preset real: 9x C300 + 3x C500 Pro</button>
-            <button id="btn-preset-real-eco" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold">Preset real eco: 9x Magnetic $39 + 3x C500 Pro</button>
-            <button id="btn-preset-12sukasa" class="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-xl font-bold">Preset: 12x mixto Sukasa</button>
+            <button id="btn-preset-real-reco" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold">Preset reco: 9x C300 + 3x C500 Pro</button>
+            <button id="btn-preset-real-aw200" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl font-bold">Preset óptimo: 9x C300 + 3x AW200 $39</button>
+            <button id="btn-preset-real-eco" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold">Eco: 9x Magnetic $39 + 3x AW200 $39</button>
             <button id="btn-clear" class="ml-auto text-sm text-gray-600 hover:underline">Limpiar</button>
           </div>
 
           <div class="mt-6 grid md:grid-cols-2 gap-4 text-sm">
             <div class="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 p-4">
-              <h4 class="font-black text-emerald-800 dark:text-emerald-300">Presupuesto recomendado (9+3)</h4>
+              <h4 class="font-black text-emerald-800 dark:text-emerald-300">Presupuesto recomendado (9+3) - actualizado MiHomeEc</h4>
               <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300 text-xs">
-                <li><b>Reco 9x C300 $42.29 + 3x C500 Pro $62.99:</b> $569.58 cámaras + SD 12x$12 $144 + kits 12x$4.50 $54 = <b id="quick-reco">$767.58 INC IVA</b><br/><span class="text-gray-500">Base $667.46 + IVA $100.12 - Cámaras base $495.29 + IVA $74.29</span></li>
-                <li><b>Eco 9x Magnetic $39 + 3x C500 Pro:</b> $351 + $188.97 = $539.97 + $198 acc = <b>$737.97</b><br/><span class="text-gray-500">Base $641.71 + IVA $96.26</span></li>
+                <li><b>Reco 9x C300 $42.29 + 3x C500 Pro $62.99:</b> $569.58 + $198 acc = <b>$767.58</b> · Base $667.46 + IVA $100.12</li>
+                <li><b>Óptimo 9x C300 + 3x AW200 $39 (MiHomeEc InStock):</b> $380.61 + $117 = $497.61 + $198 = <b class="text-emerald-700">$695.61</b> · Base $604.88 + IVA $90.73 — <b>ahorra $71.97</b> vs C500 Pro. AW200 1080p IP65 suficiente para exterior edificio.</li>
+                <li><b>Eco 9x Magnetic $39 + 3x AW200 $39:</b> $351 + $117 = $468 + $198 = <b>$666.00</b> · Base $579.13 + IVA $86.87</li>
                 <li><b>Ganacell 9x $74 + 3x $75:</b> $891 + $198 = <b>$1,089</b> - 42% más caro.</li>
+                <li class="text-gray-500">Sin stock referencia: MiHome Magnetic $35 OutOfStock, LaVictoria AW300 $59.90 INC IVA OutOfStock, MobileStore C100 $26.99 OutOfStock — como IDC.</li>
               </ul>
             </div>
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-900">
@@ -299,13 +365,17 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
         </section>
 
         <footer class="p-6 sm:p-8 bg-gray-50 dark:bg-gray-800/30 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400 print:bg-white">
-          <p class="font-bold text-gray-900 dark:text-white">Fuentes</p>
+          <p class="font-bold text-gray-900 dark:text-white">Fuentes (uv + BeautifulSoup)</p>
           <ul class="list-disc ml-4 mt-1 space-y-1">
-            <li>GadgetStore: gadgetstore.ec/producto/xiaomi-mi-camera-2k-magnetic/ - $45/$39 - Shyris N36-120 0992800271</li>
-            <li>Sukasa: sukasa.com C300 3bf84e9a $42.29 / C500 Pro e2788d77 $62.99 (meta product:price:amount)</li>
+            <li>GadgetStore: gadgetstore.ec/producto/xiaomi-mi-camera-2k-magnetic/ - $45/$39 - Shyris N36-120 0992800271 - DOMOTICA/CAMARAS Y SEGURIDAD</li>
+            <li>Sukasa: sukasa.com C300 3bf84e9a $42.29 / C500 Pro e2788d77 $62.99 (meta product:price:amount InStock)</li>
             <li>Ganacell: ganacell.com - C300 Dual $74, CW100 $75, BW300 $91 LD+JSON</li>
+            <li>MiHomeEc: mihomeec.com/camaras-seguridad/ - Magnetic $35 OutOfStock, 360 2K Pro $75 InStock, AW200 $39 InStock - LD+JSON availability + ventas@mihomeec.com</li>
+            <li>LaVictoria: lavictoria.ec/producto/camara-de-seguridad-mbc20-xiaomi/ - AW300 $52.09 sin IVA ($59.90 INC IVA) OutOfStock - referencia sin stock</li>
+            <li>MobileStore: mobilestore.ec/producto/xiaomi-smart-camera-c100/ - C100 $26.99 INC IVA OutOfStock "Notificarme..." - referencia sin stock</li>
+            <li>IDC Mayorista verificado sin CCTV - docs/estudio-mercado/empresas/01-idc-mayorista.md:56</li>
           </ul>
-          <p class="mt-3">Generado para INTECH · xeland314.github.io/cotizacion-camaras-xiaomi · Distribución: Hostal 2 + Casa Trasera 6 + Vicsan 2 + GGM 2 = 12 (9 int + 3 ext).</p>
+          <p class="mt-3">Generado para INTECH · xeland314.github.io/cotizacion-camaras-xiaomi · 12 cámaras 9I+3E distribuidas por sedes.</p>
         </footer>
       </article>
       <p class="text-center text-xs text-gray-500 mt-4 print:hidden">Ctrl+P para PDF. Informe sigue formato <code>informes-tecnicos</code> sin <code>&lt;strong&gt;</code> y con IVA desglosado.</p>
@@ -387,13 +457,14 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
         addRow({ nombre: "Xiaomi C500 Pro Exterior - Sukasa (3 exterior)", precio: 62.99, cant: 3, tipo: "cam" });
         addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 12, tipo: "acc" });
         addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 12, tipo: "acc" });
-      } else if (kind === "eco"){
-        addRow({ nombre: "Xiaomi 2K Magnetic Mount - GadgetStore $39 (9 interior)", precio: 39.00, cant: 9, tipo: "cam" });
-        addRow({ nombre: "Xiaomi C500 Pro Exterior - Sukasa (3 exterior)", precio: 62.99, cant: 3, tipo: "cam" });
+      } else if (kind === "aw200"){
+        addRow({ nombre: "Xiaomi C300 Interior PTZ - Sukasa (9 interior)", precio: 42.29, cant: 9, tipo: "cam" });
+        addRow({ nombre: "Xiaomi AW200 Exterior - MiHomeEc $39 (3 exterior)", precio: 39.00, cant: 3, tipo: "cam" });
         addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 12, tipo: "acc" });
         addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 12, tipo: "acc" });
-      } else if (kind === "12suk"){
-        addRow({ nombre: "Xiaomi C300/C500 mix Sukasa (12 total)", precio: 42.29, cant: 12, tipo: "cam" });
+      } else if (kind === "eco"){
+        addRow({ nombre: "Xiaomi 2K Magnetic Mount - GadgetStore $39 (9 interior)", precio: 39.00, cant: 9, tipo: "cam" });
+        addRow({ nombre: "Xiaomi AW200 Exterior - MiHomeEc $39 (3 exterior)", precio: 39.00, cant: 3, tipo: "cam" });
         addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 12, tipo: "acc" });
         addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 12, tipo: "acc" });
       }
@@ -403,8 +474,8 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
     elIncluyeIVA.addEventListener("change", recalc);
     document.getElementById("btn-add-row").addEventListener("click", () => { addRow({ nombre: "Nuevo concepto", precio: 0, cant: 1, tipo: "acc" }); recalc(); });
     document.getElementById("btn-preset-real-reco").addEventListener("click", () => loadPreset("reco"));
+    const btnAw = document.getElementById("btn-preset-real-aw200"); if(btnAw) btnAw.addEventListener("click", () => loadPreset("aw200"));
     document.getElementById("btn-preset-real-eco").addEventListener("click", () => loadPreset("eco"));
-    document.getElementById("btn-preset-12sukasa").addEventListener("click", () => loadPreset("12suk"));
     document.getElementById("btn-clear").addEventListener("click", () => { tbody.innerHTML=""; recalc(); });
     const now = new Date();
     const fmtDate = now.toLocaleDateString("es-EC", { year:"numeric", month:"long", day:"numeric"});
