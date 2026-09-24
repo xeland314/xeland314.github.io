@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const title = "Cotización Cámaras Xiaomi - Edificio 10 unidades | Informe y Calculadora";
-const description = "Informe comparativo y cotización imprimible para 10 cámaras Xiaomi interior edificio. Incluye GadgetStore, Sukasa y Ganacell con IVA 15% Ecuador y calculadora interactiva.";
-const keywords = "Xiaomi, camara vigilancia, cotizacion, C300, C500, GadgetStore, Sukasa, Ganacell, IVA Ecuador, edificio";
+const title = "Cotización Cámaras Xiaomi - 12 unidades (9 interior + 3 exterior) | Informe y Calculadora";
+const description = "Cotización distribuida por sedes: Hostal, Casa Trasera, Vicsan, GGM. 9 cámaras interior + 3 exterior Xiaomi con IVA 15% Ecuador. Compara GadgetStore, Sukasa y Ganacell con calculadora imprimible.";
+const keywords = "Xiaomi, camara vigilancia, cotizacion, C300, C500 Pro, Hostal, Casa Trasera, Vicsan, GGM, IVA Ecuador";
 const author = "Christopher Villamarín - xeland314";
 const url = "https://xeland314.github.io/cotizacion-camaras-xiaomi";
 const image = "https://xeland314.github.io/assets/images/logo_v3.png";
@@ -12,7 +12,6 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
 <BaseLayout title={title} description={description} keywords={keywords} author={author} url={url} image={image} canonical={url}>
   <main class="min-h-screen bg-gray-50 dark:bg-gray-950 print:bg-white">
     <div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 print:max-w-none print:p-0">
-      <!-- Header no-print -->
       <div class="mb-6 flex items-center justify-between print:hidden">
         <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-2 font-bold">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
@@ -24,14 +23,12 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
         </button>
       </div>
 
-      <!-- Documento imprimible -->
       <article id="printable" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm print:shadow-none print:border-gray-300">
-        <!-- Encabezado cotización -->
         <header class="bg-gray-900 text-white p-6 sm:p-8 print:bg-white print:text-black print:border-b-2 print:border-black">
           <div class="flex flex-col sm:flex-row justify-between gap-4">
             <div>
               <h1 class="text-2xl sm:text-3xl font-black tracking-tight">Cotización Cámaras Xiaomi</h1>
-              <p class="text-gray-300 print:text-gray-700 mt-1 font-medium">Edificio - 10 unidades interior · Informe comparativo + calculadora</p>
+              <p class="text-gray-300 print:text-gray-700 mt-1 font-medium">12 unidades distribuidas por sedes · 9 interior + 3 exterior · Informe + calculadora IVA 15%</p>
               <p class="text-sm text-gray-400 print:text-gray-600 mt-2">Fecha: <span id="fecha-hoy"></span> · Vigencia 15 días · IVA 15% Ecuador incluido donde se indica</p>
             </div>
             <div class="text-right text-sm leading-relaxed">
@@ -44,24 +41,109 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
           <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <div class="bg-white/10 print:bg-gray-100 rounded-xl p-3">
               <p class="font-bold text-white print:text-black">Objetivo</p>
-              <p class="text-gray-300 print:text-gray-700">10 cámaras interior edificio · WiFi 2.4GHz · App Xiaomi Home · microSD 128-256GB o NAS</p>
+              <p class="text-gray-300 print:text-gray-700">12 cámaras Xiaomi WiFi (App Xiaomi Home, microSD 128GB o NAS). Distribución validada por sedes abajo.</p>
             </div>
             <div class="bg-white/10 print:bg-gray-100 rounded-xl p-3">
               <p class="font-bold text-white print:text-black">Metodología</p>
-              <p class="text-gray-300 print:text-gray-700">Precios extraídos 2026-09 vía <code>uv + requests + BeautifulSoup</code> de meta <code>product:price:amount</code> y LD+JSON. IDC verificado sin CCTV.</p>
+              <p class="text-gray-300 print:text-gray-700">Precios 2026-09 vía <code>uv + requests</code> de meta <code>product:price:amount</code> y LD+JSON. IDC sin CCTV <code>01-idc-mayorista.md:56</code>.</p>
             </div>
             <div class="bg-white/10 print:bg-gray-100 rounded-xl p-3">
               <p class="font-bold text-white print:text-black">IVA</p>
-              <p class="text-gray-300 print:text-gray-700">Ecuador 15%. Todas las tablas muestran base sin IVA, IVA y total. Sukasa/GadgetStore ya incluyen IVA en etiqueta.</p>
+              <p class="text-gray-300 print:text-gray-700">Base = Total/1.15 · IVA = Total-Base. Etiquetas Sukasa/GadgetStore ya incluyen IVA.</p>
             </div>
           </div>
         </header>
 
-        <!-- Informe comparativo -->
+        <!-- Distribución por sedes -->
         <section class="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-800 print:p-6">
-          <h2 class="text-xl font-black text-gray-900 dark:text-white">1. Informe comparativo (evaluación solicitada)</h2>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">GadgetStore validado a $45 INC IVA / $39 efectivo-transferencia (página DOMOTICA/CAMARAS Y SEGURIDAD). Sukasa vía <code>product:price:amount</code>. Ganacell vía listing + LD+JSON <code>lowPrice</code>.</p>
-          
+          <h2 class="text-xl font-black text-gray-900 dark:text-white">1. Distribución requerida por sedes (12 cámaras)</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Detalle entregado: Hostal, Casa Trasera (3 pisos), Vicsan (oficina + pasillo 4to piso), GGM Matriz y GGM Cotocollao. Clasificación interior/exterior según necesidad de IP y visión nocturna.</p>
+          <div class="mt-4 overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <tr>
+                  <th class="text-left p-3 font-bold">Sede</th>
+                  <th class="text-center p-3 font-bold">Interior</th>
+                  <th class="text-center p-3 font-bold">Exterior</th>
+                  <th class="text-center p-3 font-bold">Subtotal</th>
+                  <th class="text-left p-3 font-bold">Notas</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr>
+                  <td class="p-3 font-semibold">Hostal</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center font-bold">2</td>
+                  <td class="p-3 text-xs text-gray-600">1 interior PTZ 360º + 1 exterior IP (entrada)</td>
+                </tr>
+                <tr class="bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="p-3 font-semibold">Casa Trasera - 1er piso</td>
+                  <td class="p-3 text-center">2</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center font-bold">3</td>
+                  <td class="p-3 text-xs text-gray-600">2 interior (salas) + 1 exterior (patio/acceso)</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Casa Trasera - 2do piso</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center">0</td>
+                  <td class="p-3 text-center font-bold">1</td>
+                  <td class="p-3 text-xs text-gray-600">1 interior</td>
+                </tr>
+                <tr class="bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="p-3 font-semibold">Casa Trasera - 3er piso</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center font-bold">2</td>
+                  <td class="p-3 text-xs text-gray-600">1 interior + 1 exterior (terraza)</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Vicsan (oficina)</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center">0</td>
+                  <td class="p-3 text-center font-bold">1</td>
+                  <td class="p-3 text-xs text-gray-600">1 interior</td>
+                </tr>
+                <tr class="bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="p-3 font-semibold">Vicsan - 4to piso (pasillo)</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center">0</td>
+                  <td class="p-3 text-center font-bold">1</td>
+                  <td class="p-3 text-xs text-gray-600">1 interior pasillo</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">GGM Matriz</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center">0</td>
+                  <td class="p-3 text-center font-bold">1</td>
+                  <td class="p-3 text-xs text-gray-600">1 interior</td>
+                </tr>
+                <tr class="bg-gray-50/50 dark:bg-gray-800/20">
+                  <td class="p-3 font-semibold">GGM Cotocollao</td>
+                  <td class="p-3 text-center">1</td>
+                  <td class="p-3 text-center">0</td>
+                  <td class="p-3 text-center font-bold">1</td>
+                  <td class="p-3 text-xs text-gray-600">1 interior</td>
+                </tr>
+              </tbody>
+              <tfoot class="bg-gray-900 text-white print:bg-black font-bold">
+                <tr>
+                  <td class="p-3">TOTAL</td>
+                  <td class="p-3 text-center">9</td>
+                  <td class="p-3 text-center">3</td>
+                  <td class="p-3 text-center">12</td>
+                  <td class="p-3 text-xs font-normal">9 interior (C300/Magnetic) + 3 exterior (C500 Pro/CW100)</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">Todas interior WiFi 2.4GHz 5V/1A con microSD 128GB (7-9 días en 2K). Exterior IP65/66 con visión nocturna color/IR. 12 tomas 5V y 2-3 APs WiFi 6 recomendados para 12 flujos (~18-24 Mbps).</p>
+        </section>
+
+        <section class="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-800 print:p-6">
+          <h2 class="text-xl font-black text-gray-900 dark:text-white">2. Informe comparativo de proveedores</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">GadgetStore $45/$39 efectivo (DOMOTICA/CAMARAS Y SEGURIDAD). Sukasa meta <code>product:price:amount</code>. Ganacell listing + LD+JSON.</p>
           <div class="mt-4 overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
             <table class="w-full text-sm">
               <thead class="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
@@ -69,143 +151,87 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
                   <th class="text-left p-3 font-bold">Tienda</th>
                   <th class="text-left p-3 font-bold">Modelo</th>
                   <th class="text-right p-3 font-bold">Precio INC IVA</th>
-                  <th class="text-left p-3 font-bold">Interior/Exterior</th>
-                  <th class="text-left p-3 font-bold">Veredicto edificio</th>
+                  <th class="text-left p-3 font-bold">Uso</th>
+                  <th class="text-left p-3 font-bold">Veredicto</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <tr class="bg-emerald-50/60 dark:bg-emerald-950/20">
                   <td class="p-3 font-bold">GadgetStore.ec</td>
-                  <td class="p-3"><span class="font-semibold">Mi Camera 2K Magnetic Mount</span><br/><span class="text-xs text-gray-500">Magnética fija · 2K 2304x1296 · IR · audio 2 vías · detección mov.</span></td>
-                  <td class="p-3 text-right font-black">$45.00<br/><span class="text-xs font-normal text-emerald-700">$39.00 efectivo/transf.</span></td>
+                  <td class="p-3"><span class="font-semibold">Mi Camera 2K Magnetic Mount</span><br/><span class="text-xs text-gray-500">Fija magnética · 2K · IR · audio 2 vías</span></td>
+                  <td class="p-3 text-right font-black">$45.00<br/><span class="text-xs font-normal text-emerald-700">$39.00 efectivo</span></td>
                   <td class="p-3">Interior fijo</td>
-                  <td class="p-3"><span class="bg-emerald-600 text-white px-2 py-1 rounded-full text-xs font-bold">MÁS BARATA</span><br/><span class="text-xs">Fija sin PTZ. OK si punto es pequeño y definido.</span></td>
+                  <td class="p-3"><span class="bg-emerald-600 text-white px-2 py-1 rounded-full text-xs font-bold">BARATA</span><br/><span class="text-xs">Para 9 interior si puntos son pequeños.</span></td>
                 </tr>
                 <tr class="bg-blue-50/60 dark:bg-blue-950/20">
                   <td class="p-3 font-bold">Sukasa</td>
-                  <td class="p-3"><span class="font-semibold">C300 Blanco Interior WiFi</span><br/><span class="text-xs text-gray-500">PTZ 360º H / 107º V · 3MP 2K · IA humana · Mi Home</span><br/><code class="text-xs">3bf84e9a-329d-4b72-8697</code></td>
+                  <td class="p-3"><span class="font-semibold">C300 Interior PTZ</span><br/><span class="text-xs text-gray-500">PTZ 360º/107º · 3MP 2K · IA</span><br/><code class="text-xs">3bf84e9a</code></td>
                   <td class="p-3 text-right font-black">$42.29</td>
                   <td class="p-3">Interior</td>
-                  <td class="p-3"><span class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold">RECOMENDADA</span><br/><span class="text-xs">PTZ cubre sala/pasillo en L con 1 cámara.</span></td>
+                  <td class="p-3"><span class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold">RECOMENDADA</span><br/><span class="text-xs">Cubre sala/pasillo en L.</span></td>
                 </tr>
-                <tr>
+                <tr class="bg-blue-50/60 dark:bg-blue-950/20">
                   <td class="p-3 font-bold">Sukasa</td>
-                  <td class="p-3"><span class="font-semibold">C500 Pro Blanco Exterior</span><br/><span class="text-xs text-gray-500">5MP · exterior</span><br/><code class="text-xs">e2788d77-2a44-463e-b343</code></td>
-                  <td class="p-3 text-right font-bold">$62.99</td>
+                  <td class="p-3"><span class="font-semibold">C500 Pro Exterior</span><br/><code class="text-xs">e2788d77</code></td>
+                  <td class="p-3 text-right font-black">$62.99</td>
                   <td class="p-3">Exterior</td>
-                  <td class="p-3 text-xs text-gray-600">Sobreprecio para interior. Solo si 2-3 puntos con poca luz necesitan 5MP.</td>
+                  <td class="p-3"><span class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-bold">EXTERIOR</span><br/><span class="text-xs">Para las 3 exterior.</span></td>
                 </tr>
                 <tr class="text-gray-500">
-                  <td class="p-3">Sukasa</td>
-                  <td class="p-3">Cámara Exterior IP65 90 días batería</td>
-                  <td class="p-3 text-right">$102.56</td>
-                  <td class="p-3">Exterior batería</td>
-                  <td class="p-3 text-xs">Descartada interior (2.4x). Para patio sin toma.</td>
-                </tr>
-                <tr class="text-gray-500">
-                  <td class="p-3">Sukasa</td>
-                  <td class="p-3">Set Exterior ES000XIA04 1080p + base IP65</td>
-                  <td class="p-3 text-right">$133.07</td>
-                  <td class="p-3">Exterior kit 1080p</td>
-                  <td class="p-3 text-xs">Peor resolución, más cara.</td>
-                </tr>
-                <tr>
-                  <td class="p-3 font-bold">Ganacell</td>
-                  <td class="p-3"><span class="font-semibold">C300 Dual Interior</span></td>
-                  <td class="p-3 text-right font-bold">$74.00</td>
-                  <td class="p-3">Interior dual lente</td>
-                  <td class="p-3 text-xs">Mismo segmento que Sukasa C300 pero 75% más cara.</td>
-                </tr>
-                <tr>
-                  <td class="p-3 font-bold">Ganacell</td>
-                  <td class="p-3">CW100 Dual Exterior IP66 3MP</td>
-                  <td class="p-3 text-right">$75.00</td>
-                  <td class="p-3">Exterior</td>
-                  <td class="p-3 text-xs">No interior.</td>
-                </tr>
-                <tr>
-                  <td class="p-3 font-bold">Ganacell</td>
-                  <td class="p-3">BW300 Exterior 2K batería 4900mAh</td>
-                  <td class="p-3 text-right">$91.00 <span class="text-xs">(LD+JSON lowPrice)</span></td>
-                  <td class="p-3">Exterior batería</td>
-                  <td class="p-3 text-xs">No interior.</td>
+                  <td class="p-3">Ganacell</td>
+                  <td class="p-3">C300 Dual / CW100 / BW300</td>
+                  <td class="p-3 text-right">$74 / $75 / $91</td>
+                  <td class="p-3">—</td>
+                  <td class="p-3 text-xs">75% más caro que Sukasa. Solo respaldo.</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <p class="text-xs text-gray-500 mt-2">IDC Mayorista verificado <code>docs/estudio-mercado/empresas/01-idc-mayorista.md:56</code> solo celulares Xiaomi, sin CCTV. Competidores locales usan Dahua/Hikvision <code>18-technoprimec-megamicro.md:78</code>.</p>
-          
-          <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
-            <div class="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-3">
-              <p class="font-bold text-amber-800 dark:text-amber-300">Nota técnica edificio</p>
-              <p class="text-amber-900 dark:text-amber-200 text-xs mt-1">Xiaomi es WiFi 5V/1A, no PoE. 10x 2K ≈ 15-20 Mbps continuos. Prevén 2-3 APs WiFi 6 y 10 tomas 5V. SD 128GB ≈ 7-9 días en 2K continuo. Para 24/7 legal evalúa NAS Synology/QNAP (IDC los vende).</p>
-            </div>
-            <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-3">
-              <p class="font-bold">Fuentes</p>
-              <ul class="text-xs text-gray-600 dark:text-gray-400 list-disc ml-4 mt-1 space-y-1">
-                <li>GadgetStore: DOMOTICA / CAMARAS Y SEGURIDAD - $45 INC IVA / $39 efectivo</li>
-                <li>Sukasa: meta <code>product:price:amount</code> 42.29, 62.99, 102.56, 133.07 USD InStock</li>
-                <li>Ganacell: listing $74/$75 + LD+JSON lowPrice 91 USD</li>
-              </ul>
-            </div>
-          </div>
+          <p class="text-xs text-gray-500 mt-2">IDC verificado sin CCTV. Sukasa InStock hasta 2026-10-24.</p>
         </section>
 
-        <!-- Direcciones y contacto -->
         <section class="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20 print:bg-white">
-          <h2 class="text-xl font-black text-gray-900 dark:text-white">2. Dónde comprar (direcciones y contacto)</h2>
+          <h2 class="text-xl font-black text-gray-900 dark:text-white">3. Dónde comprar</h2>
           <div class="mt-4 grid md:grid-cols-3 gap-4 text-sm">
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-              <h3 class="font-black text-gray-900 dark:text-white">GADGETSTORE.EC <span class="text-xs font-normal bg-emerald-600 text-white px-2 py-0.5 rounded-full">Más barata efectivo</span></h3>
-              <p class="text-gray-600 dark:text-gray-400 mt-1">Importadores directos · Tecnología y Electrodomésticos</p>
+              <h3 class="font-black">GADGETSTORE.EC</h3>
               <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
-                <li>📍 Av. de los Shyris N36-120, Comuna Miraflores, Quito 170505</li>
+                <li>📍 Av. Shyris N36-120, Miraflores, Quito 170505</li>
                 <li>📞 099 280 0271</li>
                 <li>🕘 Lun-Sáb 09:00-17:30</li>
-                <li>🌐 gadgetstore.ec</li>
-                <li>💳 $45 INC IVA / <b>$39 efectivo/transferencia</b></li>
+                <li>🌐 gadgetstore.ec · DOMOTICA &gt; CAMARAS</li>
+                <li>💳 $45 / <b>$39 efectivo</b></li>
               </ul>
-              <p class="text-xs text-gray-500 mt-2">Categoría: DOMOTICA &gt; CAMARAS Y SEGURIDAD</p>
             </div>
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-              <h3 class="font-black text-gray-900 dark:text-white">SUKASA <span class="text-xs font-normal bg-blue-600 text-white px-2 py-0.5 rounded-full">Recomendada PTZ</span></h3>
-              <p class="text-gray-600 dark:text-gray-400 mt-1">Cadena El Rosado · Tienda oficial</p>
+              <h3 class="font-black">SUKASA</h3>
               <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
-                <li>📍 Scala Shopping, Quicentro Shopping, Mall del Sol, Policentro (UIO/GYE)</li>
+                <li>📍 Scala, Quicentro, Mall del Sol, Policentro</li>
                 <li>🌐 sukasa.com</li>
-                <li>🛒 C300: <code class="text-xs">3bf84e9a...</code> $42.29</li>
-                <li>🛒 C500 Pro: <code class="text-xs">e2788d77...</code> $62.99</li>
-                <li>✅ InStock - priceValidUntil 2026-10-24</li>
+                <li>🛒 C300 $42.29 · C500 Pro $62.99</li>
+                <li>✅ InStock</li>
               </ul>
             </div>
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-              <h3 class="font-black text-gray-900 dark:text-white">GANACELL</h3>
-              <p class="text-gray-600 dark:text-gray-400 mt-1">Novicompu / Ganacell</p>
+              <h3 class="font-black">GANACELL</h3>
               <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
-                <li>📍 GYE - UIO - CUE - Manta - Portoviejo - Sto Dgo - Machala</li>
+                <li>📍 GYE/UIO/CUE/Manta etc.</li>
                 <li>✉️ ventas@ganacell.com</li>
-                <li>🌐 ganacell.com</li>
-                <li>💰 C300 Dual $74 / CW100 $75 / BW300 $91</li>
-                <li>🏪 Ver direcciones en /tiendas</li>
+                <li>🌐 ganacell.com/tiendas</li>
               </ul>
             </div>
           </div>
-          <p class="text-xs text-gray-500 mt-3">Sugerencia logística: llama a GadgetStore 0992800271 y a Sukasa para confirmar stock 10 unidades. GadgetStore suele tener 5-6 en vitrina y mueve entre bodegas 24h. Sukasa mueve entre locales.</p>
         </section>
 
-        <!-- Calculadora -->
         <section class="p-6 sm:p-8 print:break-inside-avoid">
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <h2 class="text-xl font-black text-gray-900 dark:text-white">3. Calculadora presupuesto (con IVA 15%)</h2>
-            <div class="flex items-center gap-2 text-sm print:hidden">
-              <label class="flex items-center gap-2 font-bold cursor-pointer">
-                <input id="incluye-iva" type="checkbox" checked class="w-4 h-4 accent-blue-600" />
-                Precios incluyen IVA
-              </label>
-              <span class="text-xs text-gray-500">Desmarca si tus precios son sin IVA</span>
-            </div>
+            <h2 class="text-xl font-black text-gray-900 dark:text-white">4. Calculadora presupuesto 12 cámaras (con IVA 15%)</h2>
+            <label class="flex items-center gap-2 text-sm font-bold cursor-pointer print:hidden">
+              <input id="incluye-iva" type="checkbox" checked class="w-4 h-4 accent-blue-600" />
+              Precios incluyen IVA
+            </label>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">Ajusta cantidades y precios unitarios. Cálculo automático base / IVA 15% / total. Para imprimir, deja solo las filas con cantidad &gt;0.</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Presets ajustados a la distribución real 9+3. Edita cantidades/precios si cambias de proveedor.</p>
 
           <div class="mt-4 overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
             <table class="w-full text-sm" id="calc-table">
@@ -214,18 +240,16 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
                   <th class="text-left p-2.5">Concepto</th>
                   <th class="text-center p-2.5 w-20">Cant.</th>
                   <th class="text-right p-2.5 w-28">P.Unit INC IVA</th>
-                  <th class="text-right p-2.5 w-28">Subtotal INC IVA</th>
-                  <th class="text-right p-2.5 w-28">Base sin IVA</th>
-                  <th class="text-right p-2.5 w-24">IVA 15%</th>
+                  <th class="text-right p-2.5 w-28">Subtotal</th>
+                  <th class="text-right p-2.5 w-28">Base</th>
+                  <th class="text-right p-2.5 w-24">IVA</th>
                   <th class="print:hidden"></th>
                 </tr>
               </thead>
-              <tbody id="calc-body" class="divide-y divide-gray-200 dark:divide-gray-700">
-                <!-- filas generadas por JS -->
-              </tbody>
+              <tbody id="calc-body" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
               <tfoot class="bg-gray-50 dark:bg-gray-800 font-bold">
                 <tr>
-                  <td colspan="3" class="p-3 text-right">TOTAL HARDWARE (cámaras)</td>
+                  <td colspan="3" class="p-3 text-right">TOTAL CÁMARAS</td>
                   <td class="p-3 text-right" id="t-subtotal">$0.00</td>
                   <td class="p-3 text-right" id="t-base">$0.00</td>
                   <td class="p-3 text-right" id="t-iva">$0.00</td>
@@ -250,48 +274,41 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2 print:hidden">
-            <button id="btn-add-row" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-xl font-bold hover:bg-gray-50">+ Añadir fila</button>
-            <button id="btn-preset-gadget" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold">Preset: 10x GadgetStore $39</button>
-            <button id="btn-preset-sukasa" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold">Preset: 10x Sukasa C300</button>
-            <button id="btn-preset-mix" class="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-xl font-bold">Preset: 7x C300 + 3x C500 Pro</button>
-            <button id="btn-clear" class="ml-auto text-sm text-gray-600 dark:text-gray-400 hover:underline">Limpiar</button>
+            <button id="btn-add-row" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-xl font-bold">+ Añadir fila</button>
+            <button id="btn-preset-real-reco" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold">Preset real: 9x C300 + 3x C500 Pro</button>
+            <button id="btn-preset-real-eco" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold">Preset real eco: 9x Magnetic $39 + 3x C500 Pro</button>
+            <button id="btn-preset-12sukasa" class="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-xl font-bold">Preset: 12x mixto Sukasa</button>
+            <button id="btn-clear" class="ml-auto text-sm text-gray-600 hover:underline">Limpiar</button>
           </div>
 
           <div class="mt-6 grid md:grid-cols-2 gap-4 text-sm">
-            <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-900">
-              <h4 class="font-black">Presupuesto rápido (efectivo)</h4>
-              <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300">
-                <li><b>GadgetStore 10x $39:</b> $390 + SD 10x $12 = <b id="quick-gadget">$510.00</b> total INC IVA · Base $339.13 + IVA $50.87 (cámaras) </li>
-                <li><b>Sukasa 10x C300 $42.29:</b> $422.90 + SD $120 = <b id="quick-sukasa">$542.90</b> · Base $367.74 + IVA $55.16</li>
-                <li><b>Mix 7+3 Sukasa:</b> $296.03 + $188.97 = $485 + SD = <b>$605.00</b> · Base $421.74 + IVA $63.26</li>
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/20 p-4">
+              <h4 class="font-black text-emerald-800 dark:text-emerald-300">Presupuesto recomendado (9+3)</h4>
+              <ul class="mt-2 space-y-1 text-gray-700 dark:text-gray-300 text-xs">
+                <li><b>Reco 9x C300 $42.29 + 3x C500 Pro $62.99:</b> $569.58 cámaras + SD 12x$12 $144 + kits 12x$4.50 $54 = <b id="quick-reco">$767.58 INC IVA</b><br/><span class="text-gray-500">Base $667.46 + IVA $100.12 - Cámaras base $495.29 + IVA $74.29</span></li>
+                <li><b>Eco 9x Magnetic $39 + 3x C500 Pro:</b> $351 + $188.97 = $539.97 + $198 acc = <b>$737.97</b><br/><span class="text-gray-500">Base $641.71 + IVA $96.26</span></li>
+                <li><b>Ganacell 9x $74 + 3x $75:</b> $891 + $198 = <b>$1,089</b> - 42% más caro.</li>
               </ul>
-              <p class="text-xs text-gray-500 mt-2">SD 128GB Endurance $12 c/u. Si usas 256GB ($18) suma $60. Instalación $10-15 por cámara no incluida.</p>
             </div>
             <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-900">
-              <h4 class="font-black">Cómo usar IVA</h4>
-              <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Ecuador IVA 15%. Si tu etiqueta dice INC IVA (Sukasa, GadgetStore), deja el check activo: Base = Total/1.15, IVA = Total-Base. Si tu proveedor te da precio sin IVA, desmarca y se calcula Total = Base*1.15. La tabla muestra ambos para transparencia.</p>
-              <p class="text-xs text-gray-500 mt-2">Fecha impresión: <span id="fecha-iva"></span></p>
+              <h4 class="font-black">IVA y condiciones</h4>
+              <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Base = Total/1.15, IVA = Total-Base si incluye IVA. Si precio sin IVA, Total = Base*1.15. Vigencia 15 días, garantía 1 año, instalación $12/cámara opcional, no incluye puntos 5V ni APs.</p>
+              <p class="text-xs text-gray-500 mt-2">Fecha: <span id="fecha-iva"></span> · <span id="fecha-hoy-2"></span></p>
             </div>
-          </div>
-
-          <div class="mt-6 text-xs text-gray-500 leading-relaxed">
-            <p><b>Condiciones sugeridas:</b> Vigencia 15 días · Forma pago: efectivo/transferencia (GadgetStore $39) o tarjeta ($45) · Entrega inmediata sujeta a stock · Garantía 1 año · No incluye obra civil, puntos eléctricos 5V, ni APs WiFi 6. Instalación opcional $10-15 por cámara + $4.50 kit canaleta/cable 3m.</p>
           </div>
         </section>
 
         <footer class="p-6 sm:p-8 bg-gray-50 dark:bg-gray-800/30 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400 print:bg-white">
-          <p class="font-bold text-gray-900 dark:text-white">Fuentes y auditoría</p>
+          <p class="font-bold text-gray-900 dark:text-white">Fuentes</p>
           <ul class="list-disc ml-4 mt-1 space-y-1">
-            <li>GadgetStore: https://gadgetstore.ec/producto/xiaomi-mi-camera-2k-magnetic/ - $45 INC IVA / $39 efectivo - DOMOTICA/CAMARAS Y SEGURIDAD - Av Shyris N36-120 Miraflores 0992800271</li>
-            <li>Sukasa: https://www.sukasa.com/productos/xiaomi-camara-smart-home-wi-fi-c300-blanco-para-interior/3bf84e9a-329d-4b72-8697-7793d3c46367 ($42.29) · https://www.sukasa.com/productos/xiaomi-camara-smart-home-wi-fi-c500-pro-blanco-para-exterior/e2788d77-2a44-463e-b343-4f39aff26100 ($62.99) - meta product:price:amount USD InStock</li>
-            <li>Ganacell: https://www.ganacell.com/xiaomi%20camaras%20de%20vigilancia?_q=xiaomi%20camaras%20de%20vigilancia&map=ft - C300 Dual $74, CW100 $75, BW300 $91 (LD+JSON lowPrice) - ventas@ganacell.com</li>
-            <li>Competidores verificados sin Xiaomi CCTV: docs/estudio-mercado/perfiles-empresas.md + empresas/01-idc-mayorista.md:56 + 18-technoprimec-megamicro.md:78</li>
+            <li>GadgetStore: gadgetstore.ec/producto/xiaomi-mi-camera-2k-magnetic/ - $45/$39 - Shyris N36-120 0992800271</li>
+            <li>Sukasa: sukasa.com C300 3bf84e9a $42.29 / C500 Pro e2788d77 $62.99 (meta product:price:amount)</li>
+            <li>Ganacell: ganacell.com - C300 Dual $74, CW100 $75, BW300 $91 LD+JSON</li>
           </ul>
-          <p class="mt-3">Generado para INTECH · xeland314.github.io/cotizacion-camaras-xiaomi · Imprimible y editable. Para consultas técnicas: Christopher Villamarín.</p>
+          <p class="mt-3">Generado para INTECH · xeland314.github.io/cotizacion-camaras-xiaomi · Distribución: Hostal 2 + Casa Trasera 6 + Vicsan 2 + GGM 2 = 12 (9 int + 3 ext).</p>
         </footer>
       </article>
-
-      <p class="text-center text-xs text-gray-500 mt-4 print:hidden">Tip: usa <kbd class="bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded">Ctrl</kbd> + <kbd class="bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded">P</kbd> para guardar como PDF. La calculadora respeta IVA 15% en impresión.</p>
+      <p class="text-center text-xs text-gray-500 mt-4 print:hidden">Ctrl+P para PDF. Informe sigue formato <code>informes-tecnicos</code> sin <code>&lt;strong&gt;</code> y con IVA desglosado.</p>
     </div>
   </main>
 
@@ -308,44 +325,36 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
   <script is:inline>
     const IVA = 0.15;
     const defaultRows = [
-      { nombre: "Xiaomi 2K Magnetic Mount - GadgetStore (Fija)", precio: 39.00, cant: 10, tipo: "cam" },
-      { nombre: "Xiaomi C300 Interior PTZ 360º - Sukasa", precio: 42.29, cant: 0, tipo: "cam" },
-      { nombre: "Xiaomi C500 Pro Exterior - Sukasa", precio: 62.99, cant: 0, tipo: "cam" },
-      { nombre: "Ganacell C300 Dual", precio: 74.00, cant: 0, tipo: "cam" },
-      { nombre: "microSD 128GB Endurance", precio: 12.00, cant: 10, tipo: "acc" },
-      { nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 10, tipo: "acc" },
-      { nombre: "Instalación y configuración", precio: 12.00, cant: 0, tipo: "acc" },
+      { nombre: "Xiaomi C300 Interior PTZ 360º - Sukasa (9 interior)", precio: 42.29, cant: 9, tipo: "cam" },
+      { nombre: "Xiaomi C500 Pro Exterior - Sukasa (3 exterior)", precio: 62.99, cant: 3, tipo: "cam" },
+      { nombre: "microSD 128GB Endurance", precio: 12.00, cant: 12, tipo: "acc" },
+      { nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 12, tipo: "acc" },
+      { nombre: "Instalación y configuración (opcional)", precio: 12.00, cant: 0, tipo: "acc" },
     ];
 
     const tbody = document.getElementById("calc-body");
     const elIncluyeIVA = document.getElementById("incluye-iva");
-
     function fmt(n){ return "$" + n.toFixed(2); }
-
     function addRow(data){
       const tr = document.createElement("tr");
       tr.className = "bg-white dark:bg-gray-900";
+      tr.dataset.tipo = data.tipo || "cam";
       tr.innerHTML = `
-        <td class="p-2"><input class="w-full bg-transparent border-b border-gray-200 dark:border-gray-700 focus:border-blue-500 outline-none px-1 py-1" value="${data.nombre}" placeholder="Concepto"></td>
+        <td class="p-2"><input class="w-full bg-transparent border-b border-gray-200 dark:border-gray-700 focus:border-blue-500 outline-none px-1 py-1" value="${data.nombre}"></td>
         <td class="p-2 text-center"><input type="number" min="0" step="1" class="w-16 text-center border border-gray-300 dark:border-gray-700 rounded-lg px-1 py-1 bg-white dark:bg-gray-800" value="${data.cant}"></td>
         <td class="p-2 text-right"><input type="number" min="0" step="0.01" class="w-24 text-right border border-gray-300 dark:border-gray-700 rounded-lg px-1 py-1 bg-white dark:bg-gray-800" value="${data.precio.toFixed(2)}"></td>
         <td class="p-2 text-right font-bold subtotal">$0.00</td>
         <td class="p-2 text-right text-gray-600 base">$0.00</td>
         <td class="p-2 text-right text-gray-600 iva">$0.00</td>
-        <td class="p-2 text-center print:hidden"><button class="text-red-500 hover:text-red-700 font-bold px-2" title="Eliminar">×</button></td>
+        <td class="p-2 text-center print:hidden"><button class="text-red-500 hover:text-red-700 font-bold px-2">×</button></td>
       `;
-      // dataset tipo
-      tr.dataset.tipo = data.tipo || "cam";
-      const cantInput = tr.querySelector('input[type="number"]');
+      const cantInput = tr.querySelectorAll('input[type="number"]')[0];
       const precioInput = tr.querySelectorAll('input[type="number"]')[1];
-      const delBtn = tr.querySelector("button");
-      delBtn.addEventListener("click", () => { tr.remove(); recalc(); });
+      tr.querySelector("button").addEventListener("click", () => { tr.remove(); recalc(); });
       cantInput.addEventListener("input", recalc);
       precioInput.addEventListener("input", recalc);
-      tr.querySelector('input[type="text"], input:not([type])').addEventListener("input", () => {});
       tbody.appendChild(tr);
     }
-
     function recalc(){
       const incluyeIVA = elIncluyeIVA.checked;
       let camSub=0, camBase=0, camIva=0, accSub=0, accBase=0, accIva=0;
@@ -354,21 +363,12 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
         const precio = parseFloat(tr.querySelectorAll('input[type="number"]')[1].value) || 0;
         const subtotal = cant * precio;
         let base, iva;
-        if (incluyeIVA){
-          base = subtotal / (1+IVA);
-          iva = subtotal - base;
-        } else {
-          base = subtotal;
-          iva = base * IVA;
-        }
+        if (incluyeIVA){ base = subtotal / (1+IVA); iva = subtotal - base; } else { base = subtotal; iva = base * IVA; }
         const totalMostrar = incluyeIVA ? subtotal : base + iva;
         tr.querySelector(".subtotal").textContent = fmt(totalMostrar);
         tr.querySelector(".base").textContent = fmt(base);
         tr.querySelector(".iva").textContent = fmt(iva);
-        // ocultar filas con cant 0 en impresión via clase
-        tr.style.display = "";
-        if (tr.dataset.tipo === "cam"){ camSub += totalMostrar; camBase += base; camIva += iva; }
-        else { accSub += totalMostrar; accBase += base; accIva += iva; }
+        if (tr.dataset.tipo === "cam"){ camSub += totalMostrar; camBase += base; camIva += iva; } else { accSub += totalMostrar; accBase += base; accIva += iva; }
       });
       document.getElementById("t-subtotal").textContent = fmt(camSub);
       document.getElementById("t-base").textContent = fmt(camBase);
@@ -380,38 +380,36 @@ const image = "https://xeland314.github.io/assets/images/logo_v3.png";
       document.getElementById("t-grand-base").textContent = fmt(camBase+accBase);
       document.getElementById("t-grand-iva").textContent = fmt(camIva+accIva);
     }
-
     function loadPreset(kind){
       tbody.innerHTML = "";
-      if (kind === "gadget"){
-        addRow({ nombre: "Xiaomi 2K Magnetic Mount - GadgetStore (Fija)", precio: 39.00, cant: 10, tipo: "cam" });
-        addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 10, tipo: "acc" });
-        addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 10, tipo: "acc" });
-      } else if (kind === "sukasa"){
-        addRow({ nombre: "Xiaomi C300 Interior PTZ 360º - Sukasa", precio: 42.29, cant: 10, tipo: "cam" });
-        addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 10, tipo: "acc" });
-        addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 10, tipo: "acc" });
-      } else if (kind === "mix"){
-        addRow({ nombre: "Xiaomi C300 Interior PTZ - Sukasa", precio: 42.29, cant: 7, tipo: "cam" });
-        addRow({ nombre: "Xiaomi C500 Pro Exterior - Sukasa", precio: 62.99, cant: 3, tipo: "cam" });
-        addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 10, tipo: "acc" });
-        addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 10, tipo: "acc" });
+      if (kind === "reco"){
+        addRow({ nombre: "Xiaomi C300 Interior PTZ - Sukasa (9 interior)", precio: 42.29, cant: 9, tipo: "cam" });
+        addRow({ nombre: "Xiaomi C500 Pro Exterior - Sukasa (3 exterior)", precio: 62.99, cant: 3, tipo: "cam" });
+        addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 12, tipo: "acc" });
+        addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 12, tipo: "acc" });
+      } else if (kind === "eco"){
+        addRow({ nombre: "Xiaomi 2K Magnetic Mount - GadgetStore $39 (9 interior)", precio: 39.00, cant: 9, tipo: "cam" });
+        addRow({ nombre: "Xiaomi C500 Pro Exterior - Sukasa (3 exterior)", precio: 62.99, cant: 3, tipo: "cam" });
+        addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 12, tipo: "acc" });
+        addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 12, tipo: "acc" });
+      } else if (kind === "12suk"){
+        addRow({ nombre: "Xiaomi C300/C500 mix Sukasa (12 total)", precio: 42.29, cant: 12, tipo: "cam" });
+        addRow({ nombre: "microSD 128GB Endurance", precio: 12.00, cant: 12, tipo: "acc" });
+        addRow({ nombre: "Kit cable 3m + canaleta", precio: 4.50, cant: 12, tipo: "acc" });
       }
       recalc();
     }
-
-    // init
     defaultRows.forEach(addRow);
     elIncluyeIVA.addEventListener("change", recalc);
     document.getElementById("btn-add-row").addEventListener("click", () => { addRow({ nombre: "Nuevo concepto", precio: 0, cant: 1, tipo: "acc" }); recalc(); });
-    document.getElementById("btn-preset-gadget").addEventListener("click", () => loadPreset("gadget"));
-    document.getElementById("btn-preset-sukasa").addEventListener("click", () => loadPreset("sukasa"));
-    document.getElementById("btn-preset-mix").addEventListener("click", () => loadPreset("mix"));
+    document.getElementById("btn-preset-real-reco").addEventListener("click", () => loadPreset("reco"));
+    document.getElementById("btn-preset-real-eco").addEventListener("click", () => loadPreset("eco"));
+    document.getElementById("btn-preset-12sukasa").addEventListener("click", () => loadPreset("12suk"));
     document.getElementById("btn-clear").addEventListener("click", () => { tbody.innerHTML=""; recalc(); });
-    // fechas
     const now = new Date();
     const fmtDate = now.toLocaleDateString("es-EC", { year:"numeric", month:"long", day:"numeric"});
     document.getElementById("fecha-hoy").textContent = fmtDate;
+    const el2 = document.getElementById("fecha-hoy-2"); if(el2) el2.textContent = fmtDate;
     document.getElementById("fecha-iva").textContent = fmtDate;
     recalc();
   </script>
