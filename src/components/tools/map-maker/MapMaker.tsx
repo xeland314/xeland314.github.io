@@ -526,6 +526,7 @@ export const MapMaker = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [clusterEnabled, setClusterEnabled] = useState(true);
   const [spiderClusterId, setSpiderClusterId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"inicio" | "puntos" | "insertar" | "vista" | "ruta" | "exportar" | "config">("inicio");
 
   const mapRef = useRef<L.Map | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -827,6 +828,57 @@ export const MapMaker = () => {
     setProjects((prev) => prev.map((p) => p.id === id ? { ...p, name: newName, updatedAt: Date.now() } : p));
     setRenamingId(null);
     setRenameDraft("");
+  };
+
+  const isDirty = (() => {
+    if (!currentProjectId) return markers.length > 0;
+    const proj = projects.find((pr) => pr.id === currentProjectId);
+    if (!proj) return markers.length > 0;
+    try {
+      return JSON.stringify(proj.markers) !== JSON.stringify(markers) || proj.tileProvider !== tileProvider || proj.showPolyline !== showPolyline;
+    } catch { return true; }
+  })();
+
+  const currentProjectName = currentProjectId ? (projects.find((pr) => pr.id === currentProjectId)?.name || "Proyecto") : (markers.length > 0 ? "Mapa sin guardar" : "Mapa nuevo");
+
+  const handleNewMap = () => {
+    if (markers.length === 0) {
+      if (currentProjectId) setCurrentProjectId(null);
+      setRouteCoords([]);
+      setRouteInfo(null);
+      setSelectedId(null);
+      return;
+    }
+    const proj = currentProjectId ? projects.find((pr) => pr.id === currentProjectId) : null;
+    const dirty = isDirty;
+    if (dirty) {
+      const randomName = `Mapa ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString().slice(0,5)} - ${generateId()}`;
+      const msg = `Vas a crear un NUEVO MAPA en blanco.
+
+Tus ${markers.length} puntos actuales se guardarán automáticamente como "${randomName}" para no perderlos.
+
+¿Continuar?`;
+      if (!confirm(msg)) return;
+      const autoProj: MapProject = {
+        id: generateId(),
+        name: randomName,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        markers: [...markers],
+        tileProvider,
+        showPolyline,
+      };
+      setProjects((prev) => [autoProj, ...prev]);
+    } else {
+      if (!confirm(`Crear nuevo mapa en blanco?\nEl mapa "${proj?.name}" ya está guardado.`)) return;
+    }
+    setMarkers([]);
+    setCurrentProjectId(null);
+    setRouteCoords([]);
+    setRouteInfo(null);
+    setSelectedId(null);
+    setSpiderClusterId(null);
+    setActiveTab("inicio");
   };
 
   const handleSaveToken = () => {
@@ -1714,714 +1766,613 @@ export const MapMaker = () => {
   }, [markers, showNumberInsteadOfIcon, rotationDeg, globalMarkerSize]);
 
   const center: [number, number] = markers.length ? [markers[0].lat, markers[0].lng] : [-0.180653, -78.467834];
+  const TABS = [
+    { id: "archivo", label: "Archivo" },
+    { id: "inicio", label: "Inicio" },
+    { id: "puntos", label: "Puntos" },
+    { id: "insertar", label: "Insertar" },
+    { id: "vista", label: "Vista" },
+    { id: "ruta", label: "Ruta" },
+    { id: "exportar", label: "Exportar" },
+    { id: "config", label: "Configuración" },
+  ] as const;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 w-full min-h-[720px] lg:items-start relative">
-      <style>{`.custom-div-icon{background:transparent !important;border:none !important} .leaflet-popup-content{margin:12px 16px !important} .leaflet-popup-content-wrapper{border-radius:14px}`}</style>
-      {/* Botón flotante hamburguesa: siempre visible sobre el mapa cuando el menú está cerrado, y como toggle cuando está abierto */}
-      <button
-        type="button"
-        data-no-export
-        onClick={() => setSidebarOpen((o) => !o)}
-        aria-label={sidebarOpen ? "Ocultar menú" : "Mostrar menú"}
-        title={sidebarOpen ? "Ocultar menú (ver mapa completo)" : "Mostrar menú"}
-        className={`hidden lg:flex absolute z-[600] w-10 h-10 rounded-xl shadow-lg border items-center justify-center transition hover:scale-105 ${sidebarOpen ? "left-[388px] xl:left-[428px] top-4 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white" : "left-4 top-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white"}`}
-      >
-        {sidebarOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
-        )}
-      </button>
-      {/* Botón hamburguesa mobile: fijo dentro del header flotante */}
-      <button
-        type="button"
-        data-no-export
-        onClick={() => setSidebarOpen((o) => !o)}
-        aria-label={sidebarOpen ? "Ocultar menú" : "Mostrar menú"}
-        className={`lg:hidden fixed bottom-5 right-5 z-[650] w-14 h-14 rounded-full shadow-xl border-2 flex items-center justify-center transition active:scale-95 ${sidebarOpen ? "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white" : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900"}`}
-      >
-        {sidebarOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
-        )}
-      </button>
-      {/* Backdrop mobile cuando sidebar abierto */}
-      {sidebarOpen && (
-        <button
-          aria-label="Cerrar menú"
-          onClick={() => setSidebarOpen(false)}
-          className="lg:hidden fixed inset-0 z-[500] bg-black/30 backdrop-blur-[1px]"
-        />
-      )}
-      {/* Sidebar */}
-      <div className={`${sidebarOpen ? "flex" : "hidden lg:hidden"} w-full lg:w-[380px] xl:w-[420px] flex-col gap-4 shrink-0 lg:sticky lg:top-4 ${sidebarOpen ? "fixed lg:static inset-0 lg:inset-auto z-[550] lg:z-auto overflow-y-auto lg:overflow-visible bg-[#f8fafc] dark:bg-[#060a0f] lg:bg-transparent p-4 lg:p-0 pt-12 lg:pt-0" : ""}`}>
-        {sidebarOpen && (
-          <div className="lg:hidden flex items-center justify-between -mt-2 mb-1">
-            <span className="text-xs font-black tracking-widest uppercase text-slate-600 dark:text-slate-300 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/> Menú</span>
-            <button type="button" onClick={() => setSidebarOpen(false)} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl">Ocultar ▲</button>
-          </div>
-        )}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="font-black text-slate-900 dark:text-white tracking-tight text-lg flex items-center gap-2">
-              <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-              </span>
-              Mapa Personalizado
-            </h2>
-            <span className="text-xs font-mono font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2.5 py-1 rounded-full">
-              {markers.length} puntos
+    <div className="flex flex-col gap-4 w-full min-h-[720px] relative">
+      <style>{`.custom-div-icon{background:transparent !important;border:none !important} .leaflet-popup-content{margin:12px 16px !important} .leaflet-popup-content-wrapper{border-radius:14px} .ribbon-group{border-right:1px solid #e2e8f0} .dark .ribbon-group{border-right-color:#1e293b} .ribbon-group:last-child{border-right:none}`}</style>
+
+      {/* Ribbon superior estilo Word/Excel */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        {/* Barra de pestañas */}
+        <div className="flex items-center gap-1 px-3 py-2 bg-[#f1f5f9] dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-thin">
+          {/* Logo mini + titulo */}
+          <div className="flex items-center gap-2 mr-3 pr-3 border-r border-slate-200 dark:border-slate-700 shrink-0">
+            <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
             </span>
+            <span className="text-xs font-black tracking-tight text-slate-700 dark:text-white hidden sm:inline">Mapa</span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-            Haz clic en el mapa para añadir puntos. <b className="text-emerald-600">Sin límite de 10</b> como en Google My Maps. Arrastra los marcadores para reposicionar.
-          </p>
-
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <button onClick={fitAll} disabled={markers.length === 0} className="text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2 rounded-xl disabled:opacity-40 hover:opacity-90 transition">
-              Ajustar vista
-            </button>
+          {TABS.map((t) => (
             <button
-              onClick={() => { if (confirm(`¿Borrar ${markers.length} puntos?`)) setMarkers([]); }}
-              disabled={markers.length === 0}
-              className="text-xs font-bold bg-red-50 dark:bg-red-950/30 text-red-600 border border-red-200 dark:border-red-900 px-3 py-2 rounded-xl disabled:opacity-40 hover:bg-red-100 transition"
+              key={t.id}
+              onClick={() => setActiveTab(t.id as any)}
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-md whitespace-nowrap transition border ${activeTab === t.id ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 shadow-sm" : "bg-transparent text-slate-600 dark:text-slate-400 border-transparent hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900"}`}
             >
-              Limpiar todo
+              {t.label}
             </button>
-          </div>
-
-          <div className="flex items-center gap-2 mt-3 text-xs">
-            <label className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-              <input type="checkbox" checked={showPolyline} onChange={(e) => setShowPolyline(e.target.checked)} className="accent-emerald-600" />
-              Unir con línea
-            </label>
-            <select value={tileProvider} onChange={(e) => setTileProvider(e.target.value as TileProvider)} className="ml-auto text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 bg-white dark:bg-slate-800 dark:text-white">
-              {Object.entries(TILE_PROVIDERS).map(([k, v]) => (
-                <option key={k} value={k}>{v.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2 mt-3 text-xs bg-amber-50/60 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900 rounded-xl px-3 py-2">
-            <label className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
-              <input type="checkbox" checked={clusterEnabled} onChange={(e) => setClusterEnabled(e.target.checked)} className="accent-amber-600" />
-              Agrupar amontonados
-            </label>
-            <span className="text-[10px] text-slate-500 ml-auto">{clusterEnabled ? "evita solapamiento • clic para expandir" : "todos visibles"}</span>
-            <button type="button" onClick={() => setSpiderClusterId(null)} disabled={!spiderClusterId} className="text-[10px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg disabled:opacity-30">Cerrar spider</button>
-          </div>
-
-          <div className="flex flex-col gap-2 mt-3 p-3 bg-sky-50/70 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-xl">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1.5">⤢ Tamaño markers</span>
-              <span className="text-[10px] font-mono bg-sky-600 text-white px-2 py-0.5 rounded-full">{globalMarkerSize}px</span>
-            </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Ajusta tamaño global o por pin individual. Reduce para ver mapa completo, agranda para destacar.</p>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold">24</span>
-              <input type="range" min={24} max={52} step={2} value={globalMarkerSize} onChange={(e) => setGlobalMarkerSize(parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
-              <span className="text-[10px] font-bold">52</span>
-              <span className="text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded-lg">{globalMarkerSize}px</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={() => handleGlobalSize(globalMarkerSize)} className="text-xs font-black bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-xl">Aplicar a todos</button>
-              <button type="button" onClick={handleResetSizes} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">Reset 38px</button>
-            </div>
-            <p className="text-[10px] text-slate-400">Global afecta visual inmediato; por pin usa slider en lista/modal para ajuste fino.</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Ver pin como:</span>
-            <button type="button" onClick={() => setShowNumberInsteadOfIcon(false)} className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition ${!showNumberInsteadOfIcon ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Ícono Lucide</button>
-            <button type="button" onClick={() => setShowNumberInsteadOfIcon(true)} className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition ${showNumberInsteadOfIcon ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Nº orden</button>
-            <span className="text-[10px] text-slate-400">{showNumberInsteadOfIcon ? "mostrando 1,2,3…" : "mostrando íconos"}</span>
-          </div>
-
-          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">Rotar mapa <span className="font-mono text-[11px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-0.5 rounded-full">{rotationDeg}°</span></p>
-            <div className="flex gap-1.5 mt-2">
-              <button type="button" onClick={() => rotateMap(-45)} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl hover:bg-slate-50" title="Antihorario 45°">↺ 45°</button>
-              <button type="button" onClick={() => rotateMap(45)} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl hover:bg-slate-50" title="Horario 45°">↻ 45°</button>
-              <button type="button" onClick={() => { setRotationDeg(0); setTimeout(() => mapRef.current?.invalidateSize(), 350); }} className="text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2 rounded-xl">Reset</button>
-            </div>
-            <div className="flex gap-1.5 mt-2">
-              <input type="number" value={rotationInput} onChange={(e) => setRotationInput(e.target.value)} placeholder="45" className="w-20 text-xs border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-2 bg-white dark:bg-slate-800 dark:text-white font-mono" />
-              <button type="button" onClick={() => rotateMap(-parseInt(rotationInput || "0") || 0)} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl">↺ X°</button>
-              <button type="button" onClick={() => rotateMap(parseInt(rotationInput || "0") || 0)} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl">↻ X°</button>
-              <button type="button" onClick={handleCustomRotate} className="text-[11px] font-bold bg-violet-600 text-white px-3 py-2 rounded-xl">Ir a X°</button>
-            </div>
-            <div className="flex items-center gap-3 mt-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
-              <div
-                ref={knobRef}
-                onMouseDown={handleKnobPointerDown}
-                onTouchStart={handleKnobPointerDown}
-                className="w-20 h-20 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 relative shadow-inner cursor-grab active:cursor-grabbing select-none shrink-0 touch-none"
-                title="Arrastra para rotar 360°"
-              >
-                <div className="absolute inset-1 rounded-full border border-slate-200 dark:border-slate-700 pointer-events-none"></div>
-                <div className="absolute left-1/2 top-1/2 w-1 h-1 bg-slate-900 dark:bg-white rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-                <div className="absolute left-1/2 top-1 w-1.5 h-7 bg-emerald-500 rounded-full -translate-x-1/2 origin-bottom pointer-events-none" style={{ transform: `translateX(-50%) rotate(${rotationDeg}deg)` }}></div>
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold text-slate-500 pointer-events-none mt-5">{rotationDeg}°</span>
-              </div>
-              <div className="flex-1 text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-                <p className="font-bold text-slate-700 dark:text-slate-300">Perilla 360°</p>
-                <p>Arrastra la aguja verde. Gira el mapa completo (tiles + marcadores). El contenedor queda fijo; interior sobredimensionado 200% cubre esquinas sin blanco.</p>
-              </div>
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1">Rotación visual CSS (no afecta coordenadas). Horario = +X°, antihorario = -X°.</p>
+          ))}
+          <div className="ml-auto hidden md:flex items-center gap-2 text-[11px] font-mono text-slate-500 shrink-0">
+            <span className={`px-2 py-1 rounded-full font-bold border truncate max-w-[180px] ${isDirty ? "bg-amber-500 text-white border-amber-500" : "bg-emerald-600 text-white border-emerald-600"}`} title={currentProjectName}>{currentProjectName}</span>
+            <span className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-full font-bold">{markers.length} pts</span>
+            <span className="hidden lg:inline">{rotationDeg}° · {TILE_PROVIDERS[tileProvider].label}</span>
           </div>
         </div>
 
-        {/* Geoapify Token - frontend only, localStorage */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${geoapifyToken ? "bg-emerald-500" : "bg-amber-500"}`}></span>
-              Geoapify API Key
-            </h3>
-            <a href="https://myprojects.geoapify.com" target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-emerald-600 hover:underline">Obtener key →</a>
-          </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-            Token se guarda solo en tu navegador (<code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">localStorage: geoapify-api-key</code>). No se envía a nuestro servidor — fetch directo a <code>api.geoapify.com</code>.
-            {geoapifyToken ? <span className="text-emerald-600 font-bold"> · listo para Routing & Route Planner (ruta óptima)</span> : <span className="text-amber-600"> · sin key, ruteo deshabilitado</span>}
-          </p>
-          <div className="flex gap-2 mt-3">
-            <div className="relative flex-1">
-              <input
-                type={showToken ? "text" : "password"}
-                value={geoapifyInput}
-                onChange={(e) => setGeoapifyInput(e.target.value)}
-                placeholder="Ej: 3b7a... (pega tu apiKey)"
-                className="w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 pr-9 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
-              />
-              <button type="button" onClick={() => setShowToken(!showToken)} className="absolute right-1 top-1 bottom-1 w-7 flex items-center justify-center text-slate-400 hover:text-slate-600" title={showToken ? "Ocultar" : "Mostrar"}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={showToken ? "M9.88 9.88a3 3 0 1 0 4.24 4.24" : "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"} /><circle cx="12" cy="12" r="3" /></svg>
-              </button>
-            </div>
-          </div>
-          <div className="flex gap-2 mt-2">
-            <button onClick={handleSaveToken} disabled={!geoapifyInput.trim() || geoapifyInput.trim() === geoapifyToken} className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2 rounded-xl transition">Guardar</button>
-            <button onClick={handleClearToken} disabled={!geoapifyToken} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl disabled:opacity-40">Borrar</button>
-            <span className={`text-[11px] font-mono px-2 py-1 rounded-full border self-center ${geoapifyToken ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 border-emerald-200" : "bg-amber-50 dark:bg-amber-950/30 text-amber-700 border-amber-200"}`}>{geoapifyToken ? "✓ configurado" : "○ falta key"}</span>
-          </div>
-          <details className="mt-3 group">
-            <summary className="text-[11px] font-bold text-slate-600 dark:text-slate-400 cursor-pointer select-none">¿Ruta óptima (TSP)? — info</summary>
-            <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl p-3">
-              <p><b>Sí, posible con Geoapify Route Planner.</b> Tu base ya tiene <code>routing-api-openapi-specs.json:24</code> (<code>/v1/routing</code> orden fijo) y batch specs.</p>
-              <p className="mt-2">Abajo puedes dibujar la ruta en orden actual u optimizada (TSP mantiene 1er y último fijos).</p>
-            </div>
-          </details>
-
-          {/* Controles de ruta */}
-          <div className="mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
-            <h4 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M3 7v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/><path d="M16 5h.01"/><path d="M8 5h.01"/><path d="M12 5h.01"/><path d="M16 17h.01"/><path d="M8 17h.01"/><path d="M12 17h.01"/></svg></span>
-              Ruta
-            </h4>
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Modo
-                <select value={routeMode} onChange={(e) => setRouteMode(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
-                  <option value="drive">Auto</option>
-                  <option value="walk">A pie</option>
-                  <option value="bicycle">Bici</option>
-                </select>
-              </label>
-              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex flex-col justify-end">
-                <span className="flex items-center gap-1.5 pb-2"><input type="checkbox" checked={optimizeStops} onChange={(e) => setOptimizeStops(e.target.checked)} className="accent-violet-600" /> Optimizar orden</span>
-                <span className="text-[10px] font-normal text-slate-400">fija 1º y último</span>
-              </label>
-            </div>
-            <div className="flex items-center gap-2 mt-3">
-              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">Color ruta
-                <input type="color" value={routeColor} onChange={(e)=> setRouteColor(e.target.value)} className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5 bg-white dark:bg-slate-800" title="Elige color de la ruta" />
-                <span className="text-[11px] font-mono px-2 py-1 rounded-full border bg-white dark:bg-slate-800" style={{ color: routeColor, borderColor: routeColor }}>{routeColor}</span>
-              </label>
-              <div className="ml-auto flex gap-1">
-                {["#7c3aed","#059669","#dc2626","#ea580c","#2563eb","#000000"].map(c=>(
-                  <button key={c} onClick={()=> setRouteColor(c)} className={`w-6 h-6 rounded-full border-2 ${routeColor===c ? "border-slate-900 dark:border-white scale-110" : "border-white dark:border-slate-600"}`} style={{ background: c }} title={c} />
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              <button onClick={handleDrawRoute} disabled={routeLoading || markers.length < 2 || !geoapifyToken} className="text-xs font-black bg-violet-600 hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-xl transition flex items-center justify-center gap-1.5">
-                {routeLoading ? "Calculando…" : "Dibujar ruta"}
-              </button>
-              <button onClick={handleClearRoute} disabled={routeCoords.length === 0 && !routeError} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 rounded-xl disabled:opacity-40">Limpiar</button>
-            </div>
-            {!geoapifyToken && <p className="text-[11px] text-amber-600 mt-2">Guarda tu API key arriba para habilitar el trazado.</p>}
-            {markers.length < 2 && <p className="text-[11px] text-slate-400 mt-2">Añade al menos 2 puntos.</p>}
-            {routeError && <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2 mt-2">{routeError}</p>}
-            {routeInfo && (
-              <div className="text-xs bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-xl px-3 py-2 mt-2 space-y-1">
-                <p className="font-bold text-emerald-800 dark:text-emerald-300">Ruta lista — {(routeInfo.distance / 1000).toFixed(2)} km · {Math.round(routeInfo.time / 60)} min</p>
-                <p className="text-[11px] text-slate-600 dark:text-slate-400">{routeCoords.length} puntos de geometría · orden actual {optimizeStops ? "(optimizado)" : "(secuencial)"} · reordena con ↑↓ y vuelve a dibujar</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Search */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between gap-2">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Buscar dirección</label>
-            <select value={geocodeProvider} onChange={(e) => setGeocodeProvider(e.target.value as any)} className="text-xs border border-slate-200 dark:border-slate-700 rounded-full px-2.5 py-1 bg-white dark:bg-slate-800 dark:text-white font-bold">
-              <option value="nominatim">Nominatim (OSM)</option>
-              <option value="geoapify">Geoapify</option>
-              <option value="both">Ambas (10 máx)</option>
-            </select>
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">Proveedor: <b className={geocodeProvider==="both" ? "text-indigo-600" : geocodeProvider==="geoapify" ? "text-violet-600" : "text-emerald-600"}>{geocodeProvider==="both" ? "ambas" : geocodeProvider}</b> · {geocodeProvider==="both" ? "combina Geoapify + Nominatim (hasta 10)" : geocodeProvider==="geoapify" ? "usa tu key embebida" : "OSM libre"} · {geocodeProvider==="both" ? "5+5" : "hasta 5"} sugerencias</p>
-          <div className="flex gap-2 mt-2">
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder={geocodeProvider==="both" ? "Ej: Av. Amazonas, Quito (Ambas)" : geocodeProvider==="geoapify" ? "Ej: Av. Orellana, Quito (Geoapify)" : "Ej: Av. Amazonas, Quito (Nominatim)"}
-              className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-            <button onClick={handleSearch} disabled={searchLoading || (geocodeProvider==="geoapify" && !geoapifyToken) || (geocodeProvider==="both" && !geoapifyToken)} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold px-4 rounded-xl transition" title={geocodeProvider!=="nominatim" && !geoapifyToken ? "Falta API key Geoapify" : ""}>
-              {searchLoading ? "…" : "Buscar"}
-            </button>
-          </div>
-          {searchResults.length > 0 && (
-            <ul className="mt-3 max-h-48 overflow-auto divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
-              {searchResults.map((r: any) => (
-                <li key={r.place_id} className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex gap-2 items-start" onClick={() => {
-                  const lat = parseFloat(r.lat), lon = parseFloat(r.lon);
-                  handleAddMarker(lat, lon, r.display_name.split(",").slice(0,2).join(","));
-                  if (mapRef.current) mapRef.current.flyTo([lat, lon], 15);
-                  setSearchResults([]);
-                  setSearchQuery("");
-                }}>
-                  <span className="mt-0.5 text-emerald-600"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{r.display_name}</p>
-                    <p className="text-[11px] text-slate-500 flex items-center gap-1.5"><span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full border ${r.source==="geoapify" ? "bg-violet-600 text-white border-violet-600" : r.source==="nominatim" ? "bg-emerald-600 text-white border-emerald-600" : "bg-slate-200"}`}>{r.source || geocodeProvider}</span>{r.type} · {parseFloat(r.lat).toFixed(4)}, {parseFloat(r.lon).toFixed(4)}</p>
+        {/* Contenido de la cinta */}
+        <div className="p-3 bg-white dark:bg-slate-900">
+          {/* ARCHIVO - Mapas guardados + Nuevo mapa - ahora en ribbon, no lateral */}
+          {activeTab === "archivo" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div className="lg:col-span-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Proyecto actual</p>
+                <div className={`mt-1.5 rounded-xl border p-3 flex flex-col gap-2 ${isDirty ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900" : "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"}`}>
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${isDirty ? "bg-amber-500" : "bg-emerald-500"}`}></span>
+                    <span className="text-xs font-black truncate flex-1 text-slate-900 dark:text-white">{currentProjectName}</span>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${isDirty ? "bg-amber-500 text-white border-amber-500" : "bg-emerald-600 text-white border-emerald-600"}`}>{isDirty ? "Cambios sin guardar" : markers.length===0 ? "Vacío" : "Guardado"}</span>
                   </div>
-                  <span className="text-[11px] font-bold text-emerald-600 shrink-0">+ Añadir</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="text-[11px] text-slate-400 mt-2">Usa <b className={geocodeProvider==="both" ? "text-indigo-600" : geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider==="both" ? "ambas" : geocodeProvider}</b> ({geocodeProvider==="both" ? "hasta 10 · 5 Geoapify + 5 Nominatim" : "hasta 5"}). Clic para añadir. Cambia arriba (combobox).</p>
-        </div>
-
-        {/* Add marker controls */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Nuevo punto</h3>
-          <div className="flex gap-2 mt-2">
-            <input
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Título del próximo punto (opcional)"
-              className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          <div className="mt-3">
-            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Ícono</p>
-            <div className="grid grid-cols-7 gap-1.5 max-h-36 overflow-y-auto pr-1 py-1">
-              {ICONS.map((ic) => (
-                <button
-                  key={ic.id}
-                  type="button"
-                  onClick={() => setSelectedIcon(ic.id)}
-                  className={`w-9 h-9 rounded-xl border-2 flex items-center justify-center transition shrink-0 ${selectedIcon === ic.id ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300"}`}
-                  title={ic.label}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={selectedIcon === ic.id ? "#059669" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={selectedIcon === ic.id ? "" : "text-slate-600 dark:text-slate-300"}>
-                    <g dangerouslySetInnerHTML={{ __html: ic.svg }} />
-                  </svg>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-3">
-            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Color</p>
-            <div className="flex flex-wrap gap-1.5">
-              {COLORS.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setSelectedColor(c.id)}
-                  className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition ${selectedColor === c.id ? "border-slate-900 dark:border-white scale-110" : "border-white dark:border-slate-700"}`}
-                  style={{ background: c.hex }}
-                  title={c.label}
-                >
-                  {selectedColor === c.id && <span className="text-white text-[10px]">✓</span>}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-3">
-            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">Forma</p>
-            <div className="grid grid-cols-3 gap-1.5">
-              {(["pin", "square", "circle"] as const).map((sh) => (
-                <button
-                  key={sh}
-                  type="button"
-                  onClick={() => setSelectedShape(sh)}
-                  className={`text-[11px] font-bold px-2 py-2 rounded-xl border flex flex-col items-center gap-1 transition ${selectedShape === sh ? "bg-sky-600 text-white border-sky-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}
-                  title={sh === "pin" ? "Lágrima (pin)" : sh === "square" ? "Cuadrado" : "Círculo"}
-                >
-                  <span className="w-6 h-6 flex items-center justify-center" style={{ background: getColorHex(selectedColor), borderRadius: sh === "circle" ? "50%" : sh === "square" ? "6px" : "50% 50% 50% 0", border: "1.5px solid white", transform: sh === "pin" ? "rotate(-45deg)" : "none", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }}>
-                    <span style={{ transform: sh === "pin" ? "rotate(45deg)" : "none", display: "flex" }}><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: (ICONS.find((i) => i.id === selectedIcon)?.svg ?? ICONS[0].svg) }} /></svg></span>
-                  </span>
-                  {sh === "pin" ? "Pin" : sh === "square" ? "Cuadrado" : "Círculo"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-3">
-            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">Tamaño próximo <span className="font-mono text-[11px] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-0.5 rounded-full">{selectedSize}px</span></p>
-            <div className="flex items-center gap-1.5">
-              <button type="button" onClick={() => setSelectedSize((s) => Math.max(24, s - 4))} className="w-8 h-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">−</button>
-              <input type="range" min={24} max={52} step={2} value={selectedSize} onChange={(e) => setSelectedSize(parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
-              <button type="button" onClick={() => setSelectedSize((s) => Math.min(52, s + 4))} className="w-8 h-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">+</button>
-            </div>
-          </div>
-          <p className="text-[11px] text-slate-400 mt-2">Tip: forma + tamaño + ícono/color, luego clic mapa. Cuadrado/círculo y tamaño pequeño ayuda con amontonados.</p>
-        </div>
-
-        {/* Marker list */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col shadow-sm">
-          <div className="p-4 pb-3 border-b border-slate-100 dark:border-slate-800 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Puntos ({markers.length})</h3>
-              <span className="text-[11px] text-slate-400">Google limit 10 · aquí ∞</span>
-            </div>
-            <div className="flex gap-1.5">
-              <button onClick={(e) => { e.stopPropagation(); handleUndo(); }} disabled={historyIdx <= 0} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-xl disabled:opacity-30 flex items-center justify-center gap-1" title="Ctrl+Z">↩ Deshacer</button>
-              <button onClick={(e) => { e.stopPropagation(); handleRedo(); }} disabled={historyIdx >= historyRef.current.length - 1} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-xl disabled:opacity-30 flex items-center justify-center gap-1" title="Ctrl+Y / Ctrl+Shift+Z / Ctrl+X">↪ Rehacer</button>
-            </div>
-            <p className="text-[10px] text-slate-400">Ctrl+Z deshacer · Ctrl+Y / Ctrl+Shift+Z / Ctrl+X rehacer · {historyIdx + 1}/{historyRef.current.length}</p>
-          </div>
-
-          <div className="max-h-[520px] overflow-y-auto p-2 space-y-2 overscroll-contain pr-1">
-            {markers.length === 0 ? (
-              <div className="text-center py-10 px-4">
-                <div className="w-12 h-12 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">📍</div>
-                <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Sin puntos aún</p>
-                <p className="text-xs text-slate-400 mt-1">Haz clic en el mapa o usa el buscador para empezar. Puedes añadir cientos.</p>
-              </div>
-            ) : markers.map((m, idx) => (
-              <div key={m.id} onClick={() => setSelectedId(m.id)} className={`group border rounded-xl p-3 flex gap-3 cursor-pointer transition ${selectedId === m.id ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/30 shadow-md" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600"}`}>
-                <div className="shrink-0 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-mono font-bold text-slate-400">#{idx + 1}</span>
-                  {showNumberInsteadOfIcon ? (
-                    <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{ background: getColorHex(m.color) }}>{idx + 1}</span>
-                  ) : (
-                    <IconPreview icon={m.icon} color={m.color} />
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
+                    {isDirty ? "Tienes cambios locales no guardados. Usa Guardar o Actualizar abajo, o Nuevo mapa los auto-guardará con nombre aleatorio." : markers.length===0 ? "Mapa en blanco listo para empezar. Añade puntos en Inicio o Insertar." : "Todo guardado. Puedes seguir editando o crear un nuevo mapa."}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    <button onClick={handleNewMap} className="text-xs font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2.5 rounded-xl flex items-center justify-center gap-1.5">
+                      <span className="text-sm">＋</span> Nuevo mapa
+                    </button>
+                    <button onClick={() => { if (markers.length===0) return; const n = prompt("Nombre para guardar mapa actual:", currentProjectName !== "Mapa sin guardar" && currentProjectName !== "Mapa nuevo" ? currentProjectName : ""); if (n===null) return; const trimmed=n.trim(); if(!trimmed) return alert("Nombre vacío"); const np: MapProject={ id: generateId(), name: trimmed, createdAt: Date.now(), updatedAt: Date.now(), markers:[...markers], tileProvider, showPolyline }; setProjects(prev=>[np,...prev]); setCurrentProjectId(np.id); }} disabled={markers.length===0} className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-3 py-2.5 rounded-xl">Guardar como…</button>
+                  </div>
+                  {currentProjectId && isDirty && (
+                    <button onClick={handleUpdateCurrentProject} className="w-full text-xs font-bold bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 px-3 py-2 rounded-xl hover:bg-amber-50">Actualizar "{`"`}{projects.find(pr=>pr.id===currentProjectId)?.name}{`"`}"</button>
                   )}
+                  <p className="text-[10px] text-slate-400">Nuevo mapa → guarda automáticamente el actual con nombre aleatorio (<code>Mapa DD/MM/AAAA HH:MM - xxx</code>) y limpia el lienzo. Nunca pierdes puntos.</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{m.title}</p>
-                  {m.description && <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{m.description}</p>}
-                  <p className="text-[11px] font-mono text-slate-400 mt-1">{m.lat.toFixed(5)}, {m.lng.toFixed(5)}</p>
-                  <div className="flex flex-wrap gap-1 mt-2 items-center">
-                    <div className="flex gap-0.5 mr-1">
-                      <button onClick={() => moveMarker(m.id, -1)} disabled={idx === 0} className="w-6 h-6 flex items-center justify-center bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-l-lg disabled:opacity-30 text-[10px]">↑</button>
-                      <button onClick={() => moveMarker(m.id, 1)} disabled={idx === markers.length - 1} className="w-6 h-6 flex items-center justify-center bg-white dark:bg-slate-700 border-t border-b border-r border-slate-200 dark:border-slate-600 rounded-r-lg disabled:opacity-30 text-[10px]">↓</button>
+              </div>
+              <div className="lg:col-span-8">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Mapas guardados ({projects.length}) — localStorage</p>
+                  <span className="text-[10px] font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-full">{projects.length} mapas</span>
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <input value={newProjectName} onChange={(e)=>setNewProjectName(e.target.value)} onKeyDown={(e)=>e.key==="Enter" && handleSaveProject()} placeholder="Nombre ej: Ruta Quito Centro" className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                  <button onClick={handleSaveProject} disabled={markers.length===0} className="text-xs font-black bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white px-4 py-2 rounded-xl">Guardar</button>
+                </div>
+                <div className="mt-2 max-h-[320px] overflow-y-auto space-y-2 pr-1 overscroll-contain border border-slate-200 dark:border-slate-700 rounded-xl p-2 bg-slate-50/50 dark:bg-slate-800/30">
+                  {projects.length===0 ? (
+                    <p className="text-xs text-slate-400 text-center py-6 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800">Sin mapas guardados aún. Guarda el actual con un nombre arriba. <br/>O usa <b>Nuevo mapa</b> para auto-guardar con nombre aleatorio.</p>
+                  ) : projects.slice().sort((a,b)=>b.updatedAt-a.updatedAt).map((proj)=> (
+                    <div key={proj.id} className={`group border rounded-xl p-3 flex flex-col gap-2 ${currentProjectId===proj.id ? "border-amber-400 bg-amber-50/50 dark:bg-amber-950/20" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"}`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          {renamingId===proj.id ? (
+                            <div className="flex gap-1.5">
+                              <input value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onKeyDown={(e)=>{if(e.key==="Enter") handleRenameProject(proj.id); if(e.key==="Escape") setRenamingId(null);}} autoFocus className="flex-1 text-sm border border-amber-300 dark:border-amber-700 rounded-lg px-2 py-1 bg-white dark:bg-slate-900 dark:text-white" />
+                              <button onClick={()=>handleRenameProject(proj.id)} className="text-xs font-bold bg-emerald-600 text-white px-2 py-1 rounded-lg">OK</button>
+                              <button onClick={()=>setRenamingId(null)} className="text-xs font-bold bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-lg">X</button>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-sm font-black text-slate-900 dark:text-white truncate">{proj.name}</p>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400">{proj.markers.length} puntos · {new Date(proj.updatedAt).toLocaleDateString()} {new Date(proj.updatedAt).toLocaleTimeString().slice(0,5)} {currentProjectId===proj.id && "· activo"}</p>
+                            </>
+                          )}
+                        </div>
+                        <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${currentProjectId===proj.id ? "bg-amber-500 text-white border-amber-500" : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600"}`}>{proj.markers.length}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        <button onClick={()=>handleLoadProject(proj.id)} className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${currentProjectId===proj.id ? "bg-amber-500 text-white" : "bg-slate-900 dark:bg-white text-white dark:text-slate-900"}`}>Cargar</button>
+                        <button onClick={()=>{setRenamingId(proj.id); setRenameDraft(proj.name);}} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">Renombrar</button>
+                        <button onClick={()=>handleDuplicateProject(proj.id)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">Duplicar</button>
+                        <button onClick={()=>handleDeleteProject(proj.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg">Eliminar</button>
+                      </div>
+                      <details className="text-[11px] text-slate-500 dark:text-slate-400">
+                        <summary className="cursor-pointer font-semibold">Ver puntos</summary>
+                        <ul className="mt-1 space-y-0.5 max-h-24 overflow-y-auto font-mono text-[11px] bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 border border-slate-100 dark:border-slate-700">
+                          {proj.markers.map((m,i)=>(<li key={m.id} className="truncate">{i+1}. {m.title} — {m.lat.toFixed(4)},{m.lng.toFixed(4)}</li>))}
+                        </ul>
+                      </details>
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); setSelectedId(m.id); mapRef.current?.flyTo([m.lat, m.lng], 16); }} className="text-[11px] font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-lg hover:opacity-90">Ver</button>
-                    <button onClick={() => startEdit(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50">Editar</button>
-                    <button onClick={() => handleDuplicate(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg hover:bg-slate-50" title="Duplicar">⧉</button>
-                    <button onClick={() => handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg hover:bg-red-100">Eliminar</button>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-1">Orden: {idx + 1} de {markers.length} · usa ↑↓ para reordenar ruta</p>
-                  <div className="mt-2 bg-sky-50/60 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-lg px-2 py-2 flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">⤢ Tamaño {m.size ?? globalMarkerSize ?? 38}px</span>
-                      <button type="button" onClick={() => updateMarkerSize(m.id, 38)} className="text-[10px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">38px</button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2">Tip: <b>Nuevo mapa</b> nunca borra sin guardar — auto-genera <code>Mapa fecha hora - id</code>. Carga un proyecto, edita en <b>Puntos</b>, luego <b>Actualizar</b>.</p>
+              </div>
+            </div>
+          )}
+          {/* INICIO */}
+          {activeTab === "inicio" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+              <div className="lg:col-span-2 ribbon-group pr-3 flex flex-col gap-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Portapapeles</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button onClick={(e) => { e.stopPropagation(); handleUndo(); }} disabled={historyIdx <= 0} className="text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl disabled:opacity-30 flex flex-col items-center gap-1">
+                    <span className="text-base">↩</span>Deshacer
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); handleRedo(); }} disabled={historyIdx >= historyRef.current.length - 1} className="text-[11px] font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl disabled:opacity-30 flex flex-col items-center gap-1">
+                    <span className="text-base">↪</span>Rehacer
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-400 text-center">{historyIdx + 1}/{historyRef.current.length} · Ctrl+Z / Ctrl+Y</p>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button onClick={fitAll} disabled={markers.length === 0} className="text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-2 rounded-lg disabled:opacity-40">Ajustar vista</button>
+                  <button onClick={handleNewMap} disabled={markers.length===0 && !currentProjectId} className="text-xs font-black bg-sky-600 hover:bg-sky-700 disabled:opacity-40 text-white px-2 py-2 rounded-lg flex items-center justify-center gap-1">＋ Nuevo</button>
+                  <button onClick={() => { if (!confirm(`¿Borrar ${markers.length} puntos sin guardar? Usa Nuevo para auto-guardar con nombre aleatorio.`)) return; setMarkers([]); setRouteCoords([]); setRouteInfo(null); }} disabled={markers.length === 0} className="text-xs font-bold bg-red-50 dark:bg-red-950/30 text-red-600 border border-red-200 dark:border-red-900 px-2 py-2 rounded-lg disabled:opacity-40">Limpiar</button>
+                </div>
+                <p className="text-[9px] text-slate-400 leading-tight text-center">Nuevo = guarda actual como <code>Mapa fecha - id</code> + lienzo en blanco. Seguro, no pierdes puntos.</p>
+              </div>
+              <div className="lg:col-span-5 ribbon-group pr-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Nuevo punto</p>
+                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Título del próximo punto (opcional)" className="mt-1.5 w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                <div className="grid grid-cols-3 gap-2 mt-2">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Ícono</p>
+                    <div className="grid grid-cols-4 gap-1 max-h-[92px] overflow-y-auto pr-1">
+                      {ICONS.slice(0, 16).map((ic) => (
+                        <button key={ic.id} type="button" onClick={() => setSelectedIcon(ic.id)} className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition ${selectedIcon === ic.id ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"}`} title={ic.label}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={selectedIcon === ic.id ? "#059669" : "currentColor"} strokeWidth="2" className={selectedIcon === ic.id ? "" : "text-slate-600 dark:text-slate-300"}><g dangerouslySetInnerHTML={{ __html: ic.svg }} /></svg>
+                        </button>
+                      ))}
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <button type="button" onClick={() => updateMarkerSize(m.id, (m.size ?? globalMarkerSize ?? 38) - 4)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">−</button>
-                      <input type="range" min={24} max={52} step={2} value={m.size ?? globalMarkerSize ?? 38} onChange={(e) => updateMarkerSize(m.id, parseInt(e.target.value, 10))} className="flex-1 accent-sky-600" />
-                      <button type="button" onClick={() => updateMarkerSize(m.id, (m.size ?? globalMarkerSize ?? 38) + 4)} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-[11px]">+</button>
-                    </div>
-                    <div className="mt-2 flex gap-1.5">
-                      {(["pin", "square", "circle"] as const).map((sh) => (
-                        <button
-                          key={sh}
-                          type="button"
-                          onClick={() => setMarkers((prev) => prev.map((x) => (x.id === m.id ? { ...x, shape: sh } : x)))}
-                          className={`flex-1 text-[10px] font-bold px-2 py-1.5 rounded-lg border flex items-center justify-center gap-1 ${ (m.shape ?? "pin") === sh ? "bg-sky-600 text-white border-sky-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}
-                          title={sh}
-                        >
-                          <span className="w-4 h-4 flex items-center justify-center shrink-0" style={{ background: getColorHex(m.color), borderRadius: sh === "circle" ? "50%" : sh === "square" ? "4px" : "50% 50% 50% 0", transform: sh === "pin" ? "rotate(-45deg)" : "none", border: "1px solid white" }}><span style={{ transform: sh === "pin" ? "rotate(45deg)" : "none", display: "flex" }}><svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: (ICONS.find((i) => i.id === m.icon)?.svg ?? ICONS[0].svg) }} /></svg></span></span>
-                          {sh === "pin" ? "Pin" : sh === "square" ? "□" : "○"}
+                    <button onClick={() => document.getElementById("all-icons-inicio")?.classList.toggle("hidden")} className="text-[10px] font-bold text-emerald-600 mt-1">Ver {ICONS.length} →</button>
+                    <div id="all-icons-inicio" className="hidden grid grid-cols-7 gap-1 mt-1 max-h-28 overflow-auto pr-1">
+                      {ICONS.map((ic) => (
+                        <button key={ic.id+"-all"} type="button" onClick={() => setSelectedIcon(ic.id)} className={`w-7 h-7 rounded-lg border flex items-center justify-center ${selectedIcon === ic.id ? "border-emerald-500 bg-emerald-50" : "border-slate-200 dark:border-slate-700"}`} title={ic.label}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: ic.svg }} /></svg>
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
-                    <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Corregir ubicación sin borrar · <span className={geocodeProvider==="both" ? "text-indigo-600" : geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider==="both" ? "ambas" : geocodeProvider}</span></label>
-                    <div className="flex gap-1.5 mt-1">
-                      <input
-                        value={pointSearchQuery[m.id] || ""}
-                        onChange={(e) => setPointSearchQuery((prev) => ({ ...prev, [m.id]: e.target.value }))}
-                        onKeyDown={(e) => { if (e.key === "Enter") handlePointSearch(m.id); }}
-                        placeholder={geocodeProvider==="both" ? "Ej: Av. Shyris, Quito (Ambas)" : geocodeProvider==="geoapify" ? "Ej: Quicentro, Quito (Geoapify)" : "Ej: Av. Shyris, Quito (Nominatim)"}
-                        className="flex-1 text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1.5 bg-white dark:bg-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
-                      />
-                      <button onClick={() => handlePointSearch(m.id)} disabled={pointSearchLoading[m.id] || (geocodeProvider!=="nominatim" && !geoapifyToken)} className="text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-2.5 py-1.5 rounded-lg">{pointSearchLoading[m.id] ? "…" : "Buscar"}</button>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Color</p>
+                    <div className="flex flex-wrap gap-1">
+                      {COLORS.map((c) => (
+                        <button key={c.id} onClick={() => setSelectedColor(c.id)} className={`w-6 h-6 rounded-full border-2 ${selectedColor === c.id ? "border-slate-900 dark:border-white scale-110" : "border-white dark:border-slate-700"}`} style={{ background: c.hex }} title={c.label}>{selectedColor === c.id && <span className="text-white text-[8px]">✓</span>}</button>
+                      ))}
                     </div>
-                    {(pointSearchResults[m.id]?.length || 0) > 0 && (
-                      <ul className="mt-1.5 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-slate-800 max-h-48 overflow-y-auto">
-                        {pointSearchResults[m.id]!.slice(0, 10).map((r: any) => (
-                          <li key={r.place_id} onClick={() => handlePointSelect(m.id, r)} className="px-2.5 py-2 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 cursor-pointer">
-                            <p className="text-[11px] font-semibold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">{r.display_name}</p>
-                            <p className="text-[10px] text-slate-500 flex items-center gap-1.5"><span className={`text-[9px] font-black px-1 py-0.5 rounded-full border ${r.source==="geoapify" ? "bg-violet-600 text-white border-violet-600" : "bg-emerald-600 text-white border-emerald-600"}`}>{r.source || geocodeProvider}</span>{r.type} · {parseFloat(r.lat).toFixed(4)},{parseFloat(r.lon).toFixed(4)} · click para mover</p>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <p className="text-[10px] text-slate-400 mt-1">{geocodeProvider==="both" ? "Ambas: hasta 10 (5 Geoapify + 5 Nominatim)" : geocodeProvider==="geoapify" ? "Geoapify hasta 5" : "Nominatim hasta 5"} · usa el combobox arriba para cambiar.</p>
+                    <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mt-2 mb-1">Forma</p>
+                    <div className="grid grid-cols-3 gap-1">
+                      {(["pin","square","circle"] as const).map((sh) => (
+                        <button key={sh} type="button" onClick={() => setSelectedShape(sh)} className={`text-[10px] font-bold px-1 py-1.5 rounded-lg border flex flex-col items-center gap-1 ${selectedShape === sh ? "bg-sky-600 text-white border-sky-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>{sh==="pin"?"Pin":sh==="square"?"□":"○"}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Tamaño {selectedSize}px</p>
+                    <div className="flex items-center gap-1">
+                      <button type="button" onClick={() => setSelectedSize((s)=>Math.max(24,s-4))} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-xs">−</button>
+                      <input type="range" min={24} max={52} step={2} value={selectedSize} onChange={(e)=>setSelectedSize(parseInt(e.target.value))} className="flex-1 accent-emerald-600" />
+                      <button type="button" onClick={() => setSelectedSize((s)=>Math.min(52,s+4))} className="w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-center text-xs">+</button>
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-2 leading-tight">Clic en mapa para añadir. Forma+color+ícono del próximo punto.</p>
+                    <div className="mt-1 flex items-center gap-1.5 text-[11px]"><IconPreview icon={selectedIcon} color={selectedColor} /><span className="text-xs font-bold truncate">{newTitle || `Punto ${markers.length+1}`}</span></div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-
-          <div className="p-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2">
-            <button onClick={exportJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">Exportar JSON</button>
-            <button onClick={exportGeoJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">GeoJSON</button>
-            <button onClick={exportCSV} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">CSV</button>
-            <button onClick={shareUrl} className="text-xs font-bold bg-emerald-600 text-white px-3 py-2 rounded-xl hover:bg-emerald-700">{shareCopied ? "¡Copiado!" : "Compartir link"}</button>
-          </div>
-
-          <div className="px-3 pb-3 flex gap-2">
-            <button onClick={() => fileInputRef.current?.click()} className="flex-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">
-              Importar JSON/GeoJSON
-            </button>
-            <input ref={fileInputRef} type="file" accept=".json,.geojson" className="hidden" onChange={importFile} />
-          </div>
-          <div className="p-3 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">Exportar en alta resolución <span className="text-[10px] font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-0.5 rounded-full">{markers.length} pts · {rotationDeg}°</span></p>
-            <p className="text-[11px] text-slate-400 mt-1">Ajusta vista primero (respeta rotación). Luego elige tamaño y formato.</p>
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Tamaño
-                <select value={exportSize} onChange={(e)=>{ setExportSize(e.target.value as any); if(e.target.value!=="actual") setPdfPageSize(e.target.value as any); }} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
-                  {Object.entries(EXPORT_PRESETS).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
-                </select>
-              </label>
-              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Formato
-                <select value={exportFormat} onChange={(e)=> setExportFormat(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white font-bold">
-                  <option value="png">PNG</option>
-                  <option value="jpeg">JPG</option>
-                  <option value="pdf">PDF (portada+tabla)</option>
-                </select>
-              </label>
+              <div className="lg:col-span-3 ribbon-group pr-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Vista</p>
+                <div className="grid grid-cols-2 gap-1.5 mt-1.5">
+                  <button type="button" onClick={() => setShowNumberInsteadOfIcon(false)} className={`text-xs font-bold px-2 py-2 rounded-xl border ${!showNumberInsteadOfIcon ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Ícono</button>
+                  <button type="button" onClick={() => setShowNumberInsteadOfIcon(true)} className={`text-xs font-bold px-2 py-2 rounded-xl border ${showNumberInsteadOfIcon ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>N.º</button>
+                </div>
+                <div className="mt-2">
+                  <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">Tamaño global <span className="font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-1.5 py-0.5 rounded-full text-[10px]">{globalMarkerSize}px</span></p>
+                  <input type="range" min={24} max={52} step={2} value={globalMarkerSize} onChange={(e)=>setGlobalMarkerSize(parseInt(e.target.value))} className="w-full accent-sky-600 mt-1" />
+                  <div className="grid grid-cols-2 gap-1 mt-1">
+                    <button type="button" onClick={()=>handleGlobalSize(globalMarkerSize)} className="text-[11px] font-bold bg-sky-600 text-white px-2 py-1.5 rounded-lg">Aplicar a todos</button>
+                    <button type="button" onClick={handleResetSizes} className="text-[11px] font-bold bg-white dark:bg-slate-800 border px-2 py-1.5 rounded-lg">Reset</button>
+                  </div>
+                </div>
+              </div>
+              <div className="lg:col-span-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Consejos</p>
+                <ul className="text-[11px] text-slate-600 dark:text-slate-400 mt-1.5 space-y-1 leading-tight list-disc list-inside">
+                  <li>Clic mapa = añadir</li>
+                  <li>Arrastra pin = mover</li>
+                  <li>↑↓ en Puntos = reordenar ruta</li>
+                  <li>Sin límite 10 de Google</li>
+                </ul>
+                <p className="text-[10px] text-slate-400 mt-2">Pestañas: <b>Puntos</b> edita lista completa, <b>Insertar</b> busca, <b>Vista</b> fondo/rotación.</p>
+              </div>
             </div>
-            {exportFormat === "pdf" && (
-              <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl space-y-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Página PDF
-                    <select value={pdfPageSize} onChange={(e)=> setPdfPageSize(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
-                      {Object.entries(PDF_PAGE_SIZES).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
+          )}
+
+          {activeTab === "puntos" && (
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Puntos ({markers.length}) — orden = orden de ruta</p>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="text-slate-400">Google limit 10 · aquí ∞</span>
+                  <button onClick={fitAll} disabled={markers.length===0} className="text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2.5 py-1 rounded-lg disabled:opacity-40">Ajustar vista</button>
+                </div>
+              </div>
+              {markers.length===0 ? (
+                <div className="text-center py-8 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
+                  <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Sin puntos aún</p>
+                  <p className="text-xs text-slate-400 mt-1">Añade desde Inicio o Insertar → Buscar</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 max-h-[420px] overflow-y-auto pr-1">
+                  {markers.map((m, idx)=> (
+                    <div key={m.id} onClick={()=>setSelectedId(m.id)} className={`border rounded-xl p-2.5 flex flex-col gap-2 cursor-pointer ${selectedId===m.id ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 ring-1 ring-emerald-500/30" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300"}`}>
+                      <div className="flex gap-2">
+                        <div className="shrink-0 flex flex-col items-center gap-1">
+                          <span className="text-[10px] font-mono font-bold text-slate-400">#{idx+1}</span>
+                          {showNumberInsteadOfIcon ? <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-black border-2 border-white shadow" style={{background:getColorHex(m.color)}}>{idx+1}</span> : <IconPreview icon={m.icon} color={m.color} />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{m.title}</p>
+                          {m.description && <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{m.description}</p>}
+                          <p className="text-[10px] font-mono text-slate-400">{m.lat.toFixed(5)}, {m.lng.toFixed(5)}</p>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <button onClick={()=>moveMarker(m.id,-1)} disabled={idx===0} className="w-6 h-6 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg disabled:opacity-30 text-[11px]">↑</button>
+                          <button onClick={()=>moveMarker(m.id,1)} disabled={idx===markers.length-1} className="w-6 h-6 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg disabled:opacity-30 text-[11px]">↓</button>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        <button onClick={(e)=>{e.stopPropagation(); mapRef.current?.flyTo([m.lat,m.lng],16); setSelectedId(m.id);}} className="text-[11px] font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-lg">Ver</button>
+                        <button onClick={()=>startEdit(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">Editar</button>
+                        <button onClick={()=>handleDuplicate(m)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">⧉</button>
+                        <button onClick={()=>handleDelete(m.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg">Eliminar</button>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button type="button" onClick={()=>updateMarkerSize(m.id,(m.size??globalMarkerSize??38)-4)} className="w-6 h-6 bg-white dark:bg-slate-800 border rounded-lg text-xs">−</button>
+                        <input type="range" min={24} max={52} step={2} value={m.size??globalMarkerSize??38} onChange={(e)=>updateMarkerSize(m.id,parseInt(e.target.value))} className="flex-1 accent-sky-600" />
+                        <button type="button" onClick={()=>updateMarkerSize(m.id,(m.size??globalMarkerSize??38)+4)} className="w-6 h-6 bg-white dark:bg-slate-800 border rounded-lg text-xs">+</button>
+                        <span className="text-[10px] font-mono bg-sky-50 dark:bg-sky-950/30 px-1.5 py-0.5 rounded">{m.size??globalMarkerSize??38}px</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1">
+                        {(["pin","square","circle"] as const).map((sh)=>(
+                          <button key={sh} type="button" onClick={()=>setMarkers(prev=>prev.map(x=>x.id===m.id?{...x,shape:sh}:x))} className={`text-[10px] font-bold px-1 py-1 rounded-lg border ${ (m.shape??"pin")===sh ? "bg-sky-600 text-white border-sky-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>{sh==="pin"?"Pin":sh==="square"?"□":"○"}</button>
+                        ))}
+                      </div>
+                      <div className="pt-1.5 border-t border-slate-100 dark:border-slate-700">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Corregir sin borrar · <span className={geocodeProvider==="both"?"text-indigo-600":geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider==="both"?"ambas":geocodeProvider}</span></p>
+                        <div className="flex gap-1 mt-1">
+                          <input value={pointSearchQuery[m.id]||""} onChange={(e)=>setPointSearchQuery(prev=>({...prev,[m.id]:e.target.value}))} onKeyDown={(e)=>{if(e.key==="Enter") handlePointSearch(m.id)}} placeholder="Ej: Av. Shyris, Quito" className="flex-1 text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-2 py-1 bg-white dark:bg-slate-900 dark:text-white" />
+                          <button onClick={()=>handlePointSearch(m.id)} disabled={!!pointSearchLoading[m.id]} className="text-[11px] font-bold bg-emerald-600 text-white px-2 py-1 rounded-lg disabled:opacity-40">{pointSearchLoading[m.id]?"…":"Buscar"}</button>
+                        </div>
+                        {(pointSearchResults[m.id]?.length||0)>0 && (
+                          <ul className="mt-1 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden divide-y max-h-32 overflow-y-auto">
+                            {pointSearchResults[m.id]!.slice(0,5).map((r:any)=>(
+                              <li key={r.place_id} onClick={()=>handlePointSelect(m.id,r)} className="px-2 py-1.5 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 cursor-pointer">
+                                <p className="text-[11px] font-semibold text-slate-800 dark:text-slate-100 line-clamp-1">{r.display_name}</p>
+                                <p className="text-[10px] text-slate-500">{parseFloat(r.lat).toFixed(4)},{parseFloat(r.lon).toFixed(4)} · {r.source}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2 mt-2">
+                <button onClick={exportJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg">JSON</button>
+                <button onClick={exportGeoJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg">GeoJSON</button>
+                <button onClick={exportCSV} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg">CSV</button>
+                <button onClick={shareUrl} className="text-xs font-bold bg-emerald-600 text-white px-3 py-1.5 rounded-lg ml-auto">{shareCopied?"¡Copiado!":"Compartir link"}</button>
+                <button onClick={()=>fileInputRef.current?.click()} className="text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg">Importar</button>
+                <input ref={fileInputRef} type="file" accept=".json,.geojson" className="hidden" onChange={importFile} />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "insertar" && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Buscar dirección</p>
+                  <select value={geocodeProvider} onChange={(e)=>setGeocodeProvider(e.target.value as any)} className="text-xs border border-slate-200 dark:border-slate-700 rounded-full px-2.5 py-1 bg-white dark:bg-slate-800 dark:text-white font-bold">
+                    <option value="nominatim">Nominatim (OSM)</option>
+                    <option value="geoapify">Geoapify</option>
+                    <option value="both">Ambas (10)</option>
+                  </select>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Escribe una dirección y añade como punto. Proveedor: <b className={geocodeProvider==="both"?"text-indigo-600":geocodeProvider==="geoapify"?"text-violet-600":"text-emerald-600"}>{geocodeProvider}</b></p>
+                <div className="flex gap-2 mt-2">
+                  <input value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} onKeyDown={(e)=>e.key==="Enter" && handleSearch()} placeholder={geocodeProvider==="both"?"Ej: Av. Amazonas, Quito (Ambas)":geocodeProvider==="geoapify"?"Ej: Av. Orellana, Quito (Geoapify)":"Ej: Av. Amazonas, Quito (Nominatim)"} className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <button onClick={handleSearch} disabled={searchLoading || (geocodeProvider!=="nominatim" && !geoapifyToken)} className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold px-4 rounded-xl">{searchLoading?"…":"Buscar"}</button>
+                </div>
+                {searchResults.length>0 && (
+                  <ul className="mt-2 max-h-56 overflow-auto divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                    {searchResults.map((r:any)=>(
+                      <li key={r.place_id} className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex gap-2 items-start" onClick={()=>{ const lat=parseFloat(r.lat), lon=parseFloat(r.lon); handleAddMarker(lat,lon,r.display_name.split(",").slice(0,2).join(",")); if(mapRef.current) mapRef.current.flyTo([lat,lon],15); setSearchResults([]); setSearchQuery(""); }}>
+                        <span className="mt-0.5 text-emerald-600"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{r.display_name}</p>
+                          <p className="text-[11px] text-slate-500 flex items-center gap-1.5"><span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full border ${r.source==="geoapify"?"bg-violet-600 text-white border-violet-600":"bg-emerald-600 text-white border-emerald-600"}`}>{r.source}</span>{r.type} · {parseFloat(r.lat).toFixed(4)}, {parseFloat(r.lon).toFixed(4)}</p>
+                        </div>
+                        <span className="text-[11px] font-bold text-emerald-600 shrink-0">+ Añadir</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Cómo insertar</p>
+                <ul className="text-xs text-slate-600 dark:text-slate-400 mt-2 space-y-1.5 leading-relaxed">
+                  <li>• <b>Clic en mapa</b> añade punto con estilo de Inicio.</li>
+                  <li>• <b>Buscar</b> y clic en resultado añade automáticamente.</li>
+                  <li>• <b>Importar JSON/GeoJSON</b> desde Exportar → Importar.</li>
+                  <li>• En <b>Puntos</b> puedes corregir cada pin con búsqueda individual.</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "vista" && (
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Fondo del mapa</p>
+                <select value={tileProvider} onChange={(e)=>setTileProvider(e.target.value as TileProvider)} className="mt-1.5 w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white">
+                  {Object.entries(TILE_PROVIDERS).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
+                </select>
+                <label className="flex items-center gap-1.5 mt-3 text-xs font-semibold text-slate-700 dark:text-slate-300"><input type="checkbox" checked={showPolyline} onChange={(e)=>setShowPolyline(e.target.checked)} className="accent-emerald-600" /> Unir con línea</label>
+                <label className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300"><input type="checkbox" checked={clusterEnabled} onChange={(e)=>setClusterEnabled(e.target.checked)} className="accent-amber-600" /> Agrupar amontonados</label>
+                <p className="text-[10px] text-slate-400 mt-1">Cluster evita solapamiento · clic para expandir/spider.</p>
+              </div>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Rotación</p>
+                <p className="text-[11px] text-slate-500 mt-1">Gira el lienzo {rotationDeg}° (no afecta coords).</p>
+                <div className="flex gap-1.5 mt-2">
+                  <button type="button" onClick={()=>rotateMap(-45)} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl">↺ 45°</button>
+                  <button type="button" onClick={()=>rotateMap(45)} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-2 rounded-xl">↻ 45°</button>
+                  <button type="button" onClick={()=>{setRotationDeg(0); setTimeout(()=>mapRef.current?.invalidateSize(),350);}} className="text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2 rounded-xl">Reset</button>
+                </div>
+                <div className="flex gap-1.5 mt-2">
+                  <input type="number" value={rotationInput} onChange={(e)=>setRotationInput(e.target.value)} placeholder="45" className="w-20 text-xs border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-2 bg-white dark:bg-slate-800 dark:text-white font-mono" />
+                  <button type="button" onClick={()=>rotateMap(-parseInt(rotationInput||"0")||0)} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border px-2 py-2 rounded-xl">↺ X°</button>
+                  <button type="button" onClick={()=>rotateMap(parseInt(rotationInput||"0")||0)} className="flex-1 text-[11px] font-bold bg-white dark:bg-slate-800 border px-2 py-2 rounded-xl">↻ X°</button>
+                  <button type="button" onClick={handleCustomRotate} className="text-[11px] font-bold bg-violet-600 text-white px-3 py-2 rounded-xl">Ir a</button>
+                </div>
+                <div className="flex items-center gap-3 mt-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2">
+                  <div ref={knobRef} onMouseDown={handleKnobPointerDown} onTouchStart={handleKnobPointerDown} className="w-16 h-16 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 relative shadow-inner cursor-grab active:cursor-grabbing select-none shrink-0 touch-none">
+                    <div className="absolute left-1/2 top-1/2 w-1 h-1 bg-slate-900 dark:bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                    <div className="absolute left-1/2 top-1 w-1.5 h-6 bg-emerald-500 rounded-full -translate-x-1/2 origin-bottom" style={{ transform: `translateX(-50%) rotate(${rotationDeg}deg)` }}></div>
+                    <span className="absolute inset-0 flex items-center justify-center text-[9px] font-mono font-bold text-slate-500 mt-4">{rotationDeg}°</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-tight flex-1">Perilla 360°: arrastra la aguja verde. El contenedor 200% cubre esquinas sin blanco.</p>
+                </div>
+              </div>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Apariencia de pins</p>
+                <div className="flex gap-1.5 mt-2">
+                  <button type="button" onClick={()=>setShowNumberInsteadOfIcon(false)} className={`flex-1 text-xs font-bold px-2 py-2 rounded-xl border ${!showNumberInsteadOfIcon ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>Ícono</button>
+                  <button type="button" onClick={()=>setShowNumberInsteadOfIcon(true)} className={`flex-1 text-xs font-bold px-2 py-2 rounded-xl border ${showNumberInsteadOfIcon ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>N.º</button>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2">N.º muestra orden de ruta · útil para planificación.</p>
+                <div className="mt-3">
+                  <p className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">Tamaño global <span className="font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-1.5 py-0.5 rounded-full text-[10px]">{globalMarkerSize}px</span></p>
+                  <input type="range" min={24} max={52} step={2} value={globalMarkerSize} onChange={(e)=>setGlobalMarkerSize(parseInt(e.target.value))} className="w-full accent-sky-600 mt-1" />
+                  <div className="grid grid-cols-2 gap-1 mt-1">
+                    <button type="button" onClick={()=>handleGlobalSize(globalMarkerSize)} className="text-[11px] font-bold bg-sky-600 text-white px-2 py-1.5 rounded-lg">Aplicar a todos</button>
+                    <button type="button" onClick={handleResetSizes} className="text-[11px] font-bold bg-white dark:bg-slate-800 border px-2 py-1.5 rounded-lg">Reset</button>
+                  </div>
+                </div>
+              </div>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-sky-50/50 dark:bg-sky-950/20">
+                <p className="text-[10px] font-black uppercase tracking-widest text-sky-700 dark:text-sky-300">Trucos de vista</p>
+                <ul className="text-[11px] text-slate-600 dark:text-slate-400 mt-2 space-y-1 leading-relaxed list-disc list-inside">
+                  <li>Reduce tamaño global para ver cientos de puntos.</li>
+                  <li>Usa círculo/cuadrado para solapados (menos alto que pin).</li>
+                  <li>Cluster activado agrupa a nivel ciudad.</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "ruta" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2"><span className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-[10px]">↗</span> Configurar ruta</p>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Modo
+                    <select value={routeMode} onChange={(e)=>setRouteMode(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
+                      <option value="drive">Auto</option>
+                      <option value="walk">A pie</option>
+                      <option value="bicycle">Bici</option>
                     </select>
                   </label>
-                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Letra tabla: {pdfFontSize}pt
-                    <input type="range" min={7} max={12} step={0.5} value={pdfFontSize} onChange={(e)=> setPdfFontSize(parseFloat(e.target.value))} className="w-full mt-1 accent-violet-600" />
-                    <span className="text-[10px] text-slate-400">7–12 pt · afecta filas por página</span>
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex flex-col justify-end">
+                    <span className="flex items-center gap-1.5 pb-1"><input type="checkbox" checked={optimizeStops} onChange={(e)=>setOptimizeStops(e.target.checked)} className="accent-violet-600" /> Optimizar orden</span>
+                    <span className="text-[10px] font-normal text-slate-400">fija 1º y último</span>
                   </label>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={handleGeneratePdfPreview} disabled={pdfPreviewLoading} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-300 px-3 py-2 rounded-xl disabled:opacity-40">{pdfPreviewLoading ? "Generando…" : "Vista previa"}</button>
-                  <button onClick={handleExportPdf} disabled={exportLoading || markers.length===0} className="flex-1 text-xs font-black bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3 py-2 rounded-xl">{exportLoading ? "Generando PDF…" : "Exportar PDF"}</button>
+                <div className="flex items-center gap-2 mt-2">
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">Color <input type="color" value={routeColor} onChange={(e)=>setRouteColor(e.target.value)} className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5 bg-white dark:bg-slate-800" /> <span className="text-[11px] font-mono px-2 py-1 rounded-full border bg-white dark:bg-slate-800" style={{color:routeColor, borderColor:routeColor}}>{routeColor}</span></label>
+                  <div className="ml-auto flex gap-1">
+                    {["#7c3aed","#059669","#dc2626","#ea580c","#2563eb","#000000"].map(c=>(
+                      <button key={c} onClick={()=>setRouteColor(c)} className={`w-6 h-6 rounded-full border-2 ${routeColor===c?"border-slate-900 dark:border-white scale-110":"border-white dark:border-slate-600"}`} style={{background:c}} title={c} />
+                    ))}
+                  </div>
                 </div>
-                <p className="text-[10px] text-slate-500 leading-tight">PDF: pág 1 mapa ajustado (todos los puntos visibles) + siguientes páginas tabla detallada. Cambia letra y genera vista previa para elegir mejor vista.</p>
-                {showPdfPreview && (
-                  <div className="mt-2 border border-violet-200 dark:border-violet-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
-                    <div className="flex items-center justify-between px-3 py-2 bg-violet-50 dark:bg-violet-950/30 border-b border-violet-200 dark:border-violet-800">
-                      <span className="text-xs font-black text-violet-700 dark:text-violet-300">Vista previa PDF</span>
-                      <button onClick={()=> setShowPdfPreview(false)} className="text-xs font-bold bg-white dark:bg-slate-800 border px-2 py-1 rounded-lg">Cerrar</button>
-                    </div>
-                    <div className="p-3 space-y-4 max-h-[520px] overflow-auto overscroll-contain">
-                      {/* Portada preview */}
-                      <div>
-                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Pág 1 — Portada mapa ({PDF_PAGE_SIZES[pdfPageSize].label}) · <span className="text-violet-600">{projects.find(p=>p.id===currentProjectId)?.name || "Mapa"}</span></p>
-                        <div className="mt-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex flex-col items-center">
-                          {pdfPreviewUrl ? <img src={pdfPreviewUrl} alt="preview mapa" className="max-w-full h-auto rounded-lg border border-slate-200 dark:border-slate-700" style={{ aspectRatio: EXPORT_PRESETS[exportSize].aspect === "auto" ? undefined : EXPORT_PRESETS[exportSize].aspect as any }} /> : <span className="text-xs text-slate-400 py-10">Genera vista previa para ver el mapa</span>}
-                          <span className="text-[10px] text-slate-400 mt-1">Solo título proyecto “{projects.find(p=>p.id===currentProjectId)?.name || "Mapa"}” + mapa centrado — sin rotación/fuente en portada</span>
-                        </div>
-                      </div>
-                      {/* Tabla preview */}
-                      <div>
-                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Págs 2+ — Tabla detalle ({markers.length} filas · {pdfFontSize}pt) · <span className="text-violet-600">{projects.find(p=>p.id===currentProjectId)?.name || "Mapa"}</span></p>
-                        <div className="mt-1 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden overflow-x-auto">
-                          <table className="w-full text-left border-collapse" style={{ fontSize: `${pdfFontSize}px` }}>
-                            <thead className="bg-slate-900 dark:bg-white text-white dark:text-slate-900">
-                              <tr>{["#","Título","Lat","Lng"].map(h=> <th key={h} className="px-2 py-1 font-bold whitespace-nowrap">{h}</th>)}</tr>
-                            </thead>
-                            <tbody>
-                              {markers.slice(0, Math.min(markers.length, 8)).map((m,i)=> (
-                                <tr key={m.id} className={i%2===1 ? "bg-slate-50 dark:bg-slate-800/50" : "bg-white dark:bg-slate-900"}>
-                                  <td className="px-2 py-1 font-mono">{i+1}</td>
-                                  <td className="px-2 py-1 truncate max-w-[180px]">{m.title}</td>
-                                  <td className="px-2 py-1 font-mono">{m.lat.toFixed(5)}</td>
-                                  <td className="px-2 py-1 font-mono">{m.lng.toFixed(5)}</td>
-                                </tr>
-                              ))}
-                              {markers.length>8 && <tr><td colSpan={4} className="text-center text-[11px] text-slate-400 py-1">… +{markers.length-8} filas más (se paginan automáticamente)</td></tr>}
-                            </tbody>
-                          </table>
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-1">{Math.ceil(markers.length / Math.max(1, Math.floor((PDF_PAGE_SIZES[pdfPageSize].hPt - 72 - 18)/ (Math.max(14, pdfFontSize+6)))))} pág(s) estimadas para tabla · {pdfFontSize}pt · columnas #/Título/Lat/Lng</p>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-2 gap-2 mt-3">
+                  <button onClick={handleDrawRoute} disabled={routeLoading || markers.length<2 || !geoapifyToken} className="text-xs font-black bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3 py-2.5 rounded-xl flex items-center justify-center gap-1.5">{routeLoading?"Calculando…":"Dibujar ruta"}</button>
+                  <button onClick={handleClearRoute} disabled={routeCoords.length===0 && !routeError} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 rounded-xl disabled:opacity-40">Limpiar</button>
+                </div>
+                {!geoapifyToken && <p className="text-[11px] text-amber-600 mt-2">Config → guarda tu API key para habilitar.</p>}
+                {markers.length<2 && <p className="text-[11px] text-slate-400 mt-2">Necesitas ≥2 puntos · reordena en Puntos con ↑↓ y vuelve a dibujar.</p>}
+                {routeError && <p className="text-xs text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl px-3 py-2 mt-2">{routeError}</p>}
+                {routeInfo && (
+                  <div className="text-xs bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-xl px-3 py-2 mt-2">
+                    <p className="font-bold text-emerald-800 dark:text-emerald-300">Ruta lista — {(routeInfo.distance/1000).toFixed(2)} km · {Math.round(routeInfo.time/60)} min</p>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400">{routeCoords.length} pts geometría · {optimizeStops?"optimizado":"secuencial"}</p>
                   </div>
                 )}
               </div>
-            )}
-            {exportFormat !== "pdf" && (
-              <div className="mt-3 flex gap-2">
-                <button onClick={handleExportPreset} disabled={exportLoading} className="flex-1 text-xs font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2.5 rounded-xl hover:opacity-90 disabled:opacity-40">
-                  {exportLoading ? "Exportando…" : `Exportar ${exportFormat.toUpperCase()} ${EXPORT_PRESETS[exportSize].w ? `${EXPORT_PRESETS[exportSize].w}×${EXPORT_PRESETS[exportSize].h}` : "actual"}`}
-                </button>
-                <button onClick={()=> { setExportFormat("pdf"); handleGeneratePdfPreview(); }} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2.5 rounded-xl">Ver PDF</button>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-violet-50/50 dark:bg-violet-950/20">
+                <p className="text-[10px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-300">Cómo funciona</p>
+                <ul className="text-xs text-slate-600 dark:text-slate-400 mt-2 space-y-1.5 leading-relaxed list-disc list-inside">
+                  <li>Usa <b>Geoapify Routing</b> (orden fijo por defecto).</li>
+                  <li><b>Optimizar</b> aplica TSP manteniendo primero y último fijos.</li>
+                  <li>Reordena marcadores en <b>Puntos</b> y vuelve a <b>Dibujar</b> para probar variantes.</li>
+                  <li>La línea se dibuja sobre el mapa y se ajusta la vista automáticamente.</li>
+                </ul>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Mini proyectos - agrupar varios puntos con nombre */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-              <span className="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6l2 2h8a2 2 0 0 1 2 2z"/></svg></span>
-              Mapas guardados
-            </h3>
-            <span className="text-[11px] font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-1 rounded-full">{projects.length}</span>
-          </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Agrupa los puntos actuales en un proyecto con nombre. Se guarda en <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">localStorage {PROJECTS_KEY}</code>.</p>
-
-          <div className="flex gap-2 mt-3">
-            <input value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSaveProject()} placeholder="Nombre ej: Ruta Quito Centro" className="flex-1 text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500" />
-            <button onClick={handleSaveProject} disabled={markers.length === 0} className="text-xs font-black bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white px-4 py-2 rounded-xl transition">Guardar</button>
-          </div>
-          {currentProjectId && (
-            <button onClick={handleUpdateCurrentProject} className="w-full mt-2 text-xs font-bold bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-900 text-amber-700 dark:text-amber-300 px-3 py-2 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/30">
-              Actualizar "{projects.find(p=>p.id===currentProjectId)?.name}" con {markers.length} puntos
-            </button>
+            </div>
           )}
 
-          <div className="mt-3 max-h-[320px] overflow-y-auto space-y-2 pr-1 overscroll-contain">
-            {projects.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-6 border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">Sin mapas guardados aún. Guarda el actual con un nombre arriba.</p>
-            ) : projects.slice().sort((a,b)=>b.updatedAt-a.updatedAt).map((proj) => (
-              <div key={proj.id} className={`group border rounded-xl p-3 flex flex-col gap-2 ${currentProjectId===proj.id ? "border-amber-400 bg-amber-50/50 dark:bg-amber-950/20" : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"}`}>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    {renamingId===proj.id ? (
-                      <div className="flex gap-1.5">
-                        <input value={renameDraft} onChange={(e)=>setRenameDraft(e.target.value)} onKeyDown={(e)=>{ if(e.key==="Enter") handleRenameProject(proj.id); if(e.key==="Escape") setRenamingId(null);}} autoFocus className="flex-1 text-sm border border-amber-300 dark:border-amber-700 rounded-lg px-2 py-1 bg-white dark:bg-slate-900 dark:text-white" />
-                        <button onClick={()=>handleRenameProject(proj.id)} className="text-xs font-bold bg-emerald-600 text-white px-2 py-1 rounded-lg">OK</button>
-                        <button onClick={()=>setRenamingId(null)} className="text-xs font-bold bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-lg">X</button>
+          {activeTab === "exportar" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Exportar datos</p>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <button onClick={exportJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">JSON</button>
+                  <button onClick={exportGeoJSON} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">GeoJSON</button>
+                  <button onClick={exportCSV} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl hover:bg-slate-50">CSV</button>
+                  <button onClick={shareUrl} className="text-xs font-bold bg-emerald-600 text-white px-3 py-2 rounded-xl hover:bg-emerald-700">{shareCopied?"¡Copiado!":"Compartir link"}</button>
+                </div>
+                <div className="mt-2 flex gap-2">
+                  <button onClick={()=>fileInputRef.current?.click()} className="flex-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl">Importar JSON/GeoJSON</button>
+                  <input ref={fileInputRef} type="file" accept=".json,.geojson" className="hidden" onChange={importFile} />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2">Importar: reemplaza o añade · Exportar: descarga inmediata.</p>
+              </div>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center justify-between">Alta resolución <span className="font-mono bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2 py-0.5 rounded-full text-[10px]">{markers.length} pts · {rotationDeg}°</span></p>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Tamaño
+                    <select value={exportSize} onChange={(e)=>{setExportSize(e.target.value as any); if(e.target.value!=="actual") setPdfPageSize(e.target.value as any);}} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
+                      {Object.entries(EXPORT_PRESETS).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
+                    </select>
+                  </label>
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Formato
+                    <select value={exportFormat} onChange={(e)=>setExportFormat(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white font-bold">
+                      <option value="png">PNG</option>
+                      <option value="jpeg">JPG</option>
+                      <option value="pdf">PDF</option>
+                    </select>
+                  </label>
+                </div>
+                {exportFormat==="pdf" && (
+                  <div className="mt-2 p-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Página PDF
+                        <select value={pdfPageSize} onChange={(e)=>setPdfPageSize(e.target.value as any)} className="mt-1 w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 bg-white dark:bg-slate-800 dark:text-white">
+                          {Object.entries(PDF_PAGE_SIZES).map(([k,v])=> <option key={k} value={k}>{v.label}</option>)}
+                        </select>
+                      </label>
+                      <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Letra tabla: {pdfFontSize}pt
+                        <input type="range" min={7} max={12} step={0.5} value={pdfFontSize} onChange={(e)=>setPdfFontSize(parseFloat(e.target.value))} className="w-full mt-1 accent-violet-600" />
+                      </label>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={handleGeneratePdfPreview} disabled={pdfPreviewLoading} className="flex-1 text-xs font-bold bg-white dark:bg-slate-800 border border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-300 px-3 py-2 rounded-xl disabled:opacity-40">{pdfPreviewLoading?"Generando…":"Vista previa"}</button>
+                      <button onClick={handleExportPdf} disabled={exportLoading || markers.length===0} className="flex-1 text-xs font-black bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3 py-2 rounded-xl">{exportLoading?"Generando…":"Exportar PDF"}</button>
+                    </div>
+                    {showPdfPreview && (
+                      <div className="border border-violet-200 dark:border-violet-800 rounded-xl overflow-hidden bg-white dark:bg-slate-900">
+                        <div className="flex items-center justify-between px-3 py-2 bg-violet-50 dark:bg-violet-950/30 border-b">
+                          <span className="text-xs font-black text-violet-700 dark:text-violet-300">Vista previa</span>
+                          <button onClick={()=>setShowPdfPreview(false)} className="text-xs font-bold bg-white dark:bg-slate-800 border px-2 py-1 rounded-lg">Cerrar</button>
+                        </div>
+                        <div className="p-2 max-h-[360px] overflow-auto space-y-2">
+                          <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Portada</p>
+                          <div className="bg-slate-100 dark:bg-slate-800 border rounded-xl p-2 flex flex-col items-center">
+                            {pdfPreviewUrl ? <img src={pdfPreviewUrl} alt="preview" className="max-w-full h-auto rounded-lg border" style={{aspectRatio: EXPORT_PRESETS[exportSize].aspect==="auto" ? undefined : EXPORT_PRESETS[exportSize].aspect as any}} /> : <span className="text-xs text-slate-400 py-6">Genera vista previa</span>}
+                          </div>
+                          <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Tabla ({markers.length} filas · {pdfFontSize}pt)</p>
+                          <div className="border rounded-xl overflow-hidden overflow-x-auto">
+                            <table className="w-full text-left border-collapse" style={{fontSize: `${pdfFontSize}px`}}>
+                              <thead className="bg-slate-900 dark:bg-white text-white dark:text-slate-900"><tr>{["#","Título","Lat","Lng"].map(h=> <th key={h} className="px-2 py-1 font-bold whitespace-nowrap">{h}</th>)}</tr></thead>
+                              <tbody>{markers.slice(0,8).map((m,i)=> <tr key={m.id} className={i%2===1?"bg-slate-50 dark:bg-slate-800/50":"bg-white dark:bg-slate-900"}><td className="px-2 py-1 font-mono">{i+1}</td><td className="px-2 py-1 truncate max-w-[150px]">{m.title}</td><td className="px-2 py-1 font-mono">{m.lat.toFixed(5)}</td><td className="px-2 py-1 font-mono">{m.lng.toFixed(5)}</td></tr>)}{markers.length>8 && <tr><td colSpan={4} className="text-center text-[11px] text-slate-400 py-1">… +{markers.length-8} más</td></tr>}</tbody>
+                            </table>
+                          </div>
+                        </div>
                       </div>
-                    ) : (
-                      <>
-                        <p className="text-sm font-black text-slate-900 dark:text-white truncate">{proj.name}</p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400">{proj.markers.length} puntos · {new Date(proj.updatedAt).toLocaleDateString()} {new Date(proj.updatedAt).toLocaleTimeString().slice(0,5)} {currentProjectId===proj.id && "· activo"}</p>
-                      </>
                     )}
                   </div>
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${currentProjectId===proj.id ? "bg-amber-500 text-white border-amber-500" : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600"}`}>{proj.markers.length}</span>
+                )}
+                {exportFormat!=="pdf" && (
+                  <div className="mt-2 flex gap-2">
+                    <button onClick={handleExportPreset} disabled={exportLoading} className="flex-1 text-xs font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-2.5 rounded-xl disabled:opacity-40">{exportLoading?"Exportando…":`Exportar ${exportFormat.toUpperCase()} ${EXPORT_PRESETS[exportSize].w ? `${EXPORT_PRESETS[exportSize].w}×${EXPORT_PRESETS[exportSize].h}` : "actual"}`}</button>
+                    <button onClick={()=>{setExportFormat("pdf"); handleGeneratePdfPreview();}} className="text-xs font-bold bg-white dark:bg-slate-800 border px-3 py-2.5 rounded-xl">Ver PDF</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "config" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1.5"><span className={`w-2 h-2 rounded-full ${geoapifyToken ? "bg-emerald-500" : "bg-amber-500"}`}></span> Geoapify API Key</p>
+                  <a href="https://myprojects.geoapify.com" target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-emerald-600 hover:underline">Obtener key →</a>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  <button onClick={()=>handleLoadProject(proj.id)} className={`text-[11px] font-bold px-2.5 py-1 rounded-lg ${currentProjectId===proj.id ? "bg-amber-500 text-white" : "bg-slate-900 dark:bg-white text-white dark:text-slate-900"}`}>Cargar</button>
-                  <button onClick={()=>{ setRenamingId(proj.id); setRenameDraft(proj.name);}} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">Renombrar</button>
-                  <button onClick={()=>handleDuplicateProject(proj.id)} className="text-[11px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-2 py-1 rounded-lg">Duplicar</button>
-                  <button onClick={()=>handleDeleteProject(proj.id)} className="text-[11px] font-bold text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 px-2 py-1 rounded-lg">Eliminar</button>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">Solo en tu navegador (<code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">localStorage: geoapify-api-key</code>) · fetch directo a api.geoapify.com {geoapifyToken ? <span className="text-emerald-600 font-bold">· listo</span> : <span className="text-amber-600">· falta</span>}</p>
+                <div className="flex gap-2 mt-2">
+                  <div className="relative flex-1">
+                    <input type={showToken ? "text" : "password"} value={geoapifyInput} onChange={(e)=>setGeoapifyInput(e.target.value)} placeholder="Ej: 3b7a... (pega tu apiKey)" className="w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 pr-9 bg-white dark:bg-slate-800 dark:text-white placeholder:text-slate-400 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    <button type="button" onClick={()=>setShowToken(!showToken)} className="absolute right-1 top-1 bottom-1 w-7 flex items-center justify-center text-slate-400 hover:text-slate-600">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={showToken ? "M9.88 9.88a3 3 0 1 0 4.24 4.24" : "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"} /><circle cx="12" cy="12" r="3" /></svg>
+                    </button>
+                  </div>
                 </div>
-                <details className="text-[11px] text-slate-500 dark:text-slate-400">
-                  <summary className="cursor-pointer font-semibold">Ver puntos</summary>
-                  <ul className="mt-1 space-y-0.5 max-h-24 overflow-y-auto font-mono text-[11px] bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 border border-slate-100 dark:border-slate-700">
-                    {proj.markers.map((m,i)=>(<li key={m.id} className="truncate">{i+1}. {m.title} — {m.lat.toFixed(4)},{m.lng.toFixed(4)}</li>))}
-                  </ul>
+                <div className="flex gap-2 mt-2">
+                  <button onClick={handleSaveToken} disabled={!geoapifyInput.trim() || geoapifyInput.trim()===geoapifyToken} className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-3 py-2 rounded-xl">Guardar</button>
+                  <button onClick={handleClearToken} disabled={!geoapifyToken} className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl disabled:opacity-40">Borrar</button>
+                  <span className={`text-[11px] font-mono px-2 py-1 rounded-full border self-center ${geoapifyToken?"bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 border-emerald-200":"bg-amber-50 dark:bg-amber-950/30 text-amber-700 border-amber-200"}`}>{geoapifyToken?"✓ configurado":"○ falta key"}</span>
+                </div>
+              </div>
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Proveedor de búsqueda</p>
+                <select value={geocodeProvider} onChange={(e)=>setGeocodeProvider(e.target.value as any)} className="mt-2 w-full text-sm border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 bg-white dark:bg-slate-800 dark:text-white font-bold">
+                  <option value="nominatim">Nominatim (OSM) — libre</option>
+                  <option value="geoapify">Geoapify — con tu key</option>
+                  <option value="both">Ambas (10 máx = 5+5)</option>
+                </select>
+                <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">Cambia cómo se buscan direcciones: en <b>Insertar</b> y en cada pin de <b>Puntos</b>. Recomendado <b>Ambas</b> para más aciertos.</p>
+                <details className="mt-2 group">
+                  <summary className="text-[11px] font-bold text-slate-600 dark:text-slate-400 cursor-pointer select-none">¿Ruta óptima (TSP)? — info</summary>
+                  <div className="mt-2 text-[11px] text-slate-500 leading-relaxed bg-slate-50 dark:bg-slate-800/50 border rounded-xl p-2">
+                    Usa Geoapify Routing / Route Planner. Tu proyecto ya incluye <code>routing-api-openapi-specs.json</code>. En pestaña <b>Ruta</b> puedes dibujar secuencial u optimizado.
+                  </div>
                 </details>
               </div>
-            ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Cuerpo: mapa a ancho completo - todo en Ribbon, sin laterales */}
+      <div className="w-full">
+        <div ref={mapExportRef} className="flex-1 min-h-[560px] lg:h-[calc(100vh-220px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900">
+          <div style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease", position: "absolute", inset: "-50%", width: "200%", height: "200%" }}>
+            <MapContainer center={center} zoom={13} style={{ height: "100%", width: "100%" }} ref={mapRef as any} zoomControl={false}>
+              <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} keepBuffer={2} updateWhenZooming={false} />
+              <MapClickHandler onAdd={handleAddMarker} rotationDeg={rotationDeg} />
+              {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
+                <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
+              )}
+              {routeCoords.length > 0 && (
+                <Polyline positions={routeCoords} pathOptions={{ color: routeColor, weight: 5, opacity: 0.85 }} />
+              )}
+              <ClusteredMarkers markers={markers} clusterEnabled={clusterEnabled} spiderClusterId={spiderClusterId} setSpiderClusterId={setSpiderClusterId} iconsMemo={iconsMemo} showNumberInsteadOfIcon={showNumberInsteadOfIcon} rotationDeg={rotationDeg} mapRef={mapRef} setMarkers={setMarkers} setSelectedId={setSelectedId} startEdit={startEdit} getColorHex={getColorHex as any} createDivIconHtml={createDivIconHtml as any} createNumberIconHtml={createNumberIconHtml as any} globalMarkerSize={globalMarkerSize} />
+            </MapContainer>
           </div>
-          <p className="text-[10px] text-slate-400 mt-2">Tip: carga un proyecto, edita puntos/orden, luego <b>Actualizar</b> para guardar cambios en el mismo grupo.</p>
+          <div data-no-export className="absolute top-3 right-3 z-[400] flex flex-col gap-2">
+            <button onClick={() => mapRef.current?.zoomIn()} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center font-black text-slate-700 dark:text-white hover:bg-slate-50" aria-label="Zoom in">+</button>
+            <button onClick={() => mapRef.current?.zoomOut()} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center font-black text-slate-700 dark:text-white hover:bg-slate-50" aria-label="Zoom out">−</button>
+            <button onClick={fitAll} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center text-slate-700 dark:text-white hover:bg-slate-50" title="Ajustar a todos">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+            </button>
+          </div>
+          <div data-no-export className="absolute bottom-3 left-3 z-[400] bg-white/95 dark:bg-slate-800/95 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-[11px] font-mono text-slate-600 dark:text-slate-300 shadow">
+            Clic para añadir · Arrastra para mover
+          </div>
         </div>
       </div>
 
-      {/* Map - rectángulo fijo horizontal, interior rota con sobredimensionado para cubrir esquinas */}
-      <div ref={mapExportRef} className="flex-1 min-h-[520px] lg:h-[calc(100vh-32px)] lg:min-h-[640px] lg:sticky lg:top-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm relative bg-slate-100 dark:bg-slate-900">
-        <div style={{ transform: `rotate(${rotationDeg}deg)`, transformOrigin: "center center", transition: "transform 0.35s ease", position: "absolute", inset: "-50%", width: "200%", height: "200%" }}>
-          <MapContainer
-            center={center}
-            zoom={13}
-            style={{ height: "100%", width: "100%" }}
-            ref={mapRef as any}
-            zoomControl={false}
-          >
-            <TileLayer attribution={TILE_PROVIDERS[tileProvider].attribution} url={TILE_PROVIDERS[tileProvider].url} crossOrigin={true} keepBuffer={2} updateWhenZooming={false} />
-            <MapClickHandler onAdd={handleAddMarker} rotationDeg={rotationDeg} />
-
-            {showPolyline && markers.length > 1 && routeCoords.length === 0 && (
-              <Polyline positions={markers.map((m) => [m.lat, m.lng] as [number, number])} pathOptions={{ color: "#10b981", weight: 3, opacity: 0.7, dashArray: "8 8" }} />
-            )}
-            {routeCoords.length > 0 && (
-              <Polyline positions={routeCoords} pathOptions={{ color: routeColor, weight: 5, opacity: 0.85 }} />
-            )}
-
-          <ClusteredMarkers
-            markers={markers}
-            clusterEnabled={clusterEnabled}
-            spiderClusterId={spiderClusterId}
-            setSpiderClusterId={setSpiderClusterId}
-            iconsMemo={iconsMemo}
-            showNumberInsteadOfIcon={showNumberInsteadOfIcon}
-            rotationDeg={rotationDeg}
-            mapRef={mapRef}
-            setMarkers={setMarkers}
-            setSelectedId={setSelectedId}
-            startEdit={startEdit}
-            getColorHex={getColorHex as any}
-            createDivIconHtml={createDivIconHtml as any}
-            createNumberIconHtml={createNumberIconHtml as any}
-            globalMarkerSize={globalMarkerSize}
-          />
-        </MapContainer>
-        </div>
-
-        {/* zoom controls custom - fijos, no rotan ni se exportan */}
-        <div data-no-export className="absolute top-3 right-3 z-[400] flex flex-col gap-2">
-          <button
-            onClick={() => mapRef.current?.zoomIn()}
-            className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center font-black text-slate-700 dark:text-white hover:bg-slate-50"
-            aria-label="Zoom in"
-          >
-            +
-          </button>
-          <button
-            onClick={() => mapRef.current?.zoomOut()}
-            className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center font-black text-slate-700 dark:text-white hover:bg-slate-50"
-            aria-label="Zoom out"
-          >
-            −
-          </button>
-          <button
-            onClick={fitAll}
-            className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow flex items-center justify-center text-slate-700 dark:text-white hover:bg-slate-50"
-            title="Ajustar a todos"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
-          </button>
-        </div>
-
-        <div data-no-export className="absolute bottom-3 left-3 z-[400] bg-white/95 dark:bg-slate-800/95 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-[11px] font-mono text-slate-600 dark:text-slate-300 shadow">
-          Clic para añadir · Arrastra para mover
-        </div>
-      </div>
-
-      {/* Modal edición - funciona desde lista y desde popup */}
+      {/* Modal edición */}
       {editingId && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setEditingId(null)} />
@@ -2475,12 +2426,7 @@ export const MapMaker = () => {
                 <label className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2 block">Forma</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(["pin", "square", "circle"] as const).map((sh) => (
-                    <button
-                      key={sh}
-                      type="button"
-                      onClick={() => setDraftShape(sh)}
-                      className={`text-xs font-bold px-3 py-2 rounded-xl border flex flex-col items-center gap-1 ${draftShape === sh ? "bg-sky-600 text-white border-sky-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}
-                    >
+                    <button key={sh} type="button" onClick={() => setDraftShape(sh)} className={`text-xs font-bold px-3 py-2 rounded-xl border flex flex-col items-center gap-1 ${draftShape === sh ? "bg-sky-600 text-white border-sky-600" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"}`}>
                       <span className="w-7 h-7 flex items-center justify-center" style={{ background: getColorHex(draftColor), borderRadius: sh === "circle" ? "50%" : sh === "square" ? "8px" : "50% 50% 50% 0", transform: sh === "pin" ? "rotate(-45deg)" : "none", border: "1.5px solid white" }}><span style={{ transform: sh === "pin" ? "rotate(45deg)" : "none", display: "flex" }}><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><g dangerouslySetInnerHTML={{ __html: (ICONS.find((i) => i.id === draftIcon)?.svg ?? ICONS[0].svg) }} /></svg></span></span>
                       {sh === "pin" ? "Pin" : sh === "square" ? "Cuadrado" : "Círculo"}
                     </button>
@@ -2489,7 +2435,7 @@ export const MapMaker = () => {
               </div>
               <div className="bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900 rounded-xl p-3">
                 <label className="text-xs font-black text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center justify-between">⤢ Tamaño marker <span className="font-mono text-[11px] bg-sky-600 text-white px-2 py-0.5 rounded-full">{draftSize}px</span></label>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">24 pequeño (más mapa visible) — 52 grande (más destacado).</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">24 pequeño — 52 grande.</p>
                 <div className="flex items-center gap-2 mt-2">
                   <button type="button" onClick={() => setDraftSize(String(Math.max(24, parseInt(draftSize || "38") - 4)))} className="w-9 h-9 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center">−</button>
                   <input type="range" min={24} max={52} step={2} value={parseInt(draftSize || "38")} onChange={(e) => setDraftSize(e.target.value)} className="flex-1 accent-sky-600" />
