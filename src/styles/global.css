@@ -34,6 +34,42 @@
   }
 }
 
+/* Paleta del gato naranja: remapea la escala blue-* del sitio entero.
+   Colores reales del pelaje (#F1A449 principal, #C66624 sombra, #EDC699/#F9E6C6 crema):
+   - blue-400 #F1A449: acento vivo (links en dark: 8.57:1 sobre gray-900)
+   - blue-500 #E08732: hovers vivos (6.49:1 en dark)
+   - blue-600 #C66624: botones/links en claro (3.94:1 con blanco) */
+@theme {
+  --color-blue-50: #fdf6ec;
+  --color-blue-100: #f9e6c6;
+  --color-blue-200: #edc699;
+  --color-blue-300: #f5bd63;
+  --color-blue-400: #f1a449;
+  --color-blue-500: #e08732;
+  --color-blue-600: #c66624;
+  --color-blue-700: #b45309;
+  --color-blue-800: #92400e;
+  --color-blue-900: #7a3a12;
+  --color-blue-950: #4a2008;
+}
+
+/* Scope que restaura el azul Tailwind original para páginas con diseño de
+   app propio (mini-apps y animaciones): el azul ahí es diseño de la app,
+   no acento del sitio. BaseLayout envuelve su contenido en .theme-blue. */
+.theme-blue {
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+  --color-blue-950: #172554;
+}
+
 @utility text-balance {
   text-wrap: balance;
 }
@@ -46,9 +82,10 @@ html {
   --background-color: #ffffff;
   --text-color: #000000;
   --foreground-rgb: 0, 0, 0;
-  --primary-color: #1d4ed8;
+  /* Paleta del gato naranja (gato-sin-fondo.svg): #F1A449 / #C66624 / #EDC699 / #483025 */
+  --primary-color: #c66624;
   --secondary-color: #ffffff;
-  scrollbar-color: #1d4ed8 #101828;
+  scrollbar-color: #c66624 #483025;
   scrollbar-width: auto;
 }
 
