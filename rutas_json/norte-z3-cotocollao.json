@@ -1,0 +1,101 @@
+[
+  {
+    "id": "lbv65am",
+    "lat": -0.103483,
+    "lng": -78.509771,
+    "title": "Colegio María Angélica Idrobo",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Colegio Maria Angelica Idrobo, N74, 170134, El Condado, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "qh08ddj",
+    "lat": -0.106784,
+    "lng": -78.502857,
+    "title": "Colegio Juan Pablo II",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Unidad Educativa Juan Pablo II, Avenida Mariscal Sucre, Cotocollao, El Condado, Quito, Pichincha, 170134, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "6cd2lyi",
+    "lat": -0.106304,
+    "lng": -78.492574,
+    "title": "Colegio Andrés Bello",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Colegio Andres Bello, Pablo Picasso, Ponceano, El Condado, Quito, Pichincha, 170315, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "bum1jmz",
+    "lat": -0.078,
+    "lng": -78.492,
+    "title": "Colegio Patrimonio de la Humanidad",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · (sin geocodificación precisa - revisar) · centro zona -0.08,-78.49",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "mjh0isq",
+    "lat": -0.113109,
+    "lng": -78.495583,
+    "title": "Colegio Amena del Hierro",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Colegio Alfonso del Hierro, 25 de Mayo, 170305, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "2gj0l06",
+    "lat": -0.115964,
+    "lng": -78.500108,
+    "title": "Colegio La Salle, Alfonso del Hierro",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Cotocollao, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "fdjswu0",
+    "lat": -0.115964,
+    "lng": -78.500108,
+    "title": "Colegio Flannagan",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Cotocollao, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "9bp2cfr",
+    "lat": -0.08,
+    "lng": -78.49,
+    "title": "Colegio Pablo VI, Cotocollao",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · (sin geocodificación precisa - revisar) · centro zona -0.08,-78.49",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "yb2vbnj",
+    "lat": -0.15675,
+    "lng": -78.498225,
+    "title": "Colegio Taylor de Chailin",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Colegio Intisana, 170515, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "biu1jtm",
+    "lat": -0.076,
+    "lng": -78.49,
+    "title": "Colegio Casa de la Cultura",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · (sin geocodificación precisa - revisar) · centro zona -0.08,-78.49",
+    "icon": "graduation",
+    "color": "blue"
+  },
+  {
+    "id": "o0f8k4b",
+    "lat": -0.116409,
+    "lng": -78.490238,
+    "title": "Colegio Municipal Cotocollao",
+    "description": "Sector Norte Zona Norte 3 – Cotocollao · Mercado Municipal Cotocollao, Avenida Diego Vasquez de Cepeda, 170305, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "blue"
+  }
+]

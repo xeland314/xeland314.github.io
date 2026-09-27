@@ -1,0 +1,54 @@
+{
+  "id": "ns-06-software",
+  "name": "06 — Investigación como Software",
+  "lastModified": 1718323200005,
+  "data": {
+    "mode": "dark",
+    "accent": "sky",
+    "showLogo": true,
+    "logoImage": "/assets/images/logo_v3.png",
+    "username": "xeland314",
+    "selectedSlideId": "06-cover",
+    "slides": [
+      {
+        "id": "06-cover",
+        "type": "cover",
+        "title": "Investigación\ncomo Software",
+        "subtitle": "Así se ve la matemática cuando la haces con mentalidad CI/CD",
+        "category": "RESEARCH AS CODE",
+        "iconChar": "⚙️"
+      },
+      {
+        "id": "06-s2",
+        "type": "markdown",
+        "content": "## Pipeline: del commit al Q.E.D.\n\n| Etapa | Git | Matemáticas |\n| --- | --- | --- |\n| 🌱 **Branch** | `git checkout -b blowup/axial` | Cada agente abre hipótesis: “¿y si blow-up con simetría X?” |\n| 🧪 **Test** | `pytest test_blowup.py` | Simulación CFD rápida descarta ideas que no explotan |\n| 🔎 **Review** | PR review | Agentes críticos buscan contraejemplo |\n| 🔒 **CI** | `lake build ✔` | Kernel Lean verifica, si hay gap → falla |\n| 🚀 **Merge** | `git merge --ff-only` | Solo lo verificado se mergea a `main` |\n\n> De 5 etapas, 3 son exactamente tu flujo diario como dev."
+      },
+      {
+        "id": "06-s3",
+        "type": "markdown",
+        "content": "## Antes vs Ahora\n\n| Investigación clásica | Research as Code |\n| --- | --- |\n| 1 genio, 1 pizarrón | **10K agentes**, enjambre |\n| Feedback en meses | Feedback en **minutos** (simulación) |\n| Peer review manual | **Lean + torneo** automático |\n| “Confía en mí” | “**Compila, luego existe**” |\n\n```bash\ntheorems/navier_stokes/\n├── blowup.lean ✔\n├── energy.lean ✔\n└── regularity.lean ✕ pruned\n\n$ git log --oneline\na1b2c3 feat: axial blow-up verified\n```\n\n> Si sabes usar Git + CI + code review, ya entiendes el futuro."
+      },
+      {
+        "id": "06-s4",
+        "type": "markdown",
+        "content": "## Por qué este pipeline escala\n\n- **Sin Lean:** cada idea requiere humano que revise 20 páginas → cuello de botella.\n- **Con Lean:** el kernel revisa **100K ideas/día** sin cansarse.\n\n```python\n# el enjambre es tu CI distribuido\nfor idea in ideas:\n    if not cfd_quick_test(idea): continue\n    if not critics.criticize(idea): continue\n    if lean_verify(idea):\n        merge(idea)  # solo 1 llega aquí\n```\n\n> La IA no reemplaza al matemático. Reemplaza el **cuello de botella de la revisión**."
+      },
+      {
+        "id": "06-s5",
+        "type": "markdown",
+        "content": "## Para tu carrusel (Cover Creator)\n\nUsa **5 slides** en formato **4:5 (1080×1350)** para Threads/IG:\n\n1. **Portada** — “Git para Teoremas”\n2. Branch → Test → Review → CI → Merge (uno por slide)\n3. Antes vs Ahora\n4. `lake build` terminal\n5. CTA final\n\n```\nCover Creator → Importar JSON → Exportar\n1080×1350 · threads preset\nQuality 0.92 JPEG\n```\n\n> Esta es la publicación que más **valor insoluble** te da: nadie más está enseñando a pensar la investigación como software."
+      },
+      {
+        "id": "06-end",
+        "type": "end",
+        "firstText": "Haz tu research",
+        "secondText": "Como código",
+        "description": "Si este enfoque te hizo click, guarda el carrusel. La próxima investigación que hagas — aunque sea un bug — aplícale branch → test → review → verify.",
+        "likeText": "Like",
+        "commentText": "Comenta",
+        "saveText": "Guarda",
+        "finalText": "xeland314 • Serie Navier-Stokes 6/6 BONUS"
+      }
+    ]
+  }
+}

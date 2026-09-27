@@ -1,0 +1,128 @@
+[
+  {
+    "id": "vxobop1",
+    "lat": -0.519373,
+    "lng": -78.589046,
+    "title": "Colegio Aloasí",
+    "description": "Sector Sur Zona 1 – Mejía · Unidad Educativa Aloasí, Victor Velasco, Miraflores Alto, Aloasí, Machachi, Pichincha, 170350, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "9kbcvey",
+    "lat": -0.510268,
+    "lng": -78.575941,
+    "title": "Colegio Elia Liut",
+    "description": "Sector Sur Zona 1 – Mejía · Academia Elia Liut, Calle 23 de Julio, El Tambo, Aloasí, Machachi, Pichincha, 170350, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "j2fcsls",
+    "lat": -0.515152,
+    "lng": -78.564397,
+    "title": "Colegio Mariano Negrete",
+    "description": "Sector Sur Zona 1 – Mejía · Unidad Educativa Mariano Negrete, Calle Simón Bolívar, Machachi, Pichincha, 171111, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "n5mdept",
+    "lat": -0.498,
+    "lng": -78.572,
+    "title": "Colegio Luis Felipe Borja",
+    "description": "Sector Sur Zona 1 – Mejía · (sin geocodificación precisa - revisar) · centro zona -0.5,-78.57",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "xlxijud",
+    "lat": -0.496,
+    "lng": -78.572,
+    "title": "Colegio Santa María Marillac",
+    "description": "Sector Sur Zona 1 – Mejía · (sin geocodificación precisa - revisar) · centro zona -0.5,-78.57",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "a3jh7ir",
+    "lat": -0.504,
+    "lng": -78.57,
+    "title": "Colegio José Mejía Lequerica",
+    "description": "Sector Sur Zona 1 – Mejía · (sin geocodificación precisa - revisar) · centro zona -0.5,-78.57",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "d6rd5to",
+    "lat": -0.508045,
+    "lng": -78.567014,
+    "title": "Colegio Machachi",
+    "description": "Sector Sur Zona 1 – Mejía · Colegio Nacional Machachi, Calle Simón Bolívar, Machachi, Pichincha, 171108, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "zy1wj71",
+    "lat": -0.508743,
+    "lng": -78.569338,
+    "title": "Colegio Británico Los Andes",
+    "description": "Sector Sur Zona 1 – Mejía · Británico Los Andes, González Suárez, Machachi, Pichincha, 171111, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "9jp8z2u",
+    "lat": -0.498,
+    "lng": -78.57,
+    "title": "Colegio 11 de Noviembre",
+    "description": "Sector Sur Zona 1 – Mejía · (sin geocodificación precisa - revisar) · centro zona -0.5,-78.57",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "tjsdgee",
+    "lat": -0.467604,
+    "lng": -78.583528,
+    "title": "Colegio Alóag",
+    "description": "Sector Sur Zona 1 – Mejía · Unidad Educativa Aloag, Bahia de Caraquez, Adelca, La Concepción, Alóag, Aloag, Machachi, Pichincha, 171108, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "swmrsld",
+    "lat": -0.41072,
+    "lng": -78.548433,
+    "title": "Colegio Ismael Proaño",
+    "description": "Sector Sur Zona 1 – Mejía · Colegio Ismael Proaño Andrade, Avenida Colectora Quito - Tambillo, 171106, Tambillo, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "nvmo35k",
+    "lat": -0.389545,
+    "lng": -78.524488,
+    "title": "Colegio Uyumbicho",
+    "description": "Sector Sur Zona 1 – Mejía · Unidad Educativa Uyumbicho, Isidro Ayora, Santa Ana, Uyumbicho, Machachi, Pichincha, 171109, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "142gnah",
+    "lat": -0.5,
+    "lng": -78.568,
+    "title": "Colegio Cutulagua",
+    "description": "Sector Sur Zona 1 – Mejía · (sin geocodificación precisa - revisar) · centro zona -0.5,-78.57",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "ycvng9y",
+    "lat": -0.253216,
+    "lng": -78.49131,
+    "title": "Colegio 2 de Agosto",
+    "description": "Sector Sur Zona 1 – Mejía · 2 de Agosto, 170410, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  }
+]

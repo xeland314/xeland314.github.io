@@ -1,0 +1,54 @@
+{
+  "id": "ns-04-falla",
+  "name": "04 — Cuando una Simulación Falla",
+  "lastModified": 1718323200003,
+  "data": {
+    "mode": "dark",
+    "accent": "rose",
+    "showLogo": true,
+    "logoImage": "/assets/images/logo_v3.png",
+    "username": "xeland314",
+    "selectedSlideId": "04-cover",
+    "slides": [
+      {
+        "id": "04-cover",
+        "type": "cover",
+        "title": "Cuando una\nsimulación falla",
+        "subtitle": "¿Bug, error numérico, inestabilidad o singularidad matemática?",
+        "category": "CFD PARA DEVS",
+        "iconChar": "💥"
+      },
+      {
+        "id": "04-s2",
+        "type": "markdown",
+        "content": "## 4 causas, 4 fixes distintos\n\n**🔢 Error Numérico** — `float32 / dt grande`\n- Síntoma: NaN gradual, difusión extra\n- Causa: truncamiento IEEE 754, CFL > 1\n- Fix: `dt ↓`, double, mesh más fino\n- `CFL = u·dt/dx < 1`\n\n**🐛 Bug de Software** — `off-by-one / BC mal`\n- Síntoma: explosión instantánea, solo en tu branch\n- Causa: condición de borde mal impuesta\n- Fix: `git bisect` + test unitario\n\n> Los dos primeros se arreglan con código. Los siguientes no."
+      },
+      {
+        "id": "04-s3",
+        "type": "markdown",
+        "content": "## Inestabilidad vs Singularidad\n\n**🌊 Inestabilidad Física** — `Re ≫ 1`\n- Síntoma: oscilaciones que crecen aunque `dt` sea pequeño\n- Causa: turbulencia real (Kelvin-Helmholtz). El fluido **también** lo hace.\n- Fix: modelo LES/RANS, viscosidad artificial\n\n**💥 Singularidad Matemática** — `‖ω‖ → ∞ en T* < ∞`\n- Síntoma: vorticidad infinita aunque todo el código sea perfecto\n- Causa: la **PDE misma** deja de tener solución suave\n- Fix: **no hay** — se demuestra\n\n> Una explosión numérica y un blow-up real se ven **idénticas** en pantalla."
+      },
+      {
+        "id": "04-s4",
+        "type": "markdown",
+        "content": "## Flujo de diagnóstico (guárdalo)\n\n```\nNaN? → revisa dt/mesh\n  → ¿solo tu rama? → git bisect (bug)\n    → ¿Re alto? → LES/RANS (inestabilidad)\n      → ¿Persiste al refinar mesh→∞, ν→0? → posible blow-up\n```\n\n```python\n# test de convergencia — el unit test de fluidos\nfor mesh in [64,128,256,512]:\n    err = simulate(mesh).max_vorticity\n    if err -> ∞ con mesh:\n        posible_singularidad()  # 💥\n    else:\n        error_numerico()  # 🔢\n```\n\n> Nunca reportes “descubrí blow-up” sin mostrar **curva de convergencia**."
+      },
+      {
+        "id": "04-s5",
+        "type": "markdown",
+        "content": "## Por qué es difícil para Navier–Stokes\n\nEl enjambre de OpenAI tuvo que distinguir:\n\n- **Ruido numérico** (se corrige refinando)\n- **Blow-up genuino** (persiste al refinar)\n\nSin esa distinción, cada simulación que explota parecería un “descubrimiento”.\n\n**Tip para devs que tocan CFD:**\n\n- Documenta `mesh, dt, ν, CFL`\n- Publica la curva `max_vorticity vs mesh`\n- Si diverge al refinar, **ahí** empieza la matemática\n\n> El bug se hace `git revert`. La singularidad se hace `theorem`."
+      },
+      {
+        "id": "04-end",
+        "type": "end",
+        "firstText": "¿Bug o",
+        "secondText": "Teorema?",
+        "description": "Guarda esta taxonomía antes de debuggear tu próxima simulación. Te ahorra semanas persiguiendo el error equivocado.",
+        "likeText": "Like",
+        "commentText": "Comenta",
+        "saveText": "Guarda",
+        "finalText": "xeland314 • Serie Navier-Stokes 4/6"
+      }
+    ]
+  }
+}

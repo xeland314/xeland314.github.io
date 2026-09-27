@@ -1,0 +1,54 @@
+{
+  "id": "ns-05-no-resolvio",
+  "name": "05 — Lo que OpenAI NO resolvió",
+  "lastModified": 1718323200004,
+  "data": {
+    "mode": "dark",
+    "accent": "amber",
+    "showLogo": true,
+    "logoImage": "/assets/images/logo_v3.png",
+    "username": "xeland314",
+    "selectedSlideId": "05-cover",
+    "slides": [
+      {
+        "id": "05-cover",
+        "type": "cover",
+        "title": "Lo que OpenAI\nNO resolvió",
+        "subtitle": "Antes de decir “resolvieron Navier-Stokes”, lee esto",
+        "category": "LECTURA CRÍTICA",
+        "iconChar": "❌"
+      },
+      {
+        "id": "05-s2",
+        "type": "markdown",
+        "content": "## Titular vs Paper\n\n**❌ Titular:**\n> “IA resuelve uno de los 7 problemas del milenio”\n\nImplica: Clay Prize otorgado, `existencia + suavidad global` resuelta para todo dato.\n\n**✅ Paper + Lean:**\n> Construcción de **blow-up en tiempo finito** para caso **forzado / axi-simétrico** con dato inicial específico.\n\n```\nstatus: THEOREM_PROVED ✔   scope: ∃ dato → blow-up\nstatus: CLAIM_INFLADO ✕    scope: ∀ dato → regularidad\n```\n\n> No es lo mismo `∃` que `∀`. Ahí vive el hype."
+      },
+      {
+        "id": "05-s3",
+        "type": "markdown",
+        "content": "## Lo que exige el Millennium (Clay)\n\nPara ganar el millón, hay que probar **uno** de estos en **ℝ³ sin forzar** (o 𝕋³ periódico), ν > 0, energía finita:\n\n**A)** `∀ dato suave → ∃ solución suave ∀ t ≥ 0`\n\n**B)** `∃ dato suave → blow-up en T* < ∞`\n\n| Requisito | Detalle |\n| --- | --- |\n| Dominio | ℝ³ o 𝕋³ — sin trucos de frontera |\n| Dato inicial | `C∞`, divergencia cero, decaimiento rápido |\n| Fuerza | `f = 0` (no forzar para provocar blow-up) |\n\n> Si ves “forzado” o “axi-simétrico con simetría extra”, **no es el Clay completo**."
+      },
+      {
+        "id": "05-s4",
+        "type": "markdown",
+        "content": "## Qué sí aportó / Qué sigue abierto\n\n**✔ Lo que sí:**\n- Técnica nueva: estimación de energía que el swarm refinó por torneo\n- Formalización Lean verificada por kernel (no “parece correcta”)\n- Método reusable: pipeline agente → Lean para otros PDEs\n\n**✕ Lo que sigue abierto:**\n- Caso **no forzado, dato genérico**\n- Regularidad global para **todo dato pequeño** vs blow-up genérico\n- Validez Clay: requiere revisión independiente + comunidad\n\n**Checklist para leer el paper:**\n- [ ] ¿Qué dominio?\n- [ ] ¿Qué fuerza?\n- [ ] ¿Qué clase de dato inicial?\n\n> 3 preguntas y desmontas el hype en 30 segundos."
+      },
+      {
+        "id": "05-s5",
+        "type": "markdown",
+        "content": "## Gancho para interacción\n\nSi alguien dice “resolvieron Navier-Stokes”, responde:\n\n> “¿En qué **dominio** y con qué **fuerza**?”\n\nEl 90% no sabe responder. **Ahí empieza la conversación.**\n\n```\n# para tu post:\nHashtags: #NoEsElMilenioCompleto #LeanVerificadoSí\nCTA: “¿Qué titular te vendió humo esta semana? Cuéntalo abajo”\n```\n\n> Este carrusel genera debate porque **corrige sin desmerecer**. OpenAI hizo algo enorme, pero no lo que dice TikTok."
+      },
+      {
+        "id": "05-end",
+        "type": "end",
+        "firstText": "Comparte la",
+        "secondText": "Corrección",
+        "description": "Guarda este fact-check y úsalo la próxima vez que veas hype. Compartir corrección también es divulgar.",
+        "likeText": "Like",
+        "commentText": "Debate",
+        "saveText": "Guarda",
+        "finalText": "xeland314 • Serie Navier-Stokes 5/6"
+      }
+    ]
+  }
+}

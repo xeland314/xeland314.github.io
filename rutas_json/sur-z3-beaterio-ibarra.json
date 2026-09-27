@@ -1,0 +1,110 @@
+[
+  {
+    "id": "bja9pv5",
+    "lat": -0.316514,
+    "lng": -78.543051,
+    "title": "Colegio Municipal Bicentenario",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · Unidad Educativa Municipal del Milenio Bicentenario, S48B, 28 de Noviembre, Turubamba, Quito, Pichincha, 170123, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "i0l8gjl",
+    "lat": -0.312,
+    "lng": -78.552,
+    "title": "Colegio Fiscal Bicentenario",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · (sin geocodificación precisa - revisar) · centro zona -0.31,-78.55",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "9o3hqoi",
+    "lat": -0.31,
+    "lng": -78.552,
+    "title": "Colegio Jean Irwin",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · (sin geocodificación precisa - revisar) · centro zona -0.31,-78.55",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "fqvzrr9",
+    "lat": -0.318514,
+    "lng": -78.539559,
+    "title": "Colegio Paul Dirac",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · Beaterio, Avenida El Beaterio, 170123, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "rtelki6",
+    "lat": -0.309485,
+    "lng": -78.549392,
+    "title": "Colegio Réplica Mejía",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · Unidad Educativa Réplica Mejía D7, Calle C, Ejercito Nacional, Quitumbe, Quito, Pichincha, 170701, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "41we7in",
+    "lat": -0.314,
+    "lng": -78.55,
+    "title": "Colegio Isabel Robalino",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · (sin geocodificación precisa - revisar) · centro zona -0.31,-78.55",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "788wle0",
+    "lat": -0.312,
+    "lng": -78.55,
+    "title": "Colegio Carlos Ponce – Fe y Alegría",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · (sin geocodificación precisa - revisar) · centro zona -0.31,-78.55",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "prxniaj",
+    "lat": -0.31,
+    "lng": -78.55,
+    "title": "Colegio Federico Larco",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · (sin geocodificación precisa - revisar) · centro zona -0.31,-78.55",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "ei42kc2",
+    "lat": -0.318514,
+    "lng": -78.539559,
+    "title": "Colegio Economista Abdón Calderón",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · Beaterio, Avenida El Beaterio, 170123, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "udzcplp",
+    "lat": -0.318514,
+    "lng": -78.539559,
+    "title": "Colegio Arturo Borja",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · Beaterio, Avenida El Beaterio, 170123, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "udhr2l1",
+    "lat": -0.298434,
+    "lng": -78.57106,
+    "title": "Colegio Antonio Nariño",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · Antonio Nariño, Andrés Pérez, 170617, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "amber"
+  },
+  {
+    "id": "8ig86rl",
+    "lat": -0.318514,
+    "lng": -78.539559,
+    "title": "Colegio Primicias de la Cultura de Quito",
+    "description": "Sector Sur Zona 3 – Beaterio y Ciudadela Ibarra · Beaterio, Avenida El Beaterio, 170123, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "amber"
+  }
+]

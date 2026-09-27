@@ -1,0 +1,54 @@
+{
+  "id": "ns-02-enjambre",
+  "name": "02 — ¿Cómo trabajan 10.000 agentes?",
+  "lastModified": 1718323200001,
+  "data": {
+    "mode": "dark",
+    "accent": "violet",
+    "showLogo": true,
+    "logoImage": "/assets/images/logo_v3.png",
+    "username": "xeland314",
+    "selectedSlideId": "02-cover",
+    "slides": [
+      {
+        "id": "02-cover",
+        "type": "cover",
+        "title": "¿Cómo trabajan\n10.000 agentes?",
+        "subtitle": "Arquitectura del enjambre: del caos a una prueba verificada",
+        "category": "SISTEMAS DISTRIBUIDOS",
+        "iconChar": "🤖"
+      },
+      {
+        "id": "02-s2",
+        "type": "markdown",
+        "content": "## No es un LLM gigante. Es un sistema distribuido\n\nPiensa en esto como **Kubernetes + MapReduce + Evolución**:\n\n- **Spawn (🧠):** 10K agentes con roles: analista, crítico, formalizador, simulador. `temperature 0.7–1.2` para diversidad.\n- **Generate (💡):** ~100K ideas/ronda: lemas, construcciones blow-up, estimaciones de energía.\n\n```python\nagents = [Agent(role=r) for r in ROLES for _ in range(N)]\nidea = agent.propose(context=paper_memory, seed=random_pdf)\n```\n\n> Map: cada agente genera en paralelo."
+      },
+      {
+        "id": "02-s3",
+        "type": "markdown",
+        "content": "## Exchange & Critic — donde muere el 95%\n\nLa magia no está en generar, está en **matar ideas rápido**:\n\n- Cada idea se envía a **críticos** que buscan contraejemplos\n- Tests numéricos CFD + Lean parcial como filtros\n- Votación por torneo: `score < τ → prune()`\n\n```python\nscore = critics.vote(idea)  # simulación + Lean check\nif score < threshold:\n    prune(idea)  # 95% muere aquí\nelse:\n    promote(idea)  # top 5% sobrevive\n```\n\n> Shuffle: intercambio brutal. Solo lo que resiste la crítica avanza."
+      },
+      {
+        "id": "02-s4",
+        "type": "markdown",
+        "content": "## Select — 1 prueba sobrevive\n\n- Top 0.1% → refinamiento profundo + formalización Lean completa\n- `lake build` y kernel verifica: `✔ Proof verified, 0 errors`\n\n| Métrica | Valor |\n| --- | --- |\n| Agentes | **10.000** concurrentes |\n| Ideas/ronda | **~100K** |\n| Supervivencia | **0.1%** |\n| Output final | **1 prueba** verificada |\n\n> Reduce: de 100K → 1. El poder no está en el modelo, está en la **selección**."
+      },
+      {
+        "id": "02-s5",
+        "type": "markdown",
+        "content": "## Analogías que sí entiende un dev\n\n**☸️ Kubernetes:** 10K pods efímeros con prompts distintos. Orquestador hace scheduling + healthchecks.\n\n**🗺️ MapReduce:**\n- `Map` = genera ideas\n- `Shuffle` = intercambio crítico\n- `Reduce` = selección final\n\n**🌿 Genético:** mutación (temp alta) + cruce (mezcla ideas) + fitness (Lean + crítica)\n\n> Visualiza esto como **diagrama de flujo**, no como fluido girando. Eso es lo que **nadie más** está mostrando."
+      },
+      {
+        "id": "02-end",
+        "type": "end",
+        "firstText": "¿Te sirve esta",
+        "secondText": "Arquitectura?",
+        "description": "Guarda este carrusel si diseñas sistemas distribuidos. El futuro de la investigación es un **enjambre con CI**, no un prompt.",
+        "likeText": "Like",
+        "commentText": "Comenta",
+        "saveText": "Guarda",
+        "finalText": "xeland314 • Serie Navier-Stokes 2/6"
+      }
+    ]
+  }
+}

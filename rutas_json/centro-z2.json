@@ -1,0 +1,83 @@
+[
+  {
+    "id": "mliytjr",
+    "lat": -0.228643,
+    "lng": -78.513171,
+    "title": "Colegio 10 de Agosto",
+    "description": "Sector Centro Zona Centro – Zona 2 · 10 de Agosto, Antonio Borrero, 170602, Centro Histórico, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "1pdxo91",
+    "lat": -0.216118,
+    "lng": -78.506448,
+    "title": "Colegio Hermano Miguel La Salle",
+    "description": "Sector Centro Zona Centro – Zona 2 · Colegio Hermano Miguel La Salle, Luis Vargas, 170402, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "zsseiuh",
+    "lat": -0.190368,
+    "lng": -78.485501,
+    "title": "Colegio Cardenal de la Torre",
+    "description": "Sector Centro Zona Centro – Zona 2 · La Carolina, Avenida General Eloy Alfaro, 170518, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "0pi2vcm",
+    "lat": -0.21383,
+    "lng": -78.506987,
+    "title": "Colegio Liceo Matovelle",
+    "description": "Sector Centro Zona Centro – Zona 2 · Unidad Educativa Liceo Matovelle, 170405, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "3iv47uv",
+    "lat": -0.211559,
+    "lng": -78.505009,
+    "title": "Colegio Mejía",
+    "description": "Sector Centro Zona Centro – Zona 2 · Colegio Mejia, Antonio Ante, 170402, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "ue9fo0o",
+    "lat": -0.212944,
+    "lng": -78.501647,
+    "title": "Colegio Espejo",
+    "description": "Sector Centro Zona Centro – Zona 2 · Colegio Espejo, Hermanos Pazmiño, 170118, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "nxvsq0w",
+    "lat": -0.208826,
+    "lng": -78.502659,
+    "title": "Colegio Simón Bolívar",
+    "description": "Sector Centro Zona Centro – Zona 2 · Colegio Simón Bolivar, Javier Zambrano, 170118, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "i7f2fmk",
+    "lat": -0.21,
+    "lng": -78.505,
+    "title": "Colegio La Salle Febres Cordero",
+    "description": "Sector Centro Zona Centro – Zona 2 · (sin geocodificación precisa - revisar) · centro zona -0.21,-78.505",
+    "icon": "graduation",
+    "color": "red"
+  },
+  {
+    "id": "00k7urs",
+    "lat": -0.220164,
+    "lng": -78.512327,
+    "title": "Colegio La Presentación",
+    "description": "Sector Centro Zona Centro – Zona 2 · Quito, P, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "red"
+  }
+]

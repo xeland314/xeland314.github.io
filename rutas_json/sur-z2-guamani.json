@@ -1,0 +1,110 @@
+[
+  {
+    "id": "sx9b332",
+    "lat": -0.334,
+    "lng": -78.552,
+    "title": "Colegio 15 de Diciembre",
+    "description": "Sector Sur Zona 2 – Guamaní · (sin geocodificación precisa - revisar) · centro zona -0.33,-78.55",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "cujzlux",
+    "lat": -0.328943,
+    "lng": -78.559596,
+    "title": "Colegio Mushuk Kawsay",
+    "description": "Sector Sur Zona 2 – Guamaní · Quito, Guamaní, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "7lr6vqk",
+    "lat": -0.336235,
+    "lng": -78.562568,
+    "title": "Colegio Oswaldo Lombeida",
+    "description": "Sector Sur Zona 2 – Guamaní · Oswaldo Lombeida, Oe6, 170705, Guamaní, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "ko3zhjt",
+    "lat": -0.334238,
+    "lng": -78.553048,
+    "title": "Colegio Julio Moreno",
+    "description": "Sector Sur Zona 2 – Guamaní · Escuela Julio Moreno, S56H, Añoranza, Guamaní, Quito, Pichincha, 170705, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "lqt2i0s",
+    "lat": -0.32983,
+    "lng": -78.54673,
+    "title": "Colegio San Juan Bosco",
+    "description": "Sector Sur Zona 2 – Guamaní · San Juan Bosco, Rio Puca, 170132, San José de Guamaní, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "fmwrpaq",
+    "lat": -0.328943,
+    "lng": -78.559596,
+    "title": "Colegio Juan Guisnet",
+    "description": "Sector Sur Zona 2 – Guamaní · Quito, Guamaní, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "1967mlx",
+    "lat": -0.326772,
+    "lng": -78.552262,
+    "title": "Colegio Manuela Santa Cruz y Espejo",
+    "description": "Sector Sur Zona 2 – Guamaní · UNIDAD EDUCATIVA MANUELA DE SANTA CRUZ Y ESPEJO,Guamani, Daniel Figueroa Gomez, La Perla, Guamaní, Quito, Pichincha, 170711, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "1pfna9i",
+    "lat": -0.328943,
+    "lng": -78.559596,
+    "title": "Colegio Manuela Sáenz",
+    "description": "Sector Sur Zona 2 – Guamaní · Quito, Guamaní, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "o3iit2u",
+    "lat": -0.325974,
+    "lng": -78.548094,
+    "title": "Colegio Ricardo Cornejo",
+    "description": "Sector Sur Zona 2 – Guamaní · Colegio Ricardo Cornejo, Rio Saloya, 170711, San José de Guamaní, Quito, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "8fn3ria",
+    "lat": -0.328943,
+    "lng": -78.559596,
+    "title": "Colegio Celiano Monge",
+    "description": "Sector Sur Zona 2 – Guamaní · Quito, Guamaní, Ecuador [geoapify]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "39y4ppn",
+    "lat": -0.319563,
+    "lng": -78.553668,
+    "title": "Colegio Nueva Aurora",
+    "description": "Sector Sur Zona 2 – Guamaní · Nueva Aurora, Avenida Quitumbe Ñan, Guamaní alto, Guamaní, Quito, Pichincha, 170711, Ecuador [nominatim]",
+    "icon": "graduation",
+    "color": "orange"
+  },
+  {
+    "id": "6jnvvlk",
+    "lat": -0.332,
+    "lng": -78.548,
+    "title": "Colegio Isabel Ruilova",
+    "description": "Sector Sur Zona 2 – Guamaní · (sin geocodificación precisa - revisar) · centro zona -0.33,-78.55",
+    "icon": "graduation",
+    "color": "orange"
+  }
+]
