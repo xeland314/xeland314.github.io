@@ -64,6 +64,8 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
   return (
     <form
       id="contact-form"
+      toolname="send_contact_message"
+      tooldescription="Envía un mensaje de contacto a Christopher Villamarín (xeland314) para iniciar un proyecto, pedir una cotización o hacer una consulta. El usuario confirma el envío manualmente."
       onSubmit={sendEmail}
       className="space-y-5 w-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-8"
     >
@@ -86,6 +88,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
             type="email"
             id="email"
             name="email"
+            toolparamdescription="Correo electrónico del remitente para poder responderle"
             value={content.email || ""}
             onChange={(e) => setField("email", e.target.value)}
             required
@@ -108,6 +111,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
             type="text"
             id="name"
             name="name"
+            toolparamdescription="Nombre de la persona que contacta"
             value={content.name || ""}
             onChange={(e) => setField("name", e.target.value)}
             required
@@ -129,6 +133,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
           <textarea
             id="message"
             name="message"
+            toolparamdescription="Mensaje con el detalle del proyecto o la consulta, en máximo 2000 caracteres"
             value={content.message || ""}
             onChange={(e) => setField("message", e.target.value)}
             required

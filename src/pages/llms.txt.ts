@@ -78,6 +78,7 @@ Si el navegador del agente soporta WebMCP (document.modelContext, Chrome 149+ or
 - \`get_contacto\` — Canales de contacto para iniciar un proyecto.
 - \`get_apps\` — Mini apps offline en el navegador con URL.
 - \`get_posts\` — Posts técnicos y artículos de blog con URL.
+- \`send_contact_message\` (declarativo) — Formulario de contacto anotado en la portada: el agente puede rellenar email, nombre y mensaje; el usuario confirma el envío.
 
 Catálogo estático de capacidades (ARD): https://xeland314.github.io/.well-known/ai-catalog.json
 
