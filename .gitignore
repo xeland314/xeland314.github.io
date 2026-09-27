@@ -25,6 +25,10 @@ pnpm-debug.log*
 pdfs_moodle/
 Analizador-lexico/
 
+# datos locales de rutas escolares (no versionar)
+rutas_json/
+Territorios de rutas de colegios.pdf
+
 # jetbrains setting folder
 .idea/
 # session notes (do not version)
