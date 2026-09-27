@@ -68,7 +68,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
       className="space-y-5 w-full bg-gray-50 dark:bg-gray-900 rounded-3xl p-8"
     >
       <div className="mb-6">
-        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-1">
+        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-1">
           {T.contact_me}
         </h3>
         <h4 className="text-xl font-bold text-gray-800 dark:text-gray-100 italic tracking-tighter">{T.contact_me_subtitle}</h4>
@@ -139,7 +139,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
             className="w-full block px-4 py-3 border bg-white dark:bg-gray-800/50 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all sm:text-sm resize-none"
           />
           <div className="flex flex-row justify-end">
-            <p className="text-[10px] font-mono text-gray-400 pt-1 uppercase">
+            <p className="text-[10px] font-mono text-gray-600 dark:text-gray-400 pt-1 uppercase">
               {content.message?.length || 0} / 2000 {T.characters}
             </p>
           </div>
