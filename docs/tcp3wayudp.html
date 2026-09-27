@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TCP 3-Way Handshake vs UDP</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #060a0f;
+    --panel: #0d131b;
+    --panel-2: #11181f;
+    --line: #1c2530;
+    --ink: #e7edf3;
+    --muted: #5f6c7a;
+    --signal: #7CFB4C;
+    --signal-dim: rgba(124, 251, 76, 0.14);
+    --tcp-blue: #3fd0e0;
+    --tcp-blue-dim: rgba(63, 208, 224, 0.15);
+    --udp-orange: #ff9736;
+    --udp-orange-dim: rgba(255, 151, 54, 0.15);
+    --warn: #ff5f57;
+    --warn-dim: rgba(255, 95, 87, 0.16);
+    --kw: #c792ea;
+    --str: #8fd14f;
+    --fn: #6cb8ff;
+  }
+
+  html, body { background: var(--bg-deep); }
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Stage vertical 9:16 */
+  #stage {
+    width: 405px;
+    height: 720px;
+    background:
+      radial-gradient(120% 90% at 15% 0%, #0a2230 0%, transparent 55%),
+      radial-gradient(90% 70% at 100% 10%, #20130e 0%, transparent 50%),
+      #060a0f;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: .18em;
+    font-size: 10px;
+    color: var(--tcp-blue);
+  }
+
+  /* Code Panel */
+  .code-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 24px -16px rgba(0,0,0,.6);
+    overflow: hidden;
+  }
+  .code-topbar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .code-topbar .dotc { width: 7px; height: 7px; border-radius: 99px; }
+  .code-body { padding: 6px 0; min-height: 110px; }
+  .code-line {
+    display: flex;
+    align-items: center;
+    padding: 2.5px 10px 2.5px 6px;
+    border-left: 2px solid transparent;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    line-height: 16px;
+    color: var(--ink);
+    white-space: pre;
+    transition: background .18s ease, border-color .18s ease, opacity .18s ease;
+    opacity: .5;
+  }
+  .code-line .ln {
+    width: 14px; flex: none; color: #39424c; margin-right: 8px; text-align: right; font-size: 9.5px;
+  }
+  .code-line.active-tcp {
+    background: var(--tcp-blue-dim);
+    border-left-color: var(--tcp-blue);
+    opacity: 1;
+  }
+  .code-line.active-udp {
+    background: var(--udp-orange-dim);
+    border-left-color: var(--udp-orange);
+    opacity: 1;
+  }
+
+  /* Network Area Visual */
+  .network-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    position: relative;
+  }
+
+  /* Packet Animation Elements */
+  .packet {
+    position: absolute;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    z-index: 20;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .packet.tcp {
+    background: #092c36;
+    border: 1px solid var(--tcp-blue);
+    color: var(--tcp-blue);
+  }
+  .packet.udp {
+    background: #331f0a;
+    border: 1px solid var(--udp-orange);
+    color: var(--udp-orange);
+  }
+  .packet.lost {
+    background: #36100e;
+    border: 1px solid var(--warn);
+    color: var(--warn);
+  }
+
+  /* Console */
+  .console {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #7ee08a;
+    background: #04070a;
+    border: 1px solid #1a232d;
+    border-radius: 10px;
+    padding: 8px 12px;
+    min-height: 65px;
+  }
+  .console .caret {
+    display: inline-block; width: 6px; height: 12px; background: #7ee08a; opacity: .85;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Controls */
+  .ctrl-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: #141b22;
+    color: #dfe6ec;
+    transition: transform .12s ease, border-color .15s ease, background .15s ease;
+    cursor: pointer;
+  }
+  .ctrl-btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.2); }
+  .ctrl-btn.active-tcp { border-color: var(--tcp-blue); background: var(--tcp-blue-dim); color: #b3f3fc; }
+  .ctrl-btn.active-udp { border-color: var(--udp-orange); background: var(--udp-orange-dim); color: #ffd8b3; }
+  .ctrl-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  .tok-kw { color: var(--kw); }
+  .tok-str { color: var(--str); }
+  .tok-fn { color: var(--fn); }
+  .tok-mut { color: var(--muted); }
+  .tok-net { color: var(--tcp-blue); font-weight: 600; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center gap-4 py-8 px-4">
+
+  <!-- Stage Container -->
+  <div id="stageOuter" class="rounded-[30px] p-[3px] bg-gradient-to-b from-white/10 to-transparent">
+    <div id="stage" class="rounded-[28px] flex flex-col justify-between p-6">
+
+      <!-- Header -->
+      <div>
+        <div class="eyebrow" id="eyebrowTag">REDES · CAPA DE TRANSPORTE</div>
+        <div class="font-display font-bold text-white text-2xl leading-tight mt-1">
+          Diferencia entre<br/><span class="text-[#3fd0e0]" id="titleProtocol">TCP (Handshake)</span> vs <span class="text-[#ff9736]">UDP</span>
+        </div>
+      </div>
+
+      <!-- Code Box -->
+      <div class="code-panel">
+        <div class="code-topbar justify-between">
+          <div class="flex items-center gap-1.5">
+            <span class="dotc" style="background:#ff5f57"></span>
+            <span class="dotc" style="background:#febc2e"></span>
+            <span class="dotc" style="background:#28c840"></span>
+            <span class="font-mono ml-1 text-[9px] text-[#5f6c7a]" id="fileName">tcp_socket.c</span>
+          </div>
+          <span id="statusBadge" class="font-mono text-[9px] px-2 py-0.5 rounded bg-white/5 text-gray-400">
+            ESPERANDO
+          </span>
+        </div>
+        <div class="code-body" id="codeBody"></div>
+      </div>
+
+      <!-- Network Canvas Diagram -->
+      <div class="network-card flex flex-col justify-between h-[180px]">
+        <!-- Top Row: Client & Server Nodes -->
+        <div class="flex justify-between items-center z-10">
+          <!-- Client Node -->
+          <div class="flex flex-col items-center">
+            <div id="clientNode" class="w-12 h-12 rounded-xl bg-gray-900 border border-gray-700 flex items-center justify-center text-xl shadow-lg transition-all duration-300">
+              💻
+            </div>
+            <span class="font-mono text-[10px] text-gray-300 font-bold mt-1">Cliente</span>
+            <span id="clientState" class="font-mono text-[8.5px] text-gray-500 font-semibold">CLOSED</span>
+          </div>
+
+          <!-- Connection Pipes Indicator -->
+          <div class="flex-1 mx-3 flex flex-col gap-2 relative">
+            <div class="h-0.5 w-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800"></div>
+            <div class="h-0.5 w-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800"></div>
+          </div>
+
+          <!-- Server Node -->
+          <div class="flex flex-col items-center">
+            <div id="serverNode" class="w-12 h-12 rounded-xl bg-gray-900 border border-gray-700 flex items-center justify-center text-xl shadow-lg transition-all duration-300">
+              🖥️
+            </div>
+            <span class="font-mono text-[10px] text-gray-300 font-bold mt-1">Servidor</span>
+            <span id="serverState" class="font-mono text-[8.5px] text-gray-500 font-semibold">LISTEN</span>
+          </div>
+        </div>
+
+        <!-- Flying Packet Canvas Space -->
+        <div id="packetArea" class="absolute inset-0 pointer-events-none overflow-hidden">
+          <!-- Animated Packets will be injected dynamically -->
+        </div>
+
+        <!-- Connection Channel Footer State -->
+        <div class="flex justify-between items-center pt-2 border-t border-white/5 font-mono text-[9.5px]">
+          <span class="text-gray-500">Garantías:</span>
+          <span id="guaranteeText" class="text-cyan-400 font-semibold">Orden, ACK & Retransmisión</span>
+        </div>
+      </div>
+
+      <!-- Console Output -->
+      <div>
+        <div class="font-mono text-[9px] text-gray-500 mb-1 tracking-wider uppercase">Salida en Consola</div>
+        <div class="console flex flex-col justify-end">
+          <div id="consoleText" class="space-y-1"></div>
+          <div class="flex items-center gap-1 mt-1">
+            <span class="text-gray-600">&gt;&gt;&gt;</span>
+            <span class="caret"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watermark Footer -->
+      <div class="flex justify-between items-center text-[10px] font-mono text-[#5f6c7a]">
+        <span>Handshake vs Fire & Forget</span>
+        <span class="opacity-80">@xeland314</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Interactive Controls (Outside Stage) -->
+  <div id="controls" class="flex flex-col items-center gap-2.5 w-[405px]">
+    <div class="flex gap-2 w-full">
+      <button class="ctrl-btn flex-1 active-tcp" id="btnTcpMode">1. Modo TCP (Reliable)</button>
+      <button class="ctrl-btn flex-1" id="btnUdpMode">2. Modo UDP (Fast)</button>
+    </div>
+    <button class="ctrl-btn w-full bg-gradient-to-r from-cyan-950 to-amber-950 border-cyan-500/30 text-cyan-200" id="btnPlay">
+      ▶ Ejecutar Simulación
+    </button>
+  </div>
+
+<script>
+(function(){
+  const fileName = document.getElementById('fileName');
+  const statusBadge = document.getElementById('statusBadge');
+  const codeBody = document.getElementById('codeBody');
+  const consoleText = document.getElementById('consoleText');
+  
+  const clientNode = document.getElementById('clientNode');
+  const serverNode = document.getElementById('serverNode');
+  const clientState = document.getElementById('clientState');
+  const serverState = document.getElementById('serverState');
+  const guaranteeText = document.getElementById('guaranteeText');
+  const packetArea = document.getElementById('packetArea');
+  
+  const btnTcpMode = document.getElementById('btnTcpMode');
+  const btnUdpMode = document.getElementById('btnUdpMode');
+  const btnPlay = document.getElementById('btnPlay');
+
+  let mode = 'tcp'; // 'tcp' | 'udp'
+  let isRunning = false;
+
+  const CODES = {
+    tcp: [
+      { id: 1, html: `<span class="tok-fn">connect</span>(sockfd, <span class="tok-mut">&amp;</span>servaddr)<span class="tok-mut">:</span>` },
+      { id: 2, html: `  <span class="tok-net">SYN</span>     <span class="tok-mut">--&gt;</span> Seq=100` },
+      { id: 3, html: `  <span class="tok-net">SYN-ACK</span> <span class="tok-mut">&lt;--</span> Seq=300 Ack=101` },
+      { id: 4, html: `  <span class="tok-net">ACK</span>     <span class="tok-mut">--&gt;</span> Ack=301 <span class="tok-str">(ESTABLISHED)</span>` },
+    ],
+    udp: [
+      { id: 1, html: `<span class="tok-fn">sendto</span>(sockfd, buffer, len, ...)<span class="tok-mut">:</span>` },
+      { id: 2, html: `  <span class="tok-str">Datagram 1</span> <span class="tok-mut">--&gt;</span> (Sin conexión)` },
+      { id: 3, html: `  <span class="tok-str">Datagram 2</span> <span class="tok-mut">--&gt;</span> (Sin confirmación)` },
+      { id: 4, html: `  <span class="tok-str">Datagram 3</span> <span class="tok-mut">--&gt;</span> (Fire &amp; Forget)` },
+    ]
+  };
+
+  function renderCode(){
+    fileName.textContent = mode === 'tcp' ? 'tcp_socket.c' : 'udp_socket.c';
+    codeBody.innerHTML = '';
+    CODES[mode].forEach((line, idx) => {
+      const row = document.createElement('div');
+      row.className = 'code-line';
+      row.dataset.line = line.id;
+      row.innerHTML = `<span class="ln">${idx + 1}</span><span>${line.html}</span>`;
+      codeBody.appendChild(row);
+    });
+  }
+
+  function setLineActive(lineId){
+    clearLines();
+    const el = codeBody.querySelector(`[data-line="${lineId}"]`);
+    if(el){
+      el.classList.add(mode === 'tcp' ? 'active-tcp' : 'active-udp');
+    }
+  }
+
+  function clearLines(){
+    codeBody.querySelectorAll('.code-line').forEach(el => {
+      el.classList.remove('active-tcp', 'active-udp');
+    });
+  }
+
+  function clearConsole(){
+    consoleText.innerHTML = '';
+  }
+
+  function printConsole(text, color = '#7ee08a'){
+    const div = document.createElement('div');
+    div.style.color = color;
+    div.textContent = text;
+    consoleText.appendChild(div);
+  }
+
+  function setStatus(text, color){
+    statusBadge.textContent = text;
+    statusBadge.style.color = color;
+    statusBadge.style.borderColor = color;
+  }
+
+  function resetNodes(){
+    clientNode.className = 'w-12 h-12 rounded-xl bg-gray-900 border border-gray-700 flex items-center justify-center text-xl shadow-lg transition-all duration-300';
+    serverNode.className = 'w-12 h-12 rounded-xl bg-gray-900 border border-gray-700 flex items-center justify-center text-xl shadow-lg transition-all duration-300';
+    
+    if(mode === 'tcp'){
+      clientState.textContent = 'CLOSED';
+      clientState.style.color = '#a1a1aa';
+      serverState.textContent = 'LISTEN';
+      serverState.style.color = '#a1a1aa';
+      guaranteeText.textContent = 'Orden, ACK & Retransmisión';
+      guaranteeText.className = 'text-cyan-400 font-semibold';
+    } else {
+      clientState.textContent = 'UNCONNECTED';
+      clientState.style.color = '#ff9736';
+      serverState.textContent = 'STATELESS';
+      serverState.style.color = '#ff9736';
+      guaranteeText.textContent = 'Sin Handshake (Sin garantías/Ultra rápido)';
+      guaranteeText.className = 'text-amber-400 font-semibold';
+    }
+    
+    packetArea.innerHTML = '';
+  }
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  // Helper function to animate a packet packet between Client (Left) and Server (Right)
+  function createAndAnimatePacket(label, type, direction = 'L2R', dropMidway = false) {
+    return new Promise((resolve) => {
+      const pkt = document.createElement('div');
+      pkt.className = `packet ${type}`;
+      pkt.textContent = label;
+
+      const startX = direction === 'L2R' ? 40 : 250;
+      const startY = direction === 'L2R' ? 65 : 95;
+      
+      pkt.style.transform = `translate(${startX}px, ${startY}px)`;
+      pkt.style.opacity = '1';
+      packetArea.appendChild(pkt);
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (dropMidway) {
+            // Animates to center and vanishes (Packet Loss)
+            pkt.style.transform = `translate(145px, ${startY + 15}px)`;
+            setTimeout(() => {
+              pkt.className = 'packet lost';
+              pkt.textContent = '❌ PERDIDO';
+              setTimeout(() => {
+                pkt.style.opacity = '0';
+                setTimeout(() => { pkt.remove(); resolve(); }, 300);
+              }, 400);
+            }, 300);
+          } else {
+            // Full distance travel
+            const endX = direction === 'L2R' ? 250 : 40;
+            pkt.style.transform = `translate(${endX}px, ${startY}px)`;
+            setTimeout(() => {
+              pkt.style.opacity = '0';
+              setTimeout(() => { pkt.remove(); resolve(); }, 300);
+            }, 600);
+          }
+        }, 50);
+      });
+    });
+  }
+
+  // --- SIMULACIÓN TCP 3-WAY HANDSHAKE ---
+  async function runTcpSimulation(){
+    setStatus('INICIANDO HANDSHAKE', '#3fd0e0');
+    resetNodes();
+    clearConsole();
+
+    // Line 1: connect()
+    setLineActive(1);
+    printConsole('$ client.connect("192.168.1.10:8080")', '#3fd0e0');
+    await sleep(400);
+
+    // Step 1: SYN (Client -> Server)
+    setLineActive(2);
+    setStatus('1/3: SYN ENVIADO', '#3fd0e0');
+    clientState.textContent = 'SYN-SENT';
+    clientState.style.color = '#3fd0e0';
+    clientNode.classList.add('border-cyan-400', 'shadow-cyan-500/20');
+    printConsole('1. [Client -> Server] SYN (Seq=100)', '#3fd0e0');
+
+    await createAndAnimatePacket('SYN [Seq=100]', 'tcp', 'L2R');
+
+    serverState.textContent = 'SYN-RCVD';
+    serverState.style.color = '#3fd0e0';
+    serverNode.classList.add('border-cyan-400', 'shadow-cyan-500/20');
+    await sleep(400);
+
+    // Step 2: SYN-ACK (Server -> Client)
+    setLineActive(3);
+    setStatus('2/3: SYN-ACK RECIBIDO', '#3fd0e0');
+    printConsole('2. [Server -> Client] SYN-ACK (Seq=300, Ack=101)', '#3fd0e0');
+
+    await createAndAnimatePacket('SYN-ACK [Ack=101]', 'tcp', 'R2L');
+
+    clientState.textContent = 'ESTABLISHED';
+    clientState.style.color = '#7CFB4C';
+    await sleep(400);
+
+    // Step 3: ACK (Client -> Server)
+    setLineActive(4);
+    setStatus('3/3: ACK CONFIRMADO', '#7CFB4C');
+    printConsole('3. [Client -> Server] ACK (Ack=301)', '#7CFB4C');
+
+    await createAndAnimatePacket('ACK [Ack=301]', 'tcp', 'L2R');
+
+    serverState.textContent = 'ESTABLISHED';
+    serverState.style.color = '#7CFB4C';
+    serverNode.classList.add('border-emerald-400', 'shadow-emerald-500/20');
+    clientNode.classList.add('border-emerald-400', 'shadow-emerald-500/20');
+
+    printConsole('✔ ¡CONEXIÓN ESTABLECIDA! (Listo para transmitir datos)', '#7CFB4C');
+    setStatus('CONEXIÓN ESTABLISHED', '#7CFB4C');
+
+    await sleep(600);
+    clearLines();
+  }
+
+  // --- SIMULACIÓN UDP FIRE & FORGET ---
+  async function runUdpSimulation(){
+    setStatus('DISPARANDO UDP DATAGRAMS', '#ff9736');
+    resetNodes();
+    clearConsole();
+
+    // Line 1: sendto()
+    setLineActive(1);
+    printConsole('$ sendto(socket, buffer, len, ...)', '#ff9736');
+    printConsole('⚡ Sin fase de conexión predeterminada...', '#999');
+    await sleep(500);
+
+    // Datagram 1
+    setLineActive(2);
+    setStatus('ENVIANDO DATAGRAMA 1', '#ff9736');
+    printConsole('1. [Client -> Server] UDP Datagram #1 (Live Stream)', '#ff9736');
+    createAndAnimatePacket('UDP #1 [Audio]', 'udp', 'L2R');
+    await sleep(400);
+
+    // Datagram 2
+    setLineActive(3);
+    setStatus('ENVIANDO DATAGRAMA 2', '#ff9736');
+    printConsole('2. [Client -> Server] UDP Datagram #2 (Live Stream)', '#ff9736');
+    createAndAnimatePacket('UDP #2 [Video]', 'udp', 'L2R');
+    await sleep(350);
+
+    // Datagram 3 (Se pierde en el camino)
+    setLineActive(4);
+    setStatus('⚠️ PAQUETE 3 PERDIDO', '#ff5f57');
+    printConsole('3. [Client -> Server] UDP Datagram #3 -> (Se perdió en red)', '#ff5f57');
+    await createAndAnimatePacket('UDP #3 [Frame]', 'udp', 'L2R', true);
+
+    // Datagram 4 (Continuación sin importar la pérdida)
+    setStatus('ENVIANDO DATAGRAMA 4', '#ff9736');
+    printConsole('4. [Client -> Server] UDP Datagram #4 (Sin esperar ACK)', '#ff9736');
+    await createAndAnimatePacket('UDP #4 [Audio]', 'udp', 'L2R');
+
+    printConsole('✔ Transmisión finalizada sin retransmisión de pérdida.', '#ff9736');
+    setStatus('TRANSMISIÓN COMPLETADA', '#ff9736');
+
+    await sleep(600);
+    clearLines();
+  }
+
+  // Switch modes
+  btnTcpMode.addEventListener('click', () => {
+    if(isRunning) return;
+    mode = 'tcp';
+    btnTcpMode.className = 'ctrl-btn flex-1 active-tcp';
+    btnUdpMode.className = 'ctrl-btn flex-1';
+    renderCode();
+    resetNodes();
+    clearConsole();
+    setStatus('ESPERANDO', '#a1a1aa');
+  });
+
+  btnUdpMode.addEventListener('click', () => {
+    if(isRunning) return;
+    mode = 'udp';
+    btnUdpMode.className = 'ctrl-btn flex-1 active-udp';
+    btnTcpMode.className = 'ctrl-btn flex-1';
+    renderCode();
+    resetNodes();
+    clearConsole();
+    setStatus('ESPERANDO', '#a1a1aa');
+  });
+
+  btnPlay.addEventListener('click', async () => {
+    if(isRunning) return;
+    isRunning = true;
+    btnPlay.disabled = true;
+    btnTcpMode.disabled = true;
+    btnUdpMode.disabled = true;
+
+    if(mode === 'tcp'){
+      await runTcpSimulation();
+    } else {
+      await runUdpSimulation();
+    }
+
+    isRunning = false;
+    btnPlay.disabled = false;
+    btnTcpMode.disabled = false;
+    btnUdpMode.disabled = false;
+  });
+
+  // Init
+  renderCode();
+  resetNodes();
+})();
+</script>
+</body>
+</html>
