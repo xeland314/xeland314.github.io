@@ -1,0 +1,144 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Portafolio de Christopher Villamarín (xeland314)",
+    "documentationUrl": "https://xeland314.github.io/llms.txt",
+    "logoUrl": "https://xeland314.github.io/assets/images/logo_v3.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:xeland314.github.io:mcp:web-tools",
+      "displayName": "Portafolio xeland314 — herramientas WebMCP",
+      "type": "application/mcp-server-card+json",
+      "description": "Tarjeta MCP del sitio: expone 7 herramientas read-only (perfil, servicios, proyectos, caso de éxito, contacto, mini apps y posts) vía document.modelContext (WebMCP, Chrome 149+ origin trial).",
+      "capabilities": [
+        "WebMCP",
+        "get_perfil",
+        "get_servicios",
+        "get_proyectos",
+        "get_caso_exito",
+        "get_contacto",
+        "get_apps",
+        "get_posts"
+      ],
+      "tags": [
+        "portafolio",
+        "desarrollador backend",
+        "SEO",
+        "servicios web",
+        "Quito"
+      ],
+      "representativeQueries": [
+        "quién es xeland314 y cómo contactarlo",
+        "qué servicios ofrece Christopher Villamarín",
+        "proyectos destacados del portafolio de xeland314",
+        "resultados SEO del caso Talleres Servi Auto"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-09-27T16:00:00-05:00",
+      "data": {
+        "name": "com.xeland314.portfolio",
+        "title": "Portafolio xeland314 — herramientas para agentes",
+        "description": "Herramientas read-only del portafolio de Christopher Villamarín (desarrollador backend, Quito): perfil y contacto, servicios, proyectos destacados y caso de estudio verificado.",
+        "version": "1.0.0",
+        "tools": [
+          {
+            "name": "get_perfil",
+            "description": "Devuelve nombre, rol, ubicación, idiomas, disponibilidad, email y redes del desarrollador. Úsala cuando el usuario pregunte quién es o cómo contactarlo.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "nombre": "string",
+              "username": "string",
+              "rol": "string",
+              "ubicacion": "string",
+              "idiomas": "string",
+              "disponibilidad": "string",
+              "email": "string",
+              "web": "string (URL)",
+              "redes": "{ github: string (URL), linkedin: string (URL) }",
+              "resumen": "string"
+            }
+          },
+          {
+            "name": "get_servicios",
+            "description": "Devuelve los servicios ofrecidos (sitios web desde cero, auditoría y rescate, mini apps offline, APIs y backend) con descripción y URL. Úsala cuando el usuario pregunte qué puede construir o contratar.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "servicios": "[{ nombre: string, descripcion: string, url: string (URL) }]"
+            }
+          },
+          {
+            "name": "get_proyectos",
+            "description": "Devuelve los proyectos destacados del portafolio con título, descripción corta y URL absoluta. Úsala cuando el usuario pida ver trabajos o ejemplos.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "proyectos": "[{ titulo: string, descripcion: string, url: string (URL) }]"
+            }
+          },
+          {
+            "name": "get_caso_exito",
+            "description": "Devuelve el caso de estudio verificado de Talleres Servi Auto con resultados SEO (ranking orgánico, citación en IA, 100/100 PageSpeed) y URLs. Úsala cuando el usuario pida resultados o pruebas.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "cliente": "string",
+              "sector": "string",
+              "resultados": "string[]",
+              "url_caso": "string (URL)",
+              "url_sitio": "string (URL)"
+            }
+          },
+          {
+            "name": "get_contacto",
+            "description": "Devuelve los canales de contacto (email, formulario, redes sociales) y la disponibilidad. Úsala cuando el usuario quiera iniciar contacto, pedir una cotización o contratar un servicio.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "email": "string",
+              "formulario": "string (URL)",
+              "disponibilidad": "string",
+              "redes": "{ github: string (URL), linkedin: string (URL), instagram: string (URL) }"
+            }
+          },
+          {
+            "name": "get_apps",
+            "description": "Devuelve las mini apps 100% en el navegador (PDF, imágenes, mapas, dominós) con su descripción y URL. Úsala cuando el usuario pida herramientas, apps o utilidades.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "apps": "[{ nombre: string, descripcion: string, badge: string, url: string (URL) }]"
+            }
+          },
+          {
+            "name": "get_posts",
+            "description": "Devuelve los posts técnicos publicados (Linux, redes, formatos binarios, compiladores, IA aplicada) y los artículos de blog, con sus URLs absolutas. Úsala cuando el usuario busque contenido técnico o quieras citar un artículo.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "posts": "[{ titulo: string, url: string (URL) }]",
+              "blogs": "[{ titulo: string, descripcion: string?, url: string (URL) }]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "urn:air:xeland314.github.io:docs:llms-txt",
+      "displayName": "Guía del sitio para agentes de IA (llms.txt)",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://xeland314.github.io/llms.txt",
+      "description": "Documento de orientación para LLMs: perfil, páginas clave, proyectos, servicios y caso de estudio del portafolio.",
+      "capabilities": ["docs"],
+      "tags": ["llms.txt", "documentación", "GEO"],
+      "representativeQueries": [
+        "información oficial del portafolio de xeland314 para agentes",
+        "páginas del sitio de Christopher Villamarín"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-09-27T16:00:00-05:00"
+    }
+  ]
+}

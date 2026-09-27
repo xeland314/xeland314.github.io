@@ -3,6 +3,7 @@ import "/src/styles/global.css";
 
 import { ClientRouter } from "astro:transitions";
 import Header from "../components/common/Header.astro";
+import WebMcpTools from "../components/WebMcpTools.astro";
 
 interface Props {
   title: string;
@@ -61,6 +62,15 @@ const {
     <meta
       name="google-site-verification"
       content="00zwLtdgjhmCPvhPBvazB4JmCArQ-0tFJMxNuhrCuIE"
+    />
+
+    {/* Origin trial WebMCP (Chrome 149-156, expira 16 nov 2026): activa
+        document.modelContext para que las herramientas de WebMcpTools.astro
+        se registren en Chrome estable. Renovar token en
+        developer.chrome.com/origintrials antes del vencimiento. */}
+    <meta
+      http-equiv="origin-trial"
+      content="AmjsTZ67E0sirZ1XmOjAH+xDIQsUE5d3WiJmeSsOC1TDeAo4nORPTBF+ogDMhLe7wMzQZpFrJMYHtsJj8VnR9g4AAABmeyJvcmlnaW4iOiJodHRwczovL3hlbGFuZDMxNC5naXRodWIuaW86NDQzIiwiZmVhdHVyZSI6IldlYk1DUCIsImV4cGlyeSI6MTc5NDg3MzYwMCwiaXNTdWJkb21haW4iOnRydWV9"
     />
 
     <meta property="og:title" content={title} />
@@ -136,6 +146,7 @@ const {
     <div class="mx-auto pt-0">
       {showHeader && <Header />}
       <slot />
+      <WebMcpTools />
       <script is:inline src="/scripts/smoothScrollWithOffset.js"></script>
     </div>
   </body>

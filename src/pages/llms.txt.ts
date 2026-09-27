@@ -67,6 +67,20 @@ ${getProjects(devSlugs)}
 ## Caso de estudio destacado
 - [Talleres Servi Auto — caso de estudio](https://xeland314.github.io/es/study-cases/taller-servi-auto/): sitio completo para taller mecánico del sur de Quito, primer resultado orgánico en Google, Bing y Brave Search, y 100/100 en SEO PageSpeed.
 
+## Herramientas para agentes de IA (WebMCP, experimental)
+
+Si el navegador del agente soporta WebMCP (document.modelContext, Chrome 149+ origin trial), el sitio registra herramientas read-only:
+
+- \`get_perfil\` — Perfil, idiomas, disponibilidad, email y redes.
+- \`get_servicios\` — Servicios ofrecidos con descripción y URL.
+- \`get_proyectos\` — Proyectos destacados con URL.
+- \`get_caso_exito\` — Caso de estudio verificado con resultados SEO.
+- \`get_contacto\` — Canales de contacto para iniciar un proyecto.
+- \`get_apps\` — Mini apps offline en el navegador con URL.
+- \`get_posts\` — Posts técnicos y artículos de blog con URL.
+
+Catálogo estático de capacidades (ARD): https://xeland314.github.io/.well-known/ai-catalog.json
+
 ## Disponibilidad
 Trabajo remoto desde Ecuador (UTC-5). Acepto proyectos freelance internacionales y colaboraciones puntuales.
 

@@ -1,0 +1,208 @@
+---
+/**
+ * WebMCP (experimental): registra herramientas read-only para agentes de IA
+ * cuando el navegador soporta document.modelContext / navigator.modelContext
+ * (origin trial de Chrome 149+). En navegadores sin soporte el script es un
+ * no-op completo: no afecta a usuarios humanos ni al rendimiento.
+ * Espejo estático del catálogo en /.well-known/ai-catalog.json (ARD).
+ */
+import { db, Projects, Posts, Blogs, eq, and } from "astro:db";
+import { STUDY_CASES } from "./study-cases/study-cases-data";
+import { TOOLS } from "./bentos/tools-data";
+
+const proyectos = await db
+  .select()
+  .from(Projects)
+  .where(and(eq(Projects.lang, "es"), eq(Projects.isFeatured, true)))
+  .limit(8);
+
+const posts = await db
+  .select()
+  .from(Posts)
+  .where(and(eq(Posts.lang, "es"), eq(Posts.isPublished, true)));
+
+const blogs = await db
+  .select()
+  .from(Blogs)
+  .where(and(eq(Blogs.lang, "es"), eq(Blogs.isPublished, true)));
+
+const absoluto = (url: string) =>
+  url.startsWith("http") ? url : `https://xeland314.github.io${url}/`;
+
+const caso =
+  STUDY_CASES.find((c) => c.slug === "taller-servi-auto") ?? STUDY_CASES[0];
+
+const apps = TOOLS.map((t) => ({
+  nombre: t.title.es,
+  descripcion: t.description.es,
+  badge: t.badge.es,
+  url: t.href.startsWith("http")
+    ? t.href
+    : `https://xeland314.github.io${t.href}/`,
+}));
+
+const datos = {
+  perfil: {
+    nombre: "Christopher Villamarín",
+    username: "xeland314",
+    rol: "Desarrollador Backend",
+    ubicacion: "Quito, Ecuador (UTC-5)",
+    idiomas: "Español (nativo), inglés C1, italiano y griego en aprendizaje",
+    disponibilidad: "Proyectos freelance internacionales y colaboraciones puntuales",
+    email: "christopher.villamarin@protonmail.com",
+    web: "https://xeland314.github.io/",
+    redes: {
+      github: "https://github.com/xeland314",
+      linkedin: "https://linkedin.com/in/christopher-villamarin",
+    },
+    resumen:
+      "Desarrollador backend con experiencia en sistemas reales: APIs de producción, datos geoespaciales y herramientas con IA. Construyo sitios web que convierten visitas en clientes y que Google indexa y las IA recomiendan.",
+  },
+  servicios: [
+    {
+      nombre: "Sitios web desde cero",
+      descripcion:
+        "Sitios completos para negocios y profesionales: estructura, contenido, SEO técnico y datos estructurados para buscadores y asistentes de IA.",
+      url: "https://xeland314.github.io/es/services/",
+    },
+    {
+      nombre: "Auditoría y rescate de sitios existentes",
+      descripcion:
+        "Diagnóstico y corrección de SEO técnico, performance y accesibilidad de sitios ya en producción, sin reconstruirlos.",
+      url: "https://xeland314.github.io/es/study-cases/",
+    },
+    {
+      nombre: "Mini apps offline en el navegador",
+      descripcion:
+        "Herramientas 100% client-side (PDF, imágenes, mapas) sin servidor ni suscripciones.",
+      url: "https://xeland314.github.io/mini-apps/",
+    },
+    {
+      nombre: "APIs y backend",
+      descripcion:
+        "APIs de producción con caché inteligente, datos geoespaciales e integraciones (ver API de Geocodificación).",
+      url: "https://xeland314.github.io/es/projects/geocoding-api/",
+    },
+  ],
+  proyectos: proyectos.map((p) => ({
+    titulo: p.title,
+    descripcion: p.shortDescription,
+    url: `https://xeland314.github.io/es/projects/${p.slug.split("/").findLast(Boolean)}/`,
+  })),
+  caso_exito: {
+    cliente: caso.client,
+    sector: "Taller mecánico familiar con más de 25 años, sur de Quito",
+    resultados: [
+      "Primer resultado orgánico en Google, Bing y Brave Search para la búsqueda de marca",
+      "Citado por las respuestas de IA de los tres buscadores con datos correctos del negocio",
+      "100/100 en SEO, accesibilidad y buenas prácticas según PageSpeed Insights",
+    ],
+    url_caso: `https://xeland314.github.io/es/study-cases/${caso.slug}/`,
+    url_sitio: caso.liveUrl,
+  },
+  contacto: {
+    email: "christopher.villamarin@protonmail.com",
+    formulario: "https://xeland314.github.io/#contact",
+    disponibilidad: "Remoto desde Ecuador (UTC-5). Proyectos freelance internacionales y colaboraciones puntuales.",
+    redes: {
+      github: "https://github.com/xeland314",
+      linkedin: "https://linkedin.com/in/christopher-villamarin",
+      instagram: "https://instagram.com/xeland314",
+    },
+  },
+  apps,
+  posts: posts.map((p) => ({ titulo: p.title, url: absoluto(p.url) })),
+  blogs: blogs.map((b) => ({
+    titulo: b.title,
+    descripcion: b.description ?? undefined,
+    url: absoluto(b.url),
+  })),
+};
+---
+
+<script type="application/json" id="webmcp-data" set:html={JSON.stringify(datos)} />
+
+<script>
+  const dataEl = document.getElementById("webmcp-data");
+  const datos = JSON.parse(dataEl?.textContent ?? "{}");
+
+  const mc = (document as any).modelContext ?? (navigator as any).modelContext;
+
+  if (mc?.registerTool) {
+    const inputSchema = { type: "object", properties: {}, required: [] };
+
+    const herramientas = [
+      {
+        name: "get_perfil",
+        title: "Perfil de Christopher Villamarín (xeland314)",
+        description:
+          "Devuelve nombre, rol, ubicación, idiomas, disponibilidad, email y redes del desarrollador. Úsala cuando el usuario pregunte quién es, dónde vive, en qué idiomas trabaja o cómo contactarlo.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => datos.perfil,
+      },
+      {
+        name: "get_servicios",
+        title: "Servicios ofrecidos por xeland314",
+        description:
+          "Devuelve la lista de servicios (sitios web, auditoría SEO, mini apps, APIs) con su descripción y URL. Úsala cuando el usuario pregunte qué puede construir o contratar.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => ({ servicios: datos.servicios }),
+      },
+      {
+        name: "get_proyectos",
+        title: "Proyectos destacados del portafolio",
+        description:
+          "Devuelve los proyectos destacados con título, descripción corta y URL absoluta. Úsala cuando el usuario pida ver trabajos o ejemplos.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => ({ proyectos: datos.proyectos }),
+      },
+      {
+        name: "get_caso_exito",
+        title: "Caso de estudio verificado: Talleres Servi Auto",
+        description:
+          "Devuelve el caso de estudio con resultados SEO verificables (ranking orgánico, citación en respuestas de IA, 100/100 PageSpeed) y URLs. Úsala cuando el usuario pida resultados o pruebas de que el SEO funciona.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => datos.caso_exito,
+      },
+      {
+        name: "get_contacto",
+        title: "Contacto e inicio de proyecto",
+        description:
+          "Devuelve los canales de contacto (email, formulario, redes sociales) y la disponibilidad. Úsala cuando el usuario quiera iniciar contacto, pedir una cotización o contratar un servicio.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => datos.contacto,
+      },
+      {
+        name: "get_apps",
+        title: "Mini apps y herramientas offline",
+        description:
+          "Devuelve las mini apps 100% en el navegador (PDF, imágenes, mapas, dominós) con su descripción y URL. Úsala cuando el usuario pida herramientas, apps o utilidades.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => ({ apps: datos.apps }),
+      },
+      {
+        name: "get_posts",
+        title: "Posts técnicos y artículos de blog",
+        description:
+          "Devuelve los posts técnicos publicados (Linux, redes, formatos binarios, compiladores, IA aplicada) y los artículos de blog, con sus URLs absolutas. Úsala cuando el usuario busque contenido técnico o quieras citar un artículo.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => ({ posts: datos.posts, blogs: datos.blogs }),
+      },
+    ];
+
+    for (const herramienta of herramientas) {
+      try {
+        mc.registerTool(herramienta);
+      } catch {
+        // La política de permisos puede bloquear el registro: ignorar.
+      }
+    }
+  }
+</script>
