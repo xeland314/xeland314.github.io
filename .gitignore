@@ -27,3 +27,5 @@ Analizador-lexico/
 
 # jetbrains setting folder
 .idea/
+# session notes (do not version)
+session-ses_*.md
