@@ -4,14 +4,25 @@ import { TOOLS } from "./tools-data";
 
 const { lang = "es" } = Astro.props;
 
-const texts: Record<string, { heading: string; label: string }> = {
-  es: { heading: "Mini Apps", label: "Apps y herramientas" },
-  en: { heading: "Mini Apps", label: "Apps & tools" },
+const texts: Record<string, { heading: string; label: string; viewMore: string }> = {
+  es: { heading: "Mini Apps", label: "Apps y herramientas", viewMore: "Ver más mini apps" },
+  en: { heading: "Mini Apps", label: "Apps & tools", viewMore: "See more mini apps" },
 };
 
 type LangKey = "es" | "en";
 const langKey = lang as LangKey;
 const T = texts[lang];
+
+// 5 mini apps destacadas + 1 tarjeta de "Ver más" = 6 celdas; el resto en /mini-apps
+const FEATURED_HREFS = [
+  "/code-to-img",
+  "/code-to-video",
+  "/recortar-pdf",
+  "/comprimir-pdf",
+  "/remover-fondo",
+];
+const visibleTools = TOOLS.filter((tool) => FEATURED_HREFS.includes(tool.href)).slice(0, 5);
+const hiddenCount = Math.max(TOOLS.length - visibleTools.length, 0);
 ---
 
 <section
@@ -33,7 +44,7 @@ const T = texts[lang];
     class="grid grid-cols-2 sm:grid-cols-3 gap-3 px-5"
   >
     {
-      TOOLS.map((tool) => (
+      visibleTools.map((tool) => (
         <li>
           <a
             href={tool.href}
@@ -75,6 +86,47 @@ const T = texts[lang];
           </a>
         </li>
       ))
+    }
+    {
+      hiddenCount > 0 && (
+        <li>
+          <a
+            href="/mini-apps"
+            aria-label={T.viewMore}
+            class="group flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <div
+              aria-hidden="true"
+              class="w-12 h-12 rounded-2xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center shadow-sm group-hover:bg-blue-600 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-gray-600 dark:text-gray-400 group-hover:text-white transition-colors"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M12 5v14"></path><path d="M5 12h14"></path>
+              </svg>
+            </div>
+            <div class="text-center">
+              <p class="text-[11px] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                {T.viewMore}
+              </p>
+              <span class="text-[9px] font-mono text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                +{hiddenCount}
+              </span>
+            </div>
+          </a>
+        </li>
+      )
     }
   </ul>
 </section>

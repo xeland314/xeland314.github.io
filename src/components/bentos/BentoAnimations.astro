@@ -12,8 +12,8 @@ const texts: Record<string, { heading: string; label: string; viewMore: string }
 const T = texts[lang];
 const langKey = lang as keyof (typeof ANIMATIONS)[number]["title"];
 
-// Máximo 6 tarjetas en el bento; el resto detrás del enlace "Ver más"
-const MAX_VISIBLE = 6;
+// Máximo 5 animaciones + 1 tarjeta de "Ver más" = 6 celdas
+const MAX_VISIBLE = 5;
 const visibleAnimations = ANIMATIONS.slice(0, MAX_VISIBLE);
 const hiddenCount = Math.max(ANIMATIONS.length - MAX_VISIBLE, 0);
 ---
