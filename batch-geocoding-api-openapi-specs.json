@@ -1,0 +1,3436 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Geoapify Batch Geocoding API",
+    "version": "1.1.1",
+    "description": "OpenAPI specification for Geoapify asynchronous batch geocoding endpoints."
+  },
+  "servers": [
+    {
+      "url": "https://api.geoapify.com/v1",
+      "description": "Default API endpoint."
+    },
+    {
+      "url": "https://api-eu.geoapify.com/v1",
+      "description": "EU-focused endpoint. Geoapify service processing uses EU infrastructure."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Batch Geocoding",
+      "description": "Submit asynchronous geocoding jobs and retrieve normalized geocoding batch results."
+    }
+  ],
+  "paths": {
+    "/batch/geocode/search": {
+      "post": {
+        "tags": [
+          "Batch Geocoding"
+        ],
+        "operationId": "submitBatchGeocodeSearchJob",
+        "summary": "Submit batch geocode search job",
+        "description": "Submit up to 1000 free-text addresses for asynchronous geocoding. One result is requested per input address.",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "description": "Result language as a supported two-letter language code.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ab",
+                "aa",
+                "af",
+                "ak",
+                "sq",
+                "am",
+                "ar",
+                "an",
+                "hy",
+                "as",
+                "av",
+                "ae",
+                "ay",
+                "az",
+                "bm",
+                "ba",
+                "eu",
+                "be",
+                "bn",
+                "bh",
+                "bi",
+                "bs",
+                "br",
+                "bg",
+                "my",
+                "ca",
+                "ch",
+                "ce",
+                "ny",
+                "zh",
+                "cv",
+                "kw",
+                "co",
+                "cr",
+                "hr",
+                "cs",
+                "da",
+                "dv",
+                "nl",
+                "en",
+                "eo",
+                "et",
+                "ee",
+                "fo",
+                "fj",
+                "fi",
+                "fr",
+                "ff",
+                "gl",
+                "ka",
+                "de",
+                "el",
+                "gn",
+                "gu",
+                "ht",
+                "ha",
+                "he",
+                "hz",
+                "hi",
+                "ho",
+                "hu",
+                "ia",
+                "id",
+                "ie",
+                "ga",
+                "ig",
+                "ik",
+                "io",
+                "is",
+                "it",
+                "iu",
+                "ja",
+                "jv",
+                "kl",
+                "kn",
+                "kr",
+                "ks",
+                "kk",
+                "km",
+                "ki",
+                "rw",
+                "ky",
+                "kv",
+                "kg",
+                "ko",
+                "ku",
+                "kj",
+                "la",
+                "lb",
+                "lg",
+                "li",
+                "ln",
+                "lo",
+                "lt",
+                "lu",
+                "lv",
+                "gv",
+                "mk",
+                "mg",
+                "ms",
+                "ml",
+                "mt",
+                "mi",
+                "mr",
+                "mh",
+                "mn",
+                "na",
+                "nv",
+                "nb",
+                "nd",
+                "ne",
+                "ng",
+                "nn",
+                "no",
+                "ii",
+                "nr",
+                "oc",
+                "oj",
+                "cu",
+                "om",
+                "or",
+                "os",
+                "pa",
+                "pi",
+                "fa",
+                "pl",
+                "ps",
+                "pt",
+                "qu",
+                "rm",
+                "rn",
+                "ro",
+                "ru",
+                "sa",
+                "sc",
+                "sd",
+                "se",
+                "sm",
+                "sg",
+                "sr",
+                "gd",
+                "sn",
+                "si",
+                "sk",
+                "sl",
+                "so",
+                "st",
+                "es",
+                "su",
+                "sw",
+                "ss",
+                "sv",
+                "ta",
+                "te",
+                "tg",
+                "th",
+                "ti",
+                "bo",
+                "tk",
+                "tl",
+                "tn",
+                "to",
+                "tr",
+                "ts",
+                "tt",
+                "tw",
+                "ty",
+                "ug",
+                "uk",
+                "ur",
+                "uz",
+                "ve",
+                "vi",
+                "vo",
+                "wa",
+                "cy",
+                "wo",
+                "fy",
+                "xh",
+                "yi",
+                "yo",
+                "za"
+              ]
+            },
+            "example": "en"
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "description": "Latitude for an optional geocoding bias. Must be used together with lon.",
+            "schema": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            }
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "description": "Longitude for an optional geocoding bias. Must be used together with lat.",
+            "schema": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "description": "Optional geocoding filter expression.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bias",
+            "in": "query",
+            "required": false,
+            "description": "Optional geocoding bias expression.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "text",
+            "in": "query",
+            "required": false,
+            "description": "Default text query applied with request-level parameters.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          },
+          {
+            "name": "countrycodes",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated ISO 3166-1 alpha-2 country code filters.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Optional result type filter.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "country",
+                "state",
+                "city",
+                "postcode",
+                "street",
+                "amenity",
+                "locality"
+              ]
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "description": "Optional batch processing priority factor.",
+            "schema": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchGeocodeSearchSubmitRequest"
+              },
+              "example": [
+                "901 South Orange Blossom Trail, Orlando, FL 32805, United States of America",
+                "2015 South Orange Blossom Trail, Orlando, FL 32805, United States of America"
+              ]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Normalized geocoding results when the batch completes immediately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchGeocodeSearchResults"
+                },
+                "example": [
+                  {
+                    "query": {
+                      "text": "901 South Orange Blossom Trail, Orlando, FL 32805, United States of America",
+                      "parsed": {
+                        "housenumber": "901",
+                        "street": "south orange blossom trail",
+                        "postcode": "32805",
+                        "city": "orlando",
+                        "state": "fl",
+                        "country": "united states of america",
+                        "expected_type": "building"
+                      }
+                    },
+                    "datasource": {
+                      "sourcename": "openstreetmap",
+                      "attribution": "© OpenStreetMap contributors",
+                      "license": "Open Database License",
+                      "url": "https://www.openstreetmap.org/copyright"
+                    },
+                    "country": "United States",
+                    "country_code": "us",
+                    "state": "Florida",
+                    "county": "Orange County",
+                    "city": "Orlando",
+                    "postcode": "32805",
+                    "district": "Holden Heights",
+                    "street": "South Orange Blossom Trail",
+                    "housenumber": "901",
+                    "iso3166_2": "US-FL",
+                    "lon": -81.397028,
+                    "lat": 28.530995,
+                    "state_code": "FL",
+                    "result_type": "building",
+                    "formatted": "901 South Orange Blossom Trail, Orlando, FL 32805, United States of America",
+                    "address_line1": "901 South Orange Blossom Trail",
+                    "address_line2": "Orlando, FL 32805, United States of America",
+                    "timezone": {
+                      "name": "America/New_York",
+                      "offset_STD": "-05:00",
+                      "offset_DST": "-04:00",
+                      "offset_STD_seconds": -18000,
+                      "offset_DST_seconds": -14400,
+                      "abbreviation_STD": "EST",
+                      "abbreviation_DST": "EDT"
+                    },
+                    "plus_code": "76WWGJJ3+95",
+                    "plus_code_short": "GJJ3+95 Orlando, Orange County, United States",
+                    "rank": {
+                      "importance": 0.00000999999999995449,
+                      "popularity": 5.606294596549741,
+                      "confidence": 1,
+                      "confidence_city_level": 1,
+                      "confidence_street_level": 1,
+                      "confidence_building_level": 1,
+                      "match_type": "full_match"
+                    },
+                    "place_id": "512ae620e8685954c059eb56cf49ef873c40f00102f901e893d00400000000c00203"
+                  },
+                  {
+                    "query": {
+                      "text": "2015 South Orange Blossom Trail, Orlando, FL 32805, United States of America",
+                      "parsed": {
+                        "housenumber": "2015",
+                        "street": "south orange blossom trail",
+                        "postcode": "32805",
+                        "city": "orlando",
+                        "state": "fl",
+                        "country": "united states of america",
+                        "expected_type": "building"
+                      }
+                    },
+                    "datasource": {
+                      "sourcename": "openstreetmap",
+                      "attribution": "© OpenStreetMap contributors",
+                      "license": "Open Database License",
+                      "url": "https://www.openstreetmap.org/copyright"
+                    },
+                    "country": "United States",
+                    "country_code": "us",
+                    "state": "Florida",
+                    "county": "Orange County",
+                    "city": "Holden Heights",
+                    "postcode": "32805",
+                    "street": "South Orange Blossom Trail",
+                    "housenumber": "2015",
+                    "iso3166_2": "US-FL",
+                    "lon": -81.39697428571428,
+                    "lat": 28.520718857142857,
+                    "state_code": "FL",
+                    "result_type": "building",
+                    "formatted": "2015 South Orange Blossom Trail, Holden Heights, FL 32805, United States of America",
+                    "address_line1": "2015 South Orange Blossom Trail",
+                    "address_line2": "Holden Heights, FL 32805, United States of America",
+                    "timezone": {
+                      "name": "America/New_York",
+                      "offset_STD": "-05:00",
+                      "offset_DST": "-04:00",
+                      "offset_STD_seconds": -18000,
+                      "offset_DST_seconds": -14400,
+                      "abbreviation_STD": "EST",
+                      "abbreviation_DST": "EDT"
+                    },
+                    "plus_code": "76WWGJC3+76",
+                    "plus_code_short": "GJC3+76 Holden Heights, Orange County, United States",
+                    "rank": {
+                      "importance": 0.00000999999999995449,
+                      "popularity": 5.211829114901075,
+                      "confidence": 0.893277226671825,
+                      "confidence_city_level": 1,
+                      "confidence_street_level": 1,
+                      "confidence_building_level": 1,
+                      "match_type": "full_match"
+                    },
+                    "place_id": "51bb9fd506685954c059cdd6bdd44d853c40f00102f9017b3c7a4f00000000c00203"
+                  }
+                ]
+              }
+            }
+          },
+          "202": {
+            "description": "The batch geocoding job was accepted and is still processing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPendingResponse"
+                },
+                "example": {
+                  "id": "e426d306e1194a05a61561825b99a922",
+                  "status": "pending",
+                  "url": "https://api.geoapify.com/v1/batch/geocode/search?id=e426d306e1194a05a61561825b99a922&apiKey=YOUR_API_KEY"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch geocoding request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 400,
+                  "error": "Bad Request",
+                  "message": "\"body\" must contain at least 1 items"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Geoapify API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 401,
+                  "error": "Unauthorized",
+                  "message": "Invalid apiKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch job was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchNotFoundError"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "error": "Not Found"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit or quota exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 429,
+                  "error": "Too Many Requests",
+                  "message": "Quota exceeded"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal gateway error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 500,
+                  "error": "Internal Server Error",
+                  "message": "Request failed, please try again later"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Batch Geocoding"
+        ],
+        "operationId": "getBatchGeocodeSearchJob",
+        "summary": "Get batch geocode search result",
+        "description": "Retrieve batch geocode search status or normalized results.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Batch job identifier returned by the submit endpoint.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            },
+            "example": "e426d306e1194a05a61561825b99a922"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "Batch geocode result format.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Normalized geocoding results for the completed job.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchGeocodeSearchResults"
+                },
+                "example": [
+                  {
+                    "query": {
+                      "text": "901 South Orange Blossom Trail, Orlando, FL 32805, United States of America",
+                      "parsed": {
+                        "housenumber": "901",
+                        "street": "south orange blossom trail",
+                        "postcode": "32805",
+                        "city": "orlando",
+                        "state": "fl",
+                        "country": "united states of america",
+                        "expected_type": "building"
+                      }
+                    },
+                    "datasource": {
+                      "sourcename": "openstreetmap",
+                      "attribution": "© OpenStreetMap contributors",
+                      "license": "Open Database License",
+                      "url": "https://www.openstreetmap.org/copyright"
+                    },
+                    "country": "United States",
+                    "country_code": "us",
+                    "state": "Florida",
+                    "county": "Orange County",
+                    "city": "Orlando",
+                    "postcode": "32805",
+                    "district": "Holden Heights",
+                    "street": "South Orange Blossom Trail",
+                    "housenumber": "901",
+                    "iso3166_2": "US-FL",
+                    "lon": -81.397028,
+                    "lat": 28.530995,
+                    "state_code": "FL",
+                    "result_type": "building",
+                    "formatted": "901 South Orange Blossom Trail, Orlando, FL 32805, United States of America",
+                    "address_line1": "901 South Orange Blossom Trail",
+                    "address_line2": "Orlando, FL 32805, United States of America",
+                    "timezone": {
+                      "name": "America/New_York",
+                      "offset_STD": "-05:00",
+                      "offset_DST": "-04:00",
+                      "offset_STD_seconds": -18000,
+                      "offset_DST_seconds": -14400,
+                      "abbreviation_STD": "EST",
+                      "abbreviation_DST": "EDT"
+                    },
+                    "plus_code": "76WWGJJ3+95",
+                    "plus_code_short": "GJJ3+95 Orlando, Orange County, United States",
+                    "rank": {
+                      "importance": 0.00000999999999995449,
+                      "popularity": 5.606294596549741,
+                      "confidence": 1,
+                      "confidence_city_level": 1,
+                      "confidence_street_level": 1,
+                      "confidence_building_level": 1,
+                      "match_type": "full_match"
+                    },
+                    "place_id": "512ae620e8685954c059eb56cf49ef873c40f00102f901e893d00400000000c00203"
+                  },
+                  {
+                    "query": {
+                      "text": "2015 South Orange Blossom Trail, Orlando, FL 32805, United States of America",
+                      "parsed": {
+                        "housenumber": "2015",
+                        "street": "south orange blossom trail",
+                        "postcode": "32805",
+                        "city": "orlando",
+                        "state": "fl",
+                        "country": "united states of america",
+                        "expected_type": "building"
+                      }
+                    },
+                    "datasource": {
+                      "sourcename": "openstreetmap",
+                      "attribution": "© OpenStreetMap contributors",
+                      "license": "Open Database License",
+                      "url": "https://www.openstreetmap.org/copyright"
+                    },
+                    "country": "United States",
+                    "country_code": "us",
+                    "state": "Florida",
+                    "county": "Orange County",
+                    "city": "Holden Heights",
+                    "postcode": "32805",
+                    "street": "South Orange Blossom Trail",
+                    "housenumber": "2015",
+                    "iso3166_2": "US-FL",
+                    "lon": -81.39697428571428,
+                    "lat": 28.520718857142857,
+                    "state_code": "FL",
+                    "result_type": "building",
+                    "formatted": "2015 South Orange Blossom Trail, Holden Heights, FL 32805, United States of America",
+                    "address_line1": "2015 South Orange Blossom Trail",
+                    "address_line2": "Holden Heights, FL 32805, United States of America",
+                    "timezone": {
+                      "name": "America/New_York",
+                      "offset_STD": "-05:00",
+                      "offset_DST": "-04:00",
+                      "offset_STD_seconds": -18000,
+                      "offset_DST_seconds": -14400,
+                      "abbreviation_STD": "EST",
+                      "abbreviation_DST": "EDT"
+                    },
+                    "plus_code": "76WWGJC3+76",
+                    "plus_code_short": "GJC3+76 Holden Heights, Orange County, United States",
+                    "rank": {
+                      "importance": 0.00000999999999995449,
+                      "popularity": 5.211829114901075,
+                      "confidence": 0.893277226671825,
+                      "confidence_city_level": 1,
+                      "confidence_street_level": 1,
+                      "confidence_building_level": 1,
+                      "match_type": "full_match"
+                    },
+                    "place_id": "51bb9fd506685954c059cdd6bdd44d853c40f00102f9017b3c7a4f00000000c00203"
+                  }
+                ]
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The batch geocoding job was accepted and is still processing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPendingResponse"
+                },
+                "example": {
+                  "id": "e426d306e1194a05a61561825b99a922",
+                  "status": "pending",
+                  "url": "https://api.geoapify.com/v1/batch/geocode/search?id=e426d306e1194a05a61561825b99a922&apiKey=YOUR_API_KEY"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch geocoding request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 400,
+                  "error": "Bad Request",
+                  "message": "\"id\" is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Geoapify API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 401,
+                  "error": "Unauthorized",
+                  "message": "Invalid apiKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch job was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchNotFoundError"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "error": "Not Found"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit or quota exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 429,
+                  "error": "Too Many Requests",
+                  "message": "Quota exceeded"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal gateway error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 500,
+                  "error": "Internal Server Error",
+                  "message": "Request failed, please try again later"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/batch/geocode/reverse": {
+      "post": {
+        "tags": [
+          "Batch Geocoding"
+        ],
+        "operationId": "submitBatchReverseGeocodeJob",
+        "summary": "Submit batch reverse geocode job",
+        "description": "Submits up to 1000 coordinates for asynchronous reverse geocoding.\n\n- Use `[lon, lat]` arrays or `{ \"lon\": ..., \"lat\": ... }` objects.\n- Coordinates in arrays are longitude first, then latitude.\n- One result is requested for each input coordinate.\n\nReturns `202` while processing or `200` when the batch completes immediately.",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "description": "Result language as a supported two-letter language code.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ab",
+                "aa",
+                "af",
+                "ak",
+                "sq",
+                "am",
+                "ar",
+                "an",
+                "hy",
+                "as",
+                "av",
+                "ae",
+                "ay",
+                "az",
+                "bm",
+                "ba",
+                "eu",
+                "be",
+                "bn",
+                "bh",
+                "bi",
+                "bs",
+                "br",
+                "bg",
+                "my",
+                "ca",
+                "ch",
+                "ce",
+                "ny",
+                "zh",
+                "cv",
+                "kw",
+                "co",
+                "cr",
+                "hr",
+                "cs",
+                "da",
+                "dv",
+                "nl",
+                "en",
+                "eo",
+                "et",
+                "ee",
+                "fo",
+                "fj",
+                "fi",
+                "fr",
+                "ff",
+                "gl",
+                "ka",
+                "de",
+                "el",
+                "gn",
+                "gu",
+                "ht",
+                "ha",
+                "he",
+                "hz",
+                "hi",
+                "ho",
+                "hu",
+                "ia",
+                "id",
+                "ie",
+                "ga",
+                "ig",
+                "ik",
+                "io",
+                "is",
+                "it",
+                "iu",
+                "ja",
+                "jv",
+                "kl",
+                "kn",
+                "kr",
+                "ks",
+                "kk",
+                "km",
+                "ki",
+                "rw",
+                "ky",
+                "kv",
+                "kg",
+                "ko",
+                "ku",
+                "kj",
+                "la",
+                "lb",
+                "lg",
+                "li",
+                "ln",
+                "lo",
+                "lt",
+                "lu",
+                "lv",
+                "gv",
+                "mk",
+                "mg",
+                "ms",
+                "ml",
+                "mt",
+                "mi",
+                "mr",
+                "mh",
+                "mn",
+                "na",
+                "nv",
+                "nb",
+                "nd",
+                "ne",
+                "ng",
+                "nn",
+                "no",
+                "ii",
+                "nr",
+                "oc",
+                "oj",
+                "cu",
+                "om",
+                "or",
+                "os",
+                "pa",
+                "pi",
+                "fa",
+                "pl",
+                "ps",
+                "pt",
+                "qu",
+                "rm",
+                "rn",
+                "ro",
+                "ru",
+                "sa",
+                "sc",
+                "sd",
+                "se",
+                "sm",
+                "sg",
+                "sr",
+                "gd",
+                "sn",
+                "si",
+                "sk",
+                "sl",
+                "so",
+                "st",
+                "es",
+                "su",
+                "sw",
+                "ss",
+                "sv",
+                "ta",
+                "te",
+                "tg",
+                "th",
+                "ti",
+                "bo",
+                "tk",
+                "tl",
+                "tn",
+                "to",
+                "tr",
+                "ts",
+                "tt",
+                "tw",
+                "ty",
+                "ug",
+                "uk",
+                "ur",
+                "uz",
+                "ve",
+                "vi",
+                "vo",
+                "wa",
+                "cy",
+                "wo",
+                "fy",
+                "xh",
+                "yi",
+                "yo",
+                "za"
+              ]
+            },
+            "example": "en"
+          },
+          {
+            "name": "countrycodes",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated ISO 3166-1 alpha-2 country code filters.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Optional reverse geocoding result type filter.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "country",
+                "state",
+                "city",
+                "postcode",
+                "street",
+                "amenity",
+                "locality",
+                "building"
+              ]
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "description": "Optional batch processing priority factor.",
+            "schema": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchReverseGeocodeSubmitRequest"
+              },
+              "example": [
+                [
+                  13.405,
+                  52.52
+                ],
+                {
+                  "lon": 2.3522,
+                  "lat": 48.8566
+                }
+              ]
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Normalized reverse geocoding results when the batch completes immediately.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchReverseGeocodeResults"
+                },
+                "example": [
+                  {
+                    "query": {
+                      "lon": 13.405,
+                      "lat": 52.52,
+                      "plus_code": "9F4MGCC4+22"
+                    },
+                    "datasource": {
+                      "sourcename": "openstreetmap",
+                      "attribution": "© OpenStreetMap contributors",
+                      "license": "Open Database License",
+                      "url": "https://www.openstreetmap.org/copyright"
+                    },
+                    "name": "Nordsee",
+                    "country": "Germany",
+                    "country_code": "de",
+                    "city": "Berlin",
+                    "postcode": "10178",
+                    "district": "Mitte",
+                    "neighbourhood": "Nikolaiviertel",
+                    "suburb": "Mitte",
+                    "street": "Spandauer Straße",
+                    "housenumber": "4",
+                    "iso3166_2": "DE-BE",
+                    "lon": 13.4049136,
+                    "lat": 52.5204075,
+                    "state": "Berlin",
+                    "state_code": "BE",
+                    "distance": 45.687533670627,
+                    "result_type": "amenity",
+                    "formatted": "Nordsee, Spandauer Straße 4, 10178 Berlin, Germany",
+                    "address_line1": "Nordsee",
+                    "address_line2": "Spandauer Straße 4, 10178 Berlin, Germany",
+                    "category": "catering.fast_food",
+                    "timezone": {
+                      "name": "Europe/Berlin",
+                      "offset_STD": "+01:00",
+                      "offset_DST": "+02:00",
+                      "offset_STD_seconds": 3600,
+                      "offset_DST_seconds": 7200,
+                      "abbreviation_STD": "CET",
+                      "abbreviation_DST": "CEST"
+                    },
+                    "plus_code": "9F4MGCC3+5X",
+                    "plus_code_short": "C3+5X Berlin, Germany",
+                    "rank": {
+                      "importance": 0.000088754863813184,
+                      "popularity": 8.9954671045531
+                    },
+                    "place_id": "514869dbd550cf2a4059eb8b84b69c424a40f00103f901726b151a00000000c002019203074e6f7264736565e203226f70656e7374726565746d61703a76656e75653a6e6f64652f343337363131333738"
+                  },
+                  {
+                    "query": {
+                      "lon": 2.3522,
+                      "lat": 48.8566,
+                      "plus_code": "8FW4V942+JV"
+                    },
+                    "country_code": "fr",
+                    "housenumber": "8",
+                    "street": "Place De L' Hotel De Ville - Esplanade De La Libération",
+                    "country": "France",
+                    "datasource": {
+                      "sourcename": "openaddresses",
+                      "attribution": "© OpenAddresses contributors",
+                      "license": "BSD-3-Clause License"
+                    },
+                    "postcode": "75004",
+                    "state": "Ile-of-France",
+                    "state_code": "IF",
+                    "district": "Paris",
+                    "city": "Paris",
+                    "suburb": "Saint-Merri",
+                    "county": "Paris",
+                    "county_code": "VP",
+                    "iso3166_2": "FR-IDF",
+                    "state_COG": "11",
+                    "lon": 2.352092,
+                    "lat": 48.856737,
+                    "distance": 17.1609162762387,
+                    "result_type": "building",
+                    "department_COG": "75",
+                    "NUTS_3": "FR101",
+                    "formatted": "8 Place De L' Hotel De Ville - Esplanade De La Libération, 75004 Paris, France",
+                    "address_line1": "8 Place De L' Hotel De Ville - Esplanade De La Libération",
+                    "address_line2": "75004 Paris, France",
+                    "timezone": {
+                      "name": "Europe/Paris",
+                      "offset_STD": "+01:00",
+                      "offset_DST": "+02:00",
+                      "offset_STD_seconds": 3600,
+                      "offset_DST_seconds": 7200,
+                      "abbreviation_STD": "CET",
+                      "abbreviation_DST": "CEST"
+                    },
+                    "plus_code": "8FW4V942+MR",
+                    "plus_code_short": "42+MR Paris, France",
+                    "iso3166_2_sublevel": "FR-75",
+                    "rank": {
+                      "popularity": 9.9954671045531
+                    },
+                    "place_id": "514277499c15d1024059f722da8ea96d4840c00203e203466f70656e6164647265737365733a616464726573733a66722f37352f7374617465776964652d6164647265737365732d73746174653a66303133366538383033343735393839"
+                  }
+                ]
+              }
+            }
+          },
+          "202": {
+            "description": "The batch reverse geocoding job was accepted and is still processing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPendingResponse"
+                },
+                "example": {
+                  "id": "e426d306e1194a05a61561825b99a922",
+                  "status": "pending",
+                  "url": "https://api.geoapify.com/v1/batch/geocode/reverse?id=e426d306e1194a05a61561825b99a922&apiKey=YOUR_API_KEY"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch geocoding request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 400,
+                  "error": "Bad Request",
+                  "message": "\"body\" must contain at least 1 items"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Geoapify API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 401,
+                  "error": "Unauthorized",
+                  "message": "Invalid apiKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch job was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchNotFoundError"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "error": "Not Found"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit or quota exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 429,
+                  "error": "Too Many Requests",
+                  "message": "Quota exceeded"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal gateway error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 500,
+                  "error": "Internal Server Error",
+                  "message": "Request failed, please try again later"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Batch Geocoding"
+        ],
+        "operationId": "getBatchReverseGeocodeJob",
+        "summary": "Get batch reverse geocode result",
+        "description": "Retrieves the status or normalized results of a reverse geocoding batch.\n\n- Provide the `id` returned when the batch was submitted.\n- Use `format=json` for structured results or `format=csv` for a downloadable table.\n\nReturns `202` while processing or `200` when results are ready.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Batch job identifier returned by the submit endpoint.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            },
+            "example": "e426d306e1194a05a61561825b99a922"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "Batch geocode result format.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ],
+              "default": "json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Normalized reverse geocoding results for the completed job.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchReverseGeocodeResults"
+                },
+                "example": [
+                  {
+                    "query": {
+                      "lon": 13.405,
+                      "lat": 52.52,
+                      "plus_code": "9F4MGCC4+22"
+                    },
+                    "datasource": {
+                      "sourcename": "openstreetmap",
+                      "attribution": "© OpenStreetMap contributors",
+                      "license": "Open Database License",
+                      "url": "https://www.openstreetmap.org/copyright"
+                    },
+                    "name": "Nordsee",
+                    "country": "Germany",
+                    "country_code": "de",
+                    "city": "Berlin",
+                    "postcode": "10178",
+                    "district": "Mitte",
+                    "neighbourhood": "Nikolaiviertel",
+                    "suburb": "Mitte",
+                    "street": "Spandauer Straße",
+                    "housenumber": "4",
+                    "iso3166_2": "DE-BE",
+                    "lon": 13.4049136,
+                    "lat": 52.5204075,
+                    "state": "Berlin",
+                    "state_code": "BE",
+                    "distance": 45.687533670627,
+                    "result_type": "amenity",
+                    "formatted": "Nordsee, Spandauer Straße 4, 10178 Berlin, Germany",
+                    "address_line1": "Nordsee",
+                    "address_line2": "Spandauer Straße 4, 10178 Berlin, Germany",
+                    "category": "catering.fast_food",
+                    "timezone": {
+                      "name": "Europe/Berlin",
+                      "offset_STD": "+01:00",
+                      "offset_DST": "+02:00",
+                      "offset_STD_seconds": 3600,
+                      "offset_DST_seconds": 7200,
+                      "abbreviation_STD": "CET",
+                      "abbreviation_DST": "CEST"
+                    },
+                    "plus_code": "9F4MGCC3+5X",
+                    "plus_code_short": "C3+5X Berlin, Germany",
+                    "rank": {
+                      "importance": 0.000088754863813184,
+                      "popularity": 8.9954671045531
+                    },
+                    "place_id": "514869dbd550cf2a4059eb8b84b69c424a40f00103f901726b151a00000000c002019203074e6f7264736565e203226f70656e7374726565746d61703a76656e75653a6e6f64652f343337363131333738"
+                  },
+                  {
+                    "query": {
+                      "lon": 2.3522,
+                      "lat": 48.8566,
+                      "plus_code": "8FW4V942+JV"
+                    },
+                    "country_code": "fr",
+                    "housenumber": "8",
+                    "street": "Place De L' Hotel De Ville - Esplanade De La Libération",
+                    "country": "France",
+                    "datasource": {
+                      "sourcename": "openaddresses",
+                      "attribution": "© OpenAddresses contributors",
+                      "license": "BSD-3-Clause License"
+                    },
+                    "postcode": "75004",
+                    "state": "Ile-of-France",
+                    "state_code": "IF",
+                    "district": "Paris",
+                    "city": "Paris",
+                    "suburb": "Saint-Merri",
+                    "county": "Paris",
+                    "county_code": "VP",
+                    "iso3166_2": "FR-IDF",
+                    "state_COG": "11",
+                    "lon": 2.352092,
+                    "lat": 48.856737,
+                    "distance": 17.1609162762387,
+                    "result_type": "building",
+                    "department_COG": "75",
+                    "NUTS_3": "FR101",
+                    "formatted": "8 Place De L' Hotel De Ville - Esplanade De La Libération, 75004 Paris, France",
+                    "address_line1": "8 Place De L' Hotel De Ville - Esplanade De La Libération",
+                    "address_line2": "75004 Paris, France",
+                    "timezone": {
+                      "name": "Europe/Paris",
+                      "offset_STD": "+01:00",
+                      "offset_DST": "+02:00",
+                      "offset_STD_seconds": 3600,
+                      "offset_DST_seconds": 7200,
+                      "abbreviation_STD": "CET",
+                      "abbreviation_DST": "CEST"
+                    },
+                    "plus_code": "8FW4V942+MR",
+                    "plus_code_short": "42+MR Paris, France",
+                    "iso3166_2_sublevel": "FR-75",
+                    "rank": {
+                      "popularity": 9.9954671045531
+                    },
+                    "place_id": "514277499c15d1024059f722da8ea96d4840c00203e203466f70656e6164647265737365733a616464726573733a66722f37352f7374617465776964652d6164647265737365732d73746174653a66303133366538383033343735393839"
+                  }
+                ]
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The batch reverse geocoding job was accepted and is still processing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPendingResponse"
+                },
+                "example": {
+                  "id": "e426d306e1194a05a61561825b99a922",
+                  "status": "pending",
+                  "url": "https://api.geoapify.com/v1/batch/geocode/reverse?id=e426d306e1194a05a61561825b99a922&apiKey=YOUR_API_KEY"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch geocoding request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 400,
+                  "error": "Bad Request",
+                  "message": "\"id\" is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Geoapify API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 401,
+                  "error": "Unauthorized",
+                  "message": "Invalid apiKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Batch job was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchNotFoundError"
+                },
+                "example": {
+                  "statusCode": 404,
+                  "error": "Not Found"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit or quota exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 429,
+                  "error": "Too Many Requests",
+                  "message": "Quota exceeded"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal gateway error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayError"
+                },
+                "example": {
+                  "statusCode": 500,
+                  "error": "Internal Server Error",
+                  "message": "Request failed, please try again later"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BatchGeocodeSearchSubmitRequest": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 1000,
+        "items": {
+          "type": "string",
+          "description": "Free-text address or place query."
+        }
+      },
+      "BatchReverseGeocodeSubmitRequest": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 1000,
+        "items": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/LonLatArray"
+            },
+            {
+              "$ref": "#/components/schemas/LonLatObject"
+            }
+          ]
+        }
+      },
+      "LonLatArray": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "prefixItems": [
+          {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180,
+            "description": "Longitude."
+          },
+          {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90,
+            "description": "Latitude."
+          }
+        ],
+        "items": false
+      },
+      "LonLatObject": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lon",
+          "lat"
+        ],
+        "properties": {
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          }
+        }
+      },
+      "GeocodingFeatureCollection": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "type",
+          "features"
+        ],
+        "properties": {
+          "type": {
+            "const": "FeatureCollection"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeocodingFeature"
+            }
+          }
+        }
+      },
+      "GeocodingFeature": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "type",
+          "properties",
+          "geometry"
+        ],
+        "properties": {
+          "type": {
+            "const": "Feature"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/GeocodingGeocodingProperties"
+          },
+          "geometry": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GeocodingPointGeometry"
+              },
+              {
+                "$ref": "#/components/schemas/GeocodingGenericGeometry"
+              },
+              {
+                "$ref": "#/components/schemas/GeocodingGeometryCollection"
+              }
+            ]
+          },
+          "bbox": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 6,
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "GeocodingPointGeometry": {
+        "type": "object",
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "properties": {
+          "type": {
+            "const": "Point"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/GeocodingPosition"
+          }
+        }
+      },
+      "GeocodingGenericGeometry": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "LineString",
+              "Polygon",
+              "MultiPoint",
+              "MultiLineString",
+              "MultiPolygon"
+            ]
+          },
+          "coordinates": {
+            "type": "array"
+          }
+        }
+      },
+      "GeocodingGeometryCollection": {
+        "type": "object",
+        "required": [
+          "type",
+          "geometries"
+        ],
+        "properties": {
+          "type": {
+            "const": "GeometryCollection"
+          },
+          "geometries": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GeocodingPointGeometry"
+                },
+                {
+                  "$ref": "#/components/schemas/GeocodingGenericGeometry"
+                },
+                {
+                  "$ref": "#/components/schemas/GeocodingGeometryCollection"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "GeocodingPosition": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 3,
+        "prefixItems": [
+          {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "items": false
+      },
+      "GeocodingTimezoneOutput": {
+        "type": "object",
+        "required": [
+          "name",
+          "offset_STD",
+          "offset_DST",
+          "offset_STD_seconds",
+          "offset_DST_seconds"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "name_alt": {
+            "type": "string"
+          },
+          "country_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offset_STD": {
+            "type": "string"
+          },
+          "offset_DST": {
+            "type": "string"
+          },
+          "offset_STD_seconds": {
+            "type": "number"
+          },
+          "offset_DST_seconds": {
+            "type": "number"
+          },
+          "abbreviation_STD": {
+            "type": "string"
+          },
+          "abbreviation_DST": {
+            "type": "string"
+          }
+        }
+      },
+      "GeocodingPublicDatasource": {
+        "type": "object",
+        "properties": {
+          "sourcename": {
+            "type": "string"
+          },
+          "attribution": {
+            "type": "string"
+          },
+          "license": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "GeocodingPlacesDatasource": {
+        "type": "object",
+        "required": [
+          "raw"
+        ],
+        "properties": {
+          "sourcename": {
+            "type": "string"
+          },
+          "attribution": {
+            "type": "string"
+          },
+          "license": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "raw": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "GeocodingGeocodingRank": {
+        "type": "object",
+        "properties": {
+          "confidence": {
+            "type": "number"
+          },
+          "confidence_city_level": {
+            "type": "number"
+          },
+          "confidence_street_level": {
+            "type": "number"
+          },
+          "confidence_building_level": {
+            "type": "number"
+          },
+          "match_type": {
+            "type": "string",
+            "enum": [
+              "full_match",
+              "inner_part",
+              "match_by_building",
+              "match_by_street",
+              "match_by_postcode",
+              "match_by_city_or_disrict",
+              "match_by_country_or_state"
+            ]
+          },
+          "importance": {
+            "type": "number"
+          },
+          "popularity": {
+            "type": "number"
+          }
+        }
+      },
+      "GeocodingWikiPopulation": {
+        "type": "object",
+        "required": [
+          "actual",
+          "by_years"
+        ],
+        "properties": {
+          "actual": {
+            "type": "string"
+          },
+          "by_years": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "GeocodingParsedAddress": {
+        "type": "object",
+        "properties": {
+          "po_box": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "house": {
+            "type": "string"
+          },
+          "housenumber": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "suburb": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "county": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "expected_type": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "amenity_name",
+              "amenity",
+              "building",
+              "street",
+              "postcode",
+              "suburb",
+              "district",
+              "city",
+              "county",
+              "state",
+              "country"
+            ]
+          }
+        }
+      },
+      "GeocodingTextGeocoderQuery": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "plus_code": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "housenumber": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "parsed": {
+            "$ref": "#/components/schemas/GeocodingParsedAddress"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "keys",
+                "label"
+              ],
+              "properties": {
+                "keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "GeocodingReverseGeocoderQuery": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "plus_code": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        }
+      },
+      "GeocodingGeocodingProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "continent": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "state_code": {
+            "type": "string"
+          },
+          "state_COG": {
+            "type": "string"
+          },
+          "department_COG": {
+            "type": "string"
+          },
+          "state_district": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "arrondissement": {
+            "type": "string"
+          },
+          "county": {
+            "type": "string"
+          },
+          "county_code": {
+            "type": "string"
+          },
+          "county_district": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "city_district": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          },
+          "openGeoDB:postal_codes": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "suburb": {
+            "type": "string"
+          },
+          "municipality": {
+            "type": "string"
+          },
+          "commune": {
+            "type": "string"
+          },
+          "subdistrict": {
+            "type": "string"
+          },
+          "city_block": {
+            "type": "string"
+          },
+          "neighbourhood": {
+            "type": "string"
+          },
+          "quarter": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "subdivision": {
+            "type": "string"
+          },
+          "croft": {
+            "type": "string"
+          },
+          "allotments": {
+            "type": "string"
+          },
+          "residental": {
+            "type": "string"
+          },
+          "farm": {
+            "type": "string"
+          },
+          "farmyard": {
+            "type": "string"
+          },
+          "industrial": {
+            "type": "string"
+          },
+          "commercial": {
+            "type": "string"
+          },
+          "retail": {
+            "type": "string"
+          },
+          "borough": {
+            "type": "string"
+          },
+          "town": {
+            "type": "string"
+          },
+          "township": {
+            "type": "string"
+          },
+          "village": {
+            "type": "string"
+          },
+          "hamlet": {
+            "type": "string"
+          },
+          "locality": {
+            "type": "string"
+          },
+          "isolated_dwelling": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "road": {
+            "type": "string"
+          },
+          "footway": {
+            "type": "string"
+          },
+          "pedestrian": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "housenumber": {
+            "type": "string"
+          },
+          "house_number": {
+            "type": "string"
+          },
+          "house_name": {
+            "type": "string"
+          },
+          "old_name": {
+            "type": "string"
+          },
+          "other": {
+            "type": "string"
+          },
+          "formatted": {
+            "type": "string"
+          },
+          "address_line1": {
+            "type": "string"
+          },
+          "address_line2": {
+            "type": "string"
+          },
+          "unlocode": {
+            "type": "string"
+          },
+          "iso3166_2": {
+            "type": "string"
+          },
+          "iso3166_2_sublevel": {
+            "type": "string"
+          },
+          "iso3166_sublevel": {
+            "type": "string"
+          },
+          "plus_code": {
+            "type": "string"
+          },
+          "plus_code_short": {
+            "type": "string"
+          },
+          "postcodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "other_names": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "population": {
+            "type": "number"
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "parent_as_place_id": {
+            "type": "boolean"
+          },
+          "timezone": {
+            "$ref": "#/components/schemas/GeocodingTimezoneOutput"
+          },
+          "NUTS_3": {
+            "type": "string"
+          },
+          "result_type": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "amenity_name",
+              "amenity",
+              "building",
+              "street",
+              "postcode",
+              "suburb",
+              "district",
+              "city",
+              "county",
+              "state",
+              "country"
+            ]
+          },
+          "distance": {
+            "type": "number"
+          },
+          "datasource": {
+            "$ref": "#/components/schemas/GeocodingPublicDatasource"
+          },
+          "rank": {
+            "$ref": "#/components/schemas/GeocodingGeocodingRank"
+          },
+          "category": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "place_id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048
+          },
+          "bbox": {
+            "type": "object",
+            "required": [
+              "lon1",
+              "lat1",
+              "lon2",
+              "lat2"
+            ],
+            "properties": {
+              "lon1": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "lat1": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lon2": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "lat2": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              }
+            }
+          }
+        }
+      },
+      "GeocodingTextGeocodingFeatureCollection": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GeocodingFeatureCollection"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "query": {
+                "$ref": "#/components/schemas/GeocodingTextGeocoderQuery"
+              }
+            }
+          }
+        ]
+      },
+      "GeocodingReverseGeocodingFeatureCollection": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GeocodingFeatureCollection"
+          },
+          {
+            "type": "object",
+            "required": [
+              "query"
+            ],
+            "properties": {
+              "query": {
+                "$ref": "#/components/schemas/GeocodingReverseGeocoderQuery"
+              }
+            }
+          }
+        ]
+      },
+      "GeocodingGeocodingJsonResponse": {
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeocodingGeocodingProperties"
+            }
+          },
+          "query": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeocodingTextGeocoderQuery"
+              },
+              {
+                "$ref": "#/components/schemas/GeocodingReverseGeocoderQuery"
+              }
+            ]
+          }
+        }
+      },
+      "GeocodingForwardGeocodingXmlResponse": {
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "xml": {
+          "name": "root"
+        },
+        "properties": {
+          "results": {
+            "type": "array",
+            "xml": {
+              "name": "results",
+              "wrapped": false
+            },
+            "items": {
+              "$ref": "#/components/schemas/GeocodingGeocodingProperties",
+              "xml": {
+                "name": "results"
+              }
+            }
+          },
+          "query": {
+            "$ref": "#/components/schemas/GeocodingTextGeocoderQuery",
+            "xml": {
+              "name": "query"
+            }
+          }
+        }
+      },
+      "GeocodingReverseGeocodingXmlResponse": {
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "xml": {
+          "name": "root"
+        },
+        "properties": {
+          "results": {
+            "type": "array",
+            "xml": {
+              "name": "results",
+              "wrapped": false
+            },
+            "items": {
+              "$ref": "#/components/schemas/GeocodingGeocodingProperties",
+              "xml": {
+                "name": "results"
+              }
+            }
+          },
+          "query": {
+            "$ref": "#/components/schemas/GeocodingReverseGeocoderQuery",
+            "xml": {
+              "name": "query"
+            }
+          }
+        }
+      },
+      "GeocodingAddressAutocompleteXmlResponse": {
+        "type": "object",
+        "required": [
+          "results"
+        ],
+        "xml": {
+          "name": "root"
+        },
+        "properties": {
+          "results": {
+            "type": "array",
+            "xml": {
+              "name": "results",
+              "wrapped": false
+            },
+            "items": {
+              "$ref": "#/components/schemas/GeocodingGeocodingProperties",
+              "xml": {
+                "name": "results"
+              }
+            }
+          },
+          "query": {
+            "$ref": "#/components/schemas/GeocodingTextGeocoderQuery",
+            "xml": {
+              "name": "query"
+            }
+          }
+        }
+      },
+      "GeocodingGatewayError": {
+        "type": "object",
+        "required": [
+          "statusCode",
+          "error",
+          "message"
+        ],
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code returned by the gateway."
+          },
+          "error": {
+            "type": "string",
+            "description": "Standard HTTP error name."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable explanation of the error."
+          }
+        }
+      },
+      "BatchPendingResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "description": "Batch job identifier."
+          },
+          "status": {
+            "const": "pending",
+            "description": "The batch job has been accepted and is still processing."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL for polling the batch job. Query-authenticated submissions include the API key in this URL for backward compatibility. Header-authenticated clients receive a keyless URL and must authenticate polling requests with x-api-key; the polling endpoint accepts both documented authentication methods."
+          }
+        }
+      },
+      "BatchResultItem": {
+        "type": "object",
+        "required": [
+          "result"
+        ],
+        "properties": {
+          "id": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Optional caller-supplied input identifier."
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Parameters used for this input."
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Request body used for this input."
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeocodingTextGeocodingFeatureCollection"
+              },
+              {
+                "$ref": "#/components/schemas/GeocodingReverseGeocodingFeatureCollection"
+              },
+              {
+                "$ref": "#/components/schemas/GeocodingGeocodingJsonResponse"
+              },
+              {
+                "$ref": "#/components/schemas/BatchItemError"
+              }
+            ]
+          }
+        }
+      },
+      "BatchCompletedResponse": {
+        "type": "object",
+        "required": [
+          "api",
+          "id",
+          "results"
+        ],
+        "properties": {
+          "api": {
+            "type": "string"
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Request-level parameters applied to the batch."
+          },
+          "body": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Request-level body applied to the batch."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchResultItem"
+            }
+          }
+        }
+      },
+      "BatchItemError": {
+        "type": "object",
+        "required": [
+          "statusCode",
+          "error",
+          "message"
+        ],
+        "properties": {
+          "statusCode": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "BatchGeocodeSearchQuery": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "plus_code": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "housenumber": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "parsed": {
+            "$ref": "#/components/schemas/GeocodingParsedAddress"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "keys",
+                "label"
+              ],
+              "properties": {
+                "keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "text"
+        ]
+      },
+      "BatchReverseGeocodeQuery": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "plus_code": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ]
+      },
+      "BatchGeocodeSearchResult": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "continent": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "state_code": {
+            "type": "string"
+          },
+          "state_COG": {
+            "type": "string"
+          },
+          "department_COG": {
+            "type": "string"
+          },
+          "state_district": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "arrondissement": {
+            "type": "string"
+          },
+          "county": {
+            "type": "string"
+          },
+          "county_code": {
+            "type": "string"
+          },
+          "county_district": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "city_district": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          },
+          "openGeoDB:postal_codes": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "suburb": {
+            "type": "string"
+          },
+          "municipality": {
+            "type": "string"
+          },
+          "commune": {
+            "type": "string"
+          },
+          "subdistrict": {
+            "type": "string"
+          },
+          "city_block": {
+            "type": "string"
+          },
+          "neighbourhood": {
+            "type": "string"
+          },
+          "quarter": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "subdivision": {
+            "type": "string"
+          },
+          "croft": {
+            "type": "string"
+          },
+          "allotments": {
+            "type": "string"
+          },
+          "residental": {
+            "type": "string"
+          },
+          "farm": {
+            "type": "string"
+          },
+          "farmyard": {
+            "type": "string"
+          },
+          "industrial": {
+            "type": "string"
+          },
+          "commercial": {
+            "type": "string"
+          },
+          "retail": {
+            "type": "string"
+          },
+          "borough": {
+            "type": "string"
+          },
+          "town": {
+            "type": "string"
+          },
+          "township": {
+            "type": "string"
+          },
+          "village": {
+            "type": "string"
+          },
+          "hamlet": {
+            "type": "string"
+          },
+          "locality": {
+            "type": "string"
+          },
+          "isolated_dwelling": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "road": {
+            "type": "string"
+          },
+          "footway": {
+            "type": "string"
+          },
+          "pedestrian": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "housenumber": {
+            "type": "string"
+          },
+          "house_number": {
+            "type": "string"
+          },
+          "house_name": {
+            "type": "string"
+          },
+          "old_name": {
+            "type": "string"
+          },
+          "other": {
+            "type": "string"
+          },
+          "formatted": {
+            "type": "string"
+          },
+          "address_line1": {
+            "type": "string"
+          },
+          "address_line2": {
+            "type": "string"
+          },
+          "unlocode": {
+            "type": "string"
+          },
+          "iso3166_2": {
+            "type": "string"
+          },
+          "iso3166_2_sublevel": {
+            "type": "string"
+          },
+          "iso3166_sublevel": {
+            "type": "string"
+          },
+          "plus_code": {
+            "type": "string"
+          },
+          "plus_code_short": {
+            "type": "string"
+          },
+          "postcodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "other_names": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "population": {
+            "type": "number"
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "parent_as_place_id": {
+            "type": "boolean"
+          },
+          "timezone": {
+            "$ref": "#/components/schemas/GeocodingTimezoneOutput"
+          },
+          "NUTS_3": {
+            "type": "string"
+          },
+          "result_type": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "amenity_name",
+              "amenity",
+              "building",
+              "street",
+              "postcode",
+              "suburb",
+              "district",
+              "city",
+              "county",
+              "state",
+              "country"
+            ]
+          },
+          "distance": {
+            "type": "number"
+          },
+          "datasource": {
+            "$ref": "#/components/schemas/GeocodingPublicDatasource"
+          },
+          "rank": {
+            "$ref": "#/components/schemas/GeocodingGeocodingRank"
+          },
+          "category": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "place_id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048
+          },
+          "bbox": {
+            "type": "object",
+            "required": [
+              "lon1",
+              "lat1",
+              "lon2",
+              "lat2"
+            ],
+            "properties": {
+              "lon1": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "lat1": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lon2": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "lat2": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              }
+            }
+          },
+          "query": {
+            "$ref": "#/components/schemas/BatchGeocodeSearchQuery"
+          }
+        }
+      },
+      "BatchReverseGeocodeResult": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "continent": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "state_code": {
+            "type": "string"
+          },
+          "state_COG": {
+            "type": "string"
+          },
+          "department_COG": {
+            "type": "string"
+          },
+          "state_district": {
+            "type": "string"
+          },
+          "province": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "arrondissement": {
+            "type": "string"
+          },
+          "county": {
+            "type": "string"
+          },
+          "county_code": {
+            "type": "string"
+          },
+          "county_district": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "city_district": {
+            "type": "string"
+          },
+          "postcode": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          },
+          "openGeoDB:postal_codes": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "suburb": {
+            "type": "string"
+          },
+          "municipality": {
+            "type": "string"
+          },
+          "commune": {
+            "type": "string"
+          },
+          "subdistrict": {
+            "type": "string"
+          },
+          "city_block": {
+            "type": "string"
+          },
+          "neighbourhood": {
+            "type": "string"
+          },
+          "quarter": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "sector": {
+            "type": "string"
+          },
+          "subdivision": {
+            "type": "string"
+          },
+          "croft": {
+            "type": "string"
+          },
+          "allotments": {
+            "type": "string"
+          },
+          "residental": {
+            "type": "string"
+          },
+          "farm": {
+            "type": "string"
+          },
+          "farmyard": {
+            "type": "string"
+          },
+          "industrial": {
+            "type": "string"
+          },
+          "commercial": {
+            "type": "string"
+          },
+          "retail": {
+            "type": "string"
+          },
+          "borough": {
+            "type": "string"
+          },
+          "town": {
+            "type": "string"
+          },
+          "township": {
+            "type": "string"
+          },
+          "village": {
+            "type": "string"
+          },
+          "hamlet": {
+            "type": "string"
+          },
+          "locality": {
+            "type": "string"
+          },
+          "isolated_dwelling": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "road": {
+            "type": "string"
+          },
+          "footway": {
+            "type": "string"
+          },
+          "pedestrian": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "housenumber": {
+            "type": "string"
+          },
+          "house_number": {
+            "type": "string"
+          },
+          "house_name": {
+            "type": "string"
+          },
+          "old_name": {
+            "type": "string"
+          },
+          "other": {
+            "type": "string"
+          },
+          "formatted": {
+            "type": "string"
+          },
+          "address_line1": {
+            "type": "string"
+          },
+          "address_line2": {
+            "type": "string"
+          },
+          "unlocode": {
+            "type": "string"
+          },
+          "iso3166_2": {
+            "type": "string"
+          },
+          "iso3166_2_sublevel": {
+            "type": "string"
+          },
+          "iso3166_sublevel": {
+            "type": "string"
+          },
+          "plus_code": {
+            "type": "string"
+          },
+          "plus_code_short": {
+            "type": "string"
+          },
+          "postcodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "other_names": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "population": {
+            "type": "number"
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "parent_as_place_id": {
+            "type": "boolean"
+          },
+          "timezone": {
+            "$ref": "#/components/schemas/GeocodingTimezoneOutput"
+          },
+          "NUTS_3": {
+            "type": "string"
+          },
+          "result_type": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "amenity_name",
+              "amenity",
+              "building",
+              "street",
+              "postcode",
+              "suburb",
+              "district",
+              "city",
+              "county",
+              "state",
+              "country"
+            ]
+          },
+          "distance": {
+            "type": "number"
+          },
+          "datasource": {
+            "$ref": "#/components/schemas/GeocodingPublicDatasource"
+          },
+          "rank": {
+            "$ref": "#/components/schemas/GeocodingGeocodingRank"
+          },
+          "category": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "place_id": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048
+          },
+          "bbox": {
+            "type": "object",
+            "required": [
+              "lon1",
+              "lat1",
+              "lon2",
+              "lat2"
+            ],
+            "properties": {
+              "lon1": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "lat1": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lon2": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "lat2": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              }
+            }
+          },
+          "query": {
+            "$ref": "#/components/schemas/BatchReverseGeocodeQuery"
+          }
+        }
+      },
+      "BatchGeocodeSearchResults": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/BatchGeocodeSearchResult"
+        }
+      },
+      "BatchReverseGeocodeResults": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/BatchReverseGeocodeResult"
+        }
+      },
+      "GatewayError": {
+        "type": "object",
+        "required": [
+          "statusCode",
+          "error",
+          "message"
+        ],
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code returned by the gateway."
+          },
+          "error": {
+            "type": "string",
+            "description": "Standard HTTP error name."
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable explanation of the error."
+          }
+        }
+      },
+      "BatchNotFoundError": {
+        "type": "object",
+        "required": [
+          "statusCode",
+          "error"
+        ],
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "const": 404
+          },
+          "error": {
+            "type": "string",
+            "const": "Not Found"
+          },
+          "message": {
+            "type": "string",
+            "description": "Optional explanation returned by the batch service."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyInQuery": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "apiKey",
+        "description": "Geoapify API key query parameter. Recommended authentication method for public APIs. API keys in URLs can be logged; use x-api-key for server-to-server clients."
+      },
+      "ApiKeyInHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Geoapify API key header. Supported as an alternative authentication method for public APIs."
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyInQuery": []
+    },
+    {
+      "ApiKeyInHeader": []
+    }
+  ]
+}
