@@ -71,13 +71,13 @@ const isActive = (link: NavLink) => {
 
 <header
   id="main-header"
-  class="my-header sticky top-0 z-50 h-auto w-full bg-gray-900 text-white backdrop-blur-sm supports-backdrop-filter:bg-background/60"
+  class="my-header sticky top-0 z-50 h-auto w-full bg-[#f1a449] text-[#483025]"
   data-menu-open="false"
 >
   <nav class="flex justify-between items-center relative p-3">
     <a
       href={homeLink}
-      class="flex items-center text-lg font-bold hover:text-blue-500 transition-colors"
+      class="flex items-center text-lg font-bold hover:text-[#c66624] transition-colors"
     >
       <img
         src="/assets/images/logo_v3-64.webp"
@@ -91,7 +91,7 @@ const isActive = (link: NavLink) => {
       xeland314
     </a>
 
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-1 [&_select]:bg-transparent [&_select]:text-[#483025] [&_select]:font-bold [&_button]:text-[#483025] [&_button:hover]:text-[#c66624]">
       <LanguageSwitcher client:idle />
 
       <ThemedToggleIconButton client:idle />
@@ -102,7 +102,7 @@ const isActive = (link: NavLink) => {
         aria-expanded="false"
         aria-controls="site-menu"
         aria-label={t.menu}
-        class="p-2 rounded-lg text-white focus:outline-none transition duration-300 ease-in-out hover:text-blue-500 hover:bg-gray-800"
+        class="p-2 rounded-lg text-[#483025] focus:outline-none transition duration-300 ease-in-out hover:text-[#c66624] hover:bg-[#483025]/10"
       >
         <svg
           id="icon-open"
@@ -143,7 +143,7 @@ const isActive = (link: NavLink) => {
 
     <div
       id="site-menu"
-      class="absolute top-full inset-x-0 bg-gray-900 border-b border-gray-800 shadow-xl overflow-hidden transition-all duration-200 ease-out"
+      class="absolute top-full inset-x-0 bg-[#f9e6c6] border-b border-[#483025]/20 shadow-xl overflow-hidden transition-all duration-200 ease-out"
     >
       <ul
         class="grid grid-cols-2 sm:grid-cols-3 gap-1 p-4 max-w-3xl mx-auto list-none"
@@ -157,8 +157,8 @@ const isActive = (link: NavLink) => {
                 aria-current={isActive(link) ? "page" : undefined}
                 class={`block px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
                   isActive(link)
-                    ? "text-blue-400 bg-gray-800/60"
-                    : "text-gray-200 hover:bg-gray-800 hover:text-blue-400"
+                    ? "text-[#b45309] bg-[#483025]/10"
+                    : "text-[#483025] hover:bg-[#483025]/10 hover:text-[#b45309]"
                 }`}
               >
                 {link.label}
