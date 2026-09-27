@@ -145,8 +145,16 @@ const siteDescription =
                       muted
                       autoplay
                       playsinline
+                      preload="metadata"
                       class="w-full h-full object-cover"
-                    />
+                    >
+                      <track
+                        kind="captions"
+                        label="Descripción de la animación"
+                        srcLang="es"
+                        src={`/videos/${v.id}.vtt`}
+                      />
+                    </video>
                   </div>
                   <p class="mt-6 text-sm text-gray-500 dark:text-gray-400 italic">
                     * Animación generada exportando frames en formato PPM y

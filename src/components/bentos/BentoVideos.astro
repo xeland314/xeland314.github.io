@@ -66,9 +66,17 @@ const T = texts[lang];
           loop
           muted
           playsinline
+          preload="metadata"
           aria-label={`${T.videoLabel}: ${randomVideo.title}`}
           class="w-full h-full object-cover opacity-80 group-hover/video:opacity-100 transition-opacity"
-        ></video>
+        >
+          <track
+            kind="captions"
+            label="Descripción de la animación"
+            srcLang="es"
+            src={`/videos/${randomVideo.src.split("/").pop()?.replace(".mp4", "")}.vtt`}
+          />
+        </video>
         <figcaption
           class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover/video:opacity-100 transition-opacity flex items-end p-1"
         >
@@ -92,6 +100,10 @@ const T = texts[lang];
     const randomIndex = Math.floor(Math.random() * videos.length);
     const selected = videos[randomIndex];
     videoElement.src = selected.src;
+    const track = videoElement.querySelector("track");
+    if (track) {
+      track.src = `/videos/${selected.src.split("/").pop().replace(".mp4", "")}.vtt`;
+    }
     videoElement.setAttribute(
       "aria-label",
       titleElement.closest("section")?.lang === "en"

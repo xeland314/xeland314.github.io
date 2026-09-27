@@ -1,6 +1,7 @@
-// src/pages/llms.txt.ts
 import type { APIRoute } from 'astro';
 import { db, Projects } from "astro:db";
+
+const SITE = "https://xeland314.github.io";
 
 export const GET: APIRoute = async () => {
   const allProjects = await db.select().from(Projects);
@@ -28,21 +29,31 @@ export const GET: APIRoute = async () => {
       })
       .map(p => {
         const cleanSlug = p.slug.split('/').findLast(Boolean);
-        return `- ${p.title}: /es/projects/${cleanSlug} (${p.shortDescription})`;
+        return `- [${p.title}](https://xeland314.github.io/es/projects/${cleanSlug}/): ${p.shortDescription}`;
       })
       .join('\n');
 
   const content = `
 # xeland314 — Christopher Villamarín
 
+Portafolio oficial de Christopher Villamarín (xeland314), desarrollador backend en Quito, Ecuador. Este documento resume el sitio para agentes de IA y LLMs. Todas las URLs son absolutas.
+
 ## Sobre mí
 Desarrollador backend con experiencia en sistemas reales: APIs de producción, datos geoespaciales y herramientas con IA.
 Uso la herramienta adecuada para cada problema.
 Si tienes un proyecto técnico que resolver, escríbeme por cualquier red social como xeland314 o a christopher.villamarin@protonmail.com
 
+## Páginas clave
+- [Inicio](https://xeland314.github.io/): presentación, proyectos destacados y caso de estudio.
+- [Proyectos](https://xeland314.github.io/es/projects/): catálogo completo con fichas técnicas.
+- [Posts técnicos](https://xeland314.github.io/es/posts/): más de 40 artículos sobre Linux, redes, formatos y compiladores.
+- [Casos de estudio](https://xeland314.github.io/es/study-cases/): resultados verificables con clientes reales.
+- [Servicios](https://xeland314.github.io/es/services/): qué construyo para negocios y desarrolladores.
+- [Herramientas](https://xeland314.github.io/mini-apps/): mini apps 100% offline en el navegador.
+
 ## Identidad Digital
 - **Username:** xeland314 (Usado en todas las redes sociales)
-- **GitHub:** https://github.com/xeland314
+- **GitHub:** [github.com/xeland314](https://github.com/xeland314)
 
 ## Idiomas
 Español (nativo), inglés C1/profesional, italiano y griego moderno (en aprendizaje).
@@ -52,6 +63,9 @@ ${getProjects(businessSlugs)}
 
 ## Proyectos — Para desarrolladores
 ${getProjects(devSlugs)}
+
+## Caso de estudio destacado
+- [Talleres Servi Auto — caso de estudio](https://xeland314.github.io/es/study-cases/taller-servi-auto/): sitio completo para taller mecánico del sur de Quito, primer resultado orgánico en Google, Bing y Brave Search, y 100/100 en SEO PageSpeed.
 
 ## Disponibilidad
 Trabajo remoto desde Ecuador (UTC-5). Acepto proyectos freelance internacionales y colaboraciones puntuales.
@@ -65,6 +79,6 @@ Capaz de leer documentación técnica en inglés o español, identificar problem
 
   return new Response(content, {
     status: 200,
-    headers: { "Content-Type": "text/plain; charset=utf-8" }
+    headers: { "Content-Type": "text/markdown; charset=utf-8" }
   });
 };

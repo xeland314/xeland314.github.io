@@ -100,7 +100,7 @@ const getCertAriaDescription = (cert: (typeof certificates)[0]) => {
                       {cert.title}
                     </p>
 
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3">
+                    <p class="text-[11px] text-gray-600 dark:text-gray-400 mb-3">
                       {cert.issuer}
                     </p>
 
@@ -161,7 +161,7 @@ const getCertAriaDescription = (cert: (typeof certificates)[0]) => {
         <p
           role="status"
           aria-live="polite"
-          class="text-[11px] text-gray-400 dark:text-gray-500 italic"
+          class="text-[11px] text-gray-500 dark:text-gray-400 italic"
         >
           {lang === "es" ? "Sin certificados aún" : "No certificates yet"}
         </p>

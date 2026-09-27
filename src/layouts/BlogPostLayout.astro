@@ -35,6 +35,16 @@ const googleFontUrl = extraFonts
 >
   {googleFontUrl && <link rel="stylesheet" href={googleFontUrl} slot="head" />}
 
+  <style is:global>
+    @font-face {
+      font-display: swap;
+      font-family: "Fira Code";
+      font-style: normal;
+      font-weight: 400;
+      src: url("/fonts/FiraCode-Regular-latin.woff2") format("woff2");
+    }
+  </style>
+
   <div class="fixed bottom-4 left-4 z-50 flex flex-col gap-2 print-hidden">
     <button
       id="btn-aspect-1-1"

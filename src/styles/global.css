@@ -104,12 +104,13 @@ html {
   border-color: #4a5568 !important; /* border-gray-600 */
 }
 
+/* Inter variable (subset latin, woff2 ~90KB vs 447KB ttf) */
 @font-face {
     font-display: swap;
     font-family: "Inter";
     font-style: normal;
     font-weight: 100 900;
-    src: url("/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+    src: url("/fonts/Inter-VariableFont-latin.woff2") format("woff2-variations");
 }
 
 @font-face {
@@ -117,7 +118,7 @@ html {
     font-family: "Inter";
     font-style: italic;
     font-weight: 100 900;
-    src: url("/fonts/Inter-Italic-VariableFont_opsz,wght.ttf") format("truetype");
+    src: url("/fonts/Inter-Italic-VariableFont-latin.woff2") format("woff2-variations");
 }
 
 @theme {
