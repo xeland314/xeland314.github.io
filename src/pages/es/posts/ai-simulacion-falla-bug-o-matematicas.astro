@@ -1,0 +1,150 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Cuando una simulación falla";
+const description = "Radiografía: bug vs error numérico vs inestabilidad vs singularidad matemática — taxonomía para developers que tocan CFD.";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-6 md:p-10 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50 flex gap-2">
+      <span class="glass-tag px-2 py-1 rounded text-rose-400 text-[10px] font-bold tracking-widest">SERIE: NAVIER-STOKES × IA · 4/6</span>
+    </div>
+
+    <RadiographyHeader
+      categoryText="CFD para Devs"
+      categoryColorClass="text-rose-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="¿Bug o Matemáticas?"
+      titleHighlightColorClass="text-amber-400"
+      subtitle="Taxonomía de fallos en simulación de fluidos"
+    />
+
+    <!-- Taxonomy 4 columns -->
+    <div class="grid grid-cols-4 gap-3 mb-4">
+      <div class="bg-slate-900 rounded-2xl p-4 border border-white/10 flex flex-col">
+        <div class="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center text-lg mb-2">🔢</div>
+        <p class="text-sky-400 font-black text-xs uppercase">1. Error Numérico</p>
+        <p class="text-slate-500 text-[10px] font-mono">float32 / dt grande</p>
+        <div class="mt-3 space-y-2 text-[11px] leading-snug">
+          <p class="text-slate-300"><span class="text-white font-bold">Síntoma:</span> NaN gradual, difusión extra.</p>
+          <p class="text-slate-300"><span class="text-white font-bold">Causa:</span> truncamiento, redondeo IEEE 754, CFL &gt; 1.</p>
+          <p class="text-slate-400"><span class="text-white font-bold">Fix:</span> dt ↓, double, mesh más fino.</p>
+        </div>
+        <div class="mt-auto pt-3">
+          <div class="bg-sky-500/10 border border-sky-500/20 rounded-lg px-2 py-1 text-[10px] font-mono text-sky-300">CFL = u·dt/dx &lt; 1</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 rounded-2xl p-4 border border-white/10 flex flex-col">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-lg mb-2">🐛</div>
+        <p class="text-amber-400 font-black text-xs uppercase">2. Bug de Software</p>
+        <p class="text-slate-500 text-[10px] font-mono">off-by-one / BC mal</p>
+        <div class="mt-3 space-y-2 text-[11px] leading-snug">
+          <p class="text-slate-300"><span class="text-white font-bold">Síntoma:</span> explosión instantánea, reproducible solo en un branch.</p>
+          <p class="text-slate-300"><span class="text-white font-bold">Causa:</span> condición de borde mal impuesta, índice fuera de rango.</p>
+          <p class="text-slate-400"><span class="text-white font-bold">Fix:</span> test unitario, diff vs referencia.</p>
+        </div>
+        <div class="mt-auto pt-3">
+          <div class="bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1 text-[10px] font-mono text-amber-300">assert(bc == noSlip)</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 rounded-2xl p-4 border border-amber-500/20 flex flex-col">
+        <div class="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-lg mb-2">🌊</div>
+        <p class="text-orange-400 font-black text-xs uppercase">3. Inestabilidad Física</p>
+        <p class="text-slate-500 text-[10px] font-mono">Re alto, vórtice real</p>
+        <div class="mt-3 space-y-2 text-[11px] leading-snug">
+          <p class="text-slate-300"><span class="text-white font-bold">Síntoma:</span> oscilaciones que crecen aunque dt sea pequeño.</p>
+          <p class="text-slate-300"><span class="text-white font-bold">Causa:</span> turbulencia, Kelvin-Helmholtz — el fluido real también lo hace.</p>
+          <p class="text-slate-400"><span class="text-white font-bold">Fix:</span> modelo LES/RANS, viscosidad artificial.</p>
+        </div>
+        <div class="mt-auto pt-3">
+          <div class="bg-orange-500/10 border border-orange-500/20 rounded-lg px-2 py-1 text-[10px] font-mono text-orange-300">Re = UL/ν ≫ 1</div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-rose-950/40 to-red-950/30 rounded-2xl p-4 border border-rose-500/30 flex flex-col">
+        <div class="w-10 h-10 rounded-xl bg-rose-600 flex items-center justify-center text-lg mb-2">💥</div>
+        <p class="text-rose-400 font-black text-xs uppercase">4. Singularidad</p>
+        <p class="text-slate-500 text-[10px] font-mono">blow-up finito</p>
+        <div class="mt-3 space-y-2 text-[11px] leading-snug">
+          <p class="text-slate-200"><span class="text-white font-bold">Síntoma:</span> ||w|| → ∞ en T* &lt; ∞ aunque todo el código sea perfecto.</p>
+          <p class="text-slate-200"><span class="text-white font-bold">Causa:</span> la PDE misma deja de tener solución suave.</p>
+          <p class="text-slate-300"><span class="text-white font-bold">Fix:</span> no hay — es matemática pura. Se demuestra.</p>
+        </div>
+        <div class="mt-auto pt-3">
+          <div class="bg-rose-500/20 border border-rose-500/30 rounded-lg px-2 py-1 text-[10px] font-mono text-rose-300">||u||_H1 → ∞</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flow + why hard -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="feature-card rounded-2xl p-5">
+        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Flujo de diagnóstico — ¿dónde mirar primero?</h3>
+        <div class="flex items-center gap-2 text-[11px] font-mono">
+          <span class="bg-sky-500 text-white px-2 py-1 rounded-lg font-bold">NaN?</span>
+          <span class="text-slate-500">→ dt/mesh</span>
+          <span class="text-slate-600">→</span>
+          <span class="bg-amber-500 text-white px-2 py-1 rounded-lg font-bold">¿Solo tu rama?</span>
+          <span class="text-slate-500">→ git bisect</span>
+          <span class="text-slate-600">→</span>
+          <span class="bg-orange-500 text-white px-2 py-1 rounded-lg font-bold">¿Re alto?</span>
+          <span class="text-slate-500">→ LES</span>
+          <span class="text-slate-600">→</span>
+          <span class="bg-rose-600 text-white px-2 py-1 rounded-lg font-bold">¿Persiste en límite ν→0, mesh→∞?</span>
+        </div>
+        <p class="text-slate-500 text-[11px] mt-3 italic text-center">Solo si sobrevive a los 3 filtros, empieza a sospechar de blow-up matemático.</p>
+        <div class="mt-4 bg-black rounded-xl p-3 border border-white/10 font-mono text-[10px] leading-relaxed">
+          <p class="text-slate-500"># test de convergencia</p>
+          <p>for mesh in [64,128,256,512]:</p>
+          <p class="pl-2">err = simulate(mesh).max_vorticity</p>
+          <p class="pl-2 text-slate-400">if err → ∞ con mesh: <span class="text-rose-400">posible singularidad</span></p>
+          <p class="pl-2 text-slate-400">else: <span class="text-sky-400">error numérico</span></p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div class="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4">
+          <h4 class="text-rose-400 font-black text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span> Por qué es tan difícil distinguir
+          </h4>
+          <p class="text-slate-200 text-xs leading-snug">Una <span class="text-white font-bold">explosión numérica</span> y una <span class="text-white font-bold">singularidad real</span> se ven idénticas en pantalla: el vórtice se hace infinito. La diferencia solo aparece al <span class="text-rose-300 font-bold">refinar el mesh y reducir dt</span> — si converge, era numérico; si diverge, puede ser teorema.</p>
+        </div>
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-sky-500">
+          <h4 class="text-sky-400 font-bold text-xs uppercase tracking-widest mb-1">Tip para devs que tocan CFD</h4>
+          <p class="text-slate-200 text-xs leading-snug">Nunca reportes “descubrí blow-up” sin mostrar curva de convergencia mesh→0. Es el <span class="text-white font-bold">unit test</span> de la matemática de fluidos.</p>
+        </div>
+      </div>
+    </div>
+
+    <RadiographyLegend
+      items={[
+        { bgColor: "bg-sky-500", shadowRgba: "rgba(14,165,233,0.5)", textColor: "text-sky-400", title: "Numérico", description: "Se arregla con<br>dt y precisión" },
+        { bgColor: "bg-amber-500", shadowRgba: "rgba(245,158,11,0.5)", textColor: "text-amber-400", title: "Bug", description: "Se arregla con<br>git + tests" },
+        { bgColor: "bg-rose-500", shadowRgba: "rgba(244,63,94,0.5)", textColor: "text-rose-400", title: "Singularidad", description: "No se arregla<br>se demuestra" },
+      ]}
+      gap="gap-4 md:gap-12"
+      minWidth="min-w-[180px]"
+    />
+
+    <PostFooterBar
+      middleHtml='<span class="text-sky-400 font-black italic">REFINA</span> mesh • <span class="text-amber-400 font-black italic">BISECTA</span> bug • <span class="text-rose-400 font-black italic">DEMUESTRA</span> blow-up.'
+    />
+  </div>
+
+  <style>
+    .feature-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .glass-tag { background: rgba(14,165,233,0.06); border: 1px solid rgba(14,165,233,0.18); }
+  </style>
+</BlogPostLayout>

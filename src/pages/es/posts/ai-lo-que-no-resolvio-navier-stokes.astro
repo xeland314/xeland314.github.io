@@ -1,0 +1,152 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Lo que OpenAI NO resolvió";
+const description = "Radiografía anti-hype: qué caso de Navier-Stokes demostró OpenAI, qué queda abierto y cómo leer el titular sin que te vendan humo.";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-6 md:p-10 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50 flex gap-2">
+      <span class="glass-tag px-2 py-1 rounded text-rose-400 text-[10px] font-bold tracking-widest">SERIE: NAVIER-STOKES × IA · 5/6 · PRIORIDAD · ANTI-HYPE</span>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Lectura Crítica"
+      categoryColorClass="text-rose-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Lo que NO resolvió"
+      titleHighlightColorClass="text-amber-400"
+      subtitle="Antes de decir 'resolvieron Navier–Stokes', lee esto"
+    />
+
+    <!-- Claim vs Reality -->
+    <div class="feature-card rounded-3xl p-5 mb-4 border border-rose-500/20">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest">Titular vs Paper</h3>
+        <span class="text-[10px] font-mono bg-rose-500/20 text-rose-300 px-2 py-1 rounded">fact-check</span>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-4">
+          <p class="text-rose-400 font-black text-xs uppercase mb-2">❌ Lo que dice el titular</p>
+          <p class="text-white font-bold text-sm leading-snug">“IA resuelve uno de los 7 problemas del milenio”</p>
+          <p class="text-slate-400 text-xs mt-2 italic">Implica: Clay Prize otorgado, existencia y suavidad global resuelta.</p>
+          <div class="mt-3 bg-black/40 rounded-lg p-2 text-[11px]">
+            <p class="text-rose-300 font-mono">status: CLAIM_INFLADO</p>
+            <p class="text-slate-500">premio = $1M ??</p>
+          </div>
+        </div>
+        <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4">
+          <p class="text-emerald-400 font-black text-xs uppercase mb-2">✓ Lo que dice el paper + Lean</p>
+          <p class="text-white font-bold text-sm leading-snug">Construcción de <span class="text-emerald-300">blow-up en tiempo finito</span> para un caso forzado/axi-simétrico (o con dato inicial específico).</p>
+          <p class="text-slate-300 text-xs mt-2">No es global-regularidad para todo dato suave en ℝ³ o 𝕋³. Es un contraejemplo condicional.</p>
+          <div class="mt-3 bg-black/40 rounded-lg p-2 text-[11px] font-mono">
+            <p class="text-emerald-300">status: THEOREM_PROVED ✓</p>
+            <p class="text-slate-400">scope: ∃ dato → blow-up</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Qué exige Clay vs qué se hizo -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="feature-card rounded-2xl p-5">
+        <h3 class="text-amber-400 font-black text-xs uppercase tracking-widest mb-3">Lo que exige el Millennium (Clay)</h3>
+        <div class="space-y-2 text-xs">
+          <div class="flex gap-3 p-3 rounded-xl bg-slate-900 border border-white/10">
+            <span class="text-lg">📜</span>
+            <div>
+              <p class="text-white font-bold">Opción A: Probar que ∀ dato suave → ∃ solución suave global ∀ t ≥ 0</p>
+              <p class="text-slate-500 text-[11px]">O bien</p>
+              <p class="text-white font-bold">Opción B: Dar contraejemplo ∃ dato suave → blow-up finito</p>
+              <p class="text-slate-400 text-[11px] mt-1">En <span class="text-white font-bold">ℝ³ sin forzar</span> (o 𝕋³ periódico) con viscosidad ν &gt; 0 fija y energía finita.</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-slate-900 rounded-xl p-3 border border-white/5">
+              <p class="text-sky-400 font-bold text-xs">Dominio</p>
+              <p class="text-slate-300 text-[11px]">ℝ³ o 𝕋³ — sin trucos de frontera</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-3 border border-white/5">
+              <p class="text-sky-400 font-bold text-xs">Dato inicial</p>
+              <p class="text-slate-300 text-[11px]">C∞ divergencia cero, decaimiento rápido</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-3 border border-white/5">
+              <p class="text-sky-400 font-bold text-xs">Fuerza</p>
+              <p class="text-slate-300 text-[11px]">f = 0 (no forzar para provocar blow-up)</p>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-3 border border-white/5">
+              <p class="text-sky-400 font-bold text-xs">Conclusión</p>
+              <p class="text-slate-300 text-[11px]">Global-regularidad o blow-up universal</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div class="bg-slate-900 rounded-2xl p-4 border border-emerald-500/20">
+          <h4 class="text-emerald-400 font-black text-xs uppercase tracking-widest mb-2">✓ Lo que sí aportó OpenAI</h4>
+          <ul class="text-slate-200 text-xs leading-relaxed space-y-1">
+            <li>→ <span class="text-white font-bold">Técnica nueva:</span> construcción explícita con estimación de energía que el swarm refinó por torneo.</li>
+            <li>→ <span class="text-white font-bold">Formalización Lean:</span> prueba verificada por kernel, no solo “parece correcta”.</li>
+            <li>→ <span class="text-white font-bold">Método reusable:</span> pipeline agente → Lean es transferible a otros PDEs.</li>
+          </ul>
+        </div>
+        <div class="bg-rose-950/30 rounded-2xl p-4 border border-rose-500/20">
+          <h4 class="text-rose-400 font-black text-xs uppercase tracking-widest mb-2">✕ Lo que sigue abierto</h4>
+          <ul class="text-slate-200 text-xs leading-relaxed space-y-1">
+            <li>→ Caso <span class="text-white font-bold">no forzado, dato genérico</span> sigue sin resolver.</li>
+            <li>→ Regularidad global para <span class="text-white font-bold">todo dato pequeño</span> vs blow-up genérico.</li>
+            <li>→ Validez del Clay Prize: requiere revisión independiente + aceptación de la comunidad.</li>
+          </ul>
+        </div>
+        <div class="glass-tag p-3 rounded-xl">
+          <p class="text-slate-300 text-xs leading-snug"><span class="text-amber-400 font-bold">Checklist para leer el paper:</span> ¿Qué dominio? ¿Qué fuerza? ¿Qué clase de dato inicial? Si hay “forzado” o “axi-simétrico con simetría extra”, no es el Clay completo.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engagement hook -->
+    <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border border-amber-500/20 rounded-2xl p-4 mb-4">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl">💬</span>
+        <div>
+          <p class="text-white font-black text-xs uppercase tracking-widest">Para generar interacción (usa este gancho)</p>
+          <p class="text-slate-200 text-xs mt-1">“Si alguien te dice que <span class="text-white font-bold">‘resolvieron Navier-Stokes’</span>, pregúntale: <span class="text-amber-300 font-bold">¿en qué dominio y con qué fuerza?</span> El 90% no sabe responder. Ahí empieza la conversación.”</p>
+          <div class="mt-2 flex gap-2">
+            <span class="bg-slate-900 border border-white/10 rounded-full px-3 py-1 text-[11px] text-slate-300">#NoEsElMilenioCompleto</span>
+            <span class="bg-slate-900 border border-white/10 rounded-full px-3 py-1 text-[11px] text-slate-300">#LeanVerificadoSí</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <RadiographyLegend
+      items={[
+        { bgColor: "bg-emerald-500", shadowRgba: "rgba(16,185,129,0.5)", textColor: "text-emerald-400", title: "Probado", description: "Blow-up condicional<br>verificado en Lean" },
+        { bgColor: "bg-amber-500", shadowRgba: "rgba(245,158,11,0.5)", textColor: "text-amber-400", title: "Condicional", description: "Depende de dominio<br>y fuerza" },
+        { bgColor: "bg-rose-500", shadowRgba: "rgba(244,63,94,0.5)", textColor: "text-rose-400", title: "Abierto", description: "Clay completo<br>sigue en pie" },
+      ]}
+      gap="gap-4 md:gap-12"
+      minWidth="min-w-[180px]"
+    />
+
+    <PostFooterBar
+      middleHtml='<span class="text-emerald-400 font-black italic">∃ blow-up</span> probado • <span class="text-amber-400 font-black italic">∀ dato</span> pendiente • <span class="text-rose-400 font-black italic">HYPE</span> recortado.'
+    />
+  </div>
+
+  <style>
+    .feature-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .glass-tag { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.18); }
+  </style>
+</BlogPostLayout>

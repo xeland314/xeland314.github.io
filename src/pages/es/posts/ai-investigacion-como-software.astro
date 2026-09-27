@@ -1,0 +1,155 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Investigación como Software";
+const description = "Radiografía: así se ve una investigación matemática cuando la haces con mentalidad CI/CD — agentes, ramas, PRs y verificación Lean.";
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="es"
+>
+  <div class="relative p-6 md:p-10 flex flex-col text-white overflow-hidden h-full">
+    <div class="absolute top-4 right-4 z-50 flex gap-2">
+      <span class="glass-tag px-2 py-1 rounded text-sky-400 text-[10px] font-bold tracking-widest">SERIE: NAVIER-STOKES × IA · 6/6 · BONUS</span>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Research as Code"
+      categoryColorClass="text-sky-400"
+      titlePrefix="Radiografía:"
+      titleHighlightText="Git para Teoremas"
+      titleHighlightColorClass="text-violet-400"
+      subtitle="Matemáticas con flujo de software"
+    />
+
+    <!-- Pipeline CI/CD -->
+    <div class="feature-card rounded-3xl p-5 mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest">Pipeline: del commit al Q.E.D.</h3>
+        <span class="text-[10px] font-mono bg-sky-500/20 text-sky-300 px-2 py-1 rounded">CI/CD matemático</span>
+      </div>
+
+      <div class="grid grid-cols-5 gap-2 items-stretch">
+        <!-- 1 -->
+        <div class="bg-slate-900 rounded-2xl p-3 border border-white/10 flex flex-col items-center text-center">
+          <div class="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center text-sm mb-2">🌱</div>
+          <p class="text-violet-400 font-black text-[11px] uppercase">Branch</p>
+          <p class="text-white font-bold text-[11px]">Hipótesis</p>
+          <p class="text-slate-400 text-[10px] mt-1 leading-snug">Cada agente abre rama: “¿y si blow-up con simetría X?”</p>
+          <code class="mt-2 bg-black rounded px-2 py-1 text-[9px] font-mono text-violet-300">git checkout -b blowup/axial</code>
+        </div>
+        <div class="flex items-center justify-center text-slate-600 text-lg">→</div>
+        <!-- 2 -->
+        <div class="bg-slate-900 rounded-2xl p-3 border border-white/10 flex flex-col items-center text-center">
+          <div class="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center text-sm mb-2">🧪</div>
+          <p class="text-sky-400 font-black text-[11px] uppercase">Test</p>
+          <p class="text-white font-bold text-[11px]">Simulación</p>
+          <p class="text-slate-400 text-[10px] mt-1 leading-snug">CFD numérico rápido descarta ideas que no explotan.</p>
+          <code class="mt-2 bg-black rounded px-2 py-1 text-[9px] font-mono text-sky-300">pytest test_blowup.py</code>
+        </div>
+        <div class="flex items-center justify-center text-slate-600 text-lg">→</div>
+        <!-- 3 -->
+        <div class="bg-slate-900 rounded-2xl p-3 border border-amber-500/20 flex flex-col items-center text-center">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-sm mb-2">🔎</div>
+          <p class="text-amber-400 font-black text-[11px] uppercase">Review</p>
+          <p class="text-white font-bold text-[11px]">Crítica cruzada</p>
+          <p class="text-slate-400 text-[10px] mt-1 leading-snug">Agentes revisores buscan contraejemplo como PR review.</p>
+          <code class="mt-2 bg-black rounded px-2 py-1 text-[9px] font-mono text-amber-300">/review --strict</code>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[1fr_auto_1fr] gap-2 mt-3 items-stretch">
+        <div class="bg-slate-900 rounded-2xl p-3 border border-emerald-500/20 flex flex-col items-center text-center">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-sm mb-2">🔒</div>
+          <p class="text-emerald-400 font-black text-[11px] uppercase">CI Verde</p>
+          <p class="text-white font-bold text-[11px]">Lean Kernel</p>
+          <p class="text-slate-400 text-[10px] mt-1 leading-snug">El verificador compila la prueba. Si hay gap, falla.</p>
+          <code class="mt-2 bg-black rounded px-2 py-1 text-[9px] font-mono text-emerald-300">lake build ✔</code>
+        </div>
+        <div class="flex items-center justify-center text-slate-600 text-lg">→</div>
+        <div class="bg-gradient-to-br from-violet-950/40 to-sky-950/30 rounded-2xl p-3 border border-violet-500/30 flex flex-col items-center text-center">
+          <div class="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center text-sm mb-2">🚀</div>
+          <p class="text-violet-400 font-black text-[11px] uppercase">Merge</p>
+          <p class="text-white font-bold text-[11px]">Teorema aceptado</p>
+          <p class="text-slate-300 text-[10px] mt-1 leading-snug">Solo lo que pasa Lean + review se mergea a <span class="font-mono text-violet-300">main</span>.</p>
+          <code class="mt-2 bg-violet-500 text-white rounded px-2 py-1 text-[9px] font-mono">git merge --ff-only</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom: Antes vs Ahora + Takeaway -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="space-y-3">
+        <div class="feature-card rounded-2xl p-4">
+          <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Antes vs Ahora</h3>
+          <div class="grid grid-cols-2 gap-3 text-[11px]">
+            <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3">
+              <p class="text-rose-400 font-black uppercase text-[11px] mb-1">Investigación clásica</p>
+              <p class="text-slate-400">1 genio · 1 pizarrón</p>
+              <p class="text-slate-400">Feedback en meses</p>
+              <p class="text-slate-400">Peer review manual</p>
+              <p class="text-slate-500 mt-2 italic text-[10px]">“Confía en mí”</p>
+            </div>
+            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3">
+              <p class="text-emerald-400 font-black uppercase text-[11px] mb-1">Research as Code</p>
+              <p class="text-slate-200 font-bold">10K agentes · enjambre</p>
+              <p class="text-slate-200">Feedback en minutos</p>
+              <p class="text-slate-200">Lean + torneo</p>
+              <p class="text-emerald-300 mt-2 italic text-[10px]">“Compila, luego existe”</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-slate-900 rounded-xl p-3 border border-white/10 font-mono text-[10px] leading-relaxed">
+          <p class="text-slate-500"># tu repo de teoremas</p>
+          <p><span class="text-violet-400">theorems/</span> navier_stokes/</p>
+          <p class="pl-3 text-sky-300">├── blowup.lean <span class="text-emerald-400">✔</span></p>
+          <p class="pl-3 text-slate-500">├── energy.lean <span class="text-emerald-400">✔</span></p>
+          <p class="pl-3 text-amber-300">└── regularity.lean <span class="text-rose-400">✕ pruned</span></p>
+          <p class="text-slate-500 mt-2">git log --oneline</p>
+          <p class="text-slate-400">a1b2c3 feat: axial blow-up verified</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div class="glass-tag p-4 rounded-xl border-l-4 border-sky-500">
+          <h4 class="text-sky-400 font-bold text-xs uppercase tracking-widest mb-1">Takeaway para devs</h4>
+          <p class="text-slate-200 text-xs leading-snug">Si sabes usar <span class="text-white font-bold">Git + CI + code review</span>, ya entiendes el futuro de la investigación matemática. La IA solo automatiza el <span class="text-sky-300 font-bold">loop</span>.</p>
+        </div>
+        <div class="bg-violet-500/10 border border-violet-500/20 rounded-2xl p-4">
+          <h4 class="text-violet-400 font-black text-xs uppercase tracking-widest mb-2">Para tu carrusel (Cover Creator)</h4>
+          <p class="text-slate-300 text-xs leading-snug">Usa 5 slides: <span class="text-white font-bold">1 portada</span> + <span class="text-violet-300">Branch</span> → <span class="text-sky-300">Test</span> → <span class="text-amber-300">Review</span> → <span class="text-emerald-300">Merge</span> + <span class="text-white font-bold">cierre CTA</span>. Formato 4:5 para Threads/IG.</p>
+          <div class="mt-3 flex gap-2 text-[10px] font-mono">
+            <span class="bg-slate-900 border border-white/10 rounded px-2 py-1 text-slate-300">threads: 1080×1350</span>
+            <span class="bg-slate-900 border border-white/10 rounded px-2 py-1 text-slate-300">carousel 5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <RadiographyLegend
+      items={[
+        { bgColor: "bg-violet-500", shadowRgba: "rgba(139,92,246,0.5)", textColor: "text-violet-400", title: "Branch", description: "Hipótesis<br>como rama" },
+        { bgColor: "bg-sky-500", shadowRgba: "rgba(14,165,233,0.5)", textColor: "text-sky-400", title: "Test", description: "Simulación<br>como pytest" },
+        { bgColor: "bg-emerald-500", shadowRgba: "rgba(16,185,129,0.5)", textColor: "text-emerald-400", title: "Verify", description: "Lean como<br>CI verde" },
+      ]}
+      gap="gap-4 md:gap-12"
+      minWidth="min-w-[180px]"
+    />
+
+    <PostFooterBar
+      middleHtml='<span class="text-violet-400 font-black italic">BRANCH</span> idea • <span class="text-sky-400 font-black italic">TEST</span> simula • <span class="text-emerald-400 font-black italic">LEAN</span> verifica.'
+    />
+  </div>
+
+  <style>
+    .feature-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .glass-tag { background: rgba(14,165,233,0.06); border: 1px solid rgba(14,165,233,0.18); }
+  </style>
+</BlogPostLayout>
