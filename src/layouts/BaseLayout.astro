@@ -19,29 +19,7 @@ interface Props {
   showHeader?: boolean;
   /** Carga coi-serviceworker para cross-origin isolation (solo /terminal: SharedArrayBuffer) */
   crossOriginIsolated?: boolean;
-  /** "cat" (acento del sitio) | "blue" (azul original, mini-apps/animaciones) | "auto" (por ruta) */
-  accent?: "cat" | "blue" | "auto";
 }
-
-/* Páginas con diseño de app propia: conservan el azul Tailwind original.
-   El acento naranja gato es identidad del sitio (header, bentos, posts...),
-   no de estas herramientas. */
-const APP_BLUE_PATHS = [
-  "/animations",
-  "/dominos",
-  "/can-i-use-gpu",
-  "/code-to-img",
-  "/code-to-video",
-  "/comprimir-pdf",
-  "/cover-creator",
-  "/intruso",
-  "/mapa-personalizado",
-  "/marca-agua-pdf",
-  "/recortar-pdf",
-  "/remover-fondo",
-  "/rotador-imagenes",
-  "/terminal",
-];
 
 const {
   title,
@@ -57,14 +35,7 @@ const {
   lang = "es",
   showHeader = true,
   crossOriginIsolated = false,
-  accent = "auto",
 } = Astro.props;
-
-const pathname = Astro.url.pathname;
-const appBlueByPath = APP_BLUE_PATHS.some(
-  (p) => pathname === p || pathname === `${p}/` || pathname.startsWith(`${p}/`),
-);
-const useBlueAccent = accent === "blue" || (accent === "auto" && appBlueByPath);
 ---
 
 <!doctype html>
@@ -164,9 +135,7 @@ const useBlueAccent = accent === "blue" || (accent === "auto" && appBlueByPath);
   <body class="font-inter bg-white text-black dark:bg-gray-800 dark:text-white">
     <div class="mx-auto pt-0">
       {showHeader && <Header />}
-      <div class={useBlueAccent ? "theme-blue" : undefined}>
-        <slot />
-      </div>
+      <slot />
       <script is:inline src="/scripts/smoothScrollWithOffset.js"></script>
     </div>
   </body>

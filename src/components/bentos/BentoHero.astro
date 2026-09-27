@@ -175,12 +175,12 @@ const T = texts[lang];
             {T.available}
           </span>
           <span
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-mono tracking-widest uppercase mb-2"
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono tracking-widest uppercase mb-2"
           >
             {T.exp}
           </span>
           <span
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-mono tracking-widest mb-2"
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-mono tracking-widest mb-2"
           >
             @xeland314
           </span>
@@ -202,7 +202,7 @@ const T = texts[lang];
         {" "}
         <span
           id="hero-rotator"
-          class="font-semibold text-blue-600 dark:text-blue-400 after:content-['|'] after:ml-0.5 after:animate-pulse"
+          class="font-semibold text-blue-500 dark:text-blue-400 after:content-['|'] after:ml-0.5 after:animate-pulse"
           data-phrases={JSON.stringify(T.tagline_phrases)}
         >
           {T.tagline_phrases[0]}
@@ -216,7 +216,7 @@ const T = texts[lang];
       >
         <a
           href="#projects"
-          class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5"
+          class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5"
         >
           {T.cta_primary}
         </a>
@@ -456,7 +456,7 @@ const T = texts[lang];
 
   /* ── Typewriter caret blink fallback ── */
   #hero-rotator::after {
-    color: rgba(198, 102, 36, 0.6); /* naranja gato #C66624 */
+    color: rgba(59, 130, 246, 0.6);
   }
 
   .hero-avatar-card:hover .hero-cat {
