@@ -17,6 +17,8 @@ interface Props {
   canonical?: string;
   lang?: string;
   showHeader?: boolean;
+  /** Carga coi-serviceworker para cross-origin isolation (solo /terminal: SharedArrayBuffer) */
+  crossOriginIsolated?: boolean;
 }
 
 const {
@@ -32,6 +34,7 @@ const {
   canonical,
   lang = "es",
   showHeader = true,
+  crossOriginIsolated = false,
 } = Astro.props;
 ---
 
@@ -80,20 +83,15 @@ const {
     <link rel="sitemap" href="/sitemap-index.xml" />
     {canonical && <link rel="canonical" href={canonical} />}
 
-    <link rel="preconnect" href="https://xeland314.github.io" crossorigin />
     <link rel="preload" href="/fonts/Inter-VariableFont-latin.woff2" as="font" type="font/woff2" crossorigin />
 
     <slot name="head" />
 
-    {/* COI service worker diferido: no compite por ancho de banda durante FCP/LCP. */}
-    <script is:inline>
-      window.addEventListener("load", () => {
-        const s = document.createElement("script");
-        s.src = "/coi-serviceworker.js";
-        s.defer = true;
-        document.head.appendChild(s);
-      });
-    </script>
+    {
+      crossOriginIsolated && (
+        <script is:inline src="/coi-serviceworker.js" />
+      )
+    }
 
     <script>
       if (import.meta.env.PROD && 'serviceWorker' in navigator) {

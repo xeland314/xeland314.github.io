@@ -1,6 +1,5 @@
 ---
 import { Image } from "astro:assets";
-import ThemeToggleButton from "../themes/ThemedToggleIconButton";
 
 const { lang = "es" } = Astro.props;
 const heroImage = "/images/gato-sin-fondo.svg";
@@ -379,18 +378,7 @@ const T = texts[lang];
           </span>
         </div>
 
-        <div class="w-px h-4 dark:bg-white/10 bg-gray-200 mx-1"></div>
-
-        {/* Lang switcher + theme */}
-        <a
-          href={lang === "es" ? "/en/" : "/"}
-          class="text-sm font-mono font-bold text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-white transition-colors uppercase"
-        >
-          {lang === "es" ? "EN" : "ES"}
-        </a>
-        <div class="bg-blue-600 dark:bg-gray-950 p-0 rounded-lg">
-          <ThemeToggleButton client:idle />
-        </div>
+        {/* Lang switcher + theme: solo en el Header del sitio para evitar duplicados */}
       </div>
     </div>
   </div>

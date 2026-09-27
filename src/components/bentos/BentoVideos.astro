@@ -61,12 +61,10 @@ const T = texts[lang];
       >
         <video
           id="random-animation-video"
-          src={randomVideo.src}
-          autoplay
-          loop
           muted
+          loop
           playsinline
-          preload="metadata"
+          preload="none"
           aria-label={`${T.videoLabel}: ${randomVideo.title}`}
           class="w-full h-full object-cover opacity-80 group-hover/video:opacity-100 transition-opacity"
         >
@@ -99,7 +97,7 @@ const T = texts[lang];
   if (videoElement && titleElement) {
     const randomIndex = Math.floor(Math.random() * videos.length);
     const selected = videos[randomIndex];
-    videoElement.src = selected.src;
+
     const track = videoElement.querySelector("track");
     if (track) {
       track.src = `/videos/${selected.src.split("/").pop().replace(".mp4", "")}.vtt`;
@@ -111,5 +109,33 @@ const T = texts[lang];
         : `Animación en reproducción: ${selected.title}`,
     );
     titleElement.textContent = selected.title;
+
+    /* Carga perezosa: el mp4 (hasta 322KB) no compite por ancho de banda
+       con la fuente/LCP durante la carga inicial. Arranca al acercarse al viewport. */
+    let loaded = false;
+    const loadAndPlay = () => {
+      if (loaded) return;
+      loaded = true;
+      videoElement.src = selected.src;
+      videoElement.preload = "metadata";
+      videoElement.play().catch(() => {});
+    };
+
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              loadAndPlay();
+              io.disconnect();
+            }
+          }
+        },
+        { rootMargin: "300px" },
+      );
+      io.observe(videoElement);
+    } else {
+      loadAndPlay();
+    }
   }
 </script>

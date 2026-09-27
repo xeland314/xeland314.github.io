@@ -13,6 +13,11 @@ const MY_SITE = "https://xeland314.github.io";
 // https://astro.build/config
 export default defineConfig({
   site: MY_SITE,
+  build: {
+    // Inline del CSS (30KB) en cada página: elimina la única petición
+    // que bloquea el render (GitHub Pages no permite cambiar headers).
+    inlineStylesheets: "always",
+  },
   vite: {
     plugins: [tailwindcss()],
     server: {
