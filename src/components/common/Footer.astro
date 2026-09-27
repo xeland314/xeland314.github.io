@@ -37,23 +37,23 @@ const T = texts[lang];
 ---
 
 <footer
-  class={`py-10 px-6 bg-[#c66624] border-t border-[#483025]/30 text-[#1c1006] ${rounded ? "rounded-3xl" : ""}`}
+  class={`py-10 px-6 bg-[#c66624] border-t border-[#483025]/30 text-white ${rounded ? "rounded-3xl" : ""}`}
 >
   <div
     class="flex flex-col items-center gap-6 md:flex-row md:justify-between md:items-center"
   >
     <p
-      class="text-center text-xs text-[#1c1006] md:text-left font-mono tracking-tight"
+      class="text-center text-xs text-white md:text-left font-mono tracking-tight"
     >
-      {T.text}
-      <span class="text-[#483025] font-bold">@xeland314</span>.
+      {T.text}{" "}
+      <span class="text-[#f9e6c6] font-bold">@xeland314</span>.
     </p>
     <div class="flex space-x-5 items-center">
       <a
         href="https://linkedin.com/in/christopher-villamarin"
         target="_blank"
         rel="noopener noreferrer"
-        class="p-2 rounded-lg text-[#483025] hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
+        class="p-2 rounded-lg text-white hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
         aria-label={T.linkedin}
         title={T.linkedin}
       >
@@ -79,7 +79,7 @@ const T = texts[lang];
         href="https://github.com/xeland314"
         target="_blank"
         rel="noopener noreferrer"
-        class="p-2 rounded-lg text-[#483025] hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
+        class="p-2 rounded-lg text-white hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
         aria-label={T.github}
         title={T.github}
       >
@@ -101,7 +101,7 @@ const T = texts[lang];
         href="https://instagram.com/xeland314"
         target="_blank"
         rel="noopener noreferrer"
-        class="p-2 rounded-lg text-[#483025] hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
+        class="p-2 rounded-lg text-white hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
         aria-label={T.instagram}
         title={T.instagram}
       >
@@ -114,7 +114,7 @@ const T = texts[lang];
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          ><rect x="2" y="2" width="26" height="26" rx="5" ry="5"></rect><path
+          ><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path
             d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line
             x1="17.5"
             y1="6.5"
@@ -126,7 +126,7 @@ const T = texts[lang];
         href="https://tiktok.com/@xeland314"
         target="_blank"
         rel="noopener noreferrer"
-        class="p-2 rounded-lg text-[#483025] hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
+        class="p-2 rounded-lg text-white hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
         aria-label={T.tiktok}
         title={T.tiktok}
       >
@@ -145,7 +145,7 @@ const T = texts[lang];
         href="https://www.xiaohongshu.com/user/profile/63874736834"
         target="_blank"
         rel="noopener noreferrer"
-        class="p-2 rounded-lg text-[#483025] hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
+        class="p-2 rounded-lg text-white hover:text-[#f9e6c6] hover:bg-[#483025]/15 flex items-center transition-all hover:scale-110"
         aria-label={T.rednote}
         title={T.rednote}
       >
@@ -162,7 +162,7 @@ const T = texts[lang];
       </a>
       <button
         id="copy-email-footer"
-        class="text-[#483025] hover:text-[#f9e6c6] flex items-center transition-all hover:scale-110 relative group"
+        class="text-white hover:text-[#f9e6c6] flex items-center transition-all hover:scale-110 relative group"
         title={T.email}
       >
         <svg
