@@ -6,7 +6,7 @@
  * no-op completo: no afecta a usuarios humanos ni al rendimiento.
  * Espejo estático del catálogo en /.well-known/ai-catalog.json (ARD).
  */
-import { db, Projects, Posts, Blogs, eq, and } from "astro:db";
+import { db, Projects, Posts, Blogs, MyCertificates, eq, and } from "astro:db";
 import { STUDY_CASES } from "./study-cases/study-cases-data";
 import { TOOLS } from "./bentos/tools-data";
 
@@ -15,6 +15,11 @@ const proyectos = await db
   .from(Projects)
   .where(and(eq(Projects.lang, "es"), eq(Projects.isFeatured, true)))
   .limit(8);
+
+const certificados = await db
+  .select()
+  .from(MyCertificates)
+  .where(eq(MyCertificates.lang, "es"));
 
 const posts = await db
   .select()
@@ -117,6 +122,14 @@ const datos = {
     descripcion: b.description ?? undefined,
     url: absoluto(b.url),
   })),
+  certificados: certificados.map((c) => ({
+    titulo: c.title,
+    emisor: c.issuer,
+    fecha: c.issueDate,
+    url_credencial: c.credentialUrl,
+    id_credencial: c.credentialId,
+    habilidades: c.skills,
+  })),
 };
 ---
 
@@ -194,6 +207,15 @@ const datos = {
         inputSchema,
         annotations: { readOnlyHint: true },
         execute: async () => ({ posts: datos.posts, blogs: datos.blogs }),
+      },
+      {
+        name: "get_certificados",
+        title: "Certificados y credenciales verificables",
+        description:
+          "Devuelve los certificados con emisor, fecha, URL de verificación, ID de credencial y habilidades. Úsala cuando el usuario pida credenciales, certificaciones o validar conocimientos del desarrollador.",
+        inputSchema,
+        annotations: { readOnlyHint: true },
+        execute: async () => ({ certificados: datos.certificados }),
       },
     ];
 

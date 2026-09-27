@@ -10,7 +10,7 @@
       "identifier": "urn:air:xeland314.github.io:mcp:web-tools",
       "displayName": "Portafolio xeland314 — herramientas WebMCP",
       "type": "application/mcp-server-card+json",
-      "description": "Tarjeta MCP del sitio: expone 7 herramientas read-only (perfil, servicios, proyectos, caso de éxito, contacto, mini apps y posts) vía document.modelContext (WebMCP, Chrome 149+ origin trial).",
+      "description": "Tarjeta MCP del sitio: expone 8 herramientas read-only (perfil, servicios, proyectos, caso de éxito, contacto, mini apps, posts y certificados) vía document.modelContext (WebMCP, Chrome 149+ origin trial).",
       "capabilities": [
         "WebMCP",
         "get_perfil",
@@ -19,7 +19,8 @@
         "get_caso_exito",
         "get_contacto",
         "get_apps",
-        "get_posts"
+        "get_posts",
+        "get_certificados"
       ],
       "tags": [
         "portafolio",
@@ -120,6 +121,15 @@
             "returns": {
               "posts": "[{ titulo: string, url: string (URL) }]",
               "blogs": "[{ titulo: string, descripcion: string?, url: string (URL) }]"
+            }
+          },
+          {
+            "name": "get_certificados",
+            "description": "Devuelve los certificados con emisor, fecha, URL de verificación, ID de credencial y habilidades. Úsala cuando el usuario pida credenciales, certificaciones o validar conocimientos del desarrollador.",
+            "inputSchema": { "type": "object", "properties": {}, "required": [] },
+            "annotations": { "readOnlyHint": true },
+            "returns": {
+              "certificados": "[{ titulo: string, emisor: string, fecha: string, url_credencial: string (URL), id_credencial: string, habilidades: string[] }]"
             }
           }
         ]
