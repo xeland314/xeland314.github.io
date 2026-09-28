@@ -177,6 +177,7 @@ export default function HeatMap() {
   const tileRef = useRef<L.TileLayer | null>(null);
   const heatLayerRef = useRef<L.ImageOverlay | null>(null);
   const circleLayerRef = useRef<L.LayerGroup | null>(null);
+  const pointsLayerRef = useRef<L.LayerGroup | null>(null);
   const baseMarkerRef = useRef<L.Marker | null>(null);
   const lastElevBaseRef = useRef<LatLng | null>(null);
 
@@ -195,15 +196,88 @@ export default function HeatMap() {
   const [geoError, setGeoError] = useState("");
   const [showChart, setShowChart] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- mediciones propias (clic en el mapa), persistidas en localStorage ---
+  const [extraPoints, setExtraPoints] = useState<Punto[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("rf-heat-extra") ?? "[]") as Punto[];
+    } catch {
+      return [];
+    }
+  });
+  const [addMode, setAddMode] = useState(false);
+  const [newCat, setNewCat] = useState("blue");
+  const [newLabel, setNewLabel] = useState("Montaña");
+
+  useEffect(() => {
+    localStorage.setItem("rf-heat-extra", JSON.stringify(extraPoints));
+  }, [extraPoints]);
+
+  const allPoints = useMemo(() => [...DATA, ...extraPoints], [extraPoints]);
+
+  const addExtra = (lat: number, lng: number) => {
+    const nuevo: Punto = {
+      id: Math.random().toString(36).slice(2, 9),
+      lat,
+      lng,
+      title: `${newLabel} ${extraPoints.length + 1}`,
+      description: "Medición manual",
+      color: newCat,
+    };
+    setExtraPoints((prev) => [...prev, nuevo]);
+  };
+
+  const exportar = () => {
+    const payload = {
+      exportado: new Date().toISOString(),
+      base,
+      altura,
+      puntos: allPoints.map((p) => ({
+        id: p.id,
+        lat: p.lat,
+        lng: p.lng,
+        title: p.title,
+        description: p.description,
+        color: p.color,
+      })),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `mapa-rf-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  const importar = async (file: File) => {
+    try {
+      const json = JSON.parse(await file.text());
+      const pts: Punto[] = Array.isArray(json) ? json : json.puntos;
+      if (!Array.isArray(pts) || pts.length === 0) throw new Error("sin puntos");
+      if (json.base) {
+        baseMarkerRef.current?.setLatLng(json.base);
+        setBase(json.base);
+        setAddress(`Importado: ${json.exportado ?? "estudio"}`);
+      }
+      setExtraPoints(pts.filter((p) => typeof p.lat === "number" && typeof p.lng === "number"));
+      setGeoError("");
+    } catch {
+      setGeoError("JSON inválido: usa el formato exportado por esta herramienta.");
+    }
+  };
 
   const model = useMemo(() => {
-    const samples: Sample[] = DATA.map((punto, i) => {
+    const samples: Sample[] = allPoints.map((punto, i) => {
       const dH = haversine(base, punto);
       const score = SCORE_BY_COLOR[punto.color] ?? 0.5;
       let dEff = dH;
       if (useDh && elevBase !== null && elevPoints) {
-        const penalty = Math.max(elevPoints[i] - elevBase - altura, 0);
-        dEff = Math.hypot(dH, penalty);
+        const ep = elevPoints[i];
+        if (typeof ep === "number") {
+          const penalty = Math.max(ep - elevBase - altura, 0);
+          dEff = Math.hypot(dH, penalty);
+        }
       }
       return { punto, dH, dEff, score };
     });
@@ -233,11 +307,12 @@ export default function HeatMap() {
     const map = L.map(containerRef.current, { zoomControl: true });
     mapRef.current = map;
 
-    const bounds = L.latLngBounds(DATA.map((p) => [p.lat, p.lng] as [number, number]));
+    const bounds = L.latLngBounds(allPoints.map((p) => [p.lat, p.lng] as [number, number]));
     bounds.extend([DEFAULT_BASE.lat, DEFAULT_BASE.lng]);
     map.fitBounds(bounds.pad(0.25));
 
     circleLayerRef.current = L.layerGroup().addTo(map);
+    pointsLayerRef.current = L.layerGroup().addTo(map);
 
     const baseIcon = L.divIcon({
       className: "",
@@ -258,7 +333,19 @@ export default function HeatMap() {
       setBase({ lat: pos.lat, lng: pos.lng });
     });
 
-    DATA.forEach((p) => {
+    return () => {
+      map.remove();
+      mapRef.current = null;
+      tileRef.current = null;
+    };
+  }, []);
+
+  // --- marcadores de puntos medidos (originales + propios) ---
+  useEffect(() => {
+    const layers = pointsLayerRef.current;
+    if (!layers) return;
+    layers.clearLayers();
+    allPoints.forEach((p) => {
       const cat = p.color;
       L.circleMarker([p.lat, p.lng], {
         radius: 8,
@@ -271,15 +358,24 @@ export default function HeatMap() {
           `<b>${p.title}</b><br/>${CAT_LABEL[cat] ?? cat}<br/><span style="opacity:.75">${p.description || "Sin notas"}</span>`,
           { direction: "top" },
         )
-        .addTo(map);
+        .addTo(layers);
     });
+  }, [allPoints]);
 
-    return () => {
-      map.remove();
-      mapRef.current = null;
-      tileRef.current = null;
+  // --- clic en el mapa para añadir medición propia ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const handler = (e: L.LeafletMouseEvent) => {
+      if (!addMode) return;
+      addExtra(e.latlng.lat, e.latlng.lng);
     };
-  }, []);
+    map.on("click", handler);
+    return () => {
+      map.off("click", handler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addMode, newCat, newLabel, extraPoints]);
 
   // --- cambiar mapa base ---
   useEffect(() => {
@@ -296,12 +392,10 @@ export default function HeatMap() {
   }, [styleId]);
 
   // --- elevaciones iniciales (base + puntos en una llamada bulk) ---
-  const loadElevations = async (b: LatLng) => {
+  const loadElevations = async (b: LatLng, pts: LatLng[]) => {
     setElevLoading(true);
     try {
-      const [elevs] = await Promise.all([
-        fetchElevations([b, ...DATA.map((p) => ({ lat: p.lat, lng: p.lng }))]),
-      ]);
+      const elevs = await fetchElevations([b, ...pts]);
       setElevBase(elevs[0]);
       setElevPoints(elevs.slice(1));
       lastElevBaseRef.current = b;
@@ -312,12 +406,13 @@ export default function HeatMap() {
     }
   };
 
+  // refetch completo cuando cambia el número de puntos (alineación por índice)
   useEffect(() => {
-    loadElevations(DEFAULT_BASE);
+    loadElevations(DEFAULT_BASE, allPoints);
     const savedKey = localStorage.getItem("geoapify-api-key");
     if (savedKey) setGeoKey(savedKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [allPoints.length]);
 
   // refetch de la elevación de la base cuando se arrastra lejos del último punto
   useEffect(() => {
@@ -368,8 +463,8 @@ export default function HeatMap() {
     }
     const latDeg = (model.R50 / 111320) * 1.1;
     const lngDeg = (model.R50 / (111320 * Math.cos((base.lat * Math.PI) / 180))) * 1.1;
-    const lats = DATA.map((p) => p.lat).concat(base.lat, base.lat - latDeg, base.lat + latDeg);
-    const lngs = DATA.map((p) => p.lng).concat(base.lng, base.lng - lngDeg, base.lng + lngDeg);
+    const lats = allPoints.map((p) => p.lat).concat(base.lat, base.lat - latDeg, base.lat + latDeg);
+    const lngs = allPoints.map((p) => p.lng).concat(base.lng, base.lng - lngDeg, base.lng + lngDeg);
     const south = Math.min(...lats);
     const north = Math.max(...lats);
     const west = Math.min(...lngs);
@@ -625,6 +720,81 @@ export default function HeatMap() {
 
         <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
           <h2 className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 mb-2">
+            Mediciones propias (más datos para el ajuste)
+          </h2>
+          <div className="flex items-center gap-2 mb-2">
+            <select
+              value={newCat}
+              onChange={(e) => setNewCat(e.target.value)}
+              className="text-[11px] font-semibold px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-gray-300"
+            >
+              <option value="blue">🔵 Escucha clara</option>
+              <option value="amber">🟡 Parcial</option>
+              <option value="red">🔴 Sin señal</option>
+            </select>
+            <input
+              value={newLabel}
+              onChange={(e) => setNewLabel(e.target.value)}
+              placeholder="Etiqueta"
+              className="flex-1 text-[11px] px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-gray-200"
+            />
+          </div>
+          <button
+            onClick={() => setAddMode((v) => !v)}
+            className={`w-full px-3 py-2 rounded-xl text-xs font-black ${
+              addMode
+                ? "bg-rose-600 hover:bg-rose-700 text-white animate-pulse"
+                : "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-slate-700"
+            }`}
+          >
+            {addMode ? "Modo añadir ACTIVO — haz clic en el mapa" : "Añadir medición con clic en el mapa"}
+          </button>
+          {extraPoints.length > 0 && (
+            <ul className="mt-2 max-h-40 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+              {extraPoints.map((p) => (
+                <li key={p.id} className="py-1 flex items-center justify-between gap-2">
+                  <span className="text-[11px] text-slate-700 dark:text-gray-300 truncate">
+                    <span style={{ color: CAT_COLOR[p.color] }}>●</span> {p.title}
+                  </span>
+                  <button
+                    onClick={() => setExtraPoints((prev) => prev.filter((x) => x.id !== p.id))}
+                    className="text-[10px] font-bold text-red-500 hover:underline shrink-0"
+                  >
+                    borrar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={exportar}
+              className="flex-1 px-2 py-1.5 rounded-lg text-[10px] font-black bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-slate-700"
+            >
+              Exportar JSON
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 px-2 py-1.5 rounded-lg text-[10px] font-black bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-slate-700"
+            >
+              Importar JSON
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) importar(f);
+                e.target.value = "";
+              }}
+            />
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+          <h2 className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-gray-400 mb-2">
             Predicción de alcance
           </h2>
           <div className="grid grid-cols-2 gap-2 text-center">
@@ -679,7 +849,7 @@ export default function HeatMap() {
         <div className="relative">
           <div
             ref={containerRef}
-            className="h-[65vh] min-h-[420px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-0"
+            className={`h-[65vh] min-h-[420px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-0 ${addMode ? "cursor-crosshair" : ""}`}
           />
           <div className="absolute top-2 right-2 z-[1000]">
             <select
