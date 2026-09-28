@@ -31,13 +31,60 @@ const CAT_LABEL: Record<string, string> = {
 
 // Oficinas ICON (piso 3) / Norio (piso 4): arrastrable en el mapa
 const DEFAULT_BASE: LatLng = { lat: -0.2058, lng: -78.4956 };
-const GEOAPIFY_KEY = "d4d5a2e38d934da287b79d360de83e5d";
-const TILES_LIGHT =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-const TILES_DARK =
-  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
+const GEOAPIFY_KEY_DEFAULT = "d4d5a2e38d934da287b79d360de83e5d";
+
+type MapStyle = {
+  id: string;
+  label: string;
+  url: string;
+  attribution: string;
+  maxZoom: number;
+  subdomains?: string | string[];
+};
+
+const MAP_STYLES: MapStyle[] = [
+  {
+    id: "voyager",
+    label: "Claro (CARTO)",
+    url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 20,
+    subdomains: ["a", "b", "c", "d"],
+  },
+  {
+    id: "osm",
+    label: "OSM estándar",
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19,
+  },
+  {
+    id: "dark",
+    label: "Oscuro (CARTO)",
+    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 20,
+    subdomains: ["a", "b", "c", "d"],
+  },
+  {
+    id: "satelite",
+    label: "Satélite (Esri)",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attribution: "Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics",
+    maxZoom: 19,
+  },
+  {
+    id: "topo",
+    label: "Topográfico (OpenTopoMap)",
+    url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    maxZoom: 17,
+    subdomains: ["a", "b", "c"],
+  },
+];
+const ATTRIBUTION = MAP_STYLES[0].attribution;
 
 function haversine(a: LatLng, b: LatLng): number {
   const R = 6371000;
@@ -139,10 +186,13 @@ export default function HeatMap() {
   const [elevBase, setElevBase] = useState<number | null>(null);
   const [elevPoints, setElevPoints] = useState<number[] | null>(null);
   const [elevLoading, setElevLoading] = useState(false);
-  const [darkTiles, setDarkTiles] = useState(false);
+  const [styleId, setStyleId] = useState("voyager");
   const [searchQuery, setSearchQuery] = useState("");
   const [address, setAddress] = useState("Oficinas ICON (p3) / Norio (p4) — arrastra para ajustar");
   const [geoLoading, setGeoLoading] = useState(false);
+  const [geoProvider, setGeoProvider] = useState<"nominatim" | "geoapify">("nominatim");
+  const [geoKey, setGeoKey] = useState(GEOAPIFY_KEY_DEFAULT);
+  const [geoError, setGeoError] = useState("");
   const [showChart, setShowChart] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -181,7 +231,6 @@ export default function HeatMap() {
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
     const map = L.map(containerRef.current, { zoomControl: true });
-    tileRef.current = L.tileLayer(TILES_LIGHT, { attribution: ATTRIBUTION, maxZoom: 20 }).addTo(map);
     mapRef.current = map;
 
     const bounds = L.latLngBounds(DATA.map((p) => [p.lat, p.lng] as [number, number]));
@@ -228,8 +277,23 @@ export default function HeatMap() {
     return () => {
       map.remove();
       mapRef.current = null;
+      tileRef.current = null;
     };
   }, []);
+
+  // --- cambiar mapa base ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const style = MAP_STYLES.find((s) => s.id === styleId) ?? MAP_STYLES[0];
+    if (tileRef.current) map.removeLayer(tileRef.current);
+    tileRef.current = L.tileLayer(style.url, {
+      attribution: style.attribution,
+      maxZoom: style.maxZoom,
+      subdomains: style.subdomains ?? "abc",
+    }).addTo(map);
+    tileRef.current.bringToBack();
+  }, [styleId]);
 
   // --- elevaciones iniciales (base + puntos en una llamada bulk) ---
   const loadElevations = async (b: LatLng) => {
@@ -250,6 +314,8 @@ export default function HeatMap() {
 
   useEffect(() => {
     loadElevations(DEFAULT_BASE);
+    const savedKey = localStorage.getItem("geoapify-api-key");
+    if (savedKey) setGeoKey(savedKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -337,29 +403,58 @@ export default function HeatMap() {
     ], { interactive: false, opacity: 0.75 }).addTo(map);
   }, [model, base]);
 
-  // --- tiles claro/oscuro ---
-  useEffect(() => {
-    tileRef.current?.setUrl(darkTiles ? TILES_DARK : TILES_LIGHT);
-  }, [darkTiles]);
-
-  // --- geocodificar nueva ubicación de la base (Geoapify) ---
+  // --- geocodificar nueva ubicación de la base (Nominatim o Geoapify) ---
   const moverBase = async () => {
     const q = searchQuery.trim();
     if (!q || geoLoading) return;
     setGeoLoading(true);
+    setGeoError("");
     try {
-      const res = await fetch(
-        `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(q)}&format=json&limit=1&apiKey=${GEOAPIFY_KEY}`,
-      );
-      const json = await res.json();
-      const hit = json.results?.[0];
-      if (hit) {
-        const pos = { lat: hit.lat, lng: hit.lon };
-        baseMarkerRef.current?.setLatLng(pos);
-        setBase(pos);
-        setAddress(hit.formatted ?? q);
-        mapRef.current?.panTo(pos);
+      let lat: number | null = null;
+      let lon: number | null = null;
+      let formatted = q;
+      if (geoProvider === "geoapify") {
+        if (!geoKey.trim()) {
+          setGeoError("API KEY REQUIRED: escribe tu clave de Geoapify o cambia a Nominatim (sin key).");
+          return;
+        }
+        const res = await fetch(
+          `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(q)}&format=json&limit=1&apiKey=${encodeURIComponent(geoKey.trim())}`,
+        );
+        const json = await res.json();
+        if (!res.ok) {
+          setGeoError(`Geoapify: ${json.message ?? `HTTP ${res.status}`} — prueba con Nominatim.`);
+          return;
+        }
+        const hit = json.results?.[0];
+        if (hit) {
+          lat = hit.lat;
+          lon = hit.lon;
+          formatted = hit.formatted ?? q;
+        }
+      } else {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`,
+        );
+        const json = await res.json();
+        const hit = json?.[0];
+        if (hit) {
+          lat = Number(hit.lat);
+          lon = Number(hit.lon);
+          formatted = hit.display_name ?? q;
+        }
       }
+      if (lat === null || lon === null) {
+        setGeoError("Sin resultados para esa búsqueda.");
+        return;
+      }
+      const pos = { lat, lng: lon };
+      baseMarkerRef.current?.setLatLng(pos);
+      setBase(pos);
+      setAddress(formatted);
+      mapRef.current?.panTo(pos);
+    } catch {
+      setGeoError("Error de red al geocodificar. Intenta de nuevo.");
     } finally {
       setGeoLoading(false);
     }
@@ -466,6 +561,29 @@ export default function HeatMap() {
               {geoLoading ? "…" : "Ir"}
             </button>
           </div>
+          <div className="flex items-center gap-2 mt-2">
+            <select
+              value={geoProvider}
+              onChange={(e) => {
+                setGeoProvider(e.target.value as "nominatim" | "geoapify");
+                setGeoError("");
+              }}
+              className="text-[11px] font-semibold px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-gray-300"
+            >
+              <option value="nominatim">Nominatim (sin key)</option>
+              <option value="geoapify">Geoapify (con key)</option>
+            </select>
+            {geoProvider === "geoapify" && (
+              <input
+                value={geoKey}
+                onChange={(e) => setGeoKey(e.target.value)}
+                onBlur={() => localStorage.setItem("geoapify-api-key", geoKey.trim())}
+                placeholder="API key Geoapify"
+                className="flex-1 text-[11px] font-mono px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-gray-200"
+              />
+            )}
+          </div>
+          {geoError && <p className="text-[10px] font-bold text-red-500 mt-1.5">{geoError}</p>}
           <p className="text-[10px] text-slate-400 mt-2">
             📡 {base.lat.toFixed(5)}, {base.lng.toFixed(5)} — también puedes arrastrarla en el mapa.
           </p>
@@ -563,19 +681,18 @@ export default function HeatMap() {
             ref={containerRef}
             className="h-[65vh] min-h-[420px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 z-0"
           />
-          <div className="absolute top-2 right-2 z-[1000] flex gap-1">
-            <button
-              onClick={() => setDarkTiles(false)}
-              className={`px-2 py-1 rounded-lg text-[10px] font-black border ${!darkTiles ? "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600" : "bg-white/70 dark:bg-slate-900/70 border-transparent text-slate-500"}`}
+          <div className="absolute top-2 right-2 z-[1000]">
+            <select
+              value={styleId}
+              onChange={(e) => setStyleId(e.target.value)}
+              className="px-2 py-1.5 rounded-lg text-[10px] font-black border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-gray-200 shadow"
             >
-              Día
-            </button>
-            <button
-              onClick={() => setDarkTiles(true)}
-              className={`px-2 py-1 rounded-lg text-[10px] font-black border ${darkTiles ? "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600" : "bg-white/70 dark:bg-slate-900/70 border-transparent text-slate-500"}`}
-            >
-              Noche
-            </button>
+              {MAP_STYLES.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
