@@ -1,0 +1,200 @@
+[
+  {
+    "id": "ig2lnx6",
+    "lat": -0.206476,
+    "lng": -78.498398,
+    "title": "Entrada de ISPADE",
+    "description": "Se escucha fuerte y claro desde las oficinas de ICON y Norio",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "yk1b187",
+    "lat": -0.20602,
+    "lng": -78.498178,
+    "title": "Antiguo GGM Pequeño",
+    "description": "Se escucha fuerte y claro",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "o3w7hwc",
+    "lat": -0.206437,
+    "lng": -78.497425,
+    "title": "Mini market",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "euafofh",
+    "lat": -0.206658,
+    "lng": -78.497046,
+    "title": "Atrás de Fiscalía",
+    "description": "Se escucha con interferencia desde las oficinas de ICON pero no desde Norio",
+    "icon": "map-pin",
+    "color": "amber",
+    "shape": "circle",
+    "size": 32
+  },
+  {
+    "id": "klu6gcx",
+    "lat": -0.206916,
+    "lng": -78.49666,
+    "title": "Punto 5",
+    "description": "",
+    "icon": "map-pin",
+    "color": "amber",
+    "shape": "circle",
+    "size": 32
+  },
+  {
+    "id": "l5k6l63",
+    "lat": -0.207506,
+    "lng": -78.495759,
+    "title": "Punto 6",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "kxvqt6w",
+    "lat": -0.208143,
+    "lng": -78.495043,
+    "title": "Punto 7",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "yzrnffc",
+    "lat": -0.20854,
+    "lng": -78.495612,
+    "title": "KFC",
+    "description": "Se escucha bien desde las oficinas\n",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "6q8lpb2",
+    "lat": -0.207392,
+    "lng": -78.497489,
+    "title": "Fiscalía",
+    "description": "Se escucha bien desde la entrada de Fiscalía\n",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "e1mnwt5",
+    "lat": -0.207584,
+    "lng": -78.494485,
+    "title": "Punto 10",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "5mtg3b5",
+    "lat": -0.206929,
+    "lng": -78.49368,
+    "title": "Parada Galo Plaza",
+    "description": "Se escucha bien desde las oficinas de Icon",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "jgrwauq",
+    "lat": -0.205628,
+    "lng": -78.492411,
+    "title": "Entrada Matriz",
+    "description": "Solo se escucha desde la entrada y desde Norio\n",
+    "icon": "map-pin",
+    "color": "amber",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "pb3euel",
+    "lat": -0.205364,
+    "lng": -78.492305,
+    "title": "GGM Matriz",
+    "description": "Solo se escucha desde el baño de GGM Matriz",
+    "icon": "map-pin",
+    "color": "red",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "u2x14ms",
+    "lat": -0.204289,
+    "lng": -78.493909,
+    "title": "Punto 14",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "zsh73dn",
+    "lat": -0.203344,
+    "lng": -78.495534,
+    "title": "Punto 15",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "5hk4ahd",
+    "lat": -0.204841,
+    "lng": -78.496355,
+    "title": "Punto 16",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "lxq5pmj",
+    "lat": -0.205391,
+    "lng": -78.495686,
+    "title": "Iglesia",
+    "description": "Se escucha fuerte y envía el audio claro desde Norio",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  },
+  {
+    "id": "3u71sfq",
+    "lat": -0.205257,
+    "lng": -78.497664,
+    "title": "Punto 18",
+    "description": "",
+    "icon": "map-pin",
+    "color": "blue",
+    "shape": "pin",
+    "size": 38
+  }
+]

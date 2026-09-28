@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeatMap from "../components/tools/heat-map/HeatMap";
+
+const title = "Mapa de Calor RF — Alcance de walkie talkies | Mini Apps";
+const description = "Mapa de calor de cobertura radial: carga mediciones de señal de walkie talkies, ajusta un modelo logístico y predice desde dónde serás escuchado. Con corrección por desnivel, esfera de cobertura móvil y geocodificación Geoapify.";
+const keywords = "mapa de calor, cobertura de radio, walkie talkie, alcance de señal, propagación de RF, leaflet, heatmap, quito";
+const author = "Christopher Alexander Villamarín Pila";
+const url = "https://xeland314.github.io/mapa-de-calor/";
+const image = "https://xeland314.github.io/assets/images/logo_v3.png";
+---
+
+<BaseLayout
+  showHeader={false}
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  url={url}
+  image={image}
+  canonical={url}
+>
+  <main class="min-h-screen bg-[#f8fafc] dark:bg-[#060a0f] text-slate-900 dark:text-gray-200">
+    <div class="max-w-[1500px] mx-auto py-4 px-4 sm:px-6 flex flex-col gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <a href="/mini-apps/" class="text-xs font-bold text-emerald-600 hover:underline inline-flex items-center gap-1">← Mini Apps</a>
+          <span class="text-xs font-mono text-slate-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full">Leaflet + Logística · Open-Meteo · Geoapify</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
+          Mapa de <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-orange-500">Calor RF</span>
+          <span class="ml-2 text-xs font-mono font-bold bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900 px-2 py-1 rounded-full align-middle">Nuevo</span>
+        </h1>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-3xl">
+          Mediciones de señal de walkie talkie desde una base (oficinas ICON piso 3 / Norio piso 4) hacia 18 puntos del sector.
+          El modelo ajusta la probabilidad de ser escuchado según la distancia y el desnivel, dibuja el mapa de calor y mueve la
+          <b>esfera de cobertura</b> al cambiar de ubicación.
+        </p>
+      </div>
+
+      <div class="flex-1 min-h-0">
+        <HeatMap client:only="react" />
+      </div>
+
+      <footer class="text-[11px] text-slate-400 text-center py-2">
+        Tiles © OpenStreetMap contributors · CARTO · Elevación vía Open-Meteo · Geocodificación vía Geoapify. Modelo orientativo, no sustituye un estudio de propagación.
+      </footer>
+    </div>
+  </main>
+</BaseLayout>

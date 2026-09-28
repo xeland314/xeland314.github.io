@@ -20,6 +20,11 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      // Pre-bundlear para que las islas client:only no topen con 504
+      // "Outdated Optimize Dep" en npm run dev
+      include: ["leaflet", "react-leaflet"],
+    },
     server: {
       headers: {
         "Cross-Origin-Embedder-Policy": "credentialless",
