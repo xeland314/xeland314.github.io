@@ -6,9 +6,10 @@ describe("watermark helpers", () => {
     expect(clampOpacity(2)).toBe(0.9);
     expect(clampOpacity(-1)).toBe(0.05);
     expect(clampOpacity(0.184)).toBe(0.18);
-    expect(clampScale(10)).toBe(0.6);
-    expect(clampScale(0)).toBe(0.1);
+    expect(clampScale(10)).toBe(1.5);
+    expect(clampScale(-1)).toBe(0);
     expect(clampScale(0.33)).toBe(0.35);
+    expect(clampScale(1.51)).toBe(1.5);
   });
   it("getWatermarkDrawRect posiciones", () => {
     const r = getWatermarkDrawRect(1000, 800, 200, 100, 0.2, "center");

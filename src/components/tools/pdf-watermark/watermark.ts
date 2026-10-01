@@ -2,7 +2,7 @@ export type WatermarkPosition = "center" | "top-left" | "top-right" | "bottom-le
 
 export interface WatermarkOptions {
   opacity: number; // 0.05..0.9
-  scale: number; // 0.1..0.6 (fracción ancho página)
+  scale: number; // 0..1.5 (fracción ancho página, hasta 150%)
   position: WatermarkPosition;
 }
 
@@ -12,7 +12,7 @@ export function clampOpacity(v: number): number {
 }
 export function clampScale(v: number): number {
   if (isNaN(v)) return 0.35;
-  return Math.max(0.1, Math.min(0.6, Math.round(v * 20) / 20));
+  return Math.max(0, Math.min(1.5, Math.round(v * 20) / 20));
 }
 
 /** Genera canvas con marca procesada (blanco -> transparente) desde dataUrl. En Node requiere createCanvas dep. */

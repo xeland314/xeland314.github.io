@@ -153,7 +153,7 @@ export default function PdfWatermarker() {
             <p className="text-xs font-bold tracking-widest uppercase text-sky-800 mb-3">Ajustes marca (previsualización hoja por hoja — sin miniaturas)</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <label className="flex flex-col gap-1 text-xs">Opacidad {Math.round(opacity*100)}%<input type="range" min={0.05} max={0.9} step={0.05} value={opacity} onChange={e=>setOpacity(clampOpacity(parseFloat(e.target.value)))} /></label>
-              <label className="flex flex-col gap-1 text-xs">Tamaño {Math.round(scale*100)}% ancho<input type="range" min={0.1} max={0.6} step={0.05} value={scale} onChange={e=>setScale(clampScale(parseFloat(e.target.value)))} /></label>
+              <label className="flex flex-col gap-1 text-xs">Tamaño {Math.round(scale*100)}% ancho<input type="range" min={0} max={1.5} step={0.05} value={scale} onChange={e=>setScale(clampScale(parseFloat(e.target.value)))} /></label>
               <label className="flex flex-col gap-1 text-xs">Posición
                 <select value={position} onChange={e=>setPosition(e.target.value as WatermarkPosition)} className="bg-white dark:bg-gray-800 border rounded-lg px-2 py-2 text-sm">
                   <option value="center">Centro</option>
