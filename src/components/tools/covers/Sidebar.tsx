@@ -13,6 +13,8 @@ interface SidebarProps {
   setAccent: (accent: AccentColor) => void;
   showLogo: boolean;
   setShowLogo: (show: boolean) => void;
+  pixel: boolean;
+  setPixel: (v: boolean) => void;
   logoImage: string;
   setLogoImage: (logo: string) => void;
   username: string;
@@ -59,6 +61,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setAccent,
   showLogo,
   setShowLogo,
+  pixel,
+  setPixel,
   logoImage,
   setLogoImage,
   username,
@@ -152,6 +156,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               setAccent={setAccent}
               showLogo={showLogo}
               setShowLogo={setShowLogo}
+              pixel={pixel}
+              setPixel={setPixel}
               logoImage={logoImage}
               setLogoImage={setLogoImage}
               username={username}

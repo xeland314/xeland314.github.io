@@ -9,6 +9,7 @@ export interface Project {
     mode: ThemeMode;
     accent: AccentColor;
     showLogo: boolean;
+    pixel?: boolean;
     logoImage: string;
     username: string;
     slides: SlideData[];

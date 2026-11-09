@@ -31,6 +31,8 @@ interface GlobalSettingsProps {
   setAccent: (accent: AccentColor) => void;
   showLogo: boolean;
   setShowLogo: (show: boolean) => void;
+  pixel: boolean;
+  setPixel: (v: boolean) => void;
   logoImage: string;
   setLogoImage: (logo: string) => void;
   username: string;
@@ -46,6 +48,8 @@ export const GlobalSettings: React.FC<GlobalSettingsProps> = ({
   setAccent,
   showLogo,
   setShowLogo,
+  pixel,
+  setPixel,
   logoImage,
   setLogoImage,
   username,
@@ -102,6 +106,18 @@ export const GlobalSettings: React.FC<GlobalSettingsProps> = ({
             />
           ))}
         </div>
+      </div>
+
+      <div className="h-px bg-gray-100 dark:bg-gray-700 my-1" />
+
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-medium text-gray-500">Estilo pixel-art</label>
+        <button
+          onClick={() => setPixel(!pixel)}
+          className={`text-[10px] px-2 py-1 rounded transition-colors ${pixel ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-400"}`}
+        >
+          {pixel ? "ACTIVO" : "INACTIVO"}
+        </button>
       </div>
 
       <div className="h-px bg-gray-100 dark:bg-gray-700 my-1" />

@@ -1,0 +1,36 @@
+/* Estilo pixel-art opcional para Cover Creator.
+   Se activa con data-pixel="true" en un ancestro del canvas ([data-export-canvas]).
+   Es ortogonal a los temas: funciona con light, dark, ambercat, catppuccin, etc.
+   Color de acento: variable CSS --cc-accent (la fija el CLI o el editor). */
+@font-face { font-family: "Press Start 2P"; src: url("/fonts/pixel/PressStart2P-Regular.ttf") format("truetype"); font-display: block; }
+@font-face { font-family: "Silkscreen"; font-weight: 400; src: url("/fonts/pixel/Silkscreen-Regular.ttf") format("truetype"); font-display: block; }
+@font-face { font-family: "Silkscreen"; font-weight: 700; src: url("/fonts/pixel/Silkscreen-Bold.ttf") format("truetype"); font-display: block; }
+@font-face { font-family: "VT323"; src: url("/fonts/pixel/VT323-Regular.ttf") format("truetype"); font-display: block; }
+
+[data-pixel="true"] [data-export-canvas] { font-family: "Silkscreen", monospace; image-rendering: pixelated; }
+[data-pixel="true"] [data-export-canvas] * { border-radius: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; text-shadow: none !important; animation: none !important; }
+/* sin desenfoques ni brillos: el pixel-art es de bordes duros */
+[data-pixel="true"] [data-export-canvas] :is([class*=" blur-"], [class^="blur-"]) { display: none !important; }
+[data-pixel="true"] [data-export-canvas] [class*="drop-shadow"] { filter: none !important; }
+[data-pixel="true"] [data-export-canvas] [class*="shadow-"] { box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.45) !important; }
+[data-pixel="true"] [data-export-canvas] img { image-rendering: pixelated; }
+
+/* títulos en fuente pixel; el degradado de texto pasa a color sólido del acento */
+[data-pixel="true"] [data-export-canvas] h1,
+[data-pixel="true"] [data-export-canvas] h2,
+[data-pixel="true"] [data-export-canvas] h3 { font-family: "Press Start 2P", monospace !important; font-weight: 400 !important; letter-spacing: 0 !important; line-height: 1.35 !important; }
+[data-pixel="true"] [data-export-canvas] h1 { background: none !important; -webkit-text-fill-color: var(--cc-accent, currentColor) !important; color: var(--cc-accent, currentColor) !important; font-size: 64px !important; }
+[data-pixel="true"] [data-export-canvas] h2 { font-size: 42px !important; color: var(--cc-accent, currentColor); }
+[data-pixel="true"] [data-export-canvas] h3 { font-size: 32px !important; }
+[data-pixel="true"] [data-export-canvas] .font-mono,
+[data-pixel="true"] [data-export-canvas] code,
+[data-pixel="true"] [data-export-canvas] pre { font-family: "VT323", monospace !important; }
+[data-pixel="true"] [data-export-canvas] code,
+[data-pixel="true"] [data-export-canvas] pre { font-size: 1.9em; line-height: 1.1; }
+[data-pixel="true"] [data-export-canvas] p,
+[data-pixel="true"] [data-export-canvas] li { font-family: "Silkscreen", monospace; letter-spacing: 0.02em; }
+/* los degradados de relleno pasan a colores planos del acento */
+[data-pixel="true"] [data-export-canvas] [class*="bg-gradient"]:not(.bg-clip-text):not(h1):not(h2):not(h3) { background-image: none !important; background-color: var(--cc-accent, currentColor) !important; }
+/* títulos dentro de una "píldora" de color: texto claro sobre el acento */
+[data-pixel="true"] [data-export-canvas] [class*="bg-gradient"] h1,
+[data-pixel="true"] [data-export-canvas] [class*="bg-gradient"] h2 { color: #fff !important; -webkit-text-fill-color: #fff !important; font-size: 40px !important; }

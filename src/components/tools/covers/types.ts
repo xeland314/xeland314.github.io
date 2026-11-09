@@ -370,3 +370,10 @@ export const ACCENT_COLORS = {
     border: "border-fuchsia-500/30",
   },
 };
+
+/** Color hex de cada acento (para el estilo pixel-art, que usa colores planos). */
+export const ACCENT_HEX: Record<AccentColor, string> = {
+  blue: "#3b82f6", purple: "#a855f7", emerald: "#10b981", orange: "#f97316", rose: "#f43f5e", yellow: "#eab308", sky: "#0ea5e9",
+  indigo: "#6366f1", cyan: "#06b6d4", teal: "#14b8a6", pink: "#ec4899", slate: "#64748b", violet: "#8b5cf6", lime: "#84cc16",
+  red: "#ef4444", amber: "#f59e0b", fuchsia: "#d946ef",
+};

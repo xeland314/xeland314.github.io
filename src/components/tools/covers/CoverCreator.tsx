@@ -8,7 +8,8 @@ import { BlogMarkdownSlide } from "./BlogMarkdownSlide";
 import { BlogImage } from "./BlogImage";
 import { BlogEnd } from "./BlogEnd";
 import { ProjectManager, type Project } from "./ProjectManager";
-import { type ThemeMode, type AccentColor, type SlideData, type SlideType, getThemeBgColor } from "./types";
+import { type ThemeMode, type AccentColor, type SlideData, type SlideType, getThemeBgColor, ACCENT_HEX } from "./types";
+import "./pixel.css";
 import { db } from "./db";
 import { migrateSlides } from "./migrate";
 
@@ -54,6 +55,7 @@ export const CoverCreator = () => {
   const [mode, setMode] = useState<ThemeMode>("dark");
   const [accent, setAccent] = useState<AccentColor>("blue");
   const [showLogo, setShowLogo] = useState(true);
+  const [pixel, setPixel] = useState(false); // estilo pixel-art opcional (ortogonal al tema)
   const [logoImage, setLogoImage] = useState("/assets/images/logo_v3.png");
   const [username, setUsername] = useState("xeland314");
   const [slides, setSlides] = useState<SlideData[]>(INITIAL_SLIDES);
@@ -111,10 +113,11 @@ export const CoverCreator = () => {
 
       if (savedState) {
         try {
-          const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId: savedId } = savedState;
+          const { mode, accent, showLogo, pixel, logoImage, username, slides, selectedSlideId, currentProjectId: savedId } = savedState;
           setMode(mode);
           setAccent(accent);
           setShowLogo(showLogo);
+          setPixel(!!pixel);
           setLogoImage(logoImage);
           setUsername(username);
           setSlides(migrateSlides(slides));
@@ -133,16 +136,16 @@ export const CoverCreator = () => {
   // Auto-save current project state
   useEffect(() => {
     if (!isLoaded) return;
-    const state = { mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId };
+    const state = { mode, accent, showLogo, pixel, logoImage, username, slides, selectedSlideId, currentProjectId };
     db.setItem(STORAGE_KEY, state).catch(e => console.error("Error saving state:", e));
 
     // Also update the project in the projects list if it exists
     setProjects(prev => prev.map(p => p.id === currentProjectId ? {
       ...p,
       lastModified: Date.now(),
-      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId }
+      data: { mode, accent, showLogo, pixel, logoImage, username, slides, selectedSlideId }
     } : p));
-  }, [mode, accent, showLogo, logoImage, username, slides, selectedSlideId, currentProjectId, isLoaded]);
+  }, [mode, accent, showLogo, pixel, logoImage, username, slides, selectedSlideId, currentProjectId, isLoaded]);
 
   // Save projects list to IndexedDB
   useEffect(() => {
@@ -295,7 +298,7 @@ export const CoverCreator = () => {
       id: Math.random().toString(36).substr(2, 9),
       name,
       lastModified: Date.now(),
-      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId }
+      data: { mode, accent, showLogo, pixel, logoImage, username, slides, selectedSlideId }
     };
     setProjects([...projects, newProject]);
     setCurrentProjectId(newProject.id);
@@ -304,10 +307,11 @@ export const CoverCreator = () => {
   const handleLoadProject = (id: string) => {
     const project = projects.find(p => p.id === id);
     if (project) {
-      const { mode, accent, showLogo, logoImage, username, slides, selectedSlideId } = project.data;
+      const { mode, accent, showLogo, pixel, logoImage, username, slides, selectedSlideId } = project.data;
       setMode(mode);
       setAccent(accent);
       setShowLogo(showLogo);
+          setPixel(!!pixel);
       setLogoImage(logoImage);
       setUsername(username);
       setSlides(slides);
@@ -343,6 +347,7 @@ export const CoverCreator = () => {
       setMode("dark");
       setAccent("blue");
       setShowLogo(true);
+      setPixel(false);
       setLogoImage("/assets/images/logo_v3.png");
       setUsername("xeland314");
       setSlides(INITIAL_SLIDES);
@@ -356,6 +361,7 @@ export const CoverCreator = () => {
       setMode("dark");
       setAccent("blue");
       setShowLogo(true);
+      setPixel(false);
       setLogoImage("/assets/images/logo_v3.png");
       setUsername("xeland314");
       setSlides(INITIAL_SLIDES);
@@ -384,7 +390,7 @@ export const CoverCreator = () => {
       id: Math.random().toString(36).substr(2, 9),
       name: current?.name ?? "Diseño actual",
       lastModified: Date.now(),
-      data: { mode, accent, showLogo, logoImage, username, slides, selectedSlideId },
+      data: { mode, accent, showLogo, pixel, logoImage, username, slides, selectedSlideId },
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -540,6 +546,8 @@ export const CoverCreator = () => {
             setAccent={setAccent}
             showLogo={showLogo}
             setShowLogo={setShowLogo}
+            pixel={pixel}
+            setPixel={setPixel}
             logoImage={logoImage}
             setLogoImage={setLogoImage}
             username={username}
@@ -620,6 +628,8 @@ export const CoverCreator = () => {
             <div
               ref={exportRef}
               className="w-full h-full bg-white dark:bg-slate-900 shadow-lg"
+              data-pixel={pixel ? "true" : "false"}
+              style={{ ["--cc-accent" as any]: ACCENT_HEX[accent] }}
             >
               {renderSlide(selectedSlide)}
             </div>
