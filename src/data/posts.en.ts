@@ -119,4 +119,12 @@ export const postDataEN = [
     lang: "en",
     isPublished: true,
   },
+  {
+    title: "Email Headers",
+    url: "/en/posts/email-headers-anatomy",
+    image:
+      "/images/optimized/posts/localhost_4321_en_posts_email-headers-anatomy-cover.avif",
+    lang: "en",
+    isPublished: true,
+  },
 ];

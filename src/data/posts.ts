@@ -250,6 +250,14 @@ export const postData = [
     isPublished: true,
   },
   {
+    title: "Cabeceras de un correo",
+    url: "/es/posts/email-headers-anatomy",
+    image:
+      "/images/optimized/posts/localhost_4321_es_posts_email-headers-anatomy-cover.avif",
+    lang: "es",
+    isPublished: true,
+  },
+  {
     title: "Hashing vs. Cifrado",
     url: "/es/posts/software-hashing-vs-encryption",
     image:

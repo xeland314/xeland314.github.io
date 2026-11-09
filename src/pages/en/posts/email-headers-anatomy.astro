@@ -1,0 +1,120 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "Email headers";
+const description =
+  "Radiograph: email headers - Anatomy of SPF, DKIM, DMARC and the sender";
+
+const ruta = [
+  {
+    bgColor: "bg-sky-400",
+    shadowRgba: "rgba(56,189,248,0.5)",
+    textColor: "text-sky-400",
+    title: "Route",
+    description:
+      "<span class='font-mono'>Received</span> is added by every server. <b class='text-white'>Read it bottom to top.</b>",
+  },
+  {
+    bgColor: "bg-emerald-400",
+    shadowRgba: "rgba(52,211,153,0.5)",
+    textColor: "text-emerald-400",
+    title: "Authentication",
+    description:
+      "SPF, DKIM and DMARC: <b class='text-white'>pass</b> or <b class='text-white'>fail</b>.",
+  },
+];
+const identidad = [
+  {
+    bgColor: "bg-amber-400",
+    shadowRgba: "rgba(251,191,36,0.5)",
+    textColor: "text-amber-400",
+    title: "Identity",
+    description:
+      "<span class='font-mono'>From</span> is what you see; <span class='font-mono'>Return-Path</span> is the real envelope.",
+  },
+  {
+    bgColor: "bg-purple-400",
+    shadowRgba: "rgba(192,132,252,0.5)",
+    textColor: "text-purple-400",
+    title: "Content",
+    description: "Recipient, subject, date and message identifier.",
+  },
+];
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-14 pb-28 md:pb-28 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/email-headers-anatomy"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="Email"
+      categoryColorClass="text-sky-400"
+      titlePrefix="Radiograph:"
+      titleHighlightText="Headers"
+      titleHighlightColorClass="text-emerald-400"
+      subtitle="Who really sent this email"
+    />
+
+    <div class="feature-card rounded-3xl p-6 mb-6 code-font text-[21px] leading-snug break-all">
+      <p><span class="text-sky-400 font-bold">Received:</span> <span class="text-sky-200">from mail.example.net (203.0.113.10)</span></p>
+      <p><span class="text-emerald-400 font-bold">Authentication-Results:</span> <span class="text-emerald-200">spf=pass dkim=pass dmarc=pass</span></p>
+      <p><span class="text-emerald-400 font-bold">DKIM-Signature:</span> <span class="text-emerald-200">v=1; d=example.com; s=sel1; b=Q2hl…</span></p>
+      <p><span class="text-amber-400 font-bold">Return-Path:</span> <span class="text-amber-200">&lt;ana@example.com&gt;</span></p>
+      <p><span class="text-amber-400 font-bold">From:</span> <span class="text-amber-200">Ana &lt;ana@example.com&gt;</span></p>
+      <p><span class="text-amber-400 font-bold">Reply-To:</span> <span class="text-amber-200">ana@example.com</span></p>
+      <p><span class="text-purple-400 font-bold">To:</span> <span class="text-purple-200">tu@example.org</span></p>
+      <p><span class="text-purple-400 font-bold">Subject:</span> <span class="text-purple-200">Tomorrow&#39;s meeting</span></p>
+      <p><span class="text-purple-400 font-bold">Message-ID:</span> <span class="text-purple-200">&lt;abc123@example.com&gt;</span></p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 mb-6 items-start">
+      <RadiographyLegend items={ruta} gap="gap-5" minWidth="min-w-0" />
+      <RadiographyLegend items={identidad} gap="gap-5" minWidth="min-w-0" />
+    </div>
+
+    <div class="glass-tag rounded-2xl p-5 mb-auto">
+      <h4 class="text-rose-400 font-bold text-lg uppercase tracking-widest mb-2">
+        Spoofing signs
+      </h4>
+      <ul class="text-slate-200 text-xl leading-snug space-y-1">
+        <li>• <span class="font-mono">From</span> different from <span class="font-mono">Return-Path</span> or a <span class="font-mono">Reply-To</span> on another domain</li>
+        <li>• <span class="font-mono">dmarc=fail</span>, <span class="font-mono">spf=fail</span> o <span class="font-mono">dkim=fail</span></li>
+        <li>• A <span class="font-mono">Received</span> with an IP that does not belong to the sender</li>
+      </ul>
+    </div>
+
+    <PostFooterBar
+      middleHtml='If the <span class="text-amber-400 font-black italic">From</span> lies, <span class="text-emerald-400 font-black italic">DMARC</span> exposes it.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-tag {
+      background: rgba(244, 63, 94, 0.05);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+  </style>
+</BlogPostLayout>
