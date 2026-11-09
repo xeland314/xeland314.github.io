@@ -1,10 +1,9 @@
 // src/pages/api/[lang]/projects/[slug].ts
-import { db, Projects } from "astro:db";
+import type { APIRoute } from "astro";
+import { projects } from "../../../../data/content";
 
-export async function getStaticPaths() {
-  const allProjects = await db.select().from(Projects);
-  
-  return allProjects.map((p) => {
+export function getStaticPaths() {
+  return projects.map((p) => {
     // LIMPIEZA: Extraemos solo la última palabra del slug de la DB
     // Ej: "/en/projects/chat-analyzer" -> "chat-analyzer"
     const cleanSlug = p.slug.includes('/') 

@@ -1,8 +1,8 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { db, Posts, eq, and } from "astro:db";
+import { getPosts } from "../../../data/content";
 
-const posts = await db.select().from(Posts).where(and(eq(Posts.lang, "en"), eq(Posts.isPublished, true)));
+const posts = getPosts("en");
 
 const siteTitle = "Post Gallery - Christopher Villamarín";
 const siteDescription = "Explore my collection of technical visual guides on software development, architecture, and programming tools.";

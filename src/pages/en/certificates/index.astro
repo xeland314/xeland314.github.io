@@ -1,5 +1,5 @@
 ---
-import { db, MyCertificates, desc, asc, eq } from "astro:db";
+import { getCertificates } from "../../../data/content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CertificatesCard from "../../../components/certificates/CertificatesCard.astro";
 
@@ -29,15 +29,7 @@ const pageRobots = "index, follow";
 const pageCanonical = pageUrl;
 
 // Get all certificates from the DB for English language
-const allCertificates = await db
-    .select()
-    .from(MyCertificates)
-    .where(eq(MyCertificates.lang, "en"))
-    .orderBy(
-        desc(MyCertificates.date),
-        desc(MyCertificates.isFeatured),
-        asc(MyCertificates.title),
-    );
+const allCertificates = getCertificates("en", { newestFirst: true });
 ---
 
 <BaseLayout

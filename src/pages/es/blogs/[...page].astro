@@ -1,15 +1,11 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Footer from "../../../components/common/Footer.astro";
-import { db, Blogs, eq, and, desc } from "astro:db";
+import { getBlogs } from "../../../data/content";
 import type { GetStaticPaths } from "astro";
 
 export const getStaticPaths = (async ({ paginate }) => {
-  const allBlogs = await db
-    .select()
-    .from(Blogs)
-    .where(and(eq(Blogs.lang, "es"), eq(Blogs.isPublished, true)))
-    .orderBy(desc(Blogs.pubDate));
+  const allBlogs = getBlogs("es");
 
   return paginate(allBlogs, { pageSize: 10 });
 }) satisfies GetStaticPaths;

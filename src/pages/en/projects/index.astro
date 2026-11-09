@@ -3,7 +3,7 @@
 import Footer from "../../../components/common/Footer.astro";
 import ProjectCard from "../../../components/projects/ProjectCard.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { db, Projects, eq, desc, and } from "astro:db";
+import { getProjects } from "../../../data/content";
 
 // --- PROJECTS PAGE METADATA ---
 const pageTitle = "All My Projects - Christopher Villamarín";
@@ -31,11 +31,7 @@ const pageRobots = "index, follow";
 const pageCanonical = pageUrl;
 
 // Get all projects from the DB for English language
-const allProjects = await db
-  .select()
-  .from(Projects)
-  .where(and(eq(Projects.lang, "en"), eq(Projects.isVisible, true)))
-  .orderBy(desc(Projects.isFeatured), Projects.title);
+const allProjects = getProjects("en", { visibleOnly: true });
 ---
 
 <BaseLayout

@@ -1,6 +1,6 @@
 // src/pages/api/[lang]/projects/index.ts
 import type { APIRoute } from 'astro';
-import { db, Projects, eq, and, desc } from "astro:db";
+import { getProjects } from "../../../data/content";
 
 export function getStaticPaths() {
   return [
@@ -14,16 +14,8 @@ export const GET: APIRoute = async ({ params, url }) => {
   const isFeaturedParam = url.searchParams.get('featured') === 'true';
 
   // Si viene ?featured=true filtramos, si no, traemos todos del idioma
-  const queryFilter = isFeaturedParam 
-    ? and(eq(Projects.lang, lang!), eq(Projects.isFeatured, true))
-    : eq(Projects.lang, lang!);
-
   try {
-    const projects = await db
-      .select()
-      .from(Projects)
-      .where(queryFilter)
-      .orderBy(desc(Projects.isFeatured), Projects.title);
+    const projects = getProjects(lang!, { featured: isFeaturedParam });
 
     // Si pidieron featured, limitamos a 6 como en tu lógica original
     const results = isFeaturedParam ? projects.slice(0, 6) : projects;

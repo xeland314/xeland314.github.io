@@ -1,5 +1,5 @@
 ---
-import { db, Blogs, eq, and, desc } from "astro:db";
+import { getBlogs } from "../../data/content";
 import BentoInternalHeader from "./BentoInternalHeader.astro";
 
 interface Props {
@@ -8,12 +8,7 @@ interface Props {
 
 const { lang = "es" } = Astro.props;
 
-const latestBlogs = await db
-  .select()
-  .from(Blogs)
-  .where(and(eq(Blogs.lang, lang), eq(Blogs.isPublished, true)))
-  .orderBy(desc(Blogs.pubDate))
-  .limit(6);
+const latestBlogs = getBlogs(lang, { limit: 6 });
 
 const labels = {
   es: {

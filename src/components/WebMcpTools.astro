@@ -6,30 +6,17 @@
  * no-op completo: no afecta a usuarios humanos ni al rendimiento.
  * Espejo estático del catálogo en /.well-known/ai-catalog.json (ARD).
  */
-import { db, Projects, Posts, Blogs, MyCertificates, eq, and } from "astro:db";
+import { projects, certificates, posts as allPosts, blogs as allBlogs } from "../data/content";
 import { STUDY_CASES } from "./study-cases/study-cases-data";
 import { TOOLS } from "./bentos/tools-data";
 
-const proyectos = await db
-  .select()
-  .from(Projects)
-  .where(and(eq(Projects.lang, "es"), eq(Projects.isFeatured, true)))
-  .limit(8);
+const proyectos = projects.filter((p) => p.lang === "es" && p.isFeatured).slice(0, 8);
 
-const certificados = await db
-  .select()
-  .from(MyCertificates)
-  .where(eq(MyCertificates.lang, "es"));
+const certificados = certificates.filter((c) => c.lang === "es");
 
-const posts = await db
-  .select()
-  .from(Posts)
-  .where(and(eq(Posts.lang, "es"), eq(Posts.isPublished, true)));
+const posts = allPosts.filter((p) => p.lang === "es" && p.isPublished);
 
-const blogs = await db
-  .select()
-  .from(Blogs)
-  .where(and(eq(Blogs.lang, "es"), eq(Blogs.isPublished, true)));
+const blogs = allBlogs.filter((b) => b.lang === "es" && b.isPublished);
 
 const absoluto = (url: string) =>
   url.startsWith("http") ? url : `https://xeland314.github.io${url}/`;

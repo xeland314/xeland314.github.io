@@ -19,22 +19,15 @@ import BentoCaseStudy from "../components/bentos/BentoCaseStudy.astro";
 import BentoBlog from "../components/bentos/BentoBlog.astro";
 import ContactForm from "../components/contact/ContactForm";
 import Footer from "../components/common/Footer.astro";
-import { db, Posts, Projects, eq, and, desc } from "astro:db";
+import { projects, getPosts } from "../data/content";
 
 const lang = "es";
 
-const featuredProjects = await db
-  .select()
-  .from(Projects)
-  .where(and(eq(Projects.lang, lang), eq(Projects.isFeatured, true)))
-  .limit(6);
+const featuredProjects = projects
+  .filter((p) => p.lang === lang && p.isFeatured)
+  .slice(0, 6);
 
-const recentPosts = await db
-  .select()
-  .from(Posts)
-  .where(and(eq(Posts.lang, lang), eq(Posts.isPublished, true)))
-  .orderBy(desc(Posts.id))
-  .limit(6);
+const recentPosts = getPosts(lang, { recent: true, limit: 6 });
 
 const siteTitle =
   "Christopher Villamarín - Desarrollador de Software | Backend | Programador";

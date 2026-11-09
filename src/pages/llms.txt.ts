@@ -1,11 +1,10 @@
 import type { APIRoute } from 'astro';
-import { db, Projects } from "astro:db";
+import { projects } from "../data/content";
 
 const SITE = "https://xeland314.github.io";
 
 export const GET: APIRoute = async () => {
-  const allProjects = await db.select().from(Projects);
-  const projectsEs = allProjects.filter(p => p.lang === 'es');
+  const projectsEs = projects.filter(p => p.lang === 'es');
 
   const businessSlugs = [
     'chat-analyzer',

@@ -1,5 +1,5 @@
 ---
-import { db, MyCertificates, asc, and, eq } from "astro:db";
+import { getCertificates } from "../../data/content";
 import BentoInternalHeader from "./BentoInternalHeader.astro";
 
 const { lang = "es" } = Astro.props;
@@ -39,14 +39,7 @@ const texts: Record<
 const T = texts[lang];
 const allCertsUrl = `/${lang}/certificates`;
 
-const certificates = await db
-  .select()
-  .from(MyCertificates)
-  .where(
-    and(eq(MyCertificates.lang, lang), eq(MyCertificates.isFeatured, true)),
-  )
-  .orderBy(asc(MyCertificates.date))
-  .limit(4);
+const certificates = getCertificates(lang, { featured: true, limit: 4 });
 
 const getCertAriaDescription = (cert: (typeof certificates)[0]) => {
   const parts = [`${T.cert_aria_prefix} ${cert.title}`, `${cert.issuer}`];

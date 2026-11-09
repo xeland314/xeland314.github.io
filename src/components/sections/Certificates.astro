@@ -1,5 +1,5 @@
 ---
-import { db, MyCertificates, asc, eq, and } from "astro:db";
+import { getCertificates } from "../../data/content";
 import CertificatesCard from "../certificates/CertificatesCard.astro";
 
 const { lang = "es" } = Astro.props;
@@ -16,13 +16,7 @@ const texts: Record<string, { title: string; button: string }> = {
   },
 };
 
-const certificates = await db
-  .select()
-  .from(MyCertificates)
-  .where(
-    and(eq(MyCertificates.isFeatured, true), eq(MyCertificates.lang, lang)),
-  )
-  .orderBy(asc(MyCertificates.date));
+const certificates = getCertificates(lang, { featured: true });
 
 const T = texts[lang];
 ---

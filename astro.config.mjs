@@ -2,8 +2,6 @@
 import { defineConfig, passthroughImageService } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
-import db from "@astrojs/db";
-
 import react from "@astrojs/react";
 
 import sitemap from "@astrojs/sitemap";
@@ -51,7 +49,6 @@ export default defineConfig({
         },
       },
     },
-    db(),
     react(),
     sitemap({
       // Páginas no indexadas por ahora (landing de servicios y volantes)

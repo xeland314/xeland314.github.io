@@ -8,7 +8,7 @@ import ProjectCardMinimalista from "../../components/projects/ProjectCardMinimal
 import ProjectCardWin95 from "../../components/projects/ProjectCardWin95.astro";
 import ProjectCardAPI from "../../components/projects/ProjectCardAPI.astro";
 
-import { db, Projects, eq, and, desc } from "astro:db";
+import { getProjects } from "../../data/content";
 
 const { lang = "es" } = Astro.props;
 
@@ -30,11 +30,7 @@ const texts: Record<
 };
 
 // 1. Obtener todos los proyectos de la DB según el idioma
-const allProjects = await db
-  .select()
-  .from(Projects)
-  .where(and(eq(Projects.isFeatured, true), eq(Projects.lang, lang)))
-  .orderBy(desc(Projects.isFeatured), Projects.title);
+const allProjects = getProjects(lang, { featured: true });
 
 // 2. Limitar a los primeros 6 proyectos destacados
 const featuredProjects = allProjects.slice(0, 6);
