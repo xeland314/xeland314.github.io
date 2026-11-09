@@ -35,7 +35,7 @@
     "react-leaflet": "^5.0.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "satori": "^0.32.0",
+    "satori": "^0.63.2",
     "satori-html": "^0.3.2",
     "tailwindcss": "^4.1.11",
     "typescript": "^6.0.3",
