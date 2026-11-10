@@ -1,0 +1,104 @@
+---
+import { Image } from "astro:assets";
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+import { posts } from "../../data/content";
+
+interface Props {
+  lang?: "es" | "en";
+}
+const { lang = "es" } = Astro.props;
+
+// Lo más citado/consultado: guías de tipos de commit (Bing/Copilot y Google las traen como respuesta).
+const T = {
+  es: {
+    header: "Lo más leído",
+    subtitle: "Guía de commits",
+    cheat: "Tipos de commit: feat, fix, docs, chore…",
+    cheatDesc: "La cheatsheet que más se consulta: qué significa cada tipo de commit y cuándo usarlo.",
+    anatomy: "Anatomía de un commit",
+    anatomyDesc: "Cada parte de un mensaje de commit convencional, explicada.",
+    read: "Leer guía",
+    explore: "Explorar",
+    links: [
+      ["Galería de posts", "/es/posts/"],
+      ["Blog", "/es/blogs/"],
+      ["Proyectos", "/es/projects/"],
+      ["Mini apps", "/mini-apps/"],
+      ["Casos de estudio", "/es/study-cases/"],
+    ],
+  },
+  en: {
+    header: "Most read",
+    subtitle: "Commit guide",
+    cheat: "Commit types: feat, fix, docs, chore…",
+    cheatDesc: "The most consulted cheatsheet: what each commit type means and when to use it.",
+    anatomy: "Anatomy of a commit",
+    anatomyDesc: "Every part of a conventional commit message, explained.",
+    read: "Read guide",
+    explore: "Explore",
+    links: [
+      ["Posts gallery", "/en/posts/"],
+      ["Blog", "/en/blogs/"],
+      ["Projects", "/en/projects/"],
+      ["Mini apps", "/mini-apps/"],
+      ["Case studies", "/en/study-cases/"],
+    ],
+  },
+}[lang];
+
+const find = (slug: string) => posts.find((p) => p.lang === lang && p.url.includes(slug));
+const cheat = find("git-commit-cheatsheet");
+const anatomy = find("git-commit-anatomy");
+const cards = [
+  { post: cheat, title: T.cheat, desc: T.cheatDesc, main: true },
+  { post: anatomy, title: T.anatomy, desc: T.anatomyDesc, main: false },
+].filter((c) => c.post);
+---
+
+<section
+  aria-labelledby="most-read-heading"
+  class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6"
+>
+  <BentoInternalHeader title={T.header} subtitle={T.subtitle} id="most-read-heading" />
+
+  <div class="grid gap-4 md:grid-cols-2">
+    {
+      cards.map(({ post, title, desc, main }) => (
+        <a
+          href={post!.url.endsWith("/") ? post!.url : `${post!.url}/`}
+          class={`group flex gap-4 items-center bg-white dark:bg-gray-800/30 border rounded-2xl p-4 hover:border-blue-500/60 transition-colors ${main ? "border-blue-500/40 md:col-span-1" : "border-gray-200 dark:border-gray-700/50"}`}
+        >
+          <Image
+            src={post!.image}
+            alt=""
+            width="160"
+            height="160"
+            class="w-28 h-28 sm:w-32 sm:h-32 rounded-xl object-cover shrink-0"
+            loading="eager"
+          />
+          <div class="min-w-0">
+            <h4 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              {title}
+            </h4>
+            <p class="mt-1 text-base text-gray-700 dark:text-gray-300">{desc}</p>
+            <span class="mt-2 inline-block text-sm font-bold text-blue-700 dark:text-blue-400">{T.read} →</span>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+
+  <nav aria-label={T.explore} class="mt-5 flex flex-wrap items-center gap-2">
+    <span class="text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mr-1">{T.explore}:</span>
+    {
+      T.links.map(([label, href]) => (
+        <a
+          href={href}
+          class="px-3 py-1.5 rounded-full text-sm font-medium border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+        >
+          {label}
+        </a>
+      ))
+    }
+  </nav>
+</section>

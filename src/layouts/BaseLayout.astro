@@ -37,6 +37,16 @@ const {
   showHeader = true,
   crossOriginIsolated = false,
 } = Astro.props;
+
+// Canónica siempre con "/" final (GitHub Pages redirige 301 las URL sin barra, y una
+// canónica que redirige confunde a los buscadores). Si la página no la define, se deduce de la ruta.
+const normalizeUrl = (value: string) => {
+  const u = new URL(value, Astro.site ?? Astro.url);
+  if (!u.pathname.endsWith("/") && !/\.[a-z0-9]+$/i.test(u.pathname)) u.pathname += "/";
+  u.hash = "";
+  return u.href;
+};
+const canonicalUrl = /noindex/i.test(robots) ? undefined : normalizeUrl(canonical ?? Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -75,7 +85,7 @@ const {
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={url} />
+    <meta property="og:url" content={url ? normalizeUrl(url) : canonicalUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={image} />
     <meta property="og:image:width" content="1200" />
@@ -91,7 +101,7 @@ const {
     <meta name="twitter:description" content={description} />
 
     <link rel="sitemap" href="/sitemap-index.xml" />
-    {canonical && <link rel="canonical" href={canonical} />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
     <link rel="preload" href="/fonts/Inter-VariableFont-latin.woff2" as="font" type="font/woff2" crossorigin />
 

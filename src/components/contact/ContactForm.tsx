@@ -80,7 +80,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
         <div>
           <label
             htmlFor="email"
-            className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 ml-1"
+            className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 ml-1"
           >
             {T.email_label}
           </label>
@@ -97,13 +97,13 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
             autoComplete="email"
             className="w-full block px-4 py-3 border bg-white dark:bg-gray-800/50 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all sm:text-sm"
           />
-          {errors.email && <p className="text-red-500 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.email}</p>}
+          {errors.email && <p className="text-red-500 text-xs font-bold mt-1 ml-1 uppercase">{errors.email}</p>}
         </div>
 
         <div>
           <label
             htmlFor="name"
-            className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 ml-1"
+            className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 ml-1"
           >
             {T.name_label}
           </label>
@@ -120,13 +120,13 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
             autoComplete="name"
             className="w-full block px-4 py-3 border bg-white dark:bg-gray-800/50 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all sm:text-sm"
           />
-          {errors.name && <p className="text-red-500 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.name}</p>}
+          {errors.name && <p className="text-red-500 text-xs font-bold mt-1 ml-1 uppercase">{errors.name}</p>}
         </div>
 
         <div>
           <label
             htmlFor="message"
-            className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 ml-1"
+            className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1 ml-1"
           >
             {T.message_label}
           </label>
@@ -144,12 +144,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
             className="w-full block px-4 py-3 border bg-white dark:bg-gray-800/50 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all sm:text-sm resize-none"
           />
           <div className="flex flex-row justify-end">
-            <p className="text-[10px] font-mono text-gray-600 dark:text-gray-400 pt-1 uppercase">
+            <p className="text-xs font-mono text-gray-600 dark:text-gray-400 pt-1 uppercase">
               {content.message?.length || 0} / 2000 {T.characters}
             </p>
           </div>
           {errors.message && (
-            <p className="text-red-500 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.message}</p>
+            <p className="text-red-500 text-xs font-bold mt-1 ml-1 uppercase">{errors.message}</p>
           )}
         </div>
       </div>
@@ -178,7 +178,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ lang }) => {
       </button>
 
       {status && (
-        <p className="mt-4 text-[10px] font-bold uppercase text-center text-blue-600 dark:text-blue-400 bg-blue-500/10 py-2 rounded-lg">
+        <p className="mt-4 text-xs font-bold uppercase text-center text-blue-600 dark:text-blue-400 bg-blue-500/10 py-2 rounded-lg">
           {status}
         </p>
       )}

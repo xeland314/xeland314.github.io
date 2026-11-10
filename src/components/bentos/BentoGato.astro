@@ -67,7 +67,7 @@ const T = texts[lang];
       </p>
 
       <span
-        class="mt-3 px-2 py-0.5 text-[10px] font-bold bg-white/20 text-white rounded-full border border-white/10 w-fit"
+        class="mt-3 px-2 py-0.5 text-xs font-bold bg-white/20 text-white rounded-full border border-white/10 w-fit"
       >
         {T.exp}
       </span>
@@ -77,13 +77,13 @@ const T = texts[lang];
   {/* Philosophy Highlights */}
   <div class="relative z-10 my-2 flex flex-col gap-2">
     <h2
-      class="text-white/90 text-[11px] font-bold uppercase tracking-wider mb-1"
+      class="text-white/90 text-[0.8125rem] font-bold uppercase tracking-wider mb-1"
     >
       {T.hook}
     </h2>
     <div class="flex items-center gap-2">
       <div class="w-1.5 h-1.5 rounded-full bg-blue-300"></div>
-      <p class="text-[11px] font-medium text-white">
+      <p class="text-[0.8125rem] font-medium text-white">
         {
           lang === "es"
             ? "Aplicaciones multiplataforma: "
@@ -93,7 +93,7 @@ const T = texts[lang];
     </div>
     <div class="flex items-center gap-2">
       <div class="w-1.5 h-1.5 rounded-full bg-blue-300"></div>
-      <p class="text-[11px] font-medium text-white">
+      <p class="text-[0.8125rem] font-medium text-white">
         {
           lang === "es"
             ? "CI/CD: Despliegue a Producción"
@@ -103,7 +103,7 @@ const T = texts[lang];
     </div>
     <div class="flex items-center gap-2">
       <div class="w-1.5 h-1.5 rounded-full bg-blue-300"></div>
-      <p class="text-[11px] font-medium text-white">
+      <p class="text-[0.8125rem] font-medium text-white">
         {
           lang === "es"
             ? "Código Limpio & Testeado"
@@ -213,7 +213,7 @@ const T = texts[lang];
         >
         <span
           id="copy-success-bento"
-          class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-blue-600 text-[10px] font-bold px-2 py-1 rounded opacity-0 transition-opacity pointer-events-none"
+          class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-blue-600 text-xs font-bold px-2 py-1 rounded opacity-0 transition-opacity pointer-events-none"
         >
           {lang === "es" ? "¡Copiado!" : "Copied!"}
         </span>

@@ -40,6 +40,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Texto base más grande (18px) por accesibilidad: todo lo que usa rem escala. */
+  font-size: 112.5%;
 }
 
 :root {

@@ -4,7 +4,7 @@ import ThemedToggleIconButton from "../themes/ThemedToggleIconButton";
 
 const currentPath = Astro.url.pathname;
 const lang = currentPath.startsWith("/en") ? "en" : "es";
-const homeLink = lang === "en" ? "/en" : "/";
+const homeLink = lang === "en" ? "/en/" : "/";
 const sectionBase = lang === "en" ? "/en" : "/es";
 
 const t =
@@ -42,13 +42,13 @@ interface NavLink {
 
 const links: NavLink[] = [
   { href: homeLink, label: t.home },
-  { href: `${sectionBase}/projects`, label: t.projects, prefix: true },
-  { href: `${sectionBase}/posts`, label: t.posts, prefix: true },
-  { href: `${sectionBase}/blogs`, label: t.blogs, prefix: true },
-  { href: `${sectionBase}/certificates`, label: t.certificates, prefix: true },
-  { href: "/animations", label: t.animations, prefix: true },
-  { href: "/mini-apps", label: t.miniApps, prefix: true },
-  { href: "/videos", label: t.videos, prefix: true },
+  { href: `${sectionBase}/projects/`, label: t.projects, prefix: true },
+  { href: `${sectionBase}/posts/`, label: t.posts, prefix: true },
+  { href: `${sectionBase}/blogs/`, label: t.blogs, prefix: true },
+  { href: `${sectionBase}/certificates/`, label: t.certificates, prefix: true },
+  { href: "/animations/", label: t.animations, prefix: true },
+  { href: "/mini-apps/", label: t.miniApps, prefix: true },
+  { href: "/videos/", label: t.videos, prefix: true },
   { href: `${homeLink}#contact`, label: t.contact },
 ];
 

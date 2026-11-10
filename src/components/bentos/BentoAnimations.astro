@@ -26,7 +26,7 @@ const hiddenCount = Math.max(ANIMATIONS.length - MAX_VISIBLE, 0);
     title={T.heading}
     subtitle={T.label}
     count={ANIMATIONS.length}
-    href="/animations"
+    href="/animations/"
     lang={lang}
     id="animations-heading"
   />
@@ -40,7 +40,7 @@ const hiddenCount = Math.max(ANIMATIONS.length - MAX_VISIBLE, 0);
       visibleAnimations.map((anim) => (
         <li>
           <a
-            href={`/animations/${anim.slug}`}
+            href={`/animations/${anim.slug}/`}
             aria-label={`${anim.title[langKey]} — ${anim.description[langKey]}`}
             class="group flex flex-col items-start gap-2 p-4 rounded-xl bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
           >
@@ -66,10 +66,10 @@ const hiddenCount = Math.max(ANIMATIONS.length - MAX_VISIBLE, 0);
             </div>
 
             <div class="text-left">
-              <p class="text-[11px] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+              <p class="text-[0.8125rem] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                 {anim.title[langKey]}
               </p>
-              <p class="text-[9px] text-gray-600 dark:text-gray-400 leading-snug mt-0.5">
+              <p class="text-xs text-gray-600 dark:text-gray-400 leading-snug mt-0.5">
                 {anim.description[langKey]}
               </p>
               <span class="inline-block mt-1.5 text-[8.5px] font-mono font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">
@@ -84,7 +84,7 @@ const hiddenCount = Math.max(ANIMATIONS.length - MAX_VISIBLE, 0);
       hiddenCount > 0 && (
         <li>
           <a
-            href="/animations"
+            href="/animations/"
             aria-label={T.viewMore}
             class="group flex flex-col items-start justify-center gap-2 p-4 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:-translate-y-0.5"
           >
@@ -110,10 +110,10 @@ const hiddenCount = Math.max(ANIMATIONS.length - MAX_VISIBLE, 0);
               </svg>
             </div>
             <div class="text-left">
-              <p class="text-[11px] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+              <p class="text-[0.8125rem] font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
                 {T.viewMore}
               </p>
-              <p class="text-[9px] text-gray-600 dark:text-gray-400 leading-snug mt-0.5 font-mono">
+              <p class="text-xs text-gray-600 dark:text-gray-400 leading-snug mt-0.5 font-mono">
                 +{hiddenCount}
               </p>
             </div>

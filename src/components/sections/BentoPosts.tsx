@@ -51,13 +51,13 @@ const BentoPosts: React.FC<Props> = ({ posts, lang }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
         <div className="absolute bottom-3 left-4 right-4 flex justify-between items-end">
           <h3 className="text-white font-bold text-base leading-tight truncate mr-2">{post.title}</h3>
-          <span className="text-blue-300 text-[9px] font-mono font-bold bg-blue-900/40 px-1.5 py-0.5 rounded-full">{index + 1} / {posts.length}</span>
+          <span className="text-blue-300 text-xs font-mono font-bold bg-blue-900/40 px-1.5 py-0.5 rounded-full">{index + 1} / {posts.length}</span>
         </div>
       </div>
 
       <div className="p-4 flex flex-col flex-grow justify-between">
         <div className="flex items-center justify-between mt-auto">
-          <a href={post.url} className="px-3 text-[11px] uppercase tracking-widest font-bold text-blue-600 dark:text-blue-400 hover:underline">
+          <a href={post.url} className="px-3 text-[0.8125rem] uppercase tracking-widest font-bold text-blue-600 dark:text-blue-400 hover:underline">
             {lang === 'es' ? 'Leer post' : 'Read post'}
           </a>
 

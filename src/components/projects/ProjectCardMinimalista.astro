@@ -1,4 +1,5 @@
 ---
+import { projectHref } from "../../utils/projectLink";
 interface Props {
   project: {
     title: string;
@@ -34,7 +35,7 @@ const texts = {
 };
 
 const T = texts[lang];
-const detailsPageLink = `/${lang}/projects/${project.slug}`;
+const detailsPageLink = projectHref(lang, project.slug);
 ---
 
 <li
@@ -62,7 +63,7 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
               target="_blank"
               rel="noopener noreferrer"
               aria-label={T.repositoryLabel}
-              class="text-[10px] text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-mono"
+              class="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-mono"
             >
               [{T.repository}]<span class="sr-only">{T.externalNotice}</span>
             </a>
@@ -75,7 +76,7 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
               target="_blank"
               rel="noopener noreferrer"
               aria-label={T.demoLabel}
-              class="text-[10px] text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-mono"
+              class="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-mono"
             >
               [{T.demo}]<span class="sr-only">{T.externalNotice}</span>
             </a>
@@ -85,7 +86,7 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
     </div>
 
     <p
-      class="text-[11px] text-gray-600 dark:text-gray-300 mb-1 leading-relaxed line-clamp-2"
+      class="text-[0.8125rem] text-gray-600 dark:text-gray-300 mb-1 leading-relaxed line-clamp-2"
     >
       {project.shortDescription || project.description}
     </p>
@@ -98,7 +99,7 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
           class="flex flex-wrap gap-1.5"
         >
           {(project.tags as string[]).map((tag) => (
-            <li class="text-[9px] text-gray-500 dark:text-gray-400 font-mono">
+            <li class="text-xs text-gray-500 dark:text-gray-400 font-mono">
               #{tag}
             </li>
           ))}

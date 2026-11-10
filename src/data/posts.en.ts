@@ -105,7 +105,7 @@ export const postDataEN = [
   },
   {
     title: "Standard Streams",
-    url: "/en/posts/linux-standard-streams",
+    url: "/en/posts/linux-standard-streams/",
     image:
       "/images/optimized/posts/127.0.0.1_8000_en_posts_linux-standard-streams-cover.avif",
     lang: "en",

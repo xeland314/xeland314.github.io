@@ -1,4 +1,5 @@
 ---
+import { projectHref } from "../../utils/projectLink";
 // src/components/ProjectCard.astro
 
 import { Image } from "astro:assets";
@@ -32,7 +33,7 @@ const texts = {
 
 const T = texts[lang];
 
-const detailsPageLink = `/${lang}/projects/${project.slug}`;
+const detailsPageLink = projectHref(lang, project.slug);
 ---
 
 <article
@@ -52,7 +53,7 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
           width="250"
         />
       ) : (
-        <div class="flex items-center justify-center h-full text-gray-400 font-mono text-[10px] uppercase tracking-tighter">
+        <div class="flex items-center justify-center h-full text-gray-400 font-mono text-xs uppercase tracking-tighter">
           No preview available
         </div>
       )
@@ -69,7 +70,7 @@ const detailsPageLink = `/${lang}/projects/${project.slug}`;
         (project.tags as string[])
           .slice(0, 3)
           .map((tag) => (
-            <span class="text-[10px] uppercase tracking-wider font-medium px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+            <span class="text-xs uppercase tracking-wider font-medium px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
               {tag}
             </span>
           ))

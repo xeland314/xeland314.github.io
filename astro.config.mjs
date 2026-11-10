@@ -54,12 +54,6 @@ export default defineConfig({
       // Páginas no indexadas por ahora (landing de servicios y volantes)
       filter: (page) =>
         !page.includes("/es/services") && !page.includes("/es/flyers"),
-      customPages: [
-        `${MY_SITE}/advent-calendar/`,
-        `${MY_SITE}/memory-game/`,
-        `${MY_SITE}/encriptador-de-texto/`,
-        `${MY_SITE}/mapa-personalizado/`,
-      ],
       i18n: {
         defaultLocale: "es",
         locales: {

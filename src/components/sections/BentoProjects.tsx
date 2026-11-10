@@ -31,9 +31,8 @@ const BentoProjects: React.FC<Props> = ({ projects, lang }) => {
   const prev = () => setIndex((i) => (i - 1 + projects.length) % projects.length);
 
   const p = projects[index];
-  // Slugs in projectDataEN already include 'en/projects/'
   // Slugs in projectData (ES) are just the name
-  const detailsLink = lang === 'es' ? `/es/projects/${p.slug}` : `/${p.slug}`;
+  const detailsLink = `/${lang}/projects/${p.slug}/`;
 
   return (
     <div className="relative h-full flex flex-col bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm group">
@@ -57,12 +56,12 @@ const BentoProjects: React.FC<Props> = ({ projects, lang }) => {
         {p.image ? (
           <img src={p.image} alt={p.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={"256"} height={"256"} fetchPriority="high" />
         ) : (
-          <div className="flex items-center justify-center h-full text-[10px] uppercase text-gray-400 font-mono tracking-tighter">No preview available</div>
+          <div className="flex items-center justify-center h-full text-xs uppercase text-gray-400 font-mono tracking-tighter">No preview available</div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent"></div>
         <div className="absolute bottom-3 left-4 right-4 flex justify-between items-end">
           <h3 className="text-white font-bold text-base leading-tight truncate mr-2">{p.title}</h3>
-          <span className="text-blue-300 text-[9px] font-mono font-bold bg-blue-900/40 px-1.5 py-0.5 rounded-full">{index + 1} / {projects.length}</span>
+          <span className="text-blue-300 text-xs font-mono font-bold bg-blue-900/40 px-1.5 py-0.5 rounded-full">{index + 1} / {projects.length}</span>
         </div>
       </div>
 
@@ -73,7 +72,7 @@ const BentoProjects: React.FC<Props> = ({ projects, lang }) => {
 
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center gap-3">
-            <a href={detailsLink} className="px-3 -ml-3 text-[11px] uppercase tracking-widest font-bold text-blue-600 dark:text-blue-400 hover:underline rounded-lg transition-all">
+            <a href={detailsLink} className="px-3 -ml-3 text-[0.8125rem] uppercase tracking-widest font-bold text-blue-600 dark:text-blue-400 hover:underline rounded-lg transition-all">
               {lang === 'es' ? 'Detalles' : 'Details'}
             </a>
 

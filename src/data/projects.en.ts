@@ -1,7 +1,7 @@
 export const projectDataEN = [
   {
     title: "Interactive Digital Advent Calendar",
-    slug: "en/projects/interactive-advent-calendar",
+    slug: "interactive-advent-calendar",
     description:
       "Create a digital advent calendar in React with animations and festive design. It allows opening boxes according to the corresponding day, revealing messages or virtual gifts.",
     shortDescription:
@@ -15,7 +15,7 @@ export const projectDataEN = [
   },
   {
     title: "Classic Tetris Game in Java",
-    slug: "en/projects/tetris",
+    slug: "tetris",
     description:
       "A classic Tetris game developed in Java using Swing. This project includes features such as difficulty levels, scores, and an intuitive graphical interface.",
     shortDescription:
@@ -29,7 +29,7 @@ export const projectDataEN = [
   },
   {
     title: "WhatsApp Chat Analyzer",
-    slug: "en/projects/chat-analyzer",
+    slug: "chat-analyzer",
     description:
       "A WhatsApp chat analysis tool developed in Dart/Flutter and Rust. Avaible on Windows, Linux and Android. It provides a simple UI to understand a group interaction in a WhatsApp chat, statistics per user and sentiment analysis. Everything is calculated on your own device without an internet conection. You can analyze 100000 messages in just 10 seconds.",
     shortDescription:
@@ -43,7 +43,7 @@ export const projectDataEN = [
   },
   {
     title: "GymApp 1.0 - Gym Management System [LEGACY]",
-    slug: "en/projects/gymapp-v1",
+    slug: "gymapp-v1",
     description:
       "Monolithic desktop application in Python and PyQt5 for gym management. 2021 university project that digitized membership management and user registration.",
     shortDescription:
@@ -57,7 +57,7 @@ export const projectDataEN = [
   },
   {
     title: "Interactive Card Memory Game",
-    slug: "en/projects/memory-game",
+    slug: "memory-game",
     description:
       "An interactive memory game created with HTML, CSS, and JavaScript. It challenges players to find pairs of cards in the shortest time possible.",
     shortDescription:
@@ -71,7 +71,7 @@ export const projectDataEN = [
   },
   {
     title: "Secure Text Encryptor",
-    slug: "en/projects/text-encryptor",
+    slug: "text-encryptor",
     description:
       "Project developed as part of the Alura Latam challenge. This text encryptor allows encrypting and decrypting messages using basic cryptography techniques.",
     shortDescription:
@@ -85,7 +85,7 @@ export const projectDataEN = [
   },
   {
     title: "Lexical Analyzer for Compilers",
-    slug: "en/projects/lexical-analyzer",
+    slug: "lexical-analyzer",
     description:
       "A lexical analyzer that recognizes and recovers errors in the different compilation stages. This project stands out for its use of regular expressions to recognize numerical systems, arithmetic operators, and mathematical functions.",
     shortDescription:
@@ -98,7 +98,7 @@ export const projectDataEN = [
   },
   {
     title: "Multi-Platform Unit Converter",
-    slug: "en/projects/unit-converter",
+    slug: "unit-converter",
     description:
       "A unit converter developed for Oracle Next Education Challenge #2. It allows converting between different units of length, time, temperature, and currencies with a simple graphical interface.",
     shortDescription:
@@ -112,7 +112,7 @@ export const projectDataEN = [
   },
   {
     title: "Linear Programming Solver with GUI",
-    slug: "en/projects/simplex",
+    slug: "simplex",
     description:
       "Comprehensive tool for Linear Programming with multiple interfaces: DSLs (String-based and Pythonic), Command-Line, and an advanced GUI with PySide6 that includes graphical visualization.",
     shortDescription:
@@ -126,7 +126,7 @@ export const projectDataEN = [
   },
   {
     title: "Ecuador Location Finder with Smart Autocomplete",
-    slug: "en/projects/autocompleter",
+    slug: "autocompleter",
     description:
       "A location finder for Ecuador with advanced autocompletion. It uses a local Nominatim server, caching with Redis, and a 'reinforcement' system to learn from user selections and improve result relevance.",
     shortDescription:
@@ -140,7 +140,7 @@ export const projectDataEN = [
   },
   {
     title: "URL Shortener with Access Management",
-    slug: "en/projects/urlshortener",
+    slug: "urlshortener",
     description:
       "A complete and efficient URL shortener service, built with Django, Django REST Framework, and HTMX. It allows creating public, private (with token), and password-protected URLs, with user management and asynchronous tasks with Celery.",
     shortDescription:
@@ -153,7 +153,7 @@ export const projectDataEN = [
   },
   {
     title: "AI-Powered Software Project Estimator",
-    slug: "en/projects/codecraft-estimator",
+    slug: "codecraft-estimator",
     description:
       "AI-powered software project estimator. The tool calculates project time and cost, manages risks, and allows for task augmentation, based on a three-point estimation formula.",
     shortDescription:
@@ -167,7 +167,7 @@ export const projectDataEN = [
   },
   {
     title: "Geocoding API with Intelligent Caching",
-    slug: "en/projects/geocoding-api",
+    slug: "geocoding-api",
     description:
       "A geocoding API wrapper that integrates multiple services (Nominatim, Here, Geoapify) under a dual-cache architecture. It uses Redis for recent queries (short-term cache) and SQLite for long-term storage, optimizing performance and reducing external requests.",
     shortDescription:
@@ -189,7 +189,7 @@ export const projectDataEN = [
   },
   {
     title: "Social Media Metrics Dashboard",
-    slug: "en/projects/post-metrics",
+    slug: "post-metrics",
     description:
       "Comprehensive analytics platform for personal brands, designed to track, visualize, and optimize performance across multiple social networks. Combines a robust Go backend, a modern React frontend with Cyberpunk aesthetics, and strategic intelligence powered by Google Gemini.",
     shortDescription:
@@ -202,7 +202,7 @@ export const projectDataEN = [
   },
   {
     title: "Minimalist Markdown Slideshow Presenter in C",
-    slug: "en/projects/slides-c",
+    slug: "slides-c",
     description:
       "A minimalist, high-performance slideshow presenter written in C using X11, Cairo, and Pango. Designed to render Markdown files directly on screen with a modern, professional aesthetic. Supports multiple languages through functional ports.",
     shortDescription:
@@ -214,7 +214,7 @@ export const projectDataEN = [
   },
   {
     title: "Visual Statistical Distributions Explorer",
-    slug: "en/projects/statlens",
+    slug: "statlens",
     description:
       "Modern statistical distributions explorer with 13 probability models (Binomial, Normal, Poisson, Gamma, F, etc.). Includes dynamic graphs with Matplotlib, LaTeX formula rendering, interval calculator, and Excel export. Built with Python 3.12 and PySide6.",
     shortDescription:
@@ -226,7 +226,7 @@ export const projectDataEN = [
   },
   {
     title: "System Info Viewer in WebAssembly",
-    slug: "en/projects/zigfetch",
+    slug: "zigfetch",
     description:
       "A neofetch-style system information visualizer compiled to WebAssembly (WASI). The same binary runs natively on Linux and inside a browser terminal, reading OS, GPU, RAM, and resolution data in both environments.",
     shortDescription:
@@ -239,7 +239,7 @@ export const projectDataEN = [
   },
   {
     title: "Animated Code Video Generator",
-    slug: "en/projects/code-to-video",
+    slug: "code-to-video",
     description:
       "Generate animated videos of code being typed directly in your browser. Ideal for tutorials and social media. Allows customization of language, theme, and typing speed.",
     shortDescription:
@@ -251,7 +251,7 @@ export const projectDataEN = [
   },
   {
     title: "Code Snippet Image Generator for Social Media",
-    slug: "en/projects/code-to-img",
+    slug: "code-to-img",
     description:
       "Convert your code snippets into elegant images with custom backgrounds for sharing on social platforms. Supports syntax highlighting for multiple languages.",
     shortDescription:
@@ -263,7 +263,7 @@ export const projectDataEN = [
   },
   {
     title: "GPU and WebGPU Compatibility Checker",
-    slug: "en/projects/can-i-use-gpu",
+    slug: "can-i-use-gpu",
     description:
       "Verify if your browser and hardware support GPU acceleration for Flutter and WebGPU applications. Provides technical details about the renderer and available compute capabilities.",
     shortDescription:
@@ -276,7 +276,7 @@ export const projectDataEN = [
   },
   {
     title: "Catsplash - Wi-Fi Captive Portal for Linux",
-    slug: "en/projects/catsplash",
+    slug: "catsplash",
     description:
       "Lightweight captive portal written in Go to manage Internet access on temporary Linux Wi-Fi networks. It blocks traffic with iptables until terms are accepted, manages clients and sessions in SQLite with time and inactivity expiration, and ships a network-namespaces testing lab with 100 concurrent clients, gosec-enabled CI/CD, and documented Ecuadorian LOPDP data-protection compliance (explicit consent, ARCO+ rights and DPIA).",
     shortDescription:
@@ -290,7 +290,7 @@ export const projectDataEN = [
   },
   {
     title: "Git Evolution - Code Evolution by Language",
-    slug: "en/projects/git-evolution",
+    slug: "git-evolution",
     description:
       "Python CLI that analyzes any Git repository's history and generates an interactive Plotly HTML report: stacked areas of cumulative lines of code per file extension over time. Built as a Chain of Responsibility pipeline with strict non-regex scanning, an explicitly computed X axis range that keeps tiny repos readable, and standalone packaging via PyInstaller. Environments resolve themselves with uv inline script metadata (PEP 723). The linked demo was generated from this very portfolio's history.",
     shortDescription:
@@ -304,7 +304,7 @@ export const projectDataEN = [
   },
   {
     title: "Mouse Visual - Animated Pixel Art in C with Raylib",
-    slug: "en/projects/mouse-visual",
+    slug: "mouse-visual",
     description:
       "Animated pixel-art mouse drawing written in pure C with Raylib. Ships a Makefile for Linux and cross-compilation to Windows with MinGW, a script that downloads and builds raylib automatically, and constants defined with #define in alphabetical order as a code-discipline exercise.",
     shortDescription:

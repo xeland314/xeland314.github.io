@@ -220,7 +220,7 @@ export const postData = [
   },
   {
     title: "Linux: Standard Streams",
-    url: "/es/posts/linux-standard-streams",
+    url: "/es/posts/linux-standard-streams/",
     image:
       "/images/optimized/posts/127.0.0.1_8000_es_posts_url-anatomy-cover.avif",
     lang: "es",

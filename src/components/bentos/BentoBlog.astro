@@ -34,7 +34,7 @@ const t = labels[lang as keyof typeof labels];
     <BentoInternalHeader
       title={t.title}
       subtitle={t.subtitle}
-      href={`/${lang}/blog`}
+      href={`/${lang}/blogs/`}
       lang={lang}
       id="blog-heading"
     />
@@ -49,7 +49,7 @@ const t = labels[lang as keyof typeof labels];
         >
           <time
             transition:name="blog-date"
-            class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1"
+            class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1"
           >
             {new Date(blog.pubDate!).toLocaleDateString(lang, {
               year: "numeric",

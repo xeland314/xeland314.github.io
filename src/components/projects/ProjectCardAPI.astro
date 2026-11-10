@@ -1,4 +1,5 @@
 ---
+import { projectHref } from "../../utils/projectLink";
 // src/components/projects/ProjectCardAPI.astro
 
 interface Props {
@@ -21,7 +22,7 @@ const cleanSlug = project.slug.split("/").filter(Boolean).pop();
 const apiLink = `/api/${lang}/project/${cleanSlug}.json`;
 
 // Enlace a la página visual del proyecto (ajusta si la ruta es distinta)
-const detailsPageLink = `/${lang}/projects/${cleanSlug}`;
+const detailsPageLink = projectHref(lang, project.slug);
 ---
 
 <article
@@ -31,7 +32,7 @@ const detailsPageLink = `/${lang}/projects/${cleanSlug}`;
     class="flex items-center bg-gray-50 dark:bg-gray-900 p-2 border-b border-gray-200 dark:border-gray-800 gap-2 overflow-hidden"
   >
     <span
-      class="bg-green-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0"
+      class="bg-green-600 text-white text-xs px-1.5 py-0.5 rounded font-bold shrink-0"
       >GET</span
     >
 
@@ -44,7 +45,7 @@ const detailsPageLink = `/${lang}/projects/${cleanSlug}`;
     </a>
 
     <span
-      class="ml-auto text-[9px] text-gray-400 italic shrink-0 hidden sm:inline"
+      class="ml-auto text-xs text-gray-400 italic shrink-0 hidden sm:inline"
       >200 OK</span
     >
   </div>
@@ -66,7 +67,7 @@ const detailsPageLink = `/${lang}/projects/${cleanSlug}`;
       // {project.shortDescription || project.description}
     </p>
 
-    <div class="space-y-3 text-[11px]">
+    <div class="space-y-3 text-[0.8125rem]">
       <div
         class="bg-gray-100 dark:bg-black/40 p-2 rounded border border-gray-200/50 dark:border-white/5 overflow-hidden"
       >
