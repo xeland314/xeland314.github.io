@@ -80,7 +80,7 @@ export const BlogEnd: React.FC<BlogEndProps> = ({
             {/* Username badge */}
             <div className={`mb-8 px-8 py-3 rounded-full ${c.bg}/10 border-2 ${c.border}/30 backdrop-blur-sm`}>
               <span className={`text-2xl font-bold ${c.textAccent} tracking-wider`}>
-                @{theme.username}
+                @{theme.username.replace(/^@/, "")}
               </span>
             </div>
 
@@ -112,21 +112,21 @@ export const BlogEnd: React.FC<BlogEndProps> = ({
             {/* Enhanced Action Buttons */}
             <div className="flex flex-row items-center justify-center gap-12 mb-2">
               <ActionCard 
-                icon="❤️" 
+                icon={<PixelIcon rows={HEART} />} 
                 label={likeText} 
                 accentColor={c} 
                 theme={s}
                 delay={0}
               />
               <ActionCard 
-                icon="💬" 
+                icon={<PixelIcon rows={COMMENT} />} 
                 label={commentText} 
                 accentColor={c} 
                 theme={s}
                 delay={100}
               />
               <ActionCard 
-                icon={<BookmarkIcon />} 
+                icon={<PixelIcon rows={BOOKMARK} />} 
                 label={saveText} 
                 accentColor={c} 
                 theme={s}
@@ -182,19 +182,60 @@ const ActionCard: React.FC<ActionCardProps> = ({ icon, label, accentColor, theme
   </div>
 );
 
-const BookmarkIcon = () => (
+// Íconos en cuadrícula de píxeles (sin emojis: se ven igual en cualquier sistema y encajan con el estilo pixel).
+const HEART = [
+  "..XXX...XXX..",
+  ".XXXXX.XXXXX.",
+  "XXXXXXXXXXXXX",
+  "XXXXXXXXXXXXX",
+  "XXXXXXXXXXXXX",
+  ".XXXXXXXXXXX.",
+  "..XXXXXXXXX..",
+  "...XXXXXXX...",
+  "....XXXXX....",
+  ".....XXX.....",
+  "......X......",
+];
+const COMMENT = [
+  "XXXXXXXXXXXXX",
+  "XXXXXXXXXXXXX",
+  "XX.........XX",
+  "XX.X..X..X.XX",
+  "XX.........XX",
+  "XX.........XX",
+  "XXXXXXXXXXXXX",
+  "XXXXXXXXXXXXX",
+  "...XXXX......",
+  "...XXX.......",
+  "...XX........",
+];
+const BOOKMARK = [
+  ".XXXXXXXXX.",
+  ".XXXXXXXXX.",
+  ".XXXXXXXXX.",
+  ".XXXXXXXXX.",
+  ".XXXXXXXXX.",
+  ".XXXXXXXXX.",
+  ".XXXXXXXXX.",
+  ".XXXXXXXXX.",
+  ".XXXX.XXXX.",
+  ".XXX...XXX.",
+  ".XX.....XX.",
+];
+
+const PixelIcon = ({ rows }: { rows: string[] }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="48"
-    height="48"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    width="56"
+    height="56"
+    viewBox={`0 0 ${rows[0].length} ${rows.length}`}
+    shapeRendering="crispEdges"
+    fill="currentColor"
     className="text-white"
+    aria-hidden="true"
   >
-    <path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z" />
+    {rows.flatMap((row, y) =>
+      [...row].map((ch, x) => (ch === "X" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" /> : null)),
+    )}
   </svg>
 );
