@@ -258,6 +258,14 @@ export const postData = [
     isPublished: true,
   },
   {
+    title: "Registro DMARC",
+    url: "/es/posts/dmarc-record-anatomy",
+    image:
+      "/images/optimized/posts/localhost_4321_es_posts_dmarc-record-anatomy-cover.avif",
+    lang: "es",
+    isPublished: true,
+  },
+  {
     title: "Hashing vs. Cifrado",
     url: "/es/posts/software-hashing-vs-encryption",
     image:

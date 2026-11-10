@@ -1,0 +1,116 @@
+---
+import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
+import RadiographyHeader from "../../../components/blog/RadiographyHeader.astro";
+import RadiographyLegend from "../../../components/blog/RadiographyLegend.astro";
+import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
+
+const title = "DMARC record";
+const description =
+  "Radiography: the DMARC record - Anatomy of v, p, rua, pct and SPF/DKIM alignment";
+
+const izquierda = [
+  {
+    bgColor: "bg-sky-400",
+    shadowRgba: "rgba(56,189,248,0.5)",
+    textColor: "text-sky-400",
+    title: "Version",
+    description: "<span class='font-mono'>v=DMARC1</span> always comes first. <b class='text-white'>Without it, it is not a DMARC record.</b>",
+  },
+  {
+    bgColor: "bg-emerald-400",
+    shadowRgba: "rgba(52,211,153,0.5)",
+    textColor: "text-emerald-400",
+    title: "Policy",
+    description: "<span class='font-mono'>p</span> says what to do on failure: <b class='text-white'>none</b>, <b class='text-white'>quarantine</b> or <b class='text-white'>reject</b>.",
+  },
+];
+const derecha = [
+  {
+    bgColor: "bg-amber-400",
+    shadowRgba: "rgba(251,191,36,0.5)",
+    textColor: "text-amber-400",
+    title: "Reports",
+    description: "<span class='font-mono'>rua</span> receives a daily summary of who sent as your domain.",
+  },
+  {
+    bgColor: "bg-purple-400",
+    shadowRgba: "rgba(192,132,252,0.5)",
+    textColor: "text-purple-400",
+    title: "Alignment and scope",
+    description: "<span class='font-mono'>adkim</span> and <span class='font-mono'>aspf</span> (r/s) and <span class='font-mono'>pct</span>: how strict and what percentage.",
+  },
+];
+---
+
+<BlogPostLayout
+  title={title}
+  description={description}
+  bgColor="bg-slate-950"
+  extraFonts="&family=Fira+Code:wght@400;700"
+  lang="en"
+>
+  <div
+    class="relative p-8 md:p-14 pb-28 md:pb-28 flex flex-col text-white overflow-hidden h-full"
+  >
+    <!-- Language Link -->
+    <div class="absolute top-4 right-4 z-50">
+      <a
+        href="/es/posts/dmarc-record-anatomy"
+        class="glass-tag px-3 py-1 rounded text-slate-400 hover:text-white text-sm font-bold transition-colors"
+      >
+        ES
+      </a>
+    </div>
+
+    <RadiographyHeader
+      categoryText="DNS and email"
+      categoryColorClass="text-sky-400"
+      titlePrefix="Radiography:"
+      titleHighlightText="DMARC"
+      titleHighlightColorClass="text-emerald-400"
+      subtitle="How you tell the world what to do with fake email"
+    />
+
+    <div class="feature-card rounded-3xl p-5 mb-5 code-font text-[24px] leading-relaxed">
+      <p class="mb-2"><span class="text-sky-400 font-bold">_dmarc.example.com</span> <span class="text-slate-500">TXT</span></p>
+      <p>
+        <span class="inline-block text-sky-300 font-bold">v=DMARC1;</span>
+        <span class="inline-block text-emerald-300 font-bold">p=reject;</span>
+        <span class="inline-block text-purple-300 font-bold">pct=100;</span>
+        <span class="inline-block text-amber-300 font-bold">rua=mailto:dmarc@example.com;</span>
+        <span class="inline-block text-purple-300 font-bold">adkim=s;</span>
+        <span class="inline-block text-purple-300 font-bold">aspf=s</span>
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 mb-6 items-start">
+      <RadiographyLegend items={izquierda} gap="gap-5" minWidth="min-w-0" />
+      <RadiographyLegend items={derecha} gap="gap-5" minWidth="min-w-0" />
+    </div>
+
+    <div class="glass-tag rounded-2xl p-4 mb-auto">
+      <h4 class="text-emerald-400 font-bold text-lg uppercase tracking-widest mb-2">Policy ladder</h4>
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div class="rounded-xl p-2 border border-sky-400/40 bg-sky-400/10"><p class="code-font font-bold text-sky-300 text-2xl">none</p><p class="text-slate-200 text-lg leading-snug">Only observe and get reports</p></div>
+        <div class="rounded-xl p-2 border border-amber-400/40 bg-amber-400/10"><p class="code-font font-bold text-amber-300 text-2xl">quarantine</p><p class="text-slate-200 text-lg leading-snug">Suspicious mail goes to spam</p></div>
+        <div class="rounded-xl p-2 border border-emerald-400/40 bg-emerald-400/10"><p class="code-font font-bold text-emerald-300 text-2xl">reject</p><p class="text-slate-200 text-lg leading-snug">Fake mail is rejected</p></div>
+      </div>
+      <p class="text-slate-300 text-xl leading-snug mt-3"><b class="text-white">Tip:</b> Start at <span class='font-mono'>p=none</span>, read the reports and move up step by step to <span class='font-mono'>reject</span>.</p>
+    </div>
+
+    <PostFooterBar
+      middleHtml='Your <span class="text-amber-400 font-black italic">rules</span>: <span class="text-emerald-400 font-black italic">DMARC</span> enforces them.'
+    />
+  </div>
+
+  <style>
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-tag {
+      background: rgba(52, 211, 153, 0.05);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+  </style>
+</BlogPostLayout>

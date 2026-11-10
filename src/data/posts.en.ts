@@ -127,4 +127,12 @@ export const postDataEN = [
     lang: "en",
     isPublished: true,
   },
+  {
+    title: "DMARC Record",
+    url: "/en/posts/dmarc-record-anatomy",
+    image:
+      "/images/optimized/posts/localhost_4321_en_posts_dmarc-record-anatomy-cover.avif",
+    lang: "en",
+    isPublished: true,
+  },
 ];
