@@ -46,6 +46,15 @@ const normalizeUrl = (value: string) => {
   u.hash = "";
   return u.href;
 };
+// Títulos y descripciones demasiado cortos pierden relevancia en buscadores (Bing/Google los marcan):
+// se completan con la marca y una frase genérica del idioma de la página.
+const noIndex = /noindex/i.test(robots);
+const seoTitle =
+  noIndex || title.length >= 40 || /Villamar/i.test(title) ? title : `${title} | Christopher Villamarín`;
+const seoDescription =
+  noIndex || !description || description.length >= 70
+    ? description
+    : `${description.replace(/[.\s]+$/, "")}. ${lang === "en" ? "Visual guide with practical examples by Christopher Villamarín." : "Guía visual con ejemplos prácticos de Christopher Villamarín."}`;
 const canonicalUrl = /noindex/i.test(robots) ? undefined : normalizeUrl(canonical ?? Astro.url.pathname);
 ---
 
@@ -61,8 +70,8 @@ const canonicalUrl = /noindex/i.test(robots) ? undefined : normalizeUrl(canonica
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)" />
     <link rel="apple-touch-icon" href="/assets/images/icon-192x192.png" />
 
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <title>{seoTitle}</title>
+    <meta name="description" content={seoDescription} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content={author} />
     <meta name="creator" content={author} />
@@ -83,8 +92,8 @@ const canonicalUrl = /noindex/i.test(robots) ? undefined : normalizeUrl(canonica
       content="AmjsTZ67E0sirZ1XmOjAH+xDIQsUE5d3WiJmeSsOC1TDeAo4nORPTBF+ogDMhLe7wMzQZpFrJMYHtsJj8VnR9g4AAABmeyJvcmlnaW4iOiJodHRwczovL3hlbGFuZDMxNC5naXRodWIuaW86NDQzIiwiZmVhdHVyZSI6IldlYk1DUCIsImV4cGlyeSI6MTc5NDg3MzYwMCwiaXNTdWJkb21haW4iOnRydWV9"
     />
 
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={seoTitle} />
+    <meta property="og:description" content={seoDescription} />
     <meta property="og:url" content={url ? normalizeUrl(url) : canonicalUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={image} />
@@ -97,8 +106,8 @@ const canonicalUrl = /noindex/i.test(robots) ? undefined : normalizeUrl(canonica
     <meta name="twitter:image:alt" content={imageAlt} />
     <meta name="twitter:site" content="@xeland314" />
     <meta name="twitter:creator" content="@xeland314" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content={seoTitle} />
+    <meta name="twitter:description" content={seoDescription} />
 
     <link rel="sitemap" href="/sitemap-index.xml" />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}

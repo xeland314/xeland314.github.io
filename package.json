@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "indexnow": "node scripts/indexnow.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

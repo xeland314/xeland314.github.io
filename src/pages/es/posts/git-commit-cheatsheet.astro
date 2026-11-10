@@ -2,8 +2,9 @@
 import BlogPostLayout from "../../../layouts/BlogPostLayout.astro";
 import PostFooterBar from "../../../components/blog/PostFooterBar.astro";
 
-const title = "Tipos de Commit";
-const description = "Cheatsheet: Conventional Commits - Tipos y Usos";
+const title = "Tipos de commit: feat, fix, docs, chore y más (Conventional Commits)";
+const description =
+  "Cheatsheet de tipos de commit de Conventional Commits: qué significa feat, fix, docs, refactor, chore y cuándo usar cada uno, con ejemplos.";
 ---
 
 <BlogPostLayout
@@ -236,4 +237,36 @@ const description = "Cheatsheet: Conventional Commits - Tipos y Usos";
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
   </style>
+  <Fragment slot="article">
+    <h2>¿Qué son los tipos de commit?</h2>
+    <p>
+      El tipo de commit es la primera palabra del mensaje y dice, de un vistazo, qué clase de cambio
+      contiene. Es la base de <strong>Conventional Commits</strong>: <code>tipo(ámbito): descripción</code>.
+      Con ese formato el historial se lee solo, se pueden generar changelogs automáticos y las
+      herramientas deciden la siguiente versión según <a href="/es/posts/software-semver/" class="text-emerald-300 underline">SemVer</a>.
+    </p>
+    <h2>Los tipos más usados</h2>
+    <ul>
+      <li><code>feat</code>: una funcionalidad nueva para el usuario. Sube la versión <em>minor</em>.</li>
+      <li><code>fix</code>: corrige un error. Sube la versión <em>patch</em>.</li>
+      <li><code>docs</code>: cambios solo en documentación.</li>
+      <li><code>style</code>: formato, espacios o punto y coma; no cambia el comportamiento.</li>
+      <li><code>refactor</code>: reorganiza el código sin añadir funciones ni corregir errores.</li>
+      <li><code>perf</code>: mejora el rendimiento.</li>
+      <li><code>test</code>: añade o corrige pruebas.</li>
+      <li><code>build</code> y <code>ci</code>: cambios en el sistema de compilación, dependencias o en la integración continua.</li>
+      <li><code>chore</code>: tareas de mantenimiento que no tocan el código de producción.</li>
+      <li><code>revert</code>: deshace un commit anterior.</li>
+    </ul>
+    <h2>Cambios que rompen compatibilidad</h2>
+    <p>
+      Añade <code>!</code> después del tipo (<code>feat!: elimina la API v1</code>) o un pie{" "}<code>BREAKING CHANGE:</code> en el cuerpo. Eso indica una versión <em>major</em>.
+    </p>
+    <h2>Un buen mensaje</h2>
+    <p>
+      Usa el imperativo y minúsculas (<code>fix(ui): evita el salto del botón</code>), mantén la
+      primera línea en unos 72 caracteres y explica el <em>porqué</em> en el cuerpo. Para ver cada
+      parte de un mensaje, revisa la <a href="/es/posts/git-commit-anatomy/" class="text-emerald-300 underline">anatomía de un commit</a>.
+    </p>
+  </Fragment>
 </BlogPostLayout>
