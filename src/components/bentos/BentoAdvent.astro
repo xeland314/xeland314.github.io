@@ -1,0 +1,118 @@
+---
+import BentoInternalHeader from "./BentoInternalHeader.astro";
+
+interface Props {
+  lang?: "es" | "en";
+}
+const { lang = "es" } = Astro.props;
+
+// Novedad de temporada: visible del 15 de noviembre al 6 de enero (se oculta con JS fuera de fecha).
+const T = {
+  es: {
+    heading: "Calendario de Adviento 2026",
+    label: "Novedad navideña",
+    text: "Abre una caja cada día de diciembre y descubre una sorpresa. Gratis, en el navegador y en estilo pixelart.",
+    cta: "Abrir el calendario",
+    more: "Ver cómo está hecho",
+    imageAlt: "Vista previa del Calendario de Adviento interactivo en pixelart",
+    link: "/es/projects/interactive-advent-calendar/",
+    before: (d: number) => `Faltan ${d} ${d === 1 ? "día" : "días"} para la primera caja (1 de diciembre).`,
+    during: (d: number) => `Hoy toca la caja ${d}.`,
+    after: "Gracias por abrir las cajas. ¡Feliz Navidad!",
+  },
+  en: {
+    heading: "Advent Calendar 2026",
+    label: "Christmas news",
+    text: "Open a box every day in December and discover a surprise. Free, in your browser and in pixel-art style.",
+    cta: "Open the calendar",
+    more: "See how it is built",
+    imageAlt: "Preview of the interactive pixel-art Advent Calendar",
+    link: "/en/projects/interactive-advent-calendar/",
+    before: (d: number) => `${d} ${d === 1 ? "day" : "days"} left until the first box (December 1st).`,
+    during: (d: number) => `Today is box number ${d}.`,
+    after: "Thanks for opening the boxes. Merry Christmas!",
+  },
+}[lang];
+const msgs = JSON.stringify({
+  before: T.before(0).replace("0", "{n}"),
+  beforeOne: T.before(1).replace("1", "{n}"),
+  during: T.during(0).replace("0", "{n}"),
+  after: T.after,
+});
+---
+
+<section
+  id="advent"
+  aria-labelledby="advent-heading"
+  data-advent
+  data-msgs={msgs}
+  class="bg-gradient-to-br from-blue-50 to-red-50 dark:from-gray-900 dark:to-gray-900 border border-blue-200 dark:border-gray-800 rounded-3xl p-6"
+>
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+    <div class="md:col-span-7">
+      <BentoInternalHeader title={T.heading} subtitle={T.label} id="advent-heading" />
+      <p class="text-base text-gray-700 dark:text-gray-300 leading-relaxed -mt-2 mb-3 px-1">{T.text}</p>
+      <p data-advent-msg class="text-base font-bold text-red-700 dark:text-red-400 px-1 mb-5"></p>
+      <div class="flex flex-wrap gap-3 ml-1">
+        <a
+          href="https://xeland314.github.io/advent-calendar/"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold transition-all transform hover:-translate-y-0.5 shadow-lg shadow-red-600/20"
+        >
+          {T.cta}
+        </a>
+        <a
+          href={T.link}
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-sm font-bold text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all transform hover:-translate-y-0.5"
+        >
+          {T.more}
+        </a>
+      </div>
+    </div>
+    <div class="md:col-span-5">
+      <a href="https://xeland314.github.io/advent-calendar/" tabindex="-1" aria-hidden="true" class="block">
+        <img
+          src="/images/advent_calendar_preview.png"
+          alt={T.imageAlt}
+          width="1200"
+          height="630"
+          loading="lazy"
+          decoding="async"
+          class="w-full rounded-2xl border border-gray-200 dark:border-gray-700 shadow-md"
+          style="image-rendering: pixelated"
+        />
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const setupAdvent = () => {
+    const el = document.querySelector<HTMLElement>("[data-advent]");
+    if (!el) return;
+    const msgs = JSON.parse(el.dataset.msgs ?? "{}");
+    const now = new Date();
+    const y = now.getFullYear();
+    const day = 86400000;
+    const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const today = startOfDay(now);
+    const dec1 = new Date(y, 11, 1).getTime();
+    // Temporada: 15 nov - 6 ene
+    const inSeason = (now.getMonth() === 10 && now.getDate() >= 15) || now.getMonth() === 11 || (now.getMonth() === 0 && now.getDate() <= 6);
+    if (!inSeason) {
+      el.hidden = true;
+      return;
+    }
+    const msg = el.querySelector("[data-advent-msg]");
+    if (!msg) return;
+    if (now.getMonth() === 10) {
+      const n = Math.round((dec1 - today) / day);
+      msg.textContent = (n === 1 ? msgs.beforeOne : msgs.before).replace("{n}", String(n));
+    } else if (now.getMonth() === 11 && now.getDate() <= 24) {
+      msg.textContent = msgs.during.replace("{n}", String(now.getDate()));
+    } else {
+      msg.textContent = msgs.after;
+    }
+  };
+  setupAdvent();
+  document.addEventListener("astro:after-swap", setupAdvent);
+</script>

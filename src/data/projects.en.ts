@@ -9,6 +9,7 @@ export const projectDataEN = [
     githubLink: "https://github.com/xeland314/inventario",
     tags: ["Go", "Astro", "React", "SQLite", "QR", "Barcode", "WebSocket"],
     image: "/images/inventario_cover.jpg",
+    isFeatured: true,
   },
   {
     title: "WindowsDiagnosis: Diagnostics and Auditing with PowerShell",
@@ -20,6 +21,7 @@ export const projectDataEN = [
     githubLink: "https://github.com/xeland314/WindowsDiagnosis",
     tags: ["PowerShell", "Windows", "Security", "Auditing", "LOPDP"],
     image: "/images/windowsdiagnosis_cover.jpg",
+    isFeatured: true,
   },
   {
     title: "Interactive Digital Advent Calendar",
@@ -219,7 +221,7 @@ export const projectDataEN = [
     githubLink: "https://github.com/xeland314/post_metrics",
     tags: ["Go", "React", "SQLite", "AI", "Gemini", "TailwindCSS", "Cyberpunk"],
     image: "/images/post_metrics_showcase.png",
-    isFeatured: true,
+    isFeatured: false,
     lang: "en",
   },
   {

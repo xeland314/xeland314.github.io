@@ -16,6 +16,7 @@ import BentoPostGallery from "../components/bentos/BentoPostGallery.astro";
 import BentoServices from "../components/bentos/BentoServices.astro";
 import BentoDevTools from "../components/bentos/BentoDevTools.astro";
 import BentoCaseStudy from "../components/bentos/BentoCaseStudy.astro";
+import BentoAdvent from "../components/bentos/BentoAdvent.astro";
 import BentoMostRead from "../components/bentos/BentoMostRead.astro";
 import BentoBlog from "../components/bentos/BentoBlog.astro";
 import ContactForm from "../components/contact/ContactForm";
@@ -68,6 +69,9 @@ const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
       >
         <BentoHero lang={lang} />
       </div>
+
+      {/* 1.5 Novedad de temporada: calendario de adviento (visible 15 nov - 6 ene) */}
+      <BentoAdvent lang={lang} />
 
       {/* 2. Lo más leído (tipos de commit) y publicaciones recientes */}
       <section aria-label="Lo más leído y publicaciones recientes" id="blog" class="space-y-4">

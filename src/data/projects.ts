@@ -9,6 +9,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/inventario",
     tags: ["Go", "Astro", "React", "SQLite", "QR", "Código de barras", "WebSocket"],
     image: "/images/inventario_cover.jpg",
+    isFeatured: true,
   },
   {
     title: "WindowsDiagnosis: Diagnóstico y Auditoría con PowerShell",
@@ -20,6 +21,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/WindowsDiagnosis",
     tags: ["PowerShell", "Windows", "Seguridad", "Auditoría", "LOPDP"],
     image: "/images/windowsdiagnosis_cover.jpg",
+    isFeatured: true,
   },
   {
     title: "Calendario de Adviento Digital Interactivo",
@@ -206,7 +208,7 @@ export const projectData = [
     githubLink: "https://github.com/xeland314/post_metrics",
     tags: ["Go", "React", "SQLite", "IA", "Gemini", "TailwindCSS", "Cyberpunk"],
     image: "/images/post_metrics_showcase.png",
-    isFeatured: true,
+    isFeatured: false,
   },
   {
     title: "Presentador de Diapositivas Markdown en C",
