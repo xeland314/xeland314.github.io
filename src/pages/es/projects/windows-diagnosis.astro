@@ -1,0 +1,110 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "WindowsDiagnosis: diagnóstico y auditoría de Windows con PowerShell";
+const description =
+  "Scripts de PowerShell sin dependencias que generan reportes HTML portables: salud del equipo, persistencia y amenazas, cumplimiento LOPDP, Office y compatibilidad con Windows 11.";
+const keywords =
+  "PowerShell, diagnóstico de Windows, auditoría, LOPDP, persistencia, Windows 11, reporte HTML, soporte técnico";
+const author = "Christopher Villamarín";
+const applicationName = "WindowsDiagnosis";
+const url = "https://xeland314.github.io/es/projects/windows-diagnosis/";
+const image = "/images/windowsdiagnosis_cover.jpg";
+const imageAlt = "Portada del proyecto WindowsDiagnosis";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/windows-diagnosis/";
+
+const features = [
+  { title: "Diagnóstico del equipo", desc: "Doce bloques: CPU, memoria, controladores, batería, discos y estado S.M.A.R.T., red, eventos críticos, antivirus, actualizaciones y software desactualizado." },
+  { title: "Persistencia y amenazas", desc: "Diez bloques para revisar el autoarranque, suscripciones WMI, exclusiones de Defender, conexiones de red, extensiones del navegador, IFEO y AppInit_DLLs. Detecta binarios firmados que están en una ubicación que no les corresponde." },
+  { title: "Cumplimiento LOPDP", desc: "Controles de la Ley Orgánica de Protección de Datos Personales de Ecuador (artículos 10 y 38): cifrado de disco, puertos abiertos, firewall, antivirus, administradores locales y más, con semáforo y mitigación sugerida." },
+  { title: "Office y portapapeles", desc: "Diagnostica cuando Excel se cuelga al copiar o el portapapeles queda bloqueado, con un monitor en tiempo real y una reparación reversible con -WhatIf." },
+  { title: "Compatibilidad con Windows 11", desc: "Indica si cada PC es compatible de forma nativa, con bypass o imposible (TPM, Secure Boot, CPU, RAM, GPT) y puede exportar JSON para inventario." },
+  { title: "Reportes portables", desc: "HTML con CSS en línea, sin CDN ni JavaScript, que funciona desde un USB. El código es ASCII puro para que PowerShell 5.1 no rompa los textos." },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      Windows<span class="text-blue-500">Diagnosis</span>
+    </h1>
+    <p class="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+      Siete scripts de PowerShell que revisan un equipo Windows y entregan un reporte HTML que se abre en cualquier navegador. Sin instalar nada y sin conexión a internet.
+    </p>
+  </header>
+
+  <div class="relative mb-12">
+    <img
+      src={image}
+      alt={imageAlt}
+      width="1080"
+      height="1080"
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-xl mx-auto"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Los reportes</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{feature.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Cómo se usa</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Cada script se ejecuta por separado según lo que se necesite revisar: no hace falta instalar módulos ni tener internet. Los scripts se generan a partir de constructores en Python, lo que mantiene el código en un formato consistente. Funcionan con Windows 10 21H2 o superior, Windows 11, PowerShell 5.1 y PowerShell 7.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Sin dependencias</h3>
+        <p class="text-gray-700 dark:text-gray-300">Solo cmdlets y WMI incluidos en Windows.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Salida segura</h3>
+        <p class="text-gray-700 dark:text-gray-300">Si no hay permisos de administrador, el reporte indica «No verificado» en lugar de un falso OK.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Para soporte</h3>
+        <p class="text-gray-700 dark:text-gray-300">Pensado para tickets de lentitud, revisiones de seguridad y entregas a usuarios.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Código de salida</h3>
+        <p class="text-gray-700 dark:text-gray-300">Devuelve un código distinto de cero si hay hallazgos, útil para herramientas de gestión remota.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-blue-600/5 to-cyan-500/5 border border-blue-500/10">
+    <h2 class="text-3xl font-bold mb-6">Código fuente</h2>
+    <p class="mb-8 text-lg text-gray-700 dark:text-gray-300">Los scripts y su documentación completa están en GitHub.</p>
+    <a
+      href="https://github.com/xeland314/WindowsDiagnosis"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-lg shadow-blue-600/20"
+    >
+      Ver en GitHub
+    </a>
+  </section>
+</ProjectLayout>

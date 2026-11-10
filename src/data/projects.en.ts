@@ -1,5 +1,27 @@
 export const projectDataEN = [
   {
+    title: "IT Inventory with QR and Barcode Scanner",
+    slug: "inventario",
+    description:
+      "Multi-site IT inventory system built with Go, Astro and SQLite. It reads QR codes and barcodes with a dedicated USB scanner (detected through evdev and streamed in real time over WebSocket), with phone-camera fallback. It prints QR labels, stores photo evidence encrypted with AES-256-GCM and counts parts from a picture with local AI.",
+    shortDescription:
+      "Equipment and parts inventory that reads QR codes and barcodes with a dedicated USB scanner, in a single Go binary.",
+    githubLink: "https://github.com/xeland314/inventario",
+    tags: ["Go", "Astro", "React", "SQLite", "QR", "Barcode", "WebSocket"],
+    image: "/images/inventario_cover.jpg",
+  },
+  {
+    title: "WindowsDiagnosis: Diagnostics and Auditing with PowerShell",
+    slug: "windows-diagnosis",
+    description:
+      "A set of dependency-free PowerShell scripts that generate portable HTML reports: machine health, persistence and threat hunting, LOPDP compliance auditing (Ecuador), Office and clipboard diagnostics, and Windows 11 compatibility. Works on PowerShell 5.1 and 7.",
+    shortDescription:
+      "HTML diagnostic, security and compliance reports for Windows using PowerShell scripts, with nothing to install.",
+    githubLink: "https://github.com/xeland314/WindowsDiagnosis",
+    tags: ["PowerShell", "Windows", "Security", "Auditing", "LOPDP"],
+    image: "/images/windowsdiagnosis_cover.jpg",
+  },
+  {
     title: "Interactive Digital Advent Calendar",
     slug: "interactive-advent-calendar",
     description:

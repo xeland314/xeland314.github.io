@@ -1,0 +1,110 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "IT Inventory with QR and Barcode Scanner | Go + Astro";
+const description =
+  "An IT inventory system built with Go, Astro and SQLite. It reads QR codes and barcodes with a dedicated USB scanner, prints labels and counts parts with local AI.";
+const keywords =
+  "IT inventory, USB barcode scanner, QR scanner, Go, Astro, SQLite, QR labels, evdev, WebSocket";
+const author = "Christopher Villamarín";
+const applicationName = "IT Inventory";
+const url = "https://xeland314.github.io/en/projects/inventario/";
+const image = "/images/inventario_cover.jpg";
+const imageAlt = "Cover of the IT Inventory project";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/en/projects/inventario/";
+
+const features = [
+  { title: "Dedicated USB scanner", desc: "Reads QR codes and barcodes (EAN-13, Code 128, Code 39, UPC-A, EAN-8) with a dedicated USB reader. On Linux the server detects the device through evdev and streams every scan in real time over WebSocket, without any text field needing focus." },
+  { title: "Three ways to scan", desc: "Besides the dedicated scanner, it works as a keyboard (wedge mode, with key-timing analysis) and with the phone camera. Search resolves labels, asset codes, serial numbers, part boxes and ink bottles." },
+  { title: "Printable QR labels", desc: "Generates a batch of UUID labels, exports them to print-ready PDF (21 mm QR) and links them to a device or a box of parts." },
+  { title: "Local AI part counting", desc: "Counts the parts in a box from a photo, using a model running in the browser or a local vision model (Ollama). A person confirms the result and the detected-versus-confirmed counts are stored." },
+  { title: "Encrypted evidence", desc: "Evidence photos are stored encrypted with AES-256-GCM and only decrypted on the server." },
+  { title: "Multi-site and traceability", desc: "Nine statuses, components inside devices (for example a fan in a PC), movement history, maintenance records, ink levels and a stock ledger for bulk parts." },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="en"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      IT <span class="text-blue-500">Inventory</span>
+    </h1>
+    <p class="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+      Track equipment, components and loose parts, and record every movement by simply scanning a code, with a dedicated USB scanner or your phone camera.
+    </p>
+  </header>
+
+  <div class="relative mb-12">
+    <img
+      src={image}
+      alt={imageAlt}
+      width="1080"
+      height="1080"
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-xl mx-auto"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">What it does</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{feature.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">How it is built</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      A single Go binary serves the API and the static frontend (Astro with React and Tailwind) on one port, with no development server in production. Data lives in SQLite and the schema is ready to move to PostgreSQL. Scanner routes require token authentication and the WebSocket authenticates with a first message, so the token never appears in the URL.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Backend</h3>
+        <p class="text-gray-700 dark:text-gray-300">Go with chi, SQLite, 18 tables with idempotent migrations and over 60 automated tests.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Frontend</h3>
+        <p class="text-gray-700 dark:text-gray-300">Astro 7, React, Tailwind, html5-qrcode and pdf-lib for the labels.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Hardware</h3>
+        <p class="text-gray-700 dark:text-gray-300">USB reader detected with udev and evdev; udev rule included in the repository.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Mobile</h3>
+        <p class="text-gray-700 dark:text-gray-300">44 px touch targets, camera photo capture and video scanning.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-blue-600/5 to-cyan-500/5 border border-blue-500/10">
+    <h2 class="text-3xl font-bold mb-6">Source code</h2>
+    <p class="mb-8 text-lg text-gray-700 dark:text-gray-300">The project is open source. Check the technical documentation and the installation instructions.</p>
+    <a
+      href="https://github.com/xeland314/inventario"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-lg shadow-blue-600/20"
+    >
+      View on GitHub
+    </a>
+  </section>
+</ProjectLayout>

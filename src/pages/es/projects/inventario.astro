@@ -1,0 +1,110 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "Inventario de TI con lector de QR y códigos de barras | Go + Astro";
+const description =
+  "Sistema de inventario de tecnología hecho con Go, Astro y SQLite. Lee códigos QR y de barras con un lector USB especializado, imprime etiquetas y cuenta piezas con IA local.";
+const keywords =
+  "inventario de TI, lector de códigos de barras USB, escáner QR, Go, Astro, SQLite, etiquetas QR, evdev, WebSocket";
+const author = "Christopher Villamarín";
+const applicationName = "Inventario de TI";
+const url = "https://xeland314.github.io/es/projects/inventario/";
+const image = "/images/inventario_cover.jpg";
+const imageAlt = "Portada del proyecto Inventario de TI";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/inventario/";
+
+const features = [
+  { title: "Lector USB especializado", desc: "Lee códigos QR y de barras (EAN-13, Code 128, Code 39, UPC-A, EAN-8) con un lector USB dedicado. El servidor detecta el dispositivo en Linux por evdev y emite cada lectura en tiempo real por WebSocket, sin que ningún campo de texto tenga el foco." },
+  { title: "Tres formas de escanear", desc: "Además del lector especializado, funciona como teclado (modo wedge, con análisis de la velocidad de las teclas) y con la cámara del móvil. La búsqueda resuelve etiquetas, códigos de activo, números de serie, cajas de piezas y frascos de tinta." },
+  { title: "Etiquetas QR imprimibles", desc: "Genera un lote de etiquetas con UUID, las exporta a PDF listas para imprimir (QR de 21 mm) y las asocia a un equipo o a una caja de piezas." },
+  { title: "Conteo de piezas con IA local", desc: "Cuenta las piezas de una caja a partir de una foto: con un modelo que corre en el propio navegador o con un modelo de visión local (Ollama). Una persona confirma el resultado y se guarda lo detectado frente a lo confirmado." },
+  { title: "Evidencia cifrada", desc: "Las fotos de evidencia se guardan cifradas con AES-256-GCM y solo se descifran en el servidor." },
+  { title: "Multi-sede y trazabilidad", desc: "Nueve estados, componentes dentro de equipos (por ejemplo, un ventilador en un PC), historial de movimientos, mantenimientos, niveles de tinta y un libro de stock para piezas a granel." },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      Inventario <span class="text-blue-500">de TI</span>
+    </h1>
+    <p class="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+      Controla equipos, componentes y piezas sueltas, y registra cada movimiento con solo escanear un código: con un lector USB especializado o con la cámara del móvil.
+    </p>
+  </header>
+
+  <div class="relative mb-12">
+    <img
+      src={image}
+      alt={imageAlt}
+      width="1080"
+      height="1080"
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-xl mx-auto"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Lo que hace</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{feature.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Cómo está hecho</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Un único binario de Go sirve la API y el frontend estático (Astro con React y Tailwind) en un solo puerto, sin servidor de desarrollo en producción. Los datos viven en SQLite y el esquema está preparado para migrar a PostgreSQL. Las rutas del escáner exigen autenticación por token y el WebSocket se autentica con un primer mensaje, sin exponer el token en la URL.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Backend</h3>
+        <p class="text-gray-700 dark:text-gray-300">Go con chi, SQLite, 18 tablas con migraciones idempotentes y más de 60 pruebas automáticas.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Frontend</h3>
+        <p class="text-gray-700 dark:text-gray-300">Astro 7, React, Tailwind, html5-qrcode y pdf-lib para las etiquetas.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Hardware</h3>
+        <p class="text-gray-700 dark:text-gray-300">Lector USB detectado con udev y evdev; regla udev incluida en el repositorio.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Móvil</h3>
+        <p class="text-gray-700 dark:text-gray-300">Botones táctiles de 44 px, captura de fotos con la cámara y escaneo por vídeo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-blue-600/5 to-cyan-500/5 border border-blue-500/10">
+    <h2 class="text-3xl font-bold mb-6">Código fuente</h2>
+    <p class="mb-8 text-lg text-gray-700 dark:text-gray-300">El proyecto es de código abierto. Revisa la documentación técnica y las instrucciones de instalación.</p>
+    <a
+      href="https://github.com/xeland314/inventario"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-lg shadow-blue-600/20"
+    >
+      Ver en GitHub
+    </a>
+  </section>
+</ProjectLayout>

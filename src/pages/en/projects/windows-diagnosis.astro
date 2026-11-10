@@ -1,0 +1,110 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "WindowsDiagnosis: Windows diagnostics and auditing with PowerShell";
+const description =
+  "Dependency-free PowerShell scripts that generate portable HTML reports: machine health, persistence and threats, LOPDP compliance, Office and Windows 11 readiness.";
+const keywords =
+  "PowerShell, Windows diagnostics, auditing, LOPDP, persistence, Windows 11, HTML report, IT support";
+const author = "Christopher Villamarín";
+const applicationName = "WindowsDiagnosis";
+const url = "https://xeland314.github.io/en/projects/windows-diagnosis/";
+const image = "/images/windowsdiagnosis_cover.jpg";
+const imageAlt = "Cover of the WindowsDiagnosis project";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/en/projects/windows-diagnosis/";
+
+const features = [
+  { title: "Machine diagnostics", desc: "Twelve blocks: CPU, memory, drivers, battery, disks and S.M.A.R.T. status, network, critical events, antivirus, updates and outdated software." },
+  { title: "Persistence and threats", desc: "Ten blocks covering startup entries, WMI subscriptions, Defender exclusions, network connections, browser extensions, IFEO and AppInit_DLLs. It flags signed binaries sitting in a location that does not match their vendor." },
+  { title: "LOPDP compliance", desc: "Controls from Ecuador's Personal Data Protection Law (articles 10 and 38): disk encryption, open ports, firewall, antivirus, local administrators and more, with a traffic-light status and suggested fix." },
+  { title: "Office and clipboard", desc: "Diagnoses Excel freezing on copy or a locked clipboard, with a real-time monitor and a reversible repair using -WhatIf." },
+  { title: "Windows 11 readiness", desc: "Tells you whether each PC is natively compatible, needs a bypass or is impossible (TPM, Secure Boot, CPU, RAM, GPT) and can export JSON for inventory." },
+  { title: "Portable reports", desc: "HTML with inline CSS, no CDN or JavaScript, that works straight from a USB drive. The code is pure ASCII so PowerShell 5.1 does not break the text." },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="en"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      Windows<span class="text-blue-500">Diagnosis</span>
+    </h1>
+    <p class="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+      Seven PowerShell scripts that inspect a Windows machine and produce an HTML report you can open in any browser. Nothing to install and no internet connection needed.
+    </p>
+  </header>
+
+  <div class="relative mb-12">
+    <img
+      src={image}
+      alt={imageAlt}
+      width="1080"
+      height="1080"
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-xl mx-auto"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">The reports</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        features.map((feature) => (
+          <div class="p-8 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-blue-500/30 transition-all duration-300 shadow-sm">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{feature.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">How to use it</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Each script runs on its own depending on what you need to inspect: no modules to install and no internet required. The scripts are generated from Python builders, which keeps the code consistently formatted. They work on Windows 10 21H2 or later, Windows 11, PowerShell 5.1 and PowerShell 7.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">No dependencies</h3>
+        <p class="text-gray-700 dark:text-gray-300">Only cmdlets and WMI that ship with Windows.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Safe output</h3>
+        <p class="text-gray-700 dark:text-gray-300">Without administrator rights the report says “Not verified” instead of a false OK.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Built for support</h3>
+        <p class="text-gray-700 dark:text-gray-300">Made for slowness tickets, security reviews and handovers to users.</p>
+      </div>
+      <div class="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-200 dark:border-blue-800">
+        <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Exit code</h3>
+        <p class="text-gray-700 dark:text-gray-300">Returns a non-zero code when there are findings, useful for remote management tools.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-blue-600/5 to-cyan-500/5 border border-blue-500/10">
+    <h2 class="text-3xl font-bold mb-6">Source code</h2>
+    <p class="mb-8 text-lg text-gray-700 dark:text-gray-300">The scripts and their full documentation are on GitHub.</p>
+    <a
+      href="https://github.com/xeland314/WindowsDiagnosis"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-lg shadow-blue-600/20"
+    >
+      View on GitHub
+    </a>
+  </section>
+</ProjectLayout>
