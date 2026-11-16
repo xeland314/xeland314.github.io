@@ -17,6 +17,7 @@ import BentoServices from "../components/bentos/BentoServices.astro";
 import BentoDevTools from "../components/bentos/BentoDevTools.astro";
 import BentoCaseStudy from "../components/bentos/BentoCaseStudy.astro";
 import BentoAdvent from "../components/bentos/BentoAdvent.astro";
+import BentoPixelDesk from "../components/bentos/BentoPixelDesk.astro";
 import BentoMostRead from "../components/bentos/BentoMostRead.astro";
 import BentoBlog from "../components/bentos/BentoBlog.astro";
 import ContactForm from "../components/contact/ContactForm";
@@ -69,6 +70,9 @@ const siteImage = "https://xeland314.github.io/images/preview-es.jpg";
       >
         <BentoHero lang={lang} />
       </div>
+
+      {/* 1.2 Proyecto especial: pixel-desk, el escritorio pixel-art para Linux */}
+      <BentoPixelDesk lang={lang} />
 
       {/* 1.5 Novedad de temporada: calendario de adviento (visible 15 nov - 6 ene) */}
       <BentoAdvent lang={lang} />

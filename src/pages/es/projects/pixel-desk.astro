@@ -1,0 +1,148 @@
+---
+import ProjectLayout from "../../../layouts/ProjectLayout.astro";
+
+const title = "pixel-desk: escritorio pixel-art en 2.5D para Linux | Go + three.js";
+const description =
+  "Escritorio para Linux con forma de habitación pixel-art en 2.5D, hecho con Go, WebKitGTK y three.js sin Electron. Cada objeto abre una app y hay cinco cuartos: kanban, monitor, calendario y rack de servidores.";
+const keywords =
+  "escritorio linux pixel-art, pixel art desktop, Go, WebKitGTK, three.js, X11, LXQt, xfwm4, rofi, kanban, monitor del sistema, Netdata, rack de servidores, sin Electron";
+const author = "Christopher Villamarín";
+const applicationName = "pixel-desk";
+const url = "https://xeland314.github.io/es/projects/pixel-desk/";
+const image = "/images/pixel-desk_cover.jpg";
+const imageAlt = "Habitación pixel-art de pixel-desk con escritorio, monitor CRT, libros, tocadiscos y un gato naranja en su caja";
+const robots = "index, follow";
+const canonical = "https://xeland314.github.io/es/projects/pixel-desk/";
+
+const objects = [
+  ["Monitor CRT", "abre la terminal y muestra la hora"],
+  ["Libros", "abren el editor de código"],
+  ["Caja del gato", "lanza cualquier app con rofi"],
+  ["Ventana", "abre el navegador; el cielo cambia con la hora"],
+  ["Tocadiscos", "reproduce, pausa y cambia de canción (MPRIS)"],
+  ["Caballete", "bitácora rápida que se exporta a Markdown"],
+  ["Cajón de arriba", "bóveda de comandos: los copia, nunca los ejecuta"],
+];
+
+const rooms = [
+  { img: "tablero", title: "Tablero de corcho", desc: "Kanban con notas de papel: por hacer, en progreso, hecho e información fija. Espacios separados (por ejemplo, trabajo y personal), arrastrar y soltar o todo con teclado." },
+  { img: "monitor", title: "Monitor del sistema", desc: "Pared de pantallas estilo terminal: CPU, memoria, procesos tipo htop, red, discos y paneles que consultan una API. También muestra otras máquinas leyendo su Netdata." },
+  { img: "calendario", title: "Calendario", desc: "Mes completo con agenda, eventos que se repiten, fase lunar y suscripciones ICS de solo lectura." },
+  { img: "rack", title: "Rack de servidores", desc: "Cada servidor es una unidad con LEDs: TCP, HTTP con palabra clave, días del certificado TLS, ping, DNS y Docker. Enter copia el comando ssh." },
+];
+---
+
+<ProjectLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  author={author}
+  applicationName={applicationName}
+  url={url}
+  image={image}
+  imageAlt={imageAlt}
+  robots={robots}
+  canonical={canonical}
+  lang="es"
+>
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tighter">
+      pixel-<span class="text-orange-500">desk</span>
+    </h1>
+    <p class="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+      Mi escritorio de Linux convertido en una habitación pixel-art en 2.5D. Cada objeto abre algo, hay cinco cuartos y todo se maneja con el teclado.
+    </p>
+  </header>
+
+  <div class="relative mb-12">
+    <img
+      src="/images/pixel-desk/escena.webp"
+      alt={imageAlt}
+      width="1920"
+      height="1200"
+      class="rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full"
+      style="image-rendering: pixelated"
+    />
+  </div>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Una habitación que lanza apps</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      La ventana se coloca como fondo del escritorio, debajo de todas las demás. Con las flechas eliges un objeto y con Enter lo usas; los números del 1 al 9 van directo. El gato naranja está hecho de cajas en 3D y se mueve a 8 fotogramas por segundo, como un sprite.
+    </p>
+    <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {
+        objects.map(([name, what]) => (
+          <li class="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+            <b class="text-gray-900 dark:text-white">{name}</b>
+            <span class="text-gray-700 dark:text-gray-300"> {what}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-8">Cinco cuartos</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        rooms.map((r) => (
+          <div class="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
+            <img
+              src={`/images/pixel-desk/${r.img}.webp`}
+              alt={`Cuarto de pixel-desk: ${r.title}`}
+              width="1920"
+              height="1200"
+              loading="lazy"
+              decoding="async"
+              class="w-full border-b border-gray-100 dark:border-gray-700"
+              style="image-rendering: pixelated"
+            />
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">{r.title}</h3>
+              <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{r.desc}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-3xl font-bold mb-6">Cómo está hecho</h2>
+    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      En vez de Electron, un solo binario de Go abre una ventana GTK con WebKitGTK y sirve la página desde un puerto local con un token por arranque. La página solo envía identificadores, nunca comandos ni URLs. La escena usa three.js con una proyección oblicua, se dibuja a baja resolución y se amplía sin suavizar, por eso se ve pixel-art.
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-200 dark:border-orange-800">
+        <h3 class="font-bold text-orange-700 dark:text-orange-400 mb-2">Backend</h3>
+        <p class="text-gray-700 dark:text-gray-300">Go con cgo para GTK y WebKitGTK; lee /proc y /sys directamente, sin ejecutar comandos.</p>
+      </div>
+      <div class="p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-200 dark:border-orange-800">
+        <h3 class="font-bold text-orange-700 dark:text-orange-400 mb-2">Escena</h3>
+        <p class="text-gray-700 dark:text-gray-300">three.js con cámara ortográfica y animación a saltos; solo redibuja cuando algo cambia.</p>
+      </div>
+      <div class="p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-200 dark:border-orange-800">
+        <h3 class="font-bold text-orange-700 dark:text-orange-400 mb-2">Datos</h3>
+        <p class="text-gray-700 dark:text-gray-300">Escritura atómica; un archivo corrupto se aparta en vez de perderse. Nada corre en segundo plano si no estás en ese cuarto.</p>
+      </div>
+      <div class="p-6 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-200 dark:border-orange-800">
+        <h3 class="font-bold text-orange-700 dark:text-orange-400 mb-2">Tema a juego</h3>
+        <p class="text-gray-700 dark:text-gray-300">Un script genera el tema de LXQt, xfwm4 y rofi, y convierte unos 550 iconos a pixel-art sin IA.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12 text-center p-12 rounded-3xl bg-gradient-to-br from-orange-500/5 to-amber-400/5 border border-orange-500/10">
+    <h2 class="text-3xl font-bold mb-6">Código fuente</h2>
+    <p class="mb-8 text-lg text-gray-700 dark:text-gray-300">El proyecto es de código abierto. El README tiene capturas de cada cuarto, las opciones y cómo instalarlo.</p>
+    <a
+      href="https://github.com/xeland314/pixel-desk"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold transition-all shadow-lg shadow-orange-600/20"
+    >
+      Ver en GitHub
+    </a>
+  </section>
+</ProjectLayout>

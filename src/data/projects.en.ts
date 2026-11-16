@@ -1,5 +1,18 @@
 export const projectDataEN = [
   {
+    title: "pixel-desk: 2.5D Pixel-Art Desktop for Linux",
+    slug: "pixel-desk",
+    description:
+      "A Linux (X11) desktop shaped like a 2.5D pixel-art room, built with Go, WebKitGTK and three.js, without Electron. Every object opens an app or a tool, and Tab switches between five rooms: a kanban board, a system monitor, a calendar with ICS subscriptions and a rack that watches servers. It ships with a matching theme for LXQt, xfwm4, rofi and icons.",
+    shortDescription:
+      "My Linux desktop turned into a pixel-art room: every object opens something and everything works from the keyboard.",
+    githubLink: "https://github.com/xeland314/pixel-desk",
+    tags: ["Go", "three.js", "WebKitGTK", "Linux", "X11", "LXQt", "Pixel-art"],
+    image: "/images/pixel-desk_cover.jpg",
+    isFeatured: false,
+    lang: "en",
+  },
+  {
     title: "IT Inventory with QR and Barcode Scanner",
     slug: "inventario",
     description:
@@ -10,6 +23,8 @@ export const projectDataEN = [
     tags: ["Go", "Astro", "React", "SQLite", "QR", "Barcode", "WebSocket"],
     image: "/images/inventario_cover.jpg",
     isFeatured: true,
+
+    lang: "en",
   },
   {
     title: "WindowsDiagnosis: Diagnostics and Auditing with PowerShell",
@@ -22,6 +37,8 @@ export const projectDataEN = [
     tags: ["PowerShell", "Windows", "Security", "Auditing", "LOPDP"],
     image: "/images/windowsdiagnosis_cover.jpg",
     isFeatured: true,
+
+    lang: "en",
   },
   {
     title: "Interactive Digital Advent Calendar",

@@ -1,5 +1,17 @@
 export const projectData = [
   {
+    title: "pixel-desk: Escritorio Pixel-Art en 2.5D para Linux",
+    slug: "pixel-desk",
+    description:
+      "Escritorio para Linux (X11) con forma de habitación pixel-art en 2.5D, hecho con Go, WebKitGTK y three.js, sin Electron. Cada objeto abre una app o una herramienta, y con Tab se cambia entre cinco cuartos: tablero kanban, monitor del sistema, calendario con suscripciones ICS y un rack que vigila servidores. Incluye un tema a juego para LXQt, xfwm4, rofi e iconos.",
+    shortDescription:
+      "Mi escritorio de Linux convertido en una habitación pixel-art: cada objeto abre algo y todo se maneja con el teclado.",
+    githubLink: "https://github.com/xeland314/pixel-desk",
+    tags: ["Go", "three.js", "WebKitGTK", "Linux", "X11", "LXQt", "Pixel-art"],
+    image: "/images/pixel-desk_cover.jpg",
+    isFeatured: false,
+  },
+  {
     title: "Inventario de TI con Escáner de QR y Códigos de Barras",
     slug: "inventario",
     description:

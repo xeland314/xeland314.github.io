@@ -1,0 +1,260 @@
+---
+// Sección especial de la portada: pixel-desk, el escritorio pixel-art para Linux.
+// Estilo propio del proyecto (tokens de pixel-desk): fondo de pantalla negro,
+// naranja de gato, fuentes pixel y bordes duros. Los botones 1-5 cambian la
+// captura entre los cinco cuartos.
+
+interface Props {
+  lang?: "es" | "en";
+}
+const { lang = "es" } = Astro.props;
+
+const REPO = "https://github.com/xeland314/pixel-desk";
+
+const T = {
+  es: {
+    label: "Nuevo · escritorio para Linux",
+    text: "Mi escritorio de Linux convertido en una habitación pixel-art en 2.5D. Cada objeto abre algo: el monitor CRT abre la terminal, los libros abren el editor, la caja del gato lanza las apps y el tocadiscos controla la música. Con Tab cambias entre cinco cuartos.",
+    points: [
+      ["Sin Electron", "Go + WebKitGTK en un solo binario"],
+      ["Todo con teclado", "flechas, Enter, Tab y atajos"],
+      ["Tema a juego", "LXQt, xfwm4, rofi e iconos pixel-art"],
+    ],
+    rooms: [
+      ["escena", "Escritorio", "Habitación pixel-art con escritorio, monitor CRT, libros, tocadiscos y un gato naranja dentro de una caja"],
+      ["tablero", "Tablero", "Tablero de corcho kanban con notas de colores en las columnas por hacer, en progreso, hecho e información fija"],
+      ["monitor", "Monitor", "Pared de pantallas verdes estilo terminal con CPU, memoria, procesos, red, disco y sistema"],
+      ["calendario", "Calendario", "Calendario mensual pixel-art con eventos de colores, agenda del día y fase lunar"],
+      ["rack", "Rack", "Rack de servidores con unidades, LEDs de estado y el detalle de cada comprobación"],
+    ],
+    roomsLabel: "Ver un cuarto",
+    cta: "Ver en GitHub",
+    more: "Cómo está hecho",
+    link: "/es/projects/pixel-desk/",
+    catAlt: "Gato naranja pixel-art que se asoma desde su caja",
+  },
+  en: {
+    label: "New · Linux desktop",
+    text: "My Linux desktop turned into a 2.5D pixel-art room. Every object opens something: the CRT monitor opens the terminal, the books open the editor, the cat's box launches apps and the turntable controls the music. Press Tab to switch between five rooms.",
+    points: [
+      ["No Electron", "Go + WebKitGTK in a single binary"],
+      ["Keyboard first", "arrows, Enter, Tab and shortcuts"],
+      ["Matching theme", "LXQt, xfwm4, rofi and pixel-art icons"],
+    ],
+    rooms: [
+      ["escena", "Desk", "Pixel-art room with a desk, CRT monitor, books, turntable and an orange cat inside a box"],
+      ["tablero", "Board", "Cork kanban board with colored notes in to do, in progress, done and pinned info columns"],
+      ["monitor", "Monitor", "Wall of green terminal-style screens with CPU, memory, processes, network, disk and system"],
+      ["calendario", "Calendar", "Pixel-art monthly calendar with colored events, today's agenda and moon phase"],
+      ["rack", "Rack", "Server rack with units, status LEDs and the detail of each check"],
+    ],
+    roomsLabel: "Show a room",
+    cta: "View on GitHub",
+    more: "How it is built",
+    link: "/en/projects/pixel-desk/",
+    catAlt: "Orange pixel-art cat peeking out of its box",
+  },
+}[lang];
+
+const [first] = T.rooms;
+---
+
+<section id="pixel-desk" aria-labelledby="pixel-desk-heading" class="pd-card rounded-3xl overflow-hidden" data-pixel-desk>
+  <div class="grid grid-cols-1 lg:grid-cols-12">
+    <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col gap-5">
+      <p class="pd-label">
+        <span class="pd-led" aria-hidden="true"></span>{T.label}
+      </p>
+      <div class="flex items-center gap-4">
+        <img src="/images/pixel-desk/gato.gif" alt={T.catAlt} width="480" height="200" loading="lazy" decoding="async" class="pd-cat" />
+        <h2 id="pixel-desk-heading" class="pd-title">pixel-desk</h2>
+      </div>
+      <p class="pd-text">{T.text}</p>
+      <ul class="pd-points">
+        {T.points.map(([k, v]) => (
+          <li><b>{k}</b> <span>{v}</span></li>
+        ))}
+      </ul>
+      <div class="flex flex-wrap gap-3 mt-auto pt-2">
+        <a href={REPO} target="_blank" rel="noopener noreferrer" class="pd-btn pd-btn-main">{T.cta}</a>
+        <a href={T.link} class="pd-btn">{T.more}</a>
+      </div>
+    </div>
+
+    <div class="lg:col-span-7 p-4 sm:p-6 lg:pl-0 flex flex-col gap-3">
+      <div class="pd-screen">
+        <img
+          data-pd-shot
+          src={`/images/pixel-desk/${first[0]}.webp`}
+          alt={first[2]}
+          width="1920"
+          height="1200"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="pd-rooms" role="group" aria-label={T.roomsLabel}>
+        {T.rooms.map(([id, name, alt], i) => (
+          <button
+            type="button"
+            class="pd-room"
+            data-pd-room={id}
+            data-alt={alt}
+            aria-pressed={i === 0 ? "true" : "false"}
+          >
+            <b>{i + 1}</b> {name}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @font-face { font-family: "Press Start 2P"; src: url("/fonts/pixel/PressStart2P-Regular.ttf") format("truetype"); font-display: swap; }
+  @font-face { font-family: "Silkscreen"; font-weight: 400; src: url("/fonts/pixel/Silkscreen-Regular.ttf") format("truetype"); font-display: swap; }
+  @font-face { font-family: "Silkscreen"; font-weight: 700; src: url("/fonts/pixel/Silkscreen-Bold.ttf") format("truetype"); font-display: swap; }
+  @font-face { font-family: "VT323"; src: url("/fonts/pixel/VT323-Regular.ttf") format("truetype"); font-display: swap; }
+
+  /* Colores de pixel-desk: la sección es una "pantalla" y se ve igual en claro y oscuro. */
+  .pd-card {
+    --pd-orange: #f1a449;
+    --pd-cream: #f9e6c6;
+    --pd-sage: #9c9e8f;
+    --pd-brown: #483025;
+    --pd-ok: #7cfb4c;
+    --pd-line: #2e2e2e;
+    background: #0b0b0b;
+    border: 1px solid var(--pd-line);
+    color: var(--pd-cream);
+  }
+  .pd-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Silkscreen", monospace;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pd-orange);
+  }
+  .pd-led {
+    width: 9px;
+    height: 9px;
+    background: var(--pd-ok);
+    animation: pd-blink 1.2s steps(1) infinite;
+  }
+  @keyframes pd-blink { 50% { opacity: 0.2; } }
+  .pd-cat { image-rendering: pixelated; flex: none; width: 96px; height: auto; }
+  .pd-title {
+    font-family: "Press Start 2P", monospace;
+    font-size: clamp(22px, 4vw, 32px);
+    line-height: 1.3;
+    color: var(--pd-orange);
+    text-shadow: 4px 4px 0 var(--pd-brown);
+  }
+  .pd-text {
+    font-family: "VT323", monospace;
+    font-size: 23px;
+    line-height: 1.15;
+    color: var(--pd-cream);
+  }
+  .pd-points { display: grid; gap: 8px; }
+  .pd-points li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    align-items: baseline;
+    padding-left: 18px;
+    position: relative;
+    font-family: "VT323", monospace;
+    font-size: 21px;
+    color: var(--pd-sage);
+  }
+  .pd-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 8px;
+    height: 8px;
+    background: var(--pd-orange);
+  }
+  .pd-points b {
+    font-family: "Silkscreen", monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pd-cream);
+  }
+  .pd-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    font-family: "Silkscreen", monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pd-cream);
+    border: 3px solid var(--pd-cream);
+    box-shadow: 4px 4px 0 var(--pd-line);
+    transition: transform 0.1s steps(2);
+  }
+  .pd-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--pd-line); }
+  .pd-btn-main { background: var(--pd-orange); border-color: var(--pd-orange); color: #000; box-shadow: 4px 4px 0 var(--pd-brown); }
+  .pd-btn-main:hover { box-shadow: 6px 6px 0 var(--pd-brown); }
+  .pd-btn:focus-visible, .pd-room:focus-visible { outline: 3px solid var(--pd-ok); outline-offset: 3px; }
+
+  .pd-screen {
+    background: #000;
+    border: 3px solid var(--pd-line);
+    box-shadow: 6px 6px 0 var(--pd-brown);
+    aspect-ratio: 16 / 10;
+  }
+  .pd-screen img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+  .pd-rooms { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pd-room {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    font-family: "Silkscreen", monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pd-sage);
+    background: #161616;
+    border: 2px solid var(--pd-line);
+    cursor: pointer;
+  }
+  .pd-room b { color: var(--pd-cream); background: var(--pd-line); padding: 0 5px; }
+  .pd-room:hover { color: var(--pd-cream); }
+  .pd-room[aria-pressed="true"] { background: var(--pd-orange); border-color: var(--pd-orange); color: #000; }
+  .pd-room[aria-pressed="true"] b { background: var(--pd-brown); color: var(--pd-orange); }
+  @media (prefers-reduced-motion: reduce) {
+    .pd-led { animation: none; }
+    .pd-btn { transition: none; }
+  }
+</style>
+
+<script>
+  const setupPixelDesk = () => {
+    const root = document.querySelector<HTMLElement>("[data-pixel-desk]");
+    if (!root || root.dataset.ready) return;
+    root.dataset.ready = "1";
+    const shot = root.querySelector<HTMLImageElement>("[data-pd-shot]");
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-pd-room]")];
+    buttons.forEach((btn) =>
+      btn.addEventListener("click", () => {
+        if (!shot) return;
+        shot.src = `/images/pixel-desk/${btn.dataset.pdRoom}.webp`;
+        shot.alt = btn.dataset.alt ?? "";
+        buttons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+      }),
+    );
+  };
+  setupPixelDesk();
+  document.addEventListener("astro:after-swap", setupPixelDesk);
+</script>
