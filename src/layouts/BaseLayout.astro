@@ -4,6 +4,7 @@ import "/src/styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import Header from "../components/common/Header.astro";
 import WebMcpTools from "../components/WebMcpTools.astro";
+import { appForPath, appIcon } from "../data/pwa-apps";
 
 interface Props {
   title: string;
@@ -55,6 +56,11 @@ const seoDescription =
   noIndex || !description || description.length >= 70
     ? description
     : `${description.replace(/[.\s]+$/, "")}. ${lang === "en" ? "Visual guide with practical examples by Christopher Villamarín." : "Guía visual con ejemplos prácticos de Christopher Villamarín."}`;
+// Mini apps instalables: en su ruta se enlaza su propio manifest (scope = la app),
+// así "Instalar" / "Añadir a inicio" instala solo esa app y no el portafolio.
+const pwaApp = appForPath(Astro.url.pathname);
+const manifestHref = pwaApp ? `/${pwaApp.slug}/manifest.webmanifest` : "/manifest.json";
+const appleIcon = pwaApp ? appIcon(pwaApp.slug, "icon-192.png") : "/assets/images/icon-192x192.png";
 const canonicalUrl = /noindex/i.test(robots) ? undefined : normalizeUrl(canonical ?? Astro.url.pathname);
 ---
 
@@ -65,10 +71,11 @@ const canonicalUrl = /noindex/i.test(robots) ? undefined : normalizeUrl(canonica
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href={manifestHref} />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1f2937" media="(prefers-color-scheme: dark)" />
-    <link rel="apple-touch-icon" href="/assets/images/icon-192x192.png" />
+    <link rel="apple-touch-icon" href={appleIcon} />
+    {pwaApp && <meta name="apple-mobile-web-app-title" content={pwaApp.name} />}
 
     <title>{seoTitle}</title>
     <meta name="description" content={seoDescription} />
