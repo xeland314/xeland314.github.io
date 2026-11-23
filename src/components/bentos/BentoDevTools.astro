@@ -15,11 +15,11 @@ const T = texts[lang];
 
 // 5 mini apps destacadas + 1 tarjeta de "Ver más" = 6 celdas; el resto en /mini-apps
 const FEATURED_HREFS = [
-  "/code-to-img",
-  "/code-to-video",
-  "/recortar-pdf",
-  "/comprimir-pdf",
-  "/remover-fondo",
+  "/code-to-img/",
+  "/code-to-video/",
+  "/recortar-pdf/",
+  "/comprimir-pdf/",
+  "/remover-fondo/",
 ];
 const visibleTools = TOOLS.filter((tool) => FEATURED_HREFS.includes(tool.href)).slice(0, 5);
 const hiddenCount = Math.max(TOOLS.length - visibleTools.length, 0);

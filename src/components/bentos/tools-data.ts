@@ -10,7 +10,7 @@ export interface ToolCard {
 
 export const TOOLS: ToolCard[] = [
   {
-    href: "/code-to-img",
+    href: "/code-to-img/",
     title: { es: "Code to Image", en: "Code to Image" },
     description: {
       es: "Fragmentos en imágenes elegantes",
@@ -21,7 +21,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>`,
   },
   {
-    href: "/cover-creator",
+    href: "/cover-creator/",
     title: { es: "Cover Creator", en: "Cover Creator" },
     description: {
       es: "Diseña portadas para tus artículos",
@@ -32,7 +32,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>`,
   },
   {
-    href: "/code-to-video",
+    href: "/code-to-video/",
     title: { es: "Code to Video", en: "Code to Video" },
     description: {
       es: "Animaciones de código para compartir",
@@ -43,7 +43,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/>`,
   },
   {
-    href: "/rotador-imagenes",
+    href: "/rotador-imagenes/",
     title: { es: "Rotador de Imágenes", en: "Image Rotator" },
     description: {
       es: "Gira imágenes con animación y trazado",
@@ -54,7 +54,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>`,
   },
   {
-    href: "/dominos",
+    href: "/dominos/",
     title: { es: "Dominós", en: "Dominos" },
     description: {
       es: "Visualizador, solver y patrones de fichas",
@@ -65,7 +65,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<rect x="3" y="3" width="18" height="18" rx="3"/><line x1="12" x2="12" y1="3" y2="21"/><circle cx="8" cy="8" r="1"/><circle cx="16" cy="16" r="1"/>`,
   },
   {
-    href: "/recortar-pdf",
+    href: "/recortar-pdf/",
     title: { es: "Recortar PDF", en: "Crop PDF" },
     description: {
       es: "Borra, extrae y recorta páginas offline",
@@ -76,7 +76,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/>`,
   },
   {
-    href: "/comprimir-pdf",
+    href: "/comprimir-pdf/",
     title: { es: "Comprimir PDF", en: "Compress PDF" },
     description: {
       es: "4 niveles + ZIP, vista hoja por hoja sin miniaturas",
@@ -87,7 +87,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15h6"/><path d="M12 12v6"/><path d="M12 12a3 3 0 0 0 3 3"/>`,
   },
   {
-    href: "/marca-agua-pdf",
+    href: "/marca-agua-pdf/",
     title: { es: "Marca de agua PDF", en: "Watermark PDF" },
     description: {
       es: "Logo en PDF/ZIP hoja por hoja, sin miniaturas",
@@ -98,7 +98,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="14" r="3"/><path d="M12 11a3 3 0 0 0-3 3"/>`,
   },
   {
-    href: "/remover-fondo",
+    href: "/remover-fondo/",
     title: { es: "Remover Fondo", en: "Remove BG" },
     description: {
       es: "Blanco/cuadriculado → PNG transparente sin re-escalar",
@@ -109,7 +109,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/><circle cx="15" cy="13" r="2"/>`,
   },
   {
-    href: "/mapa-de-calor",
+    href: "/mapa-de-calor/",
     title: { es: "Mapa de Calor RF", en: "RF Heat Map" },
     description: {
       es: "Predice el alcance de walkie talkies desde una base con desnivel",
@@ -120,7 +120,7 @@ export const TOOLS: ToolCard[] = [
     icon: `<path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1"/>`,
   },
   {
-    href: "/mapa-personalizado",
+    href: "/mapa-personalizado/",
     title: { es: "Mapa Personalizado", en: "Custom Map" },
     description: {
       es: "Marca +10 puntos sin límite con íconos",

@@ -263,7 +263,7 @@ export const projectData = [
       "Genera videos animados de código siendo escrito directamente en tu navegador. Ideal para tutoriales y redes sociales. Permite personalizar el lenguaje, el tema y la velocidad de escritura.",
     shortDescription:
       "Crea tutoriales atractivos mostrando código escribiéndose en tiempo real, perfecto para redes sociales.",
-    demoLink: "https://xeland314.github.io/code-to-video",
+    demoLink: "https://xeland314.github.io/code-to-video/",
     tags: ["TypeScript", "Canvas", "Video", "Developer Tools"],
     image: undefined,
   },
@@ -274,7 +274,7 @@ export const projectData = [
       "Convierte tus fragmentos de código en imágenes elegantes con fondos personalizados para compartir en plataformas sociales. Soporta resaltado de sintaxis para múltiples lenguajes.",
     shortDescription:
       "Convierte tus snippets en imágenes profesionales con un clic, listo para compartir en Twitter, LinkedIn o Dev.to.",
-    demoLink: "https://xeland314.github.io/code-to-img",
+    demoLink: "https://xeland314.github.io/code-to-img/",
     tags: ["TypeScript", "Canvas", "Developer Tools", "Social Media"],
     image: undefined,
   },
