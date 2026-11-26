@@ -50,5 +50,10 @@
     "prettier": "3.7.4",
     "prettier-plugin-astro": "0.14.1",
     "vitest": "^4.0.18"
+  },
+  "overrides": {
+    "satori": {
+      "fflate": "^0.7.5"
+    }
   }
 }
