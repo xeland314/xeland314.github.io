@@ -3,6 +3,25 @@ import satori from "satori";
 import { html } from "satori-html";
 import fs from "node:fs";
 import path from "node:path";
+import { projectDataEN } from "../../data/projects.en";
+import { postDataEN } from "../../data/posts.en";
+
+// Proyectos más recientes: projects.en.ts lista primero lo más nuevo.
+// Se usa el nombre del repo (último segmento de githubLink) porque es corto y reconocible.
+const RECENT_PROJECTS = projectDataEN
+  .filter((p) => p.githubLink && (p as { isVisible?: boolean }).isVisible !== false)
+  .slice(0, 3)
+  .map((p) => p.githubLink!.replace(/\/+$/, "").split("/").pop()!);
+
+// Posts: posts.en.ts agrega lo más nuevo al final.
+const LATEST_POST = [...postDataEN].reverse().find((p) => p.isPublished)?.title;
+
+// Años como programador profesional (desde jun. 2023), igual que BentoHero.
+const START = new Date("2023-06-01");
+const YEARS = Math.max(
+  1,
+  Math.floor((Date.now() - START.getTime()) / (365.25 * 24 * 3600 * 1000)),
+);
 
 // 1. Definir qué archivos estáticos va a generar Astro en el build
 export function getStaticPaths() {
@@ -68,9 +87,29 @@ export const GET: APIRoute = async ({ params }) => {
             ? ""
             : "justify-content: center;"}"
         >
-          <span style="color: #10b981;">Python / APIs / Linux</span>
+          <span style="color: #10b981;">Python / Go / Linux</span>
+          <span>•</span>
+          <span>${YEARS}+ yrs coding</span>
           <span>•</span>
           <span>Quito, EC</span>
+        </div>
+
+        <div
+          style="display: flex; gap: 10px; font-size: 13px; color: #6b7280; margin-top: 12px; ${isLinkedIn
+            ? ""
+            : "justify-content: center;"}"
+        >
+          <span style="color: #3b82f6;">new:</span>
+          <span style="color: #d1d5db;">${RECENT_PROJECTS.join(" · ")}</span>
+        </div>
+
+        <div
+          style="display: ${LATEST_POST ? "flex" : "none"}; gap: 10px; font-size: 13px; color: #6b7280; margin-top: 4px; ${isLinkedIn
+            ? ""
+            : "justify-content: center;"}"
+        >
+          <span style="color: #3b82f6;">post:</span>
+          <span style="color: #d1d5db;">${LATEST_POST ?? ""}</span>
         </div>
       </div>
     </div>
